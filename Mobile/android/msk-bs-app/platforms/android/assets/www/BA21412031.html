@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="css/common.css" type="text/css" rel="stylesheet"/>
+    <link href="css/css.css" type="text/css" rel="stylesheet"/>
+    <link href="css/BA2141203.css" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="js/constantDef.js"></script>
+    <script src="js/commonUtil.js"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+    <title>冻品管家自我介绍</title>
+    <script src="jquery/simplemodal.js"></script>
+    <link rel="stylesheet" href="css/loaders.css">
+    <link rel="stylesheet" href="css/animate.min.css">
+</head>
+
+<body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<!--加载指示器-->
+<span id='messageLoading' style="display: none">
+     <div id="messageLoadingText">正在加载中...</div>
+     <div class="loader-inner ball-clip-rotate">
+         <div></div>
+     </div>
+ </span>
+<!--页眉开始-->
+<div class="wapp-head">自我介绍
+    <a href="javascript:void(0);" id="fanhui" class="head-back">返回</a>
+</div>
+<!--页眉结束/-->
+<!--详情信息主体开始-->
+<div class="lbxx-list04" style="background-color: #e6e6e6">
+    <input type="hidden" id="intId"/>
+    <input type="hidden" id="houseCode"/>
+    <input type="hidden" id="houseAccount"/>
+    <input type="hidden" id="img1"/>
+    <input type="hidden" id="img2"/>
+    <input type="hidden" id="img3"/>
+
+    <div class="introduce">
+        <div class="imgInfo" style="margin-top: 20px"><span class="imgInfoText">工作照</span><span class="minContiue work"><img src="image/no-image.png" width="200px" height="110px" id="uploadUrl3"/> <span class="jiaFile work">未选择文件</span></span>
+        </div>
+        <div class="imgInfo"><span class="imgInfoText">身份证正面</span><span class="minContiue before"><img src="image/no-image.png" width="200px" height="110px" id="uploadUrl1"/> <span class="jiaFile before">未选择文件</span></span>
+        </div>
+        <div class="imgInfo"><span class="imgInfoText">身份证反面</span><span class="minContiue after"><img src="image/no-image.png" width="200px" height="110px" id="uploadUrl2"/> <span class="jiaFile after">未选择文件</span></span>
+        </div>
+        <div class="textArea"><span class="imgInfoText">服务心得</span><span style="float: right"><textarea placeholder="请输入服务心得" rows="5" cols="20" id="serviceCommit"></textarea></span></div>
+        <div class="textArea"><span class="imgInfoText">感悟理想</span><span style="float: right"><textarea placeholder="请输入感悟理想" rows="5" cols="20" id="introduce"></textarea></span></div>
+        <div>
+            <div style="padding: 0px" class="userInfo">
+                <span>工作经历</span>
+                <span onclick="BA21412031.addWork()">添加</span>
+            </div>
+            <div id="workInfo">
+
+            </div>
+        </div>
+        <div>
+            <div style="padding: 0px" class="userInfo">
+                <span>教育简历</span>
+                <span onclick="BA21412031.addEducation()">添加</span>
+            </div>
+            <div id="educationInfo">
+
+            </div>
+        </div>
+        <div>
+            <div style="padding: 0px" class="userInfo">
+                <span>培训经历</span>
+                <span onclick="BA21412031.addTraining()">添加</span>
+            </div>
+            <div id="trainingInfo">
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div id="copyWork" style="display: none">
+    <div class="list_param" style="padding: 8px;margin-top: 15px">
+
+        <div><span class="title">工作时间：</span><span>workTime</span></div>
+        <div><span class="title">工作单位：</span><span>workComp</span></div>
+        <div><span class="title">岗位：</span><span>workStation</span></div>
+        <div><span class="title">职务：</span><span>workPosition</span></div>
+        <div style="text-align: right"><span class="edit" onclick="BA21412031.updateWork(workId)">编辑</span><span class="delt" onclick="BA21412031.delHouseWork(workId)">删除</span></div>
+    </div>
+</div>
+
+<div id="copyEdu" style="display: none">
+    <div class="list_param" style="padding: 8px;margin-top: 15px">
+
+        <div><span class="title">学习时间：</span><span>eduTime</span></div>
+        <div><span class="title">教育单位：</span><span>eduComp</span></div>
+        <div><span class="title">学历：</span><span>eduRecord</span></div>
+        <div><span class="title">学位：</span><span>eduDegree</span></div>
+        <div style="text-align: right"><span class="edit" onclick="BA21412031.updateEducation(eduId)">编辑</span><span class="delt" onclick="BA21412031.delHouseEducation(eduId)">删除</span></div>
+    </div>
+</div>
+
+<div id="copyTrain" style="display: none">
+    <div class="list_param" style="padding: 8px;margin-top: 15px">
+
+        <div><span class="title">培训时间：</span><span>trainTime</span></div>
+        <div><span class="title">培训机构：</span><span>trainComp</span></div>
+        <div><span class="title">所获证书：</span><span>trainCertificate</span></div>
+        <div style="text-align: right"><span class="edit" onclick="BA21412031.updateTraining(trainId)">编辑</span><span class="delt" onclick="BA21412031.delHouseTraining(trainId)">删除</span></div>
+    </div>
+</div>
+<div class="gad" style="display: none">
+    <div class="footerbottom">
+        <div class="photo" onclick="loadImageLocal();">从相册选取</div>
+        <div class="camera" onclick="loadImage()">打开相机</div>
+        <div class="cancel">取消</div>
+    </div>
+</div>
+<div class="bigCion" style="display: none">
+    <div class="swiper-container" style="margin: auto auto;width: 100%">
+        <div class="swiper-wrapper" style="background: white">
+
+        </div>
+        <!-- 如果需要导航按钮 -->
+        <div class="swiper-button-prev swiper-button-white"></div>
+        <div class="swiper-button-next swiper-button-white"></div>
+    </div>
+</div>
+<!--列表信息主体结束-->
+<!--页尾开始/-->
+<div class="wapp-footer"><a href="javascript:BA21412031.saveInfo();" class="all">确认</a></div>
+<!--页尾结束/-->
+</body>
+<script src="js/BA21412031.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

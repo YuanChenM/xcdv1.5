@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2102102Logic">
+
+    <select id="findPageList" resultType="com.msk.bs.bean.BS2102102Bean" parameterType="BaseParam">
+      SELECT
+        <include refid="selectFrom"/>
+        from sl_house_account account
+        LEFT JOIN (
+        SELECT
+        IFNULL(cateType.TYPE_NAME,'') AS cateName,
+        IFNULL(subType.TYPE_NAME,'') AS subName,
+        manage.HOUSE_CATEGORY_CODE AS cateCode,
+        manage.HOUSE_RECLASSIFY_CODE AS subCode,
+        manage.SL_CODE AS slCode,
+        manage.HOUSE_CODE AS houseCode,
+        manage.LGCS_AREA_CODE AS lgcsCode,
+        manage.CITY_CODE AS cityCode,
+        manage.CITY_NAME AS cityName,
+        manage.DEL_FLG AS  delflg
+        FROM
+        sl_house_manage  manage
+        LEFT JOIN sl_bs_house_type cateType on manage.HOUSE_CATEGORY_CODE = cateType.TYPE_CODE and cateType.TYPE_LEVER=0 and cateType.ROLE_TYPE = 1
+        LEFT JOIN sl_bs_house_type subType on manage.HOUSE_RECLASSIFY_CODE = subType.TYPE_CODE and subType.TYPE_LEVER=1 and subType.ROLE_TYPE = 1
+        ) houseMange on account.SL_CODE = houseMange.slCode
+        and account.HOUSE_CODE = houseMange.houseCode
+        AND account.V_LGCS_AREA_CODE = houseMange.lgcsCode
+        AND  (houseMange.delflg = 0 OR houseMange.delflg IS NULL )
+        LEFT JOIN (
+        SELECT basic.SL_CODE,
+        bsAccount.SL_SHOW_NAME,
+        bsAccount.SL_CONTACT,
+        basic.SL_CODE_DIS
+        from sl_bs_basic_info basic
+        LEFT JOIN sl_bs_account bsAccount
+        on basic.SL_ACCOUNT = bsAccount.SL_ACCOUNT and (bsAccount.DEL_FLG=0 OR bsAccount.DEL_FLG IS NULL)
+        where  (basic.DEL_FLG=0  OR basic.DEL_FLG IS NULL))
+         t on account.SL_CODE = t.SL_CODE
+        LEFT JOIN sl_house_star star
+        ON account.SL_CODE = star.SL_CODE
+        AND account.HOUSE_CODE = star.HOUSE_CODE
+        AND star.VALID_YEAR_MONTH =#{validYearMonth}
+        AND star.STATUS != '9' AND (star.DEL_FLG=0  OR star.DEL_FLG IS NULL)
+        LEFT JOIN sl_house_grade grade ON account.SL_CODE = grade.SL_CODE AND grade.HOUSE_CODE = account.HOUSE_CODE
+        AND grade.HOUSE_CATEGORY_CODE = houseMange.cateCode AND grade.HOUSE_RECLASSIFY_CODE = houseMange.subCode
+        AND grade.LGCS_AREA_CODE = houseMange.lgcsCode
+        AND grade.VALID_YEAR_MONTH =#{validYearMonth}
+        AND grade.STATUS != '9' AND (grade.DEL_FLG=0  OR grade.DEL_FLG IS NULL)
+        <include refid="whereCondition"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <sql id="whereCondition">
+        <where>
+            (account.DEL_FLG IS NULL OR account.DEL_FLG = 0) AND (houseMange.delflg = 0 OR houseMange.delflg IS NULL )
+            AND (star.DEL_FLG IS NULL OR star.DEL_FLG = 0) AND (grade.DEL_FLG IS NULL OR grade.DEL_FLG = 0)
+            <if test="vlgcsAreaCode!=null and vlgcsAreaCode!=''">
+                AND account.V_LGCS_AREA_CODE = #{vlgcsAreaCode}
+            </if>
+            <if test="vcityCode!=null and vcityCode!=''">
+                AND  houseMange.cityCode = #{vcityCode}
+            </if>
+            <if test="houseGreade!=null and houseGreade!=''">
+                AND  account.HOUSE_GREADE = #{houseGreade}
+            </if>
+            <if test="houseStar!=null and houseStar!=''">
+                AND  account.HOUSE_STAR = #{houseStar}
+            </if>
+            <if test="houseShowName!=null and houseShowName!=''">
+                <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  Start-->
+                AND account.HOUSE_SHOW_NAME LIKE #{houseShowName}
+                <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  End-->
+            </if>
+            <if test="flag1!=null and flag1!=''">
+                AND account.FLAG1 = #{flag1}
+            </if>
+            <if test="houseTel!=null and houseTel!=''">
+                AND account.HOUSE_TEL = #{houseTel}
+            </if>
+            <if test="wechat!=null and wechat!=''">
+                AND account.WECHAT = #{wechat}
+            </if>
+            <if test="slContact!=null and slContact!=''">
+                <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  Start-->
+                AND t.SL_CONTACT LIKE #{slContact}
+                <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  End-->
+            </if>
+            <if test="cateCode !=null and cateCode !=''">
+               AND houseMange.cateCode = #{cateCode}
+            </if>
+            <if test="subCode !=null and subCode !=''">
+                AND houseMange.subCode = #{subCode}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="selectFrom">
+            IFNULL(account.HOUSE_CODE_DIS,'') AS houseCodeDis,
+            IFNULL(account.HOUSE_ACCOUNT,'') AS houseAccount,
+            IFNULL(account.SL_IDCARD,'') AS slIdcard,
+            IFNULL(account.SL_CON_FLG,'') AS slConFlg,
+            IFNULL(account.QQ,'') AS qq,
+            IFNULL(account.EMAIL,'') AS email,
+            IFNULL(account.FIXED_TEL,'') AS fixedTel,
+            IFNULL(account.FAX,'') AS fax,
+            IFNULL(account.FLAG5,'') AS flag5,
+            IFNULL(account.FLAG4,'') AS flag4,
+            IFNULL(account.FLAG3,'') AS flag3,
+            IFNULL(account.FLAG2,'') AS flag2,
+            IFNULL(account.HOUSE_ADDRESS,'') AS houseAddress,
+            IFNULL(account.SL_CODE,'') AS slCode,
+            IFNULL(account.HOUSE_CODE,'') AS houseCode,
+             IFNULL(account.V_AREA_CODE,'') AS areaCode,
+            IFNULL(account.V_LGCS_AREA_CODE,'') AS vlgcsAreaCode,
+            IFNULL(account.V_PROVINCE_CODE,'') AS vprovinceCode,
+            IFNULL(account.V_CITY_CODE,'') AS vcityCode,
+            IFNULL(account.V_DISTRICT_CODE,'') AS vdistrictCode,
+            IFNULL(account.V_HOUSE_ADDRESS,'') AS vhouseAddress,
+            IFNULL(account.LAT,'') AS lat,
+            IFNULL(account.LON,'') AS lon,
+            IFNULL(account.V_LAT,'') AS vlat,
+            IFNULL(account.V_LON,'') AS vlon,
+            IFNULL(account.BUYER_ASIGN,'') AS buyerAsign,
+            IFNULL(account.HOUSE_INTRODUCE,'') AS houseIntroduce,
+            IFNULL(account.HOUSE_CLASS,'') AS houseClass,
+            IFNULL(account.HOUSE_SHOW_NAME,'') AS houseShowName,
+             IFNULL(account.FLAG1,'') AS flag1,
+            (CASE  account.FLAG1
+                 WHEN 1 THEN '男'
+                 WHEN 2 THEN '女'
+                 ELSE ''END ) AS sex,
+             CASE grade.GRADE_CODE WHEN '0' THEN '特级'
+                               WHEN '1' THEN '高级'
+                               WHEN '2' THEN '中级'
+                               WHEN '3' THEN '见习'
+            ELSE '' END AS houseGreade,
+            star.STAR_CODE AS  houseStar,
+            IFNULL(star.VALID_YEAR_MONTH,'') AS validYearMonth,
+            IFNULL(account.HOUSE_TEL,'') AS houseTel,
+            IFNULL(account.WECHAT,'') AS wechat,
+            IFNULL(account.FLAG6,'') AS remark,
+            IFNULL(t.SL_SHOW_NAME,t.SL_CONTACT) AS slShowName,
+            IFNULL(t.SL_CODE_DIS,'') AS slCodeDis,
+            IFNULL(t.SL_CONTACT,'') AS  slContact,
+            IFNULL(houseMange.cateName,'') AS cateName,
+            IFNULL(houseMange.subName,'') AS  subName,
+            houseMange.cateCode AS  cateCode,
+            houseMange.subCode AS  subCode,
+            houseMange.delflg AS  houseDelFlg,
+            houseMange.cityCode AS  houseMangeCityCode,
+           IFNULL( houseMange.cityName,'') AS  houseMangeCityName
+    </sql>
+
+    <select id="getPageCount" resultType="int" parameterType="BaseParam">
+        SELECT COUNT(1) from (SELECT
+         <include refid="selectFrom"/>
+            from sl_house_account account
+            LEFT JOIN (
+            SELECT
+            IFNULL(cateType.TYPE_NAME,'') AS cateName,
+            IFNULL(subType.TYPE_NAME,'') AS subName,
+            manage.HOUSE_CATEGORY_CODE AS cateCode,
+            manage.HOUSE_RECLASSIFY_CODE AS subCode,
+            manage.SL_CODE AS slCode,
+            manage.HOUSE_CODE AS houseCode,
+            manage.LGCS_AREA_CODE AS lgcsCode,
+            manage.CITY_CODE AS cityCode,
+            manage.CITY_NAME AS cityName,
+            manage.DEL_FLG AS  delflg
+            FROM
+            sl_house_manage  manage
+            LEFT JOIN sl_bs_house_type cateType on manage.HOUSE_CATEGORY_CODE = cateType.TYPE_CODE and cateType.TYPE_LEVER=0 and cateType.ROLE_TYPE = 1
+            LEFT JOIN sl_bs_house_type subType on manage.HOUSE_RECLASSIFY_CODE = subType.TYPE_CODE and subType.TYPE_LEVER=1 and subType.ROLE_TYPE = 1
+            ) houseMange on account.SL_CODE = houseMange.slCode
+            and account.HOUSE_CODE = houseMange.houseCode
+            AND account.V_LGCS_AREA_CODE = houseMange.lgcsCode
+            AND  (houseMange.delflg = 0 OR houseMange.delflg IS NULL )
+            LEFT JOIN (
+            SELECT basic.SL_CODE,
+           bsAccount.SL_SHOW_NAME,
+           bsAccount.SL_CONTACT,
+           basic.SL_CODE_DIS
+            from sl_bs_basic_info basic
+            LEFT JOIN sl_bs_account bsAccount
+            on basic.SL_ACCOUNT = bsAccount.SL_ACCOUNT and (bsAccount.DEL_FLG=0 OR bsAccount.DEL_FLG IS NULL)
+           where  (basic.DEL_FLG=0 OR basic.DEL_FLG IS NULL))
+             t on account.SL_CODE = t.SL_CODE
+            LEFT JOIN sl_house_star star
+            ON account.SL_CODE = star.SL_CODE AND account.HOUSE_CODE = star.HOUSE_CODE
+            AND star.VALID_YEAR_MONTH =#{validYearMonth}
+            AND star.STATUS != '9' AND (star.DEL_FLG=0  OR star.DEL_FLG IS NULL)
+            LEFT JOIN sl_house_grade grade ON account.SL_CODE = grade.SL_CODE AND grade.HOUSE_CODE = star.HOUSE_CODE
+            AND grade.HOUSE_CATEGORY_CODE = houseMange.cateCode AND grade.HOUSE_RECLASSIFY_CODE = houseMange.subCode
+            AND grade.LGCS_AREA_CODE = houseMange.lgcsCode
+            AND grade.VALID_YEAR_MONTH =#{validYearMonth}
+            AND grade.STATUS != '9' AND (grade.DEL_FLG=0  OR grade.DEL_FLG IS NULL)
+        <include refid="whereCondition"/>) c
+    </select>
+
+
+    <update id="deleteHouseAccount" parameterType="BaseParam">
+        UPDATE  sl_house_account
+        SET DEL_FLG =1,
+        UPD_ID = #{updId},
+        UPD_TIME =#{updTime},
+        VER =VER + 1
+        WHERE  SL_CODE = #{slCode}
+        AND HOUSE_CODE= #{houseCode}
+        AND  (DEL_FLG = 0 OR DEL_FLG IS NULL )
+    </update>
+
+    <update id="deleteSlBsBuyer" parameterType="BaseParam">
+         UPDATE  sl_bs_buyer
+        SET DEL_FLG =1,
+        UPD_ID = #{updId},
+        UPD_TIME =#{updTime},
+        VER =VER + 1
+        WHERE  SL_CODE = #{slCode}
+        AND HOUSE_CODE= #{houseCode}
+        AND  (DEL_FLG = 0 OR DEL_FLG IS NULL )
+    </update>
+
+    <!-- 根据买手编码查询管家专属会员表信息 -->
+    <select id="findSlBsBuyer" resultType="com.msk.core.entity.SlBsBuyer" parameterType="BaseParam">
+        SELECT
+        SL_CODE AS slCode,
+        HOUSE_CODE AS houseCode,
+        BUYER_ID AS buyerId,
+        START_TIME AS startTime,
+        END_TIME AS endTime,
+        APPLY_SIDE AS applySide,
+        APPLY_STATUS AS applyStatus,
+        APPLY_TIME AS applyTime,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+        FROM sl_bs_buyer
+        WHERE (DEL_FLG IS NULL OR DEL_FLG =0)
+        AND SL_CODE = #{slCode}
+         AND HOUSE_CODE= #{houseCode}
+    </select>
+
+    <!-- 将查询到的管家专属会员表信息保存到管家买家关系履历表中 -->
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO sl_bs_buyer_his (
+        HIS_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        APPLY_SIDE,
+        APPLY_STATUS,
+        APPLY_TIME,
+        BUYER_REASON,
+        BUYERSHOP_REASON,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.hisId},
+            #{item.slCode},
+            #{item.houseCode},
+            #{item.buyerId},
+            #{item.startTime},
+            #{item.endTime},
+            #{item.applySide},
+            #{item.applyStatus},
+            #{item.applyTime},
+            #{item.buyerReason},
+            #{item.buyershopReason},
+            #{item.delFlg},
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            #{item.actId},
+            #{item.actTime},
+            #{item.ver}
+            )
+        </foreach>
+    </insert>
+</mapper>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141151Logic">
+
+    <!--查询一级类目  存在-->
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.PD141151ParentBean">
+        SELECT
+       A.SFT_STD_ITEM_ID AS sftStdItemId
+       ,A.SFT_STD_ITEM_NAME AS sftStdItemName
+       FROM PD_SFT_STD_ITEM AS A
+       WHERE A.LEVEL_ID = #{filterMap.levelId}
+       ORDER BY A.SFT_STD_ITEM_ID
+    </select>
+    <!--查询二级类目  存在-->
+    <select id="findStdItemLevel2ListShow" parameterType="BaseParam" resultType="com.msk.product.bean.PD141151Param">
+        SELECT
+        A.SFT_STD_ITEM_ID AS sftStdItemId
+        ,A.SFT_STD_ITEM_NAME AS sftStdItemName
+        FROM PD_SFT_STD_ITEM AS A
+        WHERE A.PARENT_ID = #{filterMap.parentId}
+        ORDER BY A.SFT_STD_ITEM_ID
+    </select>
+    <!-- 查询单个对象 存在 -->
+    <select id="findOneSftStd" parameterType="BaseParam" resultType="com.msk.product.bean.PD141151Param">
+        SELECT
+        A.SFT_STD_ITEM_ID AS sftStdItemId
+        ,A.SFT_OK_VAL AS sftOkVal
+        ,A.SFT_NG_VAL AS sftNgVal
+        FROM PD_SFT_STD AS A
+        WHERE A.SFT_STD_ITEM_ID = #{filterMap.sftStdItemId}
+        AND  A.STANDARD_ID = #{filterMap.standardId}
+        ORDER BY A.SFT_STD_ITEM_ID
+    </select>
+
+
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.PdStandard">
+        SELECT
+        A.STANDARD_ID AS standardId
+        FROM PD_STANDARD AS A
+        WHERE A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+    </select>
+    <!--查询二级类目 -->
+    <select id="findMctStdItemLevel2List" parameterType="BaseParam" resultType="com.msk.product.bean.PD141151Param">
+        SELECT
+        A.SFT_STD_ITEM_ID AS sftStdItemId
+        ,A.SFT_STD_ITEM_NAME AS sftStdItemName
+        FROM PD_SFT_STD AS A
+        WHERE A.PARENT_ID = #{filterMap.parentId}
+        ORDER BY A.SFT_STD_ITEM_ID
+    </select>
+
+    <update id="modify" parameterType="com.msk.product.bean.PD141151Param">
+        UPDATE PD_SFT_STD SET
+     SFT_OK_VAL = #{sftOkVal},
+     SFT_NG_VAL = #{sftNgVal},
+      UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+     UPD_TIME = #{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+     WHERE STANDARD_ID = #{standardId}
+     AND  SFT_STD_ITEM_ID = #{sftStdItemId}
+     <!--Modify delflag横展开 2016/10/10 任强 Start-->
+     AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+     <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+    <select id="findMctStdItemList" parameterType="BaseParam" resultType="com.msk.core.entity.PdMctStdItem">
+        SELECT
+        A.MCT_STD_ITEM_ID AS mctStdItemId
+        ,A.MCT_STD_ITEM_NAME AS mctStdItemName
+        FROM PD_MCT_STD_ITEM AS A
+        WHERE A.LEVEL_ID = '1'
+        ORDER BY A.MCT_STD_ITEM_ID
+    </select>
+
+    <!--数据插入操作-->
+    <insert id="save" parameterType="com.msk.product.bean.PD141151Param">
+       INSERT INTO PD_SFT_STD (
+	STANDARD_ID,
+	SFT_STD_ITEM_ID,
+	SFT_GOOD_VAL,
+	SFT_OK_VAL,
+	SFT_NG_VAL,
+	REMARK,
+	DEL_FLG,
+	CRT_ID,
+	CRT_TIME,
+	UPD_ID,
+	UPD_TIME,
+	ACT_ID,
+	ACT_TIME,
+	VER
+)
+VALUES
+	(
+		#{standardId},
+		#{sftStdItemId},
+		NULL ,
+		#{sftOkVal},
+		#{sftNgVal},
+		NULL,
+		   '0',
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        #{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+        <!--Modify: 添加公共属性 2016/09/26   BY  任强  Start -->
+        #{actId},
+        <!--Modify: 添加公共属性 2016/09/26   BY  任强  End -->
+		#{actTime},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        '1'
+	);
+
+    </insert>
+
+    <!--查询个数-->
+    <select id="findListSize" parameterType="BaseParam" resultType="int">
+        SELECT COUNT(1)
+        FROM PD_SFT_STD A
+        WHERE A.STANDARD_ID = #{filterMap.standardId}
+    </select>
+
+    <!-- 获取产品品种名称和品种下的特征名称-->
+    <select id="findName" parameterType="BaseParam" resultType="com.msk.product.bean.PD141124showNameBean">
+        SELECT
+        LEVEL_NAME AS featureNames
+        FROM  PD_CLASSESTREE
+        WHERE PARENT_CODE = #{filterMap.classestreeCode}
+        ORDER BY LEVEL_CODE
+    </select>
+
+
+    <!-- 修改产品标准标准表中数据-->
+    <update id="modifyFlg" parameterType="BaseParam" >
+        UPDATE PD_STANDARD SET
+        GNQ_FLG = #{filterMap.flg},
+        UPD_ID = #{filterMap.updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME = #{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        WHERE STANDARD_ID = #{filterMap.standardId}
+    </update>
+</mapper>

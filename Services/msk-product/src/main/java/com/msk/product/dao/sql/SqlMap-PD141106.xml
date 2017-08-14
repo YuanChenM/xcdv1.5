@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141106Logic">
+    <sql id="WHERECONDTION">
+        <if test="filterMap.productRltMsrId != null">
+            AND PD_RLT_MSR_ID = #{filterMap.pdRltMsrId}
+        </if>
+    </sql>
+    <delete id="removeRealityQualityValue" parameterType="com.msk.product.bean.PD141106Param">
+        DELETE FROM PD_REALITY_QUALITY_VALUE
+        WHERE PD_RLT_MSR_ID = #{pdRltMsrId}
+    </delete>
+    
+    <select id="findList" parameterType="BaseParam" >
+        SELECT
+            PD_QUA_STD_VAL_ID AS pdQuaStdValId
+            ,PD_RLT_MSR_ID AS pdRltMsrId
+            ,PD_REA_VAL AS pdReaVal
+            ,REMARK AS remark
+        FROM PD_REALITY_QUALITY_VALUE
+        WHERE 1=1
+        <include refid="WHERECONDTION"/>
+    </select>
+    
+    <insert id="save">
+        INSERT INTO PD_REALITY_QUALITY_VALUE(
+                                            PD_QUA_STD_VAL_ID
+                                            ,PD_RLT_MSR_ID
+                                            ,PD_REA_VAL
+                                            ,REMARK
+                                            )
+        VALUES (
+                #{pdQuaStdValId}
+                ,#{pdRltMsrId}
+                ,#{pdReaVal}
+                ,#{remark}
+                )
+    </insert>
+</mapper>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171103Logic">
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.price.bean.SP171103Bean">
+        SELECT
+            A.PUBLISH_ID AS publishId
+            ,IFNULL(C.DEMAND_ID,'') AS demandId
+            ,A.LGCS_CODE AS lgcsCode
+            ,IFNULL(logsPd.LGCS_NAME,'') AS lgcsName
+            ,IFNULL(logsPd.CLASSES_CODE,'') AS classesCode
+            ,IFNULL(logsPd.MACHINING_CODE,'') AS machiningCode
+            ,IFNULL(logsPd.BREED_CODE,'') AS breedCode
+            ,IFNULL(logsPd.FEATURE_CODE,'') AS featureCode
+            ,IFNULL(logsPd.WEIGHT_CODE,'') AS weightCode
+            ,IFNULL(logsPd.CLASSES,'') AS classesName
+            ,IFNULL(logsPd.MACHINING,'') AS machiningName
+            ,IFNULL(logsPd.BREED,'') AS breedName
+            ,IFNULL(logsPd.FEATURE,'') AS featureName
+            ,IFNULL(logsPd.WEIGHT,'') AS weightName
+            ,IFNULL(logsPd.PD_NAME,'') AS pdName
+            ,IFNULL(logsPd.SCIENTIFIC_NAME,'') AS scientificName
+            ,IFNULL(logsPd.LOCAL_NAME,'') AS localName
+            ,B.PD_CODE AS pdCode
+            ,B.GRADE_CODE AS gradeCode
+            ,IFNULL(logsPd.GRADE,'') AS gradeName
+            ,B.PUBLISH_NUM AS publishNum
+            ,IFNULL(C.SL_CODE,'') AS slCode
+            ,IFNULL(C.EP_NAME,'') AS slName
+            ,IFNULL(C.APPLY_NUM,'') AS applyNum
+            ,IFNULL(C.IS_CONFIRM,'') AS isConfirm
+        FROM SP_PD_DEMAND_PUBLISH A
+        INNER JOIN  SP_PD_DEMAND_PUBLISH_DETAIL B ON
+            A.PUBLISH_ID = B.PUBLISH_ID
+            AND A.DEL_FLG = 0
+            AND B.DEL_FLG = 0
+        LEFT JOIN  SP_SELLER_PD_DEMANDAPPLY_NUM C ON
+            A.PUBLISH_YM = C.DEMAND_YEARMONTH
+            AND A.LGCS_CODE = C.LGCS_CODE
+            AND B.PD_CODE = C.PD_CODE
+            AND C.DEL_FLG = 0
+        <if test="filterMap.type!=null and filterMap.type!='' and filterMap.type ==1 ">
+            <include refid="whereCondition1"/>
+        </if>
+        <if test="filterMap.type!=null and filterMap.type!='' and filterMap.type ==2 ">
+            <include refid="whereCondition2"/>
+        </if>
+        <if test="filterMap.type!=null and filterMap.type!='' and filterMap.type ==3 ">
+            <include refid="whereCondition3"/>
+        </if>
+        LEFT JOIN SP_LOGS_PRODUCT logsPd
+        on A.LGCS_CODE  = logsPd.LGCS_CODE
+        and B.PD_CODE = logsPd.PD_CODE
+        and logsPd.DEL_FLG =0
+        WHERE
+        A.DEL_FLG = 0
+        AND B.PUBLISH_NUM > 0
+        <include refid="whereCondition"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        FROM SP_PD_DEMAND_PUBLISH A
+        INNER JOIN  SP_PD_DEMAND_PUBLISH_DETAIL B ON
+            A.PUBLISH_ID = B.PUBLISH_ID
+            AND A.DEL_FLG = 0
+            AND B.DEL_FLG = 0
+        LEFT JOIN  SP_SELLER_PD_DEMANDAPPLY_NUM C ON
+            A.PUBLISH_YM = C.DEMAND_YEARMONTH
+            AND A.LGCS_CODE = C.LGCS_CODE
+            AND B.PD_CODE = C.PD_CODE
+            AND C.DEL_FLG = 0
+        <if test="filterMap.type!=null and filterMap.type!='' and filterMap.type ==1 ">
+            <include refid="whereCondition1"/>
+        </if>
+        <if test="filterMap.type!=null and filterMap.type!='' and filterMap.type ==2 ">
+            <include refid="whereCondition2"/>
+        </if>
+        <if test="filterMap.type!=null and filterMap.type!='' and filterMap.type ==3 ">
+            <include refid="whereCondition3"/>
+        </if>
+        LEFT JOIN SP_LOGS_PRODUCT logsPd
+        on A.LGCS_CODE  = logsPd.LGCS_CODE
+        and B.PD_CODE = logsPd.PD_CODE
+        and logsPd.DEL_FLG =0
+        WHERE
+        A.DEL_FLG = 0
+        AND B.PUBLISH_NUM > 0
+        <include refid="whereCondition"/>
+    </select>
+    <select id="findYearMonthList" parameterType="BaseParam" resultType="com.msk.price.bean.SP171103Bean">
+        SELECT DISTINCT
+        A.PUBLISH_YM AS demandYearMonth
+        FROM SP_PD_DEMAND_PUBLISH A
+        WHERE
+        A.DEL_FLG = 0
+        ORDER BY PUBLISH_YM DESC
+    </select>
+    <sql id="whereCondition">
+            <if test="filterMap.demandYearMonth!=null and filterMap.demandYearMonth!=''">
+                AND A.PUBLISH_YM = #{filterMap.demandYearMonth}
+            </if>
+            <if test="filterMap.lgcsCodes!=null and filterMap.lgcsCodes!=''">
+                AND logsPd.LGCS_CODE IN
+                <foreach collection="filterMap.lgcsCodes" item="lgcsCode" open="(" separator="," close=")">
+                    #{lgcsCode}
+                </foreach>
+            </if>
+            <if test="filterMap.pdName!=null and filterMap.pdName!=''">
+                AND logsPd.PD_NAME like #{filterMap.pdName}
+            </if>
+            <if test="filterMap.scientificName!=null and filterMap.scientificName!=''">
+                AND logsPd.SCIENTIFIC_NAME LIKE #{filterMap.scientificName}
+            </if>
+            <if test="filterMap.localName!=null and filterMap.localName!=''">
+                AND logsPd.LOCAL_NAME LIKE #{filterMap.localName}
+            </if>
+            <if test="filterMap.classesName!=null and filterMap.classesName!=''">
+                AND logsPd.CLASSES LIKE #{filterMap.classesName}
+            </if>
+            <if test="filterMap.machiningName!=null and filterMap.machiningName!=''">
+                AND logsPd.MACHINING LIKE #{filterMap.machiningName}
+            </if>
+            <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+                AND B.PD_CODE LIKE #{filterMap.pdCode}
+            </if>
+            <if test="filterMap.breedName !=null and filterMap.breedName !=''">
+                AND logsPd.BREED LIKE #{filterMap.breedName}
+            </if>
+            <if test="filterMap.featureName !=null and filterMap.featureName !=''">
+                AND logsPd.FEATURE LIKE #{filterMap.featureName}
+            </if>
+            <if test="filterMap.weightName !=null and filterMap.weightName !=''">
+                AND logsPd.WEIGHT LIKE #{filterMap.weightName}
+            </if>
+            <if test="filterMap.gradeCodes!=null and filterMap.gradeCodes!=''">
+                AND B.GRADE_CODE IN
+                <foreach collection="filterMap.gradeCodes" item="gradeCode" open="(" separator="," close=")">
+                    #{gradeCode}
+                </foreach>
+            </if>
+            <if test="filterMap.slName!=null and filterMap.slName!=''">
+                AND C.EP_NAME like #{filterMap.slName}
+            </if>
+            <if test="filterMap.type!=null and filterMap.type!='' and filterMap.type ==2 ">
+                <include refid="whereCondition2"/>
+            </if>
+    </sql>
+    <sql id="whereCondition1">
+        AND C.IS_CONFIRM NOT IN(1,2,3)
+    </sql>
+    <sql id="whereCondition2">
+        <if test="filterMap.isConfirms!=null and filterMap.isConfirms!=''">
+            AND C.IS_CONFIRM IN
+            <foreach collection="filterMap.isConfirms" item="isConfirm" open="(" separator="," close=")">
+                #{isConfirm}
+            </foreach>
+        </if>
+    </sql>
+    <sql id="whereCondition3">
+        <if test="filterMap.isConfirms!=null and filterMap.isConfirms!=''">
+            AND
+            (
+            C.IS_CONFIRM NOT IN(1,2,3)
+            OR
+            C.IS_CONFIRM IN
+            <foreach collection="filterMap.isConfirms" item="isConfirm" open="(" separator="," close=")">
+                #{isConfirm}
+            </foreach>
+            )
+        </if>
+    </sql>
+</mapper>

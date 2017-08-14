@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171195Logic">
+
+    <update id="updateForecastCondition" parameterType="com.msk.price.bean.SP171195Param">
+        UPDATE SP_FORECAST_CONDITION
+        SET DEL_FLG = 1
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        WHERE DEL_FLG = 0
+        AND FORECAST_YM = #{forecastYm}
+        AND LGCS_CODE = #{filterMap.lgcsCode}
+    </update>
+
+    <insert id="save" parameterType="com.msk.price.bean.SP171195Bean">
+        INSERT INTO SP_FORECAST_CONDITION
+        (CONDITION_RATIO_ID,
+        FORECAST_YM,
+        LGCS_CODE,
+        SECURITY_RATIO,
+        SELL_FORECAST_RATIO,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{ratioId},
+        #{forecastYm},
+        #{lgcsCode},
+        #{securityRatio},
+        #{sellForecastRatio},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+</mapper>

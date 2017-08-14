@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.BR121401Logic">
+    <select id="findPageList" resultType="com.msk.core.entity.BrByPoolFileInfo"
+            parameterType="com.msk.br.bean.BR121401Param">
+        SELECT
+        IFNULL(FILE_ID,'') AS fileId
+        ,IFNULL(FILE_SERVER_ID,'') AS fileServerId
+        ,IFNULL(FILE_SERVER_IP,'') AS  fileServerIp
+        ,IFNULL(FILE_NAME,'') AS fileName
+        ,IFNULL(FILE_SUF,'') AS fileSuf
+        ,FILE_START_TIME AS fileStartTime
+        ,FILE_END_TIME AS fileEndTime
+        ,FILE_STATUS AS fileStatus
+        ,IFNULL(LGCS_AREA_CODE,'') AS lgcsAreaCode
+        ,IFNULL(CITY_CODE,'') AS cityCode
+        ,IFNULL(DISTRICT_CODE,'') AS districtCode
+        ,IFNULL(CLASSES_CODE,'') AS classesCode
+        ,IFNULL(MACHINING_CODE,'') AS machiningCode
+        ,IFNULL(BUYER_TYPE,'') AS buyerType
+        FROM BR_BY_POOL_FILE_INFO
+        <include refid="whereCondition"/>
+        ORDER BY fileId
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="com.msk.br.bean.BR121401Param">
+        SELECT
+        COUNT(1)
+        FROM BR_BY_POOL_FILE_INFO
+        <include refid="whereCondition"/>
+    </select>
+    <!-- 条件-->
+    <sql id="whereCondition">
+        <where>
+            DEL_FLG = 0
+            <if test="filterMap.fileStartTime!=null and filterMap.fileStartTime!=''">
+                <![CDATA[AND FILE_START_TIME >= '${filterMap.fileStartTime} 00:00:00' ]]>
+            </if>
+            <if test="filterMap.fileEndTime!=null and filterMap.fileEndTime!=''">
+                <![CDATA[AND FILE_END_TIME <='${filterMap.fileEndTime} 23:59:59']]>
+            </if>
+
+            <if test="filterMap.lgcsAreaCode != null and filterMap.lgcsAreaCode !=''">
+                AND LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+            </if>
+
+            <if test="filterMap.cityCode != null and filterMap.cityCode !=''">
+                AND CITY_CODE = #{filterMap.cityCode}
+            </if>
+
+            <if test="filterMap.districtCode != null and filterMap.districtCode !=''">
+                AND DISTRICT_CODE = #{filterMap.districtCode}
+            </if>
+
+            <if test="filterMap.buyersType != null and filterMap.buyersType !=''">
+                AND BUYER_TYPE =RIGHT(concat('0', #{filterMap.buyersType}),2)
+            </if>
+            <if test="filterMap.classesCode != null and filterMap.classesCode !=''">
+                AND (CLASSES_CODE = #{filterMap.classesCode} OR CLASSES_CODE IS NULL)
+
+            </if>
+            <if test="filterMap.machiningCode != null and filterMap.machiningCode !=''">
+
+                AND (MACHINING_CODE = #{filterMap.machiningCode} OR MACHINING_CODE IS NULL)
+            </if>
+        </where>
+    </sql>
+</mapper>

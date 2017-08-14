@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121405Logic">
+    <insert id="save" parameterType = "com.msk.core.entity.ByMarketTerminalBasic">
+           INSERT INTO
+           by_market_terminal_basic(
+            ID,
+            MARKET_ID,
+            MARKET_CODE,
+            MARKET_NAME,
+            MARKET_ADDR,
+            MARKET_LEVEL,
+            MARKET_LEVEL_NAME,
+            AREA_COVERED,
+            AREA_COVERED_LEVEL,
+            IS_LARGE_STORAGE,
+            RADIATION_RANGE_TYPE_NAME,
+            RADIATION_RANGE_LEVEL,
+            FACE_BUYER_TYPE_NAME,
+            FACE_BUYER_LEVEL,
+            MARKET_NATURE,
+            MARKET_NATURE_EMOHASIS,
+            LGCS_AREA_CODE,
+            LGCS_AREA_NAME,
+            CITY_CODE,
+            CITY_NAME,
+            N_TARGET_BUYER,
+            N_TARGET_ANNUAL_TURNOVER,
+            TARGET_BUYER,
+            TARGET_BUYER_LEVEL,
+            TARGET_ANNUAL_TURNOVER,
+            TARGET_ANNUAL_TURNOVER_LEVEL,
+            IS_MERCHANT_NEW,
+            IS_PHASE_NEW,
+            IS_MARKET_NEW,
+            RESEARCH_PHASE,
+            RESEARCH_PHASE_NAME,
+            MARKET_STATUS,
+            DEL_FLG,
+
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+
+            VER
+           )VALUES (
+           #{id},
+           #{marketId},
+           #{marketName},
+           #{marketCode},
+           #{marketAddr},
+           #{marketLevel},
+           #{marketLevelName},
+           #{areaCovered},
+           #{areaCoveredLevel},
+           #{isLargeStorage},
+           #{radiationRangeTypeName},
+           #{radiationRangeLevel},
+           #{faceBuyerTypeName},
+           #{faceBuyerType},
+           #{marketNature},
+           #{marketNatureEmohasis},
+           #{lgcsAreaCode},
+           #{lgcsAreaName},
+           #{cityCode},
+           #{cityName},
+           #{ntargetBuyer},
+           #{ntargetAnnualTurnover},
+           #{targetBuyer},
+           #{targetBuyerLevel},
+           #{targetAnnualTurnover},
+           #{targetAnnualTurnoverLevel},
+           1,
+           1,
+           1,
+           #{researchPhase},
+           #{researchPhaseName},
+           1,
+           0,
+
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+
+
+           1
+           )
+    </insert>
+
+    <update id="modify" parameterType = "com.msk.buyers.bean.BY121403Bean">
+        UPDATE
+        by_market_terminal_basic
+        SET
+        MARKET_CODE = #{marketCode},
+        MARKET_LEVEL = #{marketLevel},
+        MARKET_LEVEL_NAME = #{marketLevelName},
+        MARKET_NATURE = #{marketNature},
+        MARKET_STATUS = 1
+
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+
+        WHERE
+        MARKET_ID = #{marketId}
+        AND IS_MARKET_NEW = 1
+        AND IS_PHASE_NEW = 1
+        AND MARKET_STATUS = 0
+        AND DEL_FLG = 0
+    </update>
+
+    <select id="findList" parameterType = "BaseParam" resultType = "com.msk.buyers.bean.BY121405Bean">
+        SELECT
+           MARKET_ID AS marketId,
+           FILE_SERVER_ID AS fileServerId,
+           FILE_NAME AS fileName,
+           FILE_SUFF AS fileSuff
+        FROM
+          by_market_terminal_file_info
+        WHERE
+          MARKET_ID = #{filterMap.marketId}
+          AND FILE_TYPE = 0
+          AND DEL_FLG = 0
+    </select>
+    <select id="count" resultType="int" parameterType = "BaseParam">
+        SELECT
+          COUNT(1)
+        FROM
+          by_market_terminal
+        WHERE
+          TER_MARKET_ID = #{filterMap.marketId}
+          AND DEL_FLG = 0
+    </select>
+    <update id="modifyTerminal" parameterType = "com.msk.buyers.bean.BY121403Bean">
+        UPDATE
+          by_market_terminal
+        SET
+          MARKET_CODE = #{marketCode},
+          MARKET_LEVEL = #{marketLevel},
+          MARKET_LEVEL_NAME = #{marketLevelName}
+
+          ,UPD_ID = #{updId}
+          ,UPD_TIME = #{updTime}
+        WHERE
+          TER_MARKET_ID = #{marketId}
+          AND DEL_FLG = 0
+    </update>
+    <insert id="addTerminal" parameterType="com.msk.buyers.bean.BY121403Bean">
+        INSERT INTO
+          by_market_terminal(
+          TER_MARKET_ID,
+          MARKET_CODE,
+          MARKET_NAME,
+          MARKET_ADDR,
+          MARKET_LEVEL,
+          MARKET_LEVEL_NAME,
+          LGCS_AREA_CODE,
+          CITY_CODE,
+          DEL_FLG,
+
+          CRT_ID,
+          CRT_TIME,
+          UPD_ID,
+          UPD_TIME,
+          ACT_ID,
+          ACT_TIME,
+
+          VER
+          )VALUES (
+          #{marketId},
+          #{marketCode},
+          #{marketName},
+          #{marketAddr},
+          #{marketLevel},
+          #{marketLevelName},
+          #{lgcsAreaCode},
+          #{cityCode},
+          0,
+
+          #{crtId},
+          #{crtTime},
+          #{updId},
+          #{updTime},
+          #{actId},
+          #{actTime},
+
+          1
+          )
+
+    </insert>
+    <select id="findBuyerByMarketId" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerBasicInfo">
+        SELECT
+          BUYER_ID AS buyerId,
+          BUYER_CODE AS buyerCode,
+          SUPERIOR_ID AS superiorId,
+          SUPERIOR_QUA AS superiorQua
+        FROM
+          by_buyer_basic_info
+        WHERE
+          SUPERIOR_ID = #{filterMap.marketId}
+          AND DEL_FLG = 0
+    </select>
+    <update id="modifyBuyerBasic" parameterType = "com.msk.core.entity.ByBuyerBasicInfo">
+        UPDATE
+        by_buyer_basic_info
+        SET
+        BUYER_CODE = #{buyerCode},
+        SUPERIOR_QUA = #{superiorQua}
+        WHERE
+        BUYER_ID = #{buyerId}
+        AND DEL_FLG = 0
+    </update>
+
+
+    <select id="getTerMarketId" resultType="com.msk.core.entity.ByMarketTerminal" parameterType="BaseParam">
+        SELECT  TER_MARKET_ID  AS terMarketId
+        FROM  by_market_terminal
+        WHERE MARKET_CODE =#{filterMap.marketCode}
+        AND DEL_FLG = 0
+    </select>
+
+</mapper>

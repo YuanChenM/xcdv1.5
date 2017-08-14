@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.InventoryViewServiceImpl">
+	<select id="querySlPdListByCondition" resultType="com.msk.inventory.bean.InventoryViewBean"             parameterType="com.msk.inventory.bean.InventoryViewBean">
+        SELECT
+            PD_CODE as pdCode,
+            PD_NAME as pdName,
+            LOGIC_AREA as logicArea,
+            PLATFORM as platform,
+            PLATFORM_NAME as platformName,
+            SL_TYPE as slType,
+            SL_ID as slId,
+            SL_NAME as slName,
+            IV_TYPE as ivType,
+            SUM(ONHAND_QTY) as onhandQty,
+            SUM(ALLOCATED_QTY) as allocatedQty,
+            SUM(AVAILABLE_QTY) as availableQty
+        FROM v_inventory
+        WHERE 1 = 1
+        AND OWNER_CODE IS NULL
+        <if test="pdCode!=null and pdCode!=''">
+            AND PD_CODE=#{pdCode}
+        </if>
+        <if test="pdName!=null and pdName!=''">
+            AND PD_NAME LIKE CONCAT(#{pdName},'%')
+        </if>
+        <if test="logicArea!=null and logicArea!=''">
+            AND LOGIC_AREA=#{logicArea}
+        </if>
+        <if test="platform!=null and platform!=''">
+            AND PLATFORM=#{platform}
+        </if>
+        <if test="slType!=null and slType!=''">
+            AND SL_TYPE=#{slType}
+        </if>
+        <if test="slId!=null and slId!=''">
+            AND SL_ID=#{slId}
+        </if>
+        <if test="ivType!=null and ivType!=''">
+            AND IV_TYPE=#{ivType}
+        </if>
+        <if test="products !=null">
+            <foreach collection="products" item="item" open="AND (" close=")" separator="OR">
+                (
+                <if test=" item.pdCode !=null and item.pdCode !=''">
+                    PD_CODE=#{item.pdCode}
+                </if>
+                <if test=" item.pdCode ==null or item.pdCode ==''">
+                    1=1
+                </if>
+                <if test=" item.pdName !=null and item.pdName !='' ">
+                    AND PD_NAME LIKE CONCAT(#{item.pdName},'%')
+                </if>
+                )
+            </foreach>
+        </if>
+        <if test="iso03Products !=null">
+            <foreach collection="iso03Products" item="item" open="AND (" close=")" separator="OR">
+                (
+                <if test=" item.pdTypeCode !=null and item.pdTypeCode !=''">
+                    PD_CODE LIKE CONCAT(#{item.pdTypeCode},'%')
+                </if>
+                <if test=" item.lgcsCode !=null and item.lgcsCode !='' ">
+                    AND LOGIC_AREA=#{item.lgcsCode}
+                </if>
+                <if test=" item.salePlatform !=null and item.salePlatform !='' ">
+                    AND PLATFORM=#{item.salePlatform}
+                </if>
+                )
+            </foreach>
+        </if>
+        GROUP BY
+            PD_CODE,
+            PD_NAME,
+            LOGIC_AREA,
+            PLATFORM,
+            PLATFORM_NAME,
+            SL_TYPE,
+            SL_ID,
+            SL_NAME,
+            IV_TYPE
+    </select>
+
+    <select id="countSlPdListByCondition" resultType="Integer" parameterType="com.msk.inventory.bean.InventoryViewBean">
+        SELECT
+            COUNT(1)
+        FROM v_inventory
+        WHERE 1 = 1 AND OWNER_CODE IS NULL
+        <if test="pdCode!=null and pdCode!=''">
+            AND PD_CODE=#{pdCode}
+        </if>
+        <if test="logicArea!=null and logicArea!=''">
+            AND LOGIC_AREA=#{logicArea}
+        </if>
+        <if test="platform!=null and platform!=''">
+            AND PLATFORM=#{platform}
+        </if>
+        <if test="slType!=null and slType!=''">
+            AND SL_TYPE=#{slType}
+        </if>
+        <if test="slId!=null and slId!=''">
+            AND SL_ID=#{slId}
+        </if>
+        <if test="ivType!=null and ivType!=''">
+            AND IV_TYPE=#{ivType}
+        </if>
+        GROUP BY
+            PD_CODE,
+            PD_NAME,
+            LOGIC_AREA,
+            PLATFORM,
+            PLATFORM_NAME,
+            SL_TYPE,
+            SL_ID,
+            SL_NAME,
+            IV_TYPE
+    </select>
+
+    <select id="queryOwnerPdListByCondition" resultType="com.msk.inventory.bean.InventoryViewBean"             parameterType="com.msk.inventory.bean.InventoryViewBean">
+        SELECT
+            PD_CODE as pdCode,
+            PD_NAME as pdName,
+            LOGIC_AREA as logicArea,
+            PLATFORM as platform,
+            PLATFORM_NAME as platformName,
+            SL_TYPE as slType,
+            SL_ID as slId,
+            SL_NAME as slName,
+            OWNER_ID as ownerId,
+            OWNER_CODE as ownerCode,
+            OWNER_NAME as ownerName,
+            IV_TYPE as ivType,
+            ONHAND_QTY as onhandQty,
+            ALLOCATED_QTY as allocatedQty,
+            AVAILABLE_QTY as availableQty
+        FROM v_inventory
+        WHERE 1 = 1
+        AND OWNER_CODE is not null
+        <if test="pdCode!=null and pdCode!=''">
+            AND PD_CODE=#{pdCode}
+        </if>
+        <if test="pdName!=null and pdName!=''">
+            AND PD_NAME LIKE CONCAT(#{pdName},'%')
+        </if>
+        <if test="logicArea!=null and logicArea!=''">
+            AND LOGIC_AREA=#{logicArea}
+        </if>
+        <if test="platform!=null and platform!=''">
+            AND PLATFORM=#{platform}
+        </if>
+        <if test="slType!=null and slType!=''">
+            AND SL_TYPE=#{slType}
+        </if>
+        <if test="slId!=null and slId!=''">
+            AND SL_ID=#{slId}
+        </if>
+        <if test="ownerId!=null and ownerId!=''">
+            AND OWNER_ID=#{ownerId}
+        </if>
+        <if test="ownerCode!=null and ownerCode!=''">
+            AND OWNER_CODE=#{ownerCode}
+        </if>
+        <if test="ivType!=null and ivType!=''">
+            AND IV_TYPE=#{ivType}
+        </if>
+    <if test="products !=null">
+            <foreach collection="products" item="item" open="AND (" close=")" separator="OR">
+                (
+                <if test=" item.pdCode !=null and item.pdCode !=''">
+                    PD_CODE=#{item.pdCode}
+                </if>
+                <if test=" item.pdCode ==null or item.pdCode ==''">
+                    1=1
+                </if>
+                <if test=" item.pdName !=null and item.pdName !='' ">
+                    AND PD_NAME LIKE CONCAT(#{item.pdName},'%')
+                </if>
+                <if test=" item.supplierCode !=null and item.supplierCode !=''">
+                    AND OWNER_CODE=#{item.supplierCode}
+                </if>
+                )
+            </foreach>
+        </if>
+    </select>
+
+    <select id="countOwnerPdListByCondition" resultType="Integer"             parameterType="com.msk.inventory.bean.InventoryViewBean">
+        SELECT
+            COUNT(1)
+        FROM v_inventory
+        WHERE 1 = 1
+        AND OWNER_CODE IS NOT NULL
+        <if test="pdCode!=null and pdCode!=''">
+            AND PD_CODE=#{pdCode}
+        </if>
+        <if test="logicArea!=null and logicArea!=''">
+            AND LOGIC_AREA=#{logicArea}
+        </if>
+        <if test="platform!=null and platform!=''">
+            AND PLATFORM=#{platform}
+        </if>
+        <if test="slType!=null and slType!=''">
+            AND SL_TYPE=#{slType}
+        </if>
+        <if test="slId!=null and slId!=''">
+            AND SL_ID=#{slId}
+        </if>
+        <if test="ownerId!=null and ownerId!=''">
+            AND OWNER_ID=#{ownerId}
+        </if>
+        <if test="ownerCode!=null and ownerCode!=''">
+            AND OWNER_CODE=#{ownerCode}
+        </if>
+        <if test="ivType!=null and ivType!=''">
+            AND IV_TYPE=#{ivType}
+        </if>
+    </select>
+
+    <select id="getAvailableSumByCondition" resultType="Decimal" parameterType="com.msk.inventory.bean.InventoryViewBean">
+        SELECT
+        IFNULL(sum(IFNULL(available_qty,0)),0) as available_qty
+        FROM v_inventory
+        WHERE 1 = 1
+        <if test="pdCode!=null and pdCode!=''">
+            AND PD_CODE=#{pdCode}
+        </if>
+        <if test="logicArea!=null and logicArea!=''">
+            AND LOGIC_AREA=#{logicArea}
+        </if>
+        <if test="platform!=null and platform!=''">
+            AND PLATFORM=#{platform}
+        </if>
+        <if test="slType!=null and slType!=''">
+            AND SL_TYPE=#{slType}
+        </if>
+        <if test="slId!=null and slId!=''">
+            AND SL_ID=#{slId}
+        </if>
+        <if test="ownerId!=null and ownerId!=''">
+            AND OWNER_ID=#{ownerId}
+        </if>
+        <if test="ownerCode!=null and ownerCode!=''">
+            AND OWNER_CODE=#{ownerCode}
+        </if>
+        <if test="ivType!=null and ivType!=''">
+            AND IV_TYPE=#{ivType}
+        </if>
+        <if test="hasNullOwner == true">
+            AND OWNER_CODE is null
+        </if>
+    </select>
+
+    <select id="getOnhandSumByCondition" resultType="Decimal" parameterType="com.msk.inventory.bean.InventoryViewBean">
+        SELECT
+        IFNULL(sum(IFNULL(onhand_qty,0)),0) as onhand_qty
+        FROM v_inventory
+        WHERE 1 = 1
+        <if test="pdCode!=null and pdCode!=''">
+            AND PD_CODE=#{pdCode}
+        </if>
+        <if test="logicArea!=null and logicArea!=''">
+            AND LOGIC_AREA=#{logicArea}
+        </if>
+        <if test="platform!=null and platform!=''">
+            AND PLATFORM=#{platform}
+        </if>
+        <if test="slType!=null and slType!=''">
+            AND SL_TYPE=#{slType}
+        </if>
+        <if test="slId!=null and slId!=''">
+            AND SL_ID=#{slId}
+        </if>
+        <if test="ownerId!=null and ownerId!=''">
+            AND OWNER_ID=#{ownerId}
+        </if>
+        <if test="ownerCode!=null and ownerCode!=''">
+            AND OWNER_CODE=#{ownerCode}
+        </if>
+        <if test="ivType!=null and ivType!=''">
+            AND IV_TYPE=#{ivType}
+        </if>
+        <if test="hasNullOwner == true">
+            AND OWNER_CODE is null
+        </if>
+    </select>
+
+    <select id="queryMaxAvQtyPdListByCondition" resultType="com.msk.inventory.bean.InventoryViewBean"   parameterType="com.msk.inventory.bean.InventoryViewBean">
+        select A.PD_CODE as pdCode,
+        A.ONHAND_QTY as onhandQty,
+        A.ALLOCATED_QTY  as allocatedQty,
+        A.AVAILABLE_QTY as availableQty
+        from
+        (
+        select PD_CODE,ONHAND_QTY,ALLOCATED_QTY,AVAILABLE_QTY from v_inventory
+        where 1=1
+        <if test="logicArea!=null and logicArea!=''">
+            AND LOGIC_AREA=#{logicArea}
+        </if>
+        <if test="platform!=null and platform!=''">
+            AND PLATFORM=#{platform}
+        </if>
+        <if test="slType!=null and slType!=''">
+            AND SL_TYPE=#{slType}
+        </if>
+            <if test="slId!=null and slId!=''">
+            AND SL_ID in (#{slId})
+        </if>
+        <if test="pdCode!=null and pdCode!=''">
+            AND PD_CODE=#{pdCode}
+        </if>
+        <if test="ownerCode!=null and ownerCode!=''">
+            AND OWNER_CODE=#{ownerCode}
+        </if>
+        order by AVAILABLE_QTY desc
+        ) as A
+        group by A.PD_CODE
+    </select>
+</mapper>

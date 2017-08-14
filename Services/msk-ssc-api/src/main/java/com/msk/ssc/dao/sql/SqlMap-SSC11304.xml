@@ -1,0 +1,891 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11304Logic">
+    <!-- 根据合同ID，查询合同 -->
+    <select id="findContractById" parameterType="com.msk.ssc.bean.SSC11304Param" resultType="com.msk.core.entity.SscContractBasic">
+        SELECT
+            CONTRACT_ID AS contractId,
+            CONTRACT_CODE AS contractCode,
+            BID_ID AS bidId,
+            BID_PROJECT_NO AS bidProjectNo,
+            BID_RELATION_TYPE AS bidRelationType,
+            CONTRACT_NAME AS contractName,
+            CONTRACT_TYPE AS contractType,
+            SUPPLIER_ID AS supplierId,
+            SUPPLIER_NAME AS supplierName,
+            SUPPLIER_CODE AS supplierCode,
+            PURCHASER_ID AS purchaserId,
+            PURCHASER_NAME AS purchaserName,
+            PURCHASER_CODE AS purchaserCode,
+            CONTRACT_ACT_DATE AS contractActDate,
+            CONTRACT_STATUS AS contractStatus,
+            CONTRACT_AMOUNT AS contractAmount,
+            PURCHASER_CONFIRM_ID AS purchaserConfirmId,
+            PURCHASER_CONFIRM_NAME AS purchaserConfirmName,
+            PURCHASER_CONFIRM_TIME AS purchaserConfirmTime,
+            SUPPLIER_CONFIRM_ID AS supplierConfirmId,
+            SUPPLIER_CONFIRM_NAME AS supplierConfirmName,
+            SUPPLIER_CONFIRM_TIME AS supplierConfirmTime,
+            VER AS ver
+        FROM
+            ssc_contract_basic
+        WHERE
+        1=1
+        AND CONTRACT_ID = #{contractId}
+    </select>
+
+
+
+    <insert id="saveContract" parameterType="com.msk.core.entity.SscContractBasic">
+        INSERT INTO ssc_contract_basic (
+            CONTRACT_ID,
+            CONTRACT_CODE,
+            BID_ID,
+            BID_PROJECT_NO,
+            BID_RELATION_TYPE,
+            CONTRACT_NAME,
+            SUPPLIER_ID,
+            SUPPLIER_NAME,
+            SUPPLIER_CODE,
+            PURCHASER_ID,
+            PURCHASER_NAME,
+            PURCHASER_CODE,
+            CONTRACT_ACT_DATE,
+            CONTRACT_STATUS,
+            CONTRACT_AMOUNT,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUES (
+            #{contractId},
+            #{contractCode},
+            #{bidId},
+            #{bidProjectNo},
+            #{bidRelationType},
+            #{contractName},
+            #{supplierId},
+            #{supplierName},
+            #{supplierCode},
+            #{purchaserId},
+            #{purchaserName},
+            #{purchaserCode},
+            #{contractActDate},
+            #{contractStatus},
+            #{contractAmount},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{crtId},
+            #{crtTime},
+            #{crtId},
+            #{crtTime},
+            1
+        )
+    </insert>
+
+    <select id="findPD" parameterType="com.msk.ssc.bean.SSC11304Param" resultType="Long">
+          SELECT   DETAIL_ID    FROM   ssc_contract_pr_detail
+        WHERE CONTRACT_ID = #{contractId}
+        AND  PD_CODE=#{pdCode}
+        AND  DEL_FLG=0
+     </select>
+
+    <select id="findPack" parameterType="com.msk.ssc.bean.SSC11304Param" resultType="Long">
+         SELECT   count(*)
+    FROM   ssc_package_material_info    pack
+   INNER  JOIN   ssc_contract_pr_detail  pre
+   on pack.DETAIL_ID=pre.DETAIL_ID
+   and pack.CONTRACT_ID=pre.CONTRACT_ID
+    WHERE      pack.DEL_FLG=0
+          and  pre.DEL_FLG=0
+          and    pack.DETAIL_ID=#{filterMap.detailId}
+          and  pack.CONTRACT_ID=  #{filterMap.contractId}
+    </select>
+
+    <!-- 根据合同ID，查询合同产品明细 -->
+    <select id="findContractPdDetail" parameterType="com.msk.ssc.bean.SSC11304Param" resultType="com.msk.ssc.bean.SSC11304ProductBean">
+        SELECT
+            A.DETAIL_ID AS detailId,
+            A.CONTRACT_ID AS contractId,
+            A.PD_CODE AS pdCode,
+            ifnull(A.PD_DESC, '') AS pdName,
+            IFNULL(A.CLASSES_CODE,'') AS classesCode,
+            IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+            IFNULL(A.BREED_CODE,'') AS breedCode,
+            A.FEATURE_NAME AS featureName,
+            A.WEIGHT_NAME AS weightName,
+            A.NORMS_NAME AS normsName,
+            A.GRADE_CODE AS gradeCode,
+            A.GRADE_NAME AS gradeName,
+            A.PRODUCT_QUA AS productQua,
+            A.PRODUCT_BOX AS productBox,
+            A.FOB_FREE_PACKAGE AS fobFreePackage,
+            A.PACKAGE_COST AS packageCost,
+            A.FOB_INCLUDE_PACKAGE AS fobIncludePackage,
+            A.TRUNK_FREIGHT AS trunkFreight,
+            A.CIF AS cif,
+            A.WEIGHT_VAL AS weightVal,
+            A.SETTKEMENT_STANDARD_PRICE AS settkementStandardPrice,
+            A.DOWN_PAYMENT AS downPayment,
+            A.PAYMENT_AMOUNT AS paymentAmount,
+            A.PRODUCT_VALUE AS productValue,
+            ifnull(A.REMARK, '') AS remark,
+            sum(B.ARRIVE_BOXES) AS plannedBoxes,
+            CASE
+                WHEN (count(B.LOT_ID) = 0 OR sum(B.ARRIVE_BOXES) = 0) THEN '未分配'
+                WHEN sum(B.ARRIVE_BOXES) = A.PRODUCT_BOX THEN '已分配完'
+                ELSE '部分分配'
+            END AS deliveryPlan
+        FROM
+            ssc_contract_pr_detail AS A
+        LEFT JOIN ssc_delivery_plan_basic AS B ON A.CONTRACT_ID = B.CONTRACT_ID AND A.PD_CODE = B.PD_CODE AND (B.DEL_FLG = 0 OR B.DEL_FLG IS NULL)
+        WHERE
+            (A.DEL_FLG = 0 OR A.DEL_FLG IS NULL)
+        AND A.CONTRACT_ID = #{contractId}
+        GROUP BY A.DETAIL_ID
+    </select>
+
+    <!--查询交货批次-->
+    <select id="findDeliveryBatch" resultType="com.msk.ssc.bean.SSC11304DeliveryPlanBean" parameterType="com.msk.ssc.bean.SSC11304Param">
+        SELECT
+            IFNULL(DATE_FORMAT(ETA, '%Y-%m-%d'),'') AS arriveDateStr,
+            BATCH_CODE AS batchCode
+        FROM
+            SSC_DELIVERY_PLAN_BASIC
+        WHERE
+            CONTRACT_ID = #{contractId}
+            AND DEL_FLG = 0
+        AND BATCH_CODE NOT IN (
+            SELECT
+                DELIVERY_BATCH
+            FROM
+                SSC_DELIVERY_ORDER_BASIC
+            WHERE
+                CONTRACT_ID = #{contractId}
+            AND DEL_FLG = 0
+        )
+        GROUP BY BATCH_CODE
+        ORDER BY ETA, BATCH_CODE
+    </select>
+
+    <!--查询交货期计划信息-->
+    <select id="findDeliveryPlan" resultType="com.msk.ssc.bean.SSC11304DeliveryPlanBean"
+            parameterType="com.msk.ssc.bean.SSC11304Param">
+      SELECT
+        dlb.LOT_ID as lotId,
+        dlb.CONTRACT_ID as contractId,
+        dlb.PD_CODE as pdCode,
+        cpd.PD_DESC AS pdName,
+        ARRIVE_QUT as arriveQut,
+        BATCH_CODE as batchCode,
+        ARRIVE_BOXES as arriveBoxes,
+        IFNULL(DATE_FORMAT(ETA,'%Y/%m/%d'), '') as arriveDateStr,
+        dlb.WEIGHT_VAL as weightVal,
+        cpd.GRADE_CODE as gradeCode,
+        cpd.GRADE_NAME as gradeName,
+        IFNULL(dlb.REMARK, '') as remark,
+        dlb.VER as ver
+        FROM SSC_DELIVERY_PLAN_BASIC dlb
+        INNER JOIN ssc_contract_pr_detail cpd
+        ON cpd.CONTRACT_ID = dlb.CONTRACT_ID
+        AND cpd.PD_CODE = dlb.PD_CODE
+        AND cpd.DEL_FLG = 0
+        WHERE  dlb.CONTRACT_ID = #{contractId}
+        AND dlb.DEL_FLG = 0
+        ORDER BY dlb.ETA, dlb.BATCH_CODE, dlb.PD_CODE
+    </select>
+    <!--查询合同包材信息-->
+    <select id="findContractPacking" resultType="com.msk.ssc.bean.SSC11304PackageBean" parameterType="com.msk.ssc.bean.SSC11304Param">
+        SELECT
+        sspd.PD_DESC
+        AS product,
+        sspd.GRADE_NAME as gradeName,
+        sspmi.CARTON_QUA_STA AS cartonQuaSta,
+        sspmi.CARTON_SPEC_STA AS cartonSpecSta,
+        sspmi.INNER_BAG_QUA_STA AS innerBagQuaSta,
+        sspmi.INNER_BAG_SPEC_STA AS  innerBagSpecSta,
+        sspmi.CARTON_QUA  AS cartonQua,
+        sspmi.CARTON_SPEC AS cartonSpec,
+        sspmi.CARTON_USE_NUM AS cartonUseNum,
+        sspmi.INNER_BAG_QUA  AS  innerBagQua,
+        sspmi.INNER_BAG_QUA_STA AS innerBagQuaSta,
+        sspmi.INNER_BAG_SPEC AS innerBagSpec,
+        sspmi.INNER_BAG_USE_NUM AS innerBagUseNum,
+        sspmi.TAPE_QUA_STA AS tapeQuaSta,
+        sspmi.TAPE_COLOR AS tapeColor,
+        sspmi.TAPE_USE_NUM AS tapeUseNum,
+        sspmi.LABEL_CONTENT AS labelContent,
+        sspmi.LARGE_LABEL_NUM AS largeLabelNum,
+        sspmi.SMALL_LABEL_NUM AS smallLabelNum,
+        sspmi.INNER_LABEL_NUM AS innerLabelNum,
+        sspmi.PACKAGE_DETAIL_ID as packageDetailId,
+        SUPPLY_MODE as supplyMode,
+        AUDIT_METHOD  as  auditMethod ,
+        SETTLEMENT_METHOD as settlementMethod,
+        sspmi.VER AS ver
+        FROM
+        ssc_contract_pr_detail sspd
+        LEFT JOIN ssc_package_material_info sspmi ON sspd.DETAIL_ID = sspmi.DETAIL_ID
+        WHERE
+        sspd.DEL_FLG = 0
+        AND sspmi.DEL_FLG = 0
+        AND sspd.CONTRACT_ID = #{contractId}
+    </select>
+
+    <!--save合同产品交货计划信息-->
+    <insert id="saveDeliveryPlan" parameterType="BaseEntity">
+     INSERT INTO SSC_DELIVERY_PLAN_BASIC (
+       LOT_ID,
+     BATCH_CODE,
+     CONTRACT_ID,
+     PD_CODE,
+     PD_DESC,
+     ETA,
+     WEIGHT_VAL,
+     ARRIVE_QUT,
+     ARRIVE_BOXES,
+     REMARK,
+     DEL_FLG,
+    CRT_ID,
+    CRT_TIME,
+     VER
+
+        )
+        VALUES (
+        #{lotId},
+        #{batchCode},
+        #{contractId},
+        #{pdCode},
+        #{pdDesc},
+        #{eta},
+        #{weightVal},
+        #{arriveQut},
+        #{arriveBoxes},
+        #{remark},
+        0,
+        #{crtId},
+        #{crtTime},
+        1
+        )
+    </insert>
+
+
+
+
+
+    <!--update 交货期计划-->
+    <update id="modifyDeliveryPlan" parameterType="BaseEntity">
+        UPDATE
+        SSC_DELIVERY_PLAN_BASIC
+        SET
+        <if test="eta!=null and eta!=''">
+            ETA = #{eta},
+        </if>
+        <if test="arriveQut!=null and arriveQut!=''">
+            ARRIVE_QUT = #{arriveQut},
+        </if>
+        <if test="arriveBoxes!=null and arriveBoxes!=''">
+            ARRIVE_BOXES = #{arriveBoxes},
+        </if>
+        <if test="weightVal!=null and weightVal!=''">
+            WEIGHT_VAL=#{weightVal},
+        </if>
+        <if test="remark!=null and remark!=''">
+            REMARK = #{remark},
+        </if>
+        DEL_FLG = #{delFlg},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        LOT_ID = #{lotId}
+        AND DEL_FLG = 0
+    </update>
+
+    <!--保存合同包材信息-->
+    <insert id="saveContractPackageM" parameterType="BaseEntity">
+       INSERT  INTO ssc_package_material_info (
+            PACKAGE_DETAIL_ID,
+            CONTRACT_ID,
+            DETAIL_ID,
+            CARTON_QUA_STA,
+            CARTON_SPEC_STA,
+            INNER_BAG_QUA_STA,
+            INNER_BAG_SPEC_STA,
+            TAPE_QUA_STA,
+            LABEL_CONTENT_STA,
+            CARTON_QUA,
+            CARTON_SPEC,
+            CARTON_USE_NUM,
+            INNER_BAG_QUA,
+            INNER_BAG_SPEC,
+            INNER_BAG_USE_NUM,
+            TAPE_COLOR,
+            TAPE_USE_NUM,
+            LABEL_CONTENT,
+            LARGE_LABEL_NUM,
+            SMALL_LABEL_NUM,
+            INNER_LABEL_NUM,
+            SUPPLY_MODE,
+            AUDIT_METHOD,
+            SETTLEMENT_METHOD,
+            REMARK,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        ) VALUES (
+            #{packageDetailId},
+            #{contractId},
+            #{detailId},
+            #{cartonQuaSta},
+            #{cartonSpecSta},
+            #{innerBagQuaSta},
+            #{innerBagSpecSta},
+            #{tapeQuaSta},
+            #{labelContentSta},
+            #{cartonQua},
+            #{cartonSpec},
+            #{cartonUseNum},
+            #{innerBagQua},
+            #{innerBagSpec},
+            #{innerBagUseNum},
+            #{tapeColor},
+            #{tapeUseNum},
+            #{labelContent},
+            #{largeLabelNum},
+            #{smallLabelNum},
+            #{innerLabelNum},
+            #{supplyMode},
+            #{auditMethod},
+            #{settlementMethod},
+            #{remark},
+           0,
+           #{crtId},
+           #{crtTime},
+           #{updId},
+           #{updTime},
+           #{actId},
+           #{actTime},
+           1
+        )
+    </insert>
+
+
+    <update id="modifyPacking" parameterType="BaseEntity">
+        UPDATE ssc_package_material_info
+        SET
+        CARTON_QUA_STA=#{cartonQuaSta},
+        CARTON_SPEC_STA=#{cartonSpecSta},
+        INNER_BAG_QUA_STA=#{innerBagQuaSta},
+        INNER_BAG_SPEC_STA=#{innerBagSpecSta},
+        TAPE_QUA_STA=#{tapeQuaSta},
+        LABEL_CONTENT_STA=#{labelContentSta},
+        CARTON_QUA=#{cartonQua},
+        CARTON_SPEC=#{cartonSpec},
+        CARTON_USE_NUM=#{cartonUseNum},
+        INNER_BAG_QUA=#{innerBagQua},
+        INNER_BAG_SPEC=#{innerBagSpec},
+        INNER_BAG_USE_NUM=#{innerBagUseNum},
+        TAPE_COLOR=#{tapeColor},
+        TAPE_USE_NUM=#{tapeUseNum},
+        LABEL_CONTENT=#{labelContent},
+        LARGE_LABEL_NUM=#{largeLabelNum},
+        SMALL_LABEL_NUM=#{smallLabelNum},
+        INNER_LABEL_NUM=#{innerLabelNum},
+        SUPPLY_MODE=#{supplyMode},
+        AUDIT_METHOD=#{auditMethod},
+        SETTLEMENT_METHOD=#{settlementMethod},
+        REMARK=#{remark},
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime},
+        VER = VER+1
+        WHERE
+        DEL_FLG = 0
+        <if test="packageDetailId!=null">
+            AND  PACKAGE_DETAIL_ID = #{packageDetailId}
+        </if>
+        <if test="detailId!=null">
+            AND   DETAIL_ID = #{detailId}
+            AND  CONTRACT_ID=#{contractId}
+        </if>
+
+    </update>
+
+
+
+
+    <update id="delContractPackgeM" parameterType="BaseEntity">
+        update  ssc_package_material_info  pm
+        set pm.DEL_FLG=1,
+        pm.UPD_ID=#{updId},
+        pm.UPD_TIME=#{updTime},
+        pm.VER=VER+1
+        where pm.PACKAGE_DETAIL_ID = #{packageDetailId}
+    </update>
+
+    <select  id="checkEffecBoxNum" parameterType="BaseEntity" resultType="com.msk.ssc.bean.SSC11304DeliveryPlanBean">
+      SELECT
+	(
+		IFNULL(pr.PRODUCT_BOX ,0)- (
+           IFNULL((SELECT
+				sum(plan.ARRIVE_BOXES)
+			FROM
+				ssc_delivery_plan_basic plan
+			WHERE
+				plan.CONTRACT_ID =#{contractId}
+				and plan.PD_CODE =#{pdCode}
+			AND plan.DEL_FLG = 0),0)
+		)-#{arriveBoxes}
+	     ) AS arriveBoxes,
+	     (
+		IFNULL(pr.PRODUCT_BOX ,0)- (
+           IFNULL((SELECT
+				sum(plan.ARRIVE_BOXES)
+			FROM
+				ssc_delivery_plan_basic plan
+			WHERE
+				plan.CONTRACT_ID =#{contractId}
+				and plan.PD_CODE =#{pdCode}
+			AND plan.DEL_FLG = 0),0)
+		)
+	     )AS effctNum ,
+	     pr.PD_CODE as pdCode,
+	     pr.PD_DESC AS pdName
+   FROM
+	  ssc_contract_pr_detail pr
+WHERE
+	pr.CONTRACT_ID =#{contractId}
+AND pr.PD_CODE =#{pdCode}
+AND pr.DEL_FLG = 0
+    </select>
+
+    <select  id="findBatchDate" parameterType="BaseEntity" resultType="String">
+       SELECT  date(plan.ETA ) as evaDate
+       from  ssc_delivery_plan_basic  plan
+      WHERE plan.DEL_FLG=0
+      and   plan.CONTRACT_ID=#{filterMap.contractId}
+      and  plan.BATCH_CODE=#{filterMap.batchCode}
+
+    </select>
+
+    <update id="updateContractBasic" parameterType="com.msk.core.entity.SscContractBasic">
+        UPDATE ssc_contract_basic
+        SET
+            <if test="supplierName != null and supplierName != ''">
+                SUPPLIER_NAME = #{supplierName},
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                SUPPLIER_CODE = #{supplierCode},
+            </if>
+            <if test="purchaserName != null and purchaserName != ''">
+                PURCHASER_NAME = #{purchaserName},
+            </if>
+            <if test="purchaserCode != null and purchaserCode != ''">
+                PURCHASER_CODE = #{purchaserCode},
+            </if>
+            <if test="contractName != null and contractName != ''">
+                CONTRACT_NAME = #{contractName},
+            </if>
+            <if test="contractActDate != null and contractActDate != ''">
+                CONTRACT_ACT_DATE = #{contractActDate},
+            </if>
+            <if test="contractStatus != null and contractStatus != ''">
+                CONTRACT_STATUS = #{contractStatus},
+            </if>
+            <if test="realProduceStartDate != null and realProduceStartDate != ''">
+                REAL_PRODUCE_START_DATE = #{realProduceStartDate},
+            </if>
+            <if test="realProduceEndDate != null and realProduceEndDate != ''">
+                REAL_PRODUCE_END_DATE = #{realProduceEndDate},
+            </if>
+            <if test="purchaserConfirmId != null and purchaserConfirmId != ''">
+                PURCHASER_CONFIRM_ID = #{purchaserConfirmId},
+            </if>
+            <if test="purchaserConfirmName != null and purchaserConfirmName != ''">
+                PURCHASER_CONFIRM_NAME = #{purchaserConfirmName},
+            </if>
+            <if test="purchaserConfirmTime != null and purchaserConfirmTime != ''">
+                PURCHASER_CONFIRM_TIME = #{purchaserConfirmTime},
+            </if>
+            <if test="supplierConfirmId != null and supplierConfirmId != ''">
+                SUPPLIER_CONFIRM_ID = #{supplierConfirmId},
+            </if>
+            <if test="supplierConfirmName != null and supplierConfirmName != ''">
+                SUPPLIER_CONFIRM_NAME = #{supplierConfirmName},
+            </if>
+            <if test="supplierConfirmTime != null and supplierConfirmTime != ''">
+                SUPPLIER_CONFIRM_TIME = #{supplierConfirmTime},
+            </if>
+            <if test="bidId != null and bidId != ''">
+                BID_ID = #{bidId},
+            </if>
+            <if test="bidProjectNo != null and bidProjectNo != ''">
+                BID_PROJECT_NO = #{bidProjectNo},
+            </if>
+            <if test="bidRelationType != null and bidRelationType != ''">
+                BID_RELATION_TYPE = #{bidRelationType},
+            </if>
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            DEL_FLG = 0
+        AND CONTRACT_ID = #{contractId}
+    </update>
+
+
+
+
+    <insert id="saveContractBussiness" parameterType="BaseEntity">
+        INSERT  INTO ssc_business_terms (
+        CLAUSE_ID,
+        CONTRACT_ID,
+        PAYMENT_RATIO,
+        TRAN_RES_,
+        TRAN_FEE_METHOD,
+        TRAN_FEE_STANDARD,
+        DELAY_DEADLINE,
+        PURCHASER_AUTH_SIG,
+        SUPPLIER_AUTH_SIG,
+        FAX_NUM,
+        PURCHASER_ADDR,
+        PURCHASER_EMAIL,
+        ADMIN_TRANS,
+        ADMIN_TRANS_QQ,
+        NEG_MANAGER,
+        NEG_MANAGER_PHONENUM,
+        NEG_MANAGER_QQ,
+        QC_MANAGER,
+        QC_MANAGER_PHONENUM,
+        QC_MANAGER_QQ,
+        CONTRACT_SUBJ_1,
+        CONTRACT_SUBJ_2,
+        PAYMENT_UNIT_1,
+        PAYMENT_UNIT_2,
+        SUPPLIER_QQ,
+        SUPPLIER_EMAIL,
+        MARKET_MANAGER,
+        MARKET_MANAGER_PHONENUM,
+        CONTRACT_DIRECTOR,
+        CONTRACT_DIRECTOR_PHONENUM,
+        PRODUCE_DIRECTOR,
+        PRODUCE_DIRECTOR_PHONENUM,
+        QC_DIRECTOR,
+        QC_DIRECTOR_PHONENUM,
+        TRANS_DIRECTOR,
+        TRANS_DIRECTOR_PHONENUM,
+        DELIVERY_LOCATION,
+        CONTRACT_VER_PERIOD,
+        PUR_VER_DIRECTOR,
+        PUR_VER_DIRECTOR_NUM,
+        SUPP_VER_DIRECTOR,
+        SUPP_VER_DIRECTOR_NUM,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER) VALUES (
+        #{clauseId},
+        #{contractId},
+        #{paymentRatio},
+        #{tranRes},
+        #{tranFeeMethod},
+        #{tranFeeStandard},
+        #{delayDeadline},
+        #{purchaserAuthSig},
+        #{supplierAuthSig},
+        #{faxNum},
+        #{purchaserAddr},
+        #{purchaserEmail},
+        #{adminTrans},
+        #{adminTransQq},
+        #{negManager},
+        #{negManagerPhonenum},
+        #{negManagerQq},
+        #{qcManager},
+        #{qcManagerPhonenum},
+        #{qcManagerQq},
+        #{contractSubj1},
+        #{contractSubj2},
+        #{paymentUnit1},
+        #{paymentUnit2},
+        #{supplierQq},
+        #{supplierEmail},
+        #{marketManager},
+        #{marketManagerPhonenum},
+        #{contractDirector},
+        #{contractDirectorPhonenum},
+        #{produceDirector},
+        #{produceDirectorPhonenum},
+        #{qcDirector},
+        #{qcDirectorPhonenum},
+        #{transDirector},
+        #{transDirectorPhonenum},
+        #{deliveryLocation},
+        #{contractVerPeriod},
+        #{purVerDirector},
+        #{purVerDirectorNum},
+        #{suppVerDirector},
+        #{suppVerDirectorNum},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+
+    <update id="updateContractBussiness" parameterType="BaseEntity">
+        UPDATE ssc_business_terms
+        SET
+            PAYMENT_RATIO=#{paymentRatio},
+            TRAN_RES_=#{tranRes},
+            TRAN_FEE_METHOD=#{tranFeeMethod},
+            TRAN_FEE_STANDARD=#{tranFeeStandard},
+            DELAY_DEADLINE=#{delayDeadline},
+            PURCHASER_AUTH_SIG=#{purchaserAuthSig},
+            SUPPLIER_AUTH_SIG=#{supplierAuthSig},
+            FAX_NUM=#{faxNum},
+            PURCHASER_ADDR=#{purchaserAddr},
+            PURCHASER_EMAIL=#{purchaserEmail},
+            ADMIN_TRANS=#{adminTrans},
+            ADMIN_TRANS_QQ=#{adminTransQq},
+            NEG_MANAGER=#{negManager},
+            NEG_MANAGER_PHONENUM=#{negManagerPhonenum},
+            NEG_MANAGER_QQ=#{negManagerQq},
+            QC_MANAGER=#{qcManager},
+            QC_MANAGER_PHONENUM=#{qcManagerPhonenum},
+            QC_MANAGER_QQ=#{qcManagerQq},
+            CONTRACT_SUBJ_1=#{contractSubj1},
+            CONTRACT_SUBJ_2=#{contractSubj2},
+            PAYMENT_UNIT_1=#{paymentUnit1},
+            PAYMENT_UNIT_2=#{paymentUnit2},
+            SUPPLIER_QQ=#{supplierQq},
+            SUPPLIER_EMAIL=#{supplierEmail},
+            MARKET_MANAGER=#{marketManager},
+            MARKET_MANAGER_PHONENUM=#{marketManagerPhonenum},
+            CONTRACT_DIRECTOR=#{contractDirector},
+            CONTRACT_DIRECTOR_PHONENUM=#{contractDirectorPhonenum},
+            PRODUCE_DIRECTOR=#{produceDirector},
+            PRODUCE_DIRECTOR_PHONENUM=#{produceDirectorPhonenum},
+            QC_DIRECTOR=#{qcDirector},
+            QC_DIRECTOR_PHONENUM=#{qcDirectorPhonenum},
+            TRANS_DIRECTOR=#{transDirector},
+            TRANS_DIRECTOR_PHONENUM=#{transDirectorPhonenum},
+            DELIVERY_LOCATION=#{deliveryLocation},
+            CONTRACT_VER_PERIOD=#{contractVerPeriod},
+            PUR_VER_DIRECTOR=#{purVerDirector},
+            PUR_VER_DIRECTOR_NUM=#{purVerDirectorNum},
+            SUPP_VER_DIRECTOR=#{suppVerDirector},
+            SUPP_VER_DIRECTOR_NUM=#{suppVerDirectorNum},
+            UPD_ID=#{updId},
+            UPD_TIME=#{updTime},
+            VER=ver+1
+        WHERE
+          CLAUSE_ID=#{clauseId}
+
+    </update>
+
+    <select id="findContractBussiness" parameterType="BaseEntity" resultType="com.msk.core.entity.SscBusinessTerms">
+    SELECT
+        CLAUSE_ID as clauseId ,
+        PAYMENT_RATIO as paymentRatio,
+        TRAN_RES_  as  tranRes   ,
+        TRAN_FEE_METHOD  as  tranFeeMethod   ,
+        TRAN_FEE_STANDARD  as  tranFeeStandard   ,
+        DELAY_DEADLINE  as  delayDeadline   ,
+        PURCHASER_AUTH_SIG  as  purchaserAuthSig   ,
+        SUPPLIER_AUTH_SIG  as  supplierAuthSig   ,
+        FAX_NUM  as  faxNum   ,
+        PURCHASER_ADDR  as  purchaserAddr   ,
+        PURCHASER_EMAIL  as  purchaserEmail   ,
+        ADMIN_TRANS  as  adminTrans   ,
+        ADMIN_TRANS_QQ  as  adminTransQq   ,
+        NEG_MANAGER  as  negManager   ,
+        NEG_MANAGER_PHONENUM  as  negManagerPhonenum   ,
+        NEG_MANAGER_QQ  as  negManagerQq   ,
+        QC_MANAGER  as  qcManager   ,
+        QC_MANAGER_PHONENUM  as  qcManagerPhonenum   ,
+        QC_MANAGER_QQ  as  qcManagerQq   ,
+        CONTRACT_SUBJ_1  as  contractSubj1   ,
+        CONTRACT_SUBJ_2  as  contractSubj2   ,
+        PAYMENT_UNIT_1  as  paymentUnit1   ,
+        PAYMENT_UNIT_2  as  paymentUnit2   ,
+        SUPPLIER_QQ  as  supplierQq   ,
+        SUPPLIER_EMAIL  as  supplierEmail   ,
+        MARKET_MANAGER  as  marketManager   ,
+        MARKET_MANAGER_PHONENUM  as  marketManagerPhonenum   ,
+        CONTRACT_DIRECTOR  contractDirector   ,
+        CONTRACT_DIRECTOR_PHONENUM  as  contractDirectorPhonenum   ,
+        PRODUCE_DIRECTOR  as  produceDirector   ,
+        PRODUCE_DIRECTOR_PHONENUM  as  produceDirectorPhonenum   ,
+        QC_DIRECTOR  as  qcDirector   ,
+        QC_DIRECTOR_PHONENUM  as  qcDirectorPhonenum   ,
+        TRANS_DIRECTOR  as  transDirector   ,
+        TRANS_DIRECTOR_PHONENUM  as  transDirectorPhonenum   ,
+        DELIVERY_LOCATION  as  deliveryLocation   ,
+        CONTRACT_VER_PERIOD  as  contractVerPeriod   ,
+        PUR_VER_DIRECTOR  as  purVerDirector   ,
+        PUR_VER_DIRECTOR_NUM  as  purVerDirectorNum   ,
+        SUPP_VER_DIRECTOR  as  suppVerDirector   ,
+        SUPP_VER_DIRECTOR_NUM  as  suppVerDirectorNum,
+        VER as ver
+    from ssc_business_terms
+    WHERE
+        DEL_FLG = 0
+    AND CONTRACT_ID=#{contractId}
+</select>
+
+
+    <select id="findDBContractCode" parameterType="BaseEntity" resultType="String">
+        select  b.CONTRACT_CODE  from ssc_contract_basic  b   where b.CONTRACT_ID=(select MAX(c.CONTRACT_ID) from ssc_contract_basic  c )
+    </select>
+
+
+    <!-- 根据合同ID，产品CODE和交货日期，查询交货计划 -->
+    <select id="findExistentDps" parameterType="com.msk.ssc.bean.SSC11304Param" resultType="com.msk.ssc.bean.SSC11304DeliveryPlanBean">
+        <foreach collection="deliveryPlans" item="item" index="index" separator="union all">
+            SELECT
+            LOT_ID AS lotId,
+            CONTRACT_ID AS contractId,
+            PD_CODE AS pdCode,
+            PD_DESC AS pdDesc,
+            ETA AS eta,
+            WEIGHT_VAL AS weightVal,
+            ARRIVE_QUT AS arriveQut,
+            ARRIVE_BOXES AS arriveBoxes,
+            REMARK AS remark,
+            VER AS ver
+            FROM
+            ssc_delivery_plan_basic
+            WHERE
+            (DEL_FLG = 0 OR DEL_FLG IS NULL)
+            AND CONTRACT_ID = #{item.contractId}
+            AND PD_CODE = #{item.pdCode}
+            AND (ETA BETWEEN concat(#{item.arriveDateStr}, ' 00:00:00') AND concat(#{item.arriveDateStr}, ' 23:59:59'))
+        </foreach>
+    </select>
+
+    <!-- 批量新增交货计划 -->
+    <insert id="batchCreateDps" parameterType="com.msk.ssc.bean.SSC11304Param">
+        INSERT INTO ssc_delivery_plan_basic
+        (LOT_ID, BATCH_CODE, CONTRACT_ID, PD_CODE, PD_DESC, ETA, ARRIVE_QUT, ARRIVE_BOXES, WEIGHT_VAL, REMARK, DEL_FLG, CRT_ID, CRT_TIME, ACT_ID, ACT_TIME, VER)
+        VALUES
+        <foreach collection="deliveryPlans" item="item" index="index" separator=",">
+            (#{item.lotId}, #{item.batchCode}, #{item.contractId}, #{item.pdCode}, #{item.pdDesc}, #{item.eta}, #{item.arriveQut}, #{item.arriveBoxes}, #{item.weightVal}, #{item.remark}, '0', #{item.crtId}, #{item.crtTime}, #{item.crtId}, #{item.crtTime}, 1)
+        </foreach>
+    </insert>
+
+    <!-- 批量更新交货计划 -->
+    <update id="batchUpdateDps" parameterType="com.msk.ssc.bean.SSC11304Param">
+        <foreach collection="deliveryPlans" item="item" index="index" separator=";">
+            UPDATE
+            ssc_delivery_plan_basic
+            SET
+            ARRIVE_QUT = #{item.arriveQut},
+            ARRIVE_BOXES = #{item.arriveBoxes},
+            REMARK = #{item.remark},
+            UPD_ID = #{item.updId},
+            UPD_TIME = #{item.updTime},
+            VER = #{item.ver}
+            WHERE
+            (DEL_FLG = 0 OR DEL_FLG IS NULL)
+            AND LOT_ID = #{item.lotId}
+        </foreach>
+    </update>
+
+    <!-- 根据合同ID，查询合同订单中的产品明细，排除已有包材信息的产品 -->
+    <select id="findContractProducts" parameterType="com.msk.ssc.bean.SSC11304Param" resultType="com.msk.ssc.bean.SSC11304ProductBean">
+        SELECT
+            A.DETAIL_ID AS detailId,
+            A.CONTRACT_ID AS contractId,
+            A.PD_CODE AS pdCode,
+            ifnull(A.PD_DESC, '') AS pdName,
+            A.CLASSES_CODE as classesCode,
+            A.MACHINING_CODE as machiningCode,
+            A.BREED_CODE as breedCode,
+            A.FEATURE_CODE as featureCode,
+            A.WEIGHT_CODE as weightCode,
+            A.NORMS_CODE as normsCode,
+            A.FEATURE_NAME AS featureName,
+            A.WEIGHT_NAME AS weightName,
+            A.NORMS_NAME AS normsName,
+            A.GRADE_CODE AS gradeCode,
+            A.GRADE_NAME AS gradeName,
+            A.PRODUCT_QUA AS productQua,
+            A.PRODUCT_BOX AS productBox,
+            A.FOB_FREE_PACKAGE AS fobFreePackage,
+            A.PACKAGE_COST AS packageCost,
+            A.FOB_INCLUDE_PACKAGE AS fobIncludePackage,
+            A.TRUNK_FREIGHT AS trunkFreight,
+            A.CIF AS cif,
+            A.WEIGHT_VAL AS weightVal,
+            A.SETTKEMENT_STANDARD_PRICE AS settkementStandardPrice,
+            A.DOWN_PAYMENT AS downPayment,
+            A.PAYMENT_AMOUNT AS paymentAmount,
+            A.PRODUCT_VALUE AS productValue,
+            ifnull(A.REMARK, '') AS remark
+        FROM
+            ssc_contract_pr_detail AS A
+        WHERE
+            (A.DEL_FLG = 0 OR A.DEL_FLG IS NULL)
+        AND A.CONTRACT_ID = #{contractId}
+        AND A.DETAIL_ID NOT in (
+            SELECT
+                B.DETAIL_ID
+            FROM
+                ssc_package_material_info B
+            WHERE
+                (B.DEL_FLG = 0 OR B.DEL_FLG IS NULL)
+            AND B.CONTRACT_ID = #{contractId}
+        )
+    </select>
+
+    <!-- 根据合同ID，更新合同状态为待审核 -->
+    <update id="enableToModify" parameterType="com.msk.core.entity.SscContractBasic">
+        UPDATE ssc_contract_basic
+        SET CONTRACT_STATUS = 1,
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            (DEL_FLG = 0 OR DEL_FLG IS NULL)
+        AND CONTRACT_ID = #{contractId}
+    </update>
+
+    <!-- 根据合同ID，查询交货计划中最大的批次 -->
+    <select id="findMaxBatchCode" parameterType="BaseParam" resultType="String">
+        SELECT
+            max(BATCH_CODE)
+        FROM
+            ssc_delivery_plan_basic
+        WHERE
+            CONTRACT_ID = #{filterMap.contractId}
+    </select>
+
+    <!-- 根据合同ID，更新合同总金额 -->
+    <update id="updateContractAmount" parameterType="BaseParam">
+        UPDATE ssc_contract_basic
+        SET CONTRACT_AMOUNT = #{filterMap.contractAmount},
+            CONTRACT_STATUS = 1,
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            (DEL_FLG = 0 OR DEL_FLG IS NULL)
+        AND CONTRACT_ID = #{filterMap.contractId}
+    </update>
+</mapper>

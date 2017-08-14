@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="./resources/js/BY121230.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>批发市场详细画面编辑</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+			<div style="width:100%;background-color:#F0F2F5;">
+                <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                    <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                        <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                    </div>
+                    <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+                    <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                        <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                    </div>
+                </div>
+			</div>
+            <div style="width: 80%;margin-left:20px;" class="divCommon1">批发市场编辑 - 基础资料</div>
+            <div style="width:100%;">
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000">*</span>批发市场编码</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="marketCode" placeholder="请输入批发市场编码" readonly="readonly"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000">*</span>批发市场名称</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="marketName" placeholder="请输入批发市场名称" readonly="readonly"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">批发市场地址</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="marketAddr" placeholder="请输入批发市场地址" readonly="readonly"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">批发市场级别</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <!--<select name="marketLevel" id="marketLevel" ></select>-->
+                    <input type="text"  id="marketLevel"  name="marketLevel" readonly="readonly"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">物流区编码</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <!--<select name="lgcsAreaCode" id="lgcsAreaCode" onchange="logsChange();" ></select>-->
+                    <input type="text"  id="lgcsAreaCode"  name="lgcsAreaCode" readonly="readonly"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">城市编码</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <!--<select name="cityCode" id="cityCode" onchange="cityChange();" readonly="readonly"></select>-->
+                    <input type="text"  id="cityCode"  name="cityCode" readonly="readonly"/>
+                </div>
+                <!-- 去掉区编码，批发市场定位到城市-->
+<!--                <div style="width: 80%;margin-left:35px;" class="divCommon2">区编码</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <select name="districtCode" id="districtCode"></select>
+                </div>-->
+            </div>
+            <div id="errorMessage" class="errorMessageDiv" style="width: 76%;margin-left:35px;display: none"></div>
+            <br/>
+            <!-- 去掉保存按钮，批发市场信息只准许查看不能修改。-->
+<!--            <div>
+                <div id="saveButtonDiv" style="margin-left:35px;width:100px;" class="buttonDiv" onclick="byMarketTerminalUpdate()" onmouseover="javascript:this.style.backgroundColor='#4169E1'">保存</div>
+            </div>-->
+            <br/>
+		</div>
+	</body>
+</html>

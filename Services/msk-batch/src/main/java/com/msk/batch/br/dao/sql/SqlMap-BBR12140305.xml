@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.br.logic.BBR12140305Logic">
+    <delete id="remove" parameterType="BaseParam">
+        DELETE
+          FROM
+	    BR_O_HK_INFO
+    </delete>
+
+    <insert id="save" parameterType="com.msk.batch.br.bean.IBBR12140305RsBean">
+      INSERT INTO BR_O_HK_INFO
+        (
+        SL_CODE,
+        HOUSE_ACCOUNT,
+        HOUSE_CODE,
+        HOUSE_TEL,
+        HOUSE_SHOW_NAME,
+        HOUSE_CONTACT,
+        LGCS_AREA_CODE,
+        LGCS_AREA_NAME,
+        CITY_CODE,
+        CITY_NAME,
+        LOCK_MAX_BUYERS,
+        MARKETING_MAX_DAYS,
+        VIP_MAX_BUYERS,
+        IS_CHANGE_BUYERS,
+        HOUSE_STAR,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES
+            (
+            #{slCode},
+            #{houseAccount},
+            #{houseCode},
+            #{houseTel},
+            #{houseShowName},
+            #{houseContact},
+            #{vlgcsAreaCode},
+            #{vlgcsAreaName},
+            #{vcityCode},
+            #{vcityName},
+            #{publicBuyers},
+            #{marketingDays},
+            #{vipBuyers},
+            #{isChangeBuyers},
+            #{houseStar},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1)
+    </insert>
+
+    <update id="modify" parameterType="com.msk.batch.br.bean.IBBR12140305RsBean">
+        UPDATE BR_O_HK_INFO
+        SET LOCK_MAX_BUYERS = #{publicBuyers}
+        ,MARKETING_MAX_DAYS = #{marketingDays}
+        ,VIP_MAX_BUYERS = #{vipBuyers}
+        ,IS_CHANGE_BUYERS = #{isChangeBuyers}
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        WHERE  SL_CODE = #{slCode}
+        AND HOUSE_CODE = #{houseCode}
+    </update>
+
+    <select id="findList" resultType="com.msk.batch.br.bean.BBR121403Bean" parameterType="BaseParam">
+        SELECT
+            SL_CODE AS slCode,
+            HOUSE_CODE AS houseCode
+        FROM
+            BR_O_HK_INFO
+        WHERE
+            DEL_FLG = '0'
+    </select>
+</mapper>

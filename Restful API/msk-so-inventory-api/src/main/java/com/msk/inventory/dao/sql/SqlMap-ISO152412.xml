@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.ISO152412ServiceImpl">
+
+    <select id="findSlProductIvList" parameterType="com.msk.inventory.bean.ISO152412ParamBean" resultType="com.msk.inventory.bean.ISO152412PdStockResultBean">
+        select
+        EXTRACTVALUE(A.PRODUCT_XML, '/CLS_C') as classesCode,
+        EXTRACTVALUE(A.PRODUCT_XML, '/MACH_C') as machiningCode,
+        EXTRACTVALUE(A.PRODUCT_XML, '/BRE_C') as breedCode,
+        EXTRACTVALUE(A.PRODUCT_XML, '/FEAT_C') as featureCode,
+        EXTRACTVALUE(A.PRODUCT_XML, '/GRAD_C') as pdGradeCode,
+        CONCAT(
+        EXTRACTVALUE(A.PRODUCT_XML,'/CLS_C'),
+        EXTRACTVALUE(A.PRODUCT_XML,'/MACH_C'),
+        EXTRACTVALUE(A.PRODUCT_XML,'/BRE_C'),
+        EXTRACTVALUE(A.PRODUCT_XML,'/FEAT_C'),
+        EXTRACTVALUE(A.PRODUCT_XML,'/WEI_C'),
+        EXTRACTVALUE(A.PRODUCT_XML,'/GRAD_C')
+        ) as pdCode,
+        <!--A.UOM as unit,-->
+        A.QTY as onhandQty,
+        A.ALLOCATED_QTY AS allocatedQty,
+        A.QTY - A.ALLOCATED_QTY as availableQty
+        from IVM_INVENTORY_BY_PROD A
+        where 1=1
+        <if test="salePlatform!=null and salePlatform!=''">
+        AND EXTRACTVALUE(A.BELONE_XML,'/PLT')=#{salePlatform}
+        </if>
+        <if test="slCode!=null and slCode!=''">
+        AND EXTRACTVALUE(A.BELONE_XML,'/SLT')=#{slCode}
+        </if>
+        <if test="lgcsCode!=null and lgcsCode!=''">
+        AND EXTRACTVALUE(A.BELONE_XML,'/AREA')=#{lgcsCode}
+        </if>
+        <if test="products !=null">
+            <foreach collection="products" item="item" open="AND (" close=")" separator="OR">
+                1 = 1
+                <if test="item.pdCode!=null and item.pdCode!=''">
+                    AND CONCAT(
+                        EXTRACTVALUE(A.PRODUCT_XML,'/CLS_C'),
+                        EXTRACTVALUE(A.PRODUCT_XML,'/MACH_C'),
+                        EXTRACTVALUE(A.PRODUCT_XML,'/BRE_C'),
+                        EXTRACTVALUE(A.PRODUCT_XML,'/FEAT_C'),
+                        EXTRACTVALUE(A.PRODUCT_XML,'/WEI_C'),
+                        EXTRACTVALUE(A.PRODUCT_XML,'/GRAD_C')
+                    ) = #{item.pdCode}
+                </if>
+                <if test="item.classesCode!=null and item.classesCode!=''">
+                    AND EXTRACTVALUE(A.PRODUCT_XML, '/CLS_C') =#{item.classesCode}
+                </if>
+                <if test="item.breedCode!=null and item.breedCode!=''">
+                    AND EXTRACTVALUE(A.PRODUCT_XML, '/BRE_C')=#{item.breedCode}
+                </if>
+            </foreach>
+        </if>
+        <if test="startPos>=0 and pageCount>0">
+            LIMIT #{startPos}, #{pageCount}
+        </if>
+    </select>
+
+</mapper>

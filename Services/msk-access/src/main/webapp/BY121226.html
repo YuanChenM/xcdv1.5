@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="./resources/js/BY121226.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>选择产品规格</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="text-align:center;width:76%;height:40px;line-height:45px;text-shadow:none;background-color: #F0F2F5;color:#3290B3;font-size: 23px;font-weight: bold;">通路注册营销一体化工作站</div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div style="width: 80%;margin-left:20px;color: #CCCCCC;text-align:left;text-shadow:none;font-size: 20px;margin-top:10px;">当前选择产品</div>
+            <div id="currentSelectedPd" style="width: 80%;margin-left:20px;color: #52C2E9;text-align:center;text-shadow:none;font-size: 23px;margin-top:10px;"></div>
+            <div style="width: 80%;margin-left:30px;color: #CCCCCC;text-align:left;text-shadow:none;font-size: 20px;margin-top:10px;">请选择该产品的净重和包装规格</div>
+            <div style="width:100%;margin-top:10px;">
+                <div style="width: 70%;margin-left:50px;color: #CCCCCC;text-align:left;text-shadow:none;font-size: 17px;font-weight: bold;">产品特征(四级分类)</div>
+                <div style="width: 70%;margin-left:50px;">
+                    <select id="featureCode"></select>
+                </div>
+                <div style="width: 70%;margin-left:50px;color: #CCCCCC;text-align:left;text-shadow:none;font-size: 17px;font-weight: bold;">产品净重(五级分类)</div>
+                <div style="width: 70%;margin-left:50px;">
+                    <select id="weightCode"></select>
+                </div>
+            </div>
+            <div style="width:100%;">
+                <div style="margin-left:25px;width:80%;height:40px;background-color: #CCCCCC;color: #FFFFFF;text-align:center;text-shadow:none;line-height:45px;">
+                    <div style="width: 100%" class="ui-grid-a">
+                        <div style="width: 80%;" class="ui-block-a">选择的净重标准下的产品规格</div>
+                        <div style="width: 20%" class="ui-block-b"><div id="totalCount"></div></div>
+                    </div>
+                </div>
+                <div id="normsStdInfoDiv" style="width: 100%">
+                    <div id="normsStdDiv" style="width: 100%;"> </div>
+                    <div id="normsStdOtherDiv" style="width: 100%;display:none;"></div>
+                    <div style="display:none;width: 80%;background-color:#F6F8FA;color:#89D1ED;height:40px;line-height:45px;margin-left:25px;text-shadow:none;" onclick="normsStdOther()" id="normsStdOther"><span style="padding-left:20px;">展开更多</span></div>
+                </div>
+            </div>
+        </div>
+	</body>
+</html>

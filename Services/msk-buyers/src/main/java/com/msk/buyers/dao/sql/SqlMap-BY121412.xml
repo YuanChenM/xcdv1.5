@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121412Logic">
+    <select id="findPageList" resultType ="com.msk.buyers.bean.BY121412Bean" parameterType ="BasePageParam">
+        SELECT
+        IFNULL(MARKET_ID, '') AS marketId,
+        IFNULL(MARKET_NAME, '') AS marketName,
+        IFNULL(LGCS_AREA_NAME, '') AS lgcsAreaName,
+        IFNULL(MARKET_ADDR, '') AS marketAddr,
+        IFNULL(RESEARCH_PHASE, '') AS researchPhase,
+        /*Add for Bug #2528 at 2016/09/07 by zhou_yajun Start*/
+        IFNULL(RESEARCH_PHASE_NAME,'') AS researchPhaseName,
+        /*Add for Bug #2528 at 2016/09/07 by zhou_yajun End*/
+        IFNULL(a.amarketNatureName, '') AS netMarketNatureName,
+        IFNULL(
+        a.aradiationRangeTypeName,
+        ''
+        ) AS netRadiationRangeTypeName,
+        IFNULL(b.bmarketNatureName, '') AS advanceMarketNatureName,
+        IFNULL(
+        b.bradiationRangeTypeName,
+        ''
+        ) AS advanceRadiationRangeTypeName,
+        IFNULL(c.cmarketNatureName, '') AS auditMarketNatureName,
+        IFNULL(
+        c.cradiationRangeTypeName,
+        ''
+        ) AS auditRadiationRangeTypeName
+        FROM
+        BY_MARKET_FOOD_BASIC d
+        LEFT JOIN (
+        SELECT
+        /*网搜阶段*/
+        MARKET_ID AS amarketId,
+        IFNULL(MARKET_NATURE_NAME, '') AS amarketNatureName,
+        IFNULL(
+        RADIATION_RANGE_TYPE_NAME,
+        ''
+        ) AS aradiationRangeTypeName
+        FROM
+        BY_MARKET_FOOD_BASIC
+        WHERE
+        IS_PHASE_NEW = 1
+        AND RESEARCH_PHASE = 1
+        ) a ON d.MARKET_ID = a.amarketId
+        LEFT JOIN (
+        SELECT
+        /*先期调研阶段*/
+        MARKET_ID AS bmarketId,
+        IFNULL(MARKET_NATURE_NAME, '') AS bmarketNatureName,
+        IFNULL(
+        RADIATION_RANGE_TYPE_NAME,
+        ''
+        ) AS bradiationRangeTypeName
+        FROM
+        BY_MARKET_FOOD_BASIC
+        WHERE
+        IS_PHASE_NEW = 1
+        AND RESEARCH_PHASE = 2
+        ) b ON d.MARKET_ID = b.bmarketId
+        LEFT JOIN (
+        SELECT
+        /*稽核阶段*/
+        MARKET_ID AS cmarketId,
+        IFNULL(MARKET_NATURE_NAME, '') AS cmarketNatureName,
+        IFNULL(
+        RADIATION_RANGE_TYPE_NAME,
+        ''
+        ) AS cradiationRangeTypeName
+        FROM
+        BY_MARKET_FOOD_BASIC
+        WHERE
+        IS_PHASE_NEW = 1
+        AND RESEARCH_PHASE = 3
+        ) c ON d.MARKET_ID = c.cmarketId
+        WHERE
+        IS_PHASE_NEW = 1
+        AND IS_MARKET_NEW = 1
+        AND DEL_FLG = 0
+        ORDER BY marketId
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+
+    </select>
+    <select id="getPageCount" resultType="int" parameterType="BasePageParam">
+        SELECT
+            COUNT(1)
+        FROM
+            BY_MARKET_FOOD_BASIC d
+        LEFT JOIN (
+            SELECT
+                /*网搜阶段*/
+                MARKET_ID AS amarketId,
+                IFNULL(MARKET_NATURE_NAME, '') AS amarketNatureName,
+                IFNULL(
+                    RADIATION_RANGE_TYPE_NAME,
+                    ''
+                ) AS aradiationRangeTypeName
+            FROM
+                BY_MARKET_FOOD_BASIC
+            WHERE
+                IS_PHASE_NEW = 1
+            AND RESEARCH_PHASE = 1
+        ) a ON d.MARKET_ID = a.amarketId
+        LEFT JOIN (
+            SELECT
+                /*先期调研阶段*/
+                MARKET_ID AS bmarketId,
+                IFNULL(MARKET_NATURE_NAME, '') AS bmarketNatureName,
+                IFNULL(
+                    RADIATION_RANGE_TYPE_NAME,
+                    ''
+                ) AS bradiationRangeTypeName
+            FROM
+                BY_MARKET_FOOD_BASIC
+            WHERE
+                IS_PHASE_NEW = 1
+            AND RESEARCH_PHASE = 2
+        ) b ON d.MARKET_ID = b.bmarketId
+        LEFT JOIN (
+            SELECT
+                /*稽核阶段*/
+                MARKET_ID AS cmarketId,
+                IFNULL(MARKET_NATURE_NAME, '') AS cmarketNatureName,
+                IFNULL(
+                    RADIATION_RANGE_TYPE_NAME,
+                    ''
+                ) AS cradiationRangeTypeName
+            FROM
+                BY_MARKET_FOOD_BASIC
+            WHERE
+                IS_PHASE_NEW = 1
+            AND RESEARCH_PHASE = 3
+        ) c ON d.MARKET_ID = c.cmarketId
+        WHERE
+            IS_PHASE_NEW = 1
+        AND IS_MARKET_NEW = 1
+        AND DEL_FLG = 0
+    </select>
+</mapper>

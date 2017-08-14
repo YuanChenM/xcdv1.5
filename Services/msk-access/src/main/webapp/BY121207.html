@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="./resources/js/BY121207.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+        <script type="text/javascript" src="./resources/js/com/fileupload.js"></script>
+        <script type="text/javascript" src="./resources/js/com/jquery-form.js"></script>
+		<title>证照信息录入</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div id="titleDiv" style="width: 80%;margin-left:20px;" class="divCommon1">新买家注册 - 证照信息</div>
+            <input type="hidden" id="fileUploadServerUrl" value=""/>
+            <input type="hidden" id="fileDownLoadServerUrl" value=""/>
+            <div style="width:100%;">
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">营业执照类型</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <select name="licType" id="licType">
+                        <option value="1">《个体工商户营业执照》</option>
+                        <option value="2">《个人独资企业营业执照》</option>
+                        <option value="3">《合伙企业营业执照》</option>
+                        <option value="4">《企业法人营业执照》</option>
+                        <option value="5">《农民专业合作社营业执照》</option>
+                    </select>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000"></span>营业执照号码</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="licNumber" placeholder="请输入买家营业执照号码"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">法定代表人类型</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <select name="legalLicType" id="legalLicType">
+                        <option value="1">身份证</option>
+                        <option value="2">护照</option>
+                        <option value="3">军官证</option>
+                    </select>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000"></span>法定代表人姓名</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="legalName" placeholder="请输入法定代表人姓名"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000"></span>法定代表人证件号码</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="legalLicNumber" placeholder="请输入法定代表人证件号码"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">营业执照</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <div id="picLicense" style="width: 270px;height:200px;border:1px #CCCCCC solid;color:#CCCCCC;font-size:17px;">
+                        还未上传照片<br/>
+                        请选择照片文件上传
+                    </div>
+                </div>
+                <div id="picLicenseFile_Message" style="width: 66%;margin-left:50px;display: none;height:30px;padding-left:10px;line-height:35px;font-size:17px;">
+                </div>
+                <div style="width: 80%;margin-left:35px;margin-bottom:10px;">
+                    <div class="ui-grid-b">
+                        <div class="ui-block-a"><div id="picLicenseFile" style="width:80%;height:35px;line-height: 40px;background-color: #A0D468;color:#FFFFFF;text-align:center;text-shadow:none;margin-top:10px;margin-left:10px;">选择文件</div></div>
+                        <div class="ui-block-b"><div id="picLicenseFile_Name" style="width:100%;height:35px;line-height: 40px;color:#A0D468;text-align:center;text-shadow:none;margin-top:10px;font-size:15px;"></div></div>
+                    </div>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">组织机构代码证</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <div id="picOrgStructure" style="width: 270px;height:200px;border:1px #CCCCCC solid;color:#CCCCCC;font-size:17px;">
+                        还未上传照片<br/>
+                        请选择照片文件上传
+                    </div>
+                </div>
+                <div id="picOrgStructureFile_Message" style="width: 66%;margin-left:50px;display: none;height:30px;padding-left:10px;line-height:35px;font-size:17px;">
+                </div>
+                <div style="width: 80%;margin-left:35px;margin-bottom:10px;">
+                    <div class="ui-grid-b">
+                        <div class="ui-block-a"><div id="picOrgStructureFile" style="width:80%;height:35px;line-height: 40px;background-color: #A0D468;color:#FFFFFF;text-align:center;text-shadow:none;margin-top:10px;margin-left:10px;">选择文件</div></div>
+                        <div class="ui-block-b"><div id="picOrgStructureFile_Name" style="width:100%;height:35px;line-height: 40px;color:#A0D468;text-align:center;text-shadow:none;margin-top:10px;font-size:15px;"></div></div>
+                    </div>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">税务登记证</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <div id="picTaxRegistration"  style="width: 270px;height:200px;border:1px #CCCCCC solid;color:#CCCCCC;font-size:17px;">
+                        还未上传照片<br/>
+                        请选择照片文件上传
+                    </div>
+                </div>
+                <div id="picTaxRegistrationFile_Message" style="width: 66%;margin-left:50px;display: none;height:30px;padding-left:10px;line-height:35px;font-size:17px;">
+                </div>
+                <div style="width: 80%;margin-left:35px;margin-bottom:10px;">
+                    <div class="ui-grid-b">
+                        <div class="ui-block-a"><div id="picTaxRegistrationFile" style="width:80%;height:35px;line-height: 40px;background-color: #A0D468;color:#FFFFFF;text-align:center;text-shadow:none;margin-top:10px;margin-left:10px;">选择文件</div></div>
+                        <div class="ui-block-b"><div id="picTaxRegistrationFile_Name" style="width:100%;height:35px;line-height: 40px;color:#A0D468;text-align:center;text-shadow:none;margin-top:10px;font-size:15px;"></div></div>
+                    </div>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">食品流通许可证</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <div id="picFoodCirculation" style="width: 270px;height:200px;border:1px #CCCCCC solid;color:#CCCCCC;font-size:17px;">
+                        还未上传照片<br/>
+                        请选择照片文件上传
+                    </div>
+                </div>
+                <div id="picFoodCirculationFile_Message" style="width: 66%;margin-left:50px;display: none;height:30px;padding-left:10px;line-height:35px;font-size:17px;">
+                </div>
+                <div style="width: 80%;margin-left:35px;margin-bottom:10px;">
+                    <div class="ui-grid-b">
+                        <div class="ui-block-a"><div id="picFoodCirculationFile" style="width:80%;height:35px;line-height: 40px;background-color: #A0D468;color:#FFFFFF;text-align:center;text-shadow:none;margin-top:10px;margin-left:10px;">选择文件</div></div>
+                        <div class="ui-block-b"><div id="picFoodCirculationFile_Name" style="width:100%;height:35px;line-height: 40px;color:#A0D468;text-align:center;text-shadow:none;margin-top:10px;font-size:15px;"></div></div>
+                    </div>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">法定代表人证</div>
+                <div  style="width: 80%;margin-left:35px;">
+                    <div id="picCert" style="width: 270px;height:200px;border:1px #CCCCCC solid;color:#CCCCCC;font-size:17px;">
+                        还未上传照片<br/>
+                        请选择照片文件上传
+                    </div>
+                </div>
+                <div id="picCertFile_Message" style="width: 66%;margin-left:50px;display: none;height:30px;padding-left:10px;line-height:35px;font-size:17px;">
+                </div>
+                <div style="width: 80%;margin-left:35px;margin-bottom:10px;">
+                    <div class="ui-grid-b">
+                        <div class="ui-block-a"><div id="picCertFile" style="width:80%;height:35px;line-height: 40px;background-color: #A0D468;color:#FFFFFF;text-align:center;text-shadow:none;margin-top:10px;margin-left:10px;">选择文件</div></div>
+                        <div class="ui-block-b"><div id="picCertFile_Name" style="width:100%;height:35px;line-height: 40px;color:#A0D468;text-align:center;text-shadow:none;margin-top:10px;font-size:15px;"></div></div>
+                    </div>
+                </div>
+            </div>
+            <div id="errorMessage" style="width: 76%;margin-left:35px;display: none;padding-left: 10px;"></div>
+            <br/>
+            <div>
+                <div id="saveButtonDiv" style="margin-left:35px;width:100px;" class="buttonDiv" onclick="buyerLicenseInfo()" onmouseover="javascript:this.style.backgroundColor='#4169E1'">下一步 2/8</div>
+            </div>
+            <br/>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101106RsLogic">
+
+    <!-- 买手店管家专属会员 操作-->
+    <select id="findBsBuyer" resultType="com.msk.bs.bean.IBS2101106Bean" parameterType="BaseParam">
+       SELECT
+        A.SL_CODE AS slCode,
+        A.HOUSE_CODE AS houseCode,
+        A.BUYER_ID AS buyerId,
+        A.START_TIME AS startTime,
+        A.END_TIME AS endTime,
+        A.APPLY_SIDE AS applySide,
+        IFNULL(A.APPLY_STATUS,'') AS applyStatus,
+        A.APPLY_TIME AS applyTime,
+        A.DEL_FLG AS delFlg,
+        A.CRT_ID AS crtId,
+        A.CRT_TIME AS crtTime,
+        A.UPD_ID AS updId,
+        A.UPD_TIME AS updTime,
+        A.ACT_ID AS actId,
+        A.ACT_TIME AS actTime,
+        A.VER AS ver
+        FROM
+        sl_bs_buyer AS A
+        INNER JOIN
+        (
+        SELECT  SL_CODE
+        FROM sl_bs_account  account
+        INNER JOIN sl_bs_basic_info basic ON account.SL_ACCOUNT = basic.SL_ACCOUNT
+        WHERE (account.DEL_FLG IS NULL OR account.DEL_FLG = 0)
+        AND (basic.DEL_FLG IS NULL OR basic.DEL_FLG = 0)
+        )B ON A.SL_CODE = B.SL_CODE
+        <where>
+            (A.DEL_FLG IS NULL OR A.DEL_FLG =0)
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+               AND A.SL_CODE = #{filterMap.slCode}
+            </if>
+            <if test="filterMap.houseCode!=null and filterMap.houseCode!=''">
+                AND A.HOUSE_CODE = #{filterMap.houseCode}
+            </if>
+            <if test="filterMap.buyerId!=null and filterMap.buyerId!=''">
+                AND A.BUYER_ID = #{filterMap.buyerId}
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="saveBsBuyer" parameterType="com.msk.bs.bean.IBS2101106Bean">
+        INSERT INTO sl_bs_buyer (
+            SL_CODE,
+            HOUSE_CODE,
+            BUYER_ID,
+            APPLY_SIDE,
+            APPLY_STATUS,
+            START_TIME,
+            END_TIME,
+            APPLY_TIME,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUES
+            (
+            #{slCode},
+            #{houseCode},
+            #{buyerId},
+            #{applySide},
+            #{applyStatus},
+            #{startTime},
+            #{endTime},
+            #{applyTime},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            0
+            )
+    </insert>
+    <!-- 查询被删除的记录-->
+    <select id="findBuyerDel" parameterType="BaseParam" resultType="int">
+        SELECT
+        COUNT(1)
+        FROM
+        sl_bs_buyer AS A
+        WHERE  A.DEL_FLG = 1 AND BUYER_ID = #{filterMap.buyerId}
+    </select>
+    <!--根据买家id恢复被删除的数据-->
+    <update id="updateBsBuyerDel" parameterType="com.msk.bs.bean.IBS2101106Bean">
+        UPDATE sl_bs_buyer SET DEL_FLG = 0,VER = VER+1,UPD_TIME = #{updTime},UPD_ID = #{updId}
+        <if test="slCode!=null and slCode!=''">
+            ,SL_CODE = #{slCode}
+        </if>
+        <if test="houseCode!=null and houseCode!=''">
+            ,HOUSE_CODE = #{houseCode}
+        </if>
+        <if test="applySide!=null and applySide!=''">
+            ,APPLY_SIDE = #{applySide}
+        </if>
+        <if test="applyStatus!=null and applyStatus!=''">
+            ,APPLY_STATUS = #{applyStatus}
+        </if>
+        <if test="startTime!=null and startTime!=''">
+            ,START_TIME = #{startTime}
+        </if>
+        <if test="endTime!=null and endTime!=''">
+            ,END_TIME = #{endTime}
+        </if>
+        <if test="applyTime!=null and applyTime!=''">
+            ,APPLY_TIME = #{applyTime}
+        </if>
+        WHERE BUYER_ID = #{buyerId}
+    </update>
+    <select id="findHouseAccount" resultType="com.msk.core.entity.SlHouseAccount" parameterType="BaseParam">
+        SELECT
+        IFNULL(HOUSE_CLASS,'') AS houseClass,
+        IFNULL(HOUSE_ACCOUNT,'') AS houseAccount,
+        IFNULL(HOUSE_CODE,'') AS houseCode
+        FROM
+        sl_house_account
+        WHERE
+        SL_CODE = #{filterMap.slCode}
+        AND HOUSE_CODE = #{filterMap.houseCode}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+
+    <update id="deleteBsBuyer" parameterType="BaseParam">
+        UPDATE  sl_bs_buyer
+         SET DEL_FLG ='1',
+        UPD_ID = #{updId},
+        UPD_TIME =#{updTime},
+         VER =VER + 1
+        WHERE
+        SL_CODE = #{filterMap.slCode}
+        AND HOUSE_CODE = #{filterMap.houseCode}
+        AND BUYER_ID = #{filterMap.buyerId}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+
+    </update>
+
+
+    <insert id="saveBsBuyerHis" parameterType="com.msk.bs.bean.IBS2101106Bean">
+        INSERT INTO sl_bs_buyer_his (
+            HIS_ID,
+            SL_CODE,
+            HOUSE_CODE,
+            BUYER_ID,
+            START_TIME,
+            END_TIME,
+            BUYER_REASON,
+            BUYERSHOP_REASON,
+            VER
+        )
+        VALUES
+            (
+            #{hisId},
+            #{slCode},
+            #{houseCode},
+            #{buyerId},
+            #{startTime},
+            #{endTime},
+            #{buyerReason},
+            #{buyershopReason},
+            #{ver}
+            )
+    </insert>
+
+
+
+    <insert id="saveBsBuyerHis1" parameterType="com.msk.bs.bean.IBS2101106Bean">
+        INSERT INTO sl_bs_buyer_his (
+        HIS_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        APPLY_SIDE,
+        APPLY_STATUS,
+        APPLY_TIME,
+        BUYER_REASON,
+        BUYERSHOP_REASON,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{hisId},
+        #{slCode},
+        #{houseCode},
+        #{buyerId},
+        #{startTime},
+        #{endTime},
+        #{applySide},
+        #{applyStatus},
+        #{applyTime},
+        #{buyerReason},
+        #{buyershopReason},
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        '0',
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        0
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+
+        )
+    </insert>
+
+
+
+
+    <select id="findShopManager" resultType="com.msk.core.entity.SlHouseAccount" parameterType="BaseParam">
+        SELECT
+        SL_CODE AS slCode,
+        HOUSE_ACCOUNT AS houseAccount
+        FROM
+        sl_house_account
+        WHERE
+        SL_CODE = #{filterMap.slCode}
+        AND HOUSE_CLASS = 1
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+
+    <select id="findApplyStatus" resultType="com.msk.core.entity.SlBsBuyer" parameterType="BaseParam">
+        SELECT
+        APPLY_STATUS AS applyStatus
+        FROM
+        sl_bs_buyer
+        WHERE
+        SL_CODE = #{filterMap.slCode}
+        AND HOUSE_CODE = #{filterMap.houseCode}
+        AND BUYER_ID = #{filterMap.buyerId}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+
+
+    <update id="updateBsBuyer" parameterType="com.msk.bs.bean.IBS2101106Bean">
+        UPDATE sl_bs_buyer
+        SET
+        START_TIME = #{startTime},
+        END_TIME = #{endTime},
+        APPLY_STATUS = #{applyStatus},
+        APPLY_TIME = #{applyTime},
+        UPD_TIME = #{updTime},
+        UPD_ID = #{loginId},
+        VER = #{ver}+1
+        WHERE
+        SL_CODE = #{slCode}
+        AND HOUSE_CODE = #{houseCode}
+        AND BUYER_ID = #{buyerId}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+
+
+
+
+    <!-- 买手店抢单会员 操作-->
+    <select id="findBsBuyerGet" resultType="int" parameterType="BaseParam">
+        SELECT
+        COUNT(1)
+        FROM
+        sl_bs_buyer_get
+        WHERE
+        SL_CODE = #{filterMap.slCode}
+        AND HOUSE_CODE = #{filterMap.houseCode}
+        AND BUYER_ID = #{filterMap.buyerId}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+
+    <insert id="saveBsBuyerGet" parameterType="com.msk.bs.bean.IBS2101106Bean">
+        INSERT INTO sl_bs_buyer (
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{slCode},
+        #{houseCode},
+        #{buyerId},
+        #{startTime},
+        #{endTime},
+        #{ver}
+        )
+    </insert>
+
+    <delete id="deleteBsBuyerGet" parameterType="BaseParam">
+        DELETE FROM sl_bs_buyer_get
+        WHERE
+        SL_CODE = #{filterMap.slCode}
+        AND HOUSE_CODE = #{filterMap.houseCode}
+        AND BUYER_ID = #{filterMap.buyerId}
+    </delete>
+
+
+
+    <insert id="saveBsBuyerGetHis" parameterType="com.msk.bs.bean.IBS2101106Bean">
+        INSERT INTO sl_bs_buyer_his (
+        HIS_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        REASON,
+        VER
+        )
+        VALUES
+        (
+        #{hisId},
+        #{slCode},
+        #{houseCode},
+        #{buyerId},
+        #{startTime},
+        #{endTime},
+        #{reason},
+        #{ver}
+        )
+    </insert>
+
+
+    <update id="updateBsBuyerGet" parameterType="com.msk.bs.bean.IBS2101106Bean">
+        UPDATE sl_bs_buyer
+        SET SL_CODE = #{slCode},
+        HOUSE_CODE = #{houseCode},
+        BUYER_ID = #{buyerId},
+        START_TIME = #{startTime},
+        END_TIME = #{endTime},
+        UPD_TIME = #{updTime},
+        UPD_ID = #{loginId},
+        VER = #{ver}+1
+        WHERE
+        SL_CODE = #{slCode}
+        AND HOUSE_CODE = #{houseCode}
+    </update>
+
+
+</mapper>

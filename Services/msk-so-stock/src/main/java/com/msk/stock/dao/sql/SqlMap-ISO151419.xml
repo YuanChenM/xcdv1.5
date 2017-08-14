@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.stock.logic.ISO151419Logic">
+    <sql id="whereCondition">
+        where
+            sssh.history_date BETWEEN '${years}-15 00:00:00' AND '${years}-15 23:59:59'
+            AND sssh.DEL_FLG = 0
+            <if test="lgcsCode != null and lgcsCode !=''">
+                AND sssh.LGCS_CODE=#{lgcsCode}
+            </if>
+            <if test="lgcsName != null and lgcsName !=''">
+                AND sssh.LGCS_NAME=#{lgcsName}
+            </if>
+            <if test="sellerCode != null and sellerCode != ''">
+                AND sssh.SL_CODE = #{sellerCode}
+            </if>
+            <if test="sellerName != null and sellerName !=''">
+                AND sssh.SL_NAME = #{sellerName}
+            </if>
+            <if test="supplierCode != null and supplierCode != ''">
+                AND sssh.SUPPLIER_CODE = #{supplierCode}
+            </if>
+            <if test="supplierName != null and supplierName != ''">
+                AND sssh.SUPPLIER_NAME = #{supplierName}
+            </if>
+
+            <if test="pdCode != null">
+                AND sssh.PD_CODE IN
+                <foreach collection="pdCode" item="item" index="index" open="(" separator="," close=")">
+                    ${item}
+                </foreach>
+            </if>
+            <if test="pdName !=null">
+                AND sssh.PD_NAME IN
+                <foreach collection="pdName" item="item" index="index" open="(" separator="," close=")">
+                    '${item}'
+                </foreach>
+            </if>
+            <if test="weight !=null">
+                AND sssh.WEIGHT IN
+                <foreach collection="weight" item="item" index="index" open="(" separator="," close=")">
+                    ${item}
+                </foreach>
+            </if>
+
+    </sql>
+    <select id = "findPageList" resultType="com.msk.stock.bean.ISO151419RsProductResult"
+            parameterType="BaseParam">
+        SELECT
+        sssh.SL_CODE AS sellerCode,
+        sssh.SL_NAME AS sellerName,
+        sssh.SUPPLIER_CODE AS supplierCode,
+        sssh.SUPPLIER_NAME AS supplierName,
+        sssh.PD_CODE AS pdCode,
+        sssh.PD_NAME AS pdName,
+        sssh.STOCK_QTY AS stockNum,
+        sssh.CLASSES_CODE AS classesCode,
+        sssh.CLASSES_NAME AS classesName,
+        sssh.BREED_CODE AS breedCode,
+        sssh.BREED_NAME AS breedName,
+        sssh.FEATURE_CODE AS featureCode,
+        sssh.FEATURE_NAME AS featureName,
+        sssh.NORMS_CODE AS normsCode,
+        sssh.NORMS_NAME AS normsName,
+        sssh.PD_LEVEL AS pdLevel,
+        sssh.UNIT AS unit,
+        sssh.PACKING_VOLUME AS packingVolume,
+        sssh.WEIGHT AS weight,
+        sssh.VOLUME AS volume,
+        sssh.LGCS_CODE AS lgcsCode,
+        sssh.LGCS_NAME AS lgcsName
+    FROM
+    SO_STOCK_SP_HISTORY sssh
+        <include refid="whereCondition" />
+        ORDER BY  sssh.PD_CODE DESC
+        <if test="startPos>0 and pageCount>0">
+            LIMIT #{startPos},#{pageCount}
+        </if>
+    </select>
+    <select id="getPageCount" resultType="java.lang.Integer" parameterType="BasePageParam">
+        SELECT count(1) AS  totalCount FROM SO_STOCK_SP_HISTORY sssh
+        <include refid="whereCondition" />
+    </select>
+
+
+</mapper>

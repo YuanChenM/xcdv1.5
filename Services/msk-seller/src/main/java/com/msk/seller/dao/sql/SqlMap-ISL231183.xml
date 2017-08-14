@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231183Logic">
+    <select id="findSlAccount" parameterType="com.msk.seller.bean.ISL231183RsParam" resultType="com.msk.core.entity.SlAccount">
+        SELECT
+        A.SL_ACCOUNT AS slAccount,
+        A.SL_TEL AS slTel,
+        A.SL_SHOW_NAME AS slShowName,
+        A.SL_CONTACT AS slContact,
+        A.ACCOUNT_PSD AS accountPsd,
+        A.ACCOUNT_IMG AS accountImg
+        FROM
+        sl_account AS A
+        where
+        A.SL_ACCOUNT=#{slAccount}
+        AND  A.DEL_FLG = 0
+    </select>
+    <update id="updAccountPsd" parameterType="com.msk.seller.bean.ISL231183RsParam">
+        UPDATE sl_account
+        SET
+         ACCOUNT_PSD = #{newAccountPsd},
+         UPD_ID = #{updId},
+         UPD_TIME = #{updTime},
+         VER = VER + 1
+        WHERE
+            SL_ACCOUNT = #{slAccount}
+    </update>
+</mapper>

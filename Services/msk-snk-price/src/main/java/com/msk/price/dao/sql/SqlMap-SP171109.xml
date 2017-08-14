@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171109Logic">
+    <!--查询list页面信息-->
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.price.bean.SP171109Bean">
+        SELECT IFNULL(a.LGCS_CODE,'-') AS lgcsCode,
+        IFNULL(t.LGCS_NAME,'-') AS lgcsName,
+        '-' AS pdTypeCode,
+        IFNULL(t.PD_NAME,'-') AS pdName,
+        IFNULL(t.CLASSES_CODE,'-') AS classesCode,
+        IFNULL(t.CLASSES,'-') AS classesName,
+        IFNULL(t.MACHINING_CODE,'-') AS machiningCode,
+        IFNULL(t.MACHINING,'-') AS machining,
+        IFNULL(t.FEATURE_CODE,'-') AS featureCode,
+        IFNULL(t.FEATURE,'-') AS feature,
+        IFNULL(t.BREED_CODE,'-') AS breedCode,
+        IFNULL(t.BREED,'-') AS breed,
+        IFNULL(t.WEIGHT_CODE,'-') AS weightCode,
+        IFNULL(t.WEIGHT,'-') AS weight,
+        IFNULL(a.PD_CODE,'-') AS pdCode,
+        IFNULL(t.GRADE_CODE,'-') AS gradeCode,
+        IFNULL(t.GRADE,'-') AS grade,
+        IFNULL(convert(b.WAYGRADE_PRICE,decimal(10,2)), '-') AS applyPrice,
+        '-' AS stockQty,'0' AS isNewPrice from SP_SELLER_PD_PRICE a
+        LEFT JOIN sp_seller_pd_price_detail AS b
+        ON a.PRICE_ID = b.PRICE_ID
+        AND b.WAYGRADE_CODE = '5'
+        LEFT JOIN sp_logs_product t on t.PD_CODE = a.PD_CODE AND t.LGCS_CODE = a.LGCS_CODE
+        WHERE a.DEL_FLG = 0 AND b.DEL_FLG = 0
+            <if test="filterMap.pricePeriod!=null and filterMap.pricePeriod!=''">
+                AND a.PRICE_PERIOD = #{filterMap.pricePeriod}
+            </if>
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND a.SL_CODE = #{filterMap.slCode}
+            </if>
+        <include refid="whereCondition"/>
+        ORDER BY a.LGCS_CODE,a.PD_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+
+    </select>
+
+    <select id="getPricePeriod" resultType="com.msk.price.bean.SP171109Bean" parameterType="BaseParam">
+        SELECT
+            c.PRICE_ID AS priceId,
+            c.PRICE_PERIOD AS pricePeriod,
+            c.PRICE_STARTDATE AS priceStartDate,
+            c.PRICE_ENDDATE AS priceEndDate,
+            IFNULL(convert(d.WAYGRADE_PRICE,decimal(10,2)), '-') AS applyPrice
+        FROM
+            sp_seller_pd_price AS c
+            LEFT JOIN sp_seller_pd_price_detail AS d
+            ON c.PRICE_ID = d.PRICE_ID
+            AND d.WAYGRADE_CODE = '5'
+        WHERE
+            c.LGCS_CODE = ${filterMap.lgcsCode}
+            AND c.PD_CODE = ${filterMap.pdCode}
+            AND c.PRICE_PERIOD = ${filterMap.pricePeriod}
+            AND c.SL_CODE = ${filterMap.slCode}
+ AND d.DEL_FLG = 0
+        ORDER BY c.PRICE_PERIOD DESC
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        SELECT COUNT(1) FROM(
+        SELECT IFNULL(a.LGCS_CODE,'-') AS lgcsCode,
+        IFNULL(t.LGCS_NAME,'-') AS lgcsName,
+        '-' AS pdTypeCode,
+        IFNULL(t.PD_NAME,'-') AS pdName,
+        IFNULL(t.CLASSES_CODE,'-') AS classesCode,
+        IFNULL(t.CLASSES,'-') AS classesName,
+        IFNULL(t.MACHINING_CODE,'-') AS machiningCode,
+        IFNULL(t.MACHINING,'-') AS machining,
+        IFNULL(t.FEATURE_CODE,'-') AS featureCode,
+        IFNULL(t.FEATURE,'-') AS feature,
+        IFNULL(t.BREED_CODE,'-') AS breedCode,
+        IFNULL(t.BREED,'-') AS breed,
+        IFNULL(t.WEIGHT_CODE,'-') AS weightCode,
+        IFNULL(t.WEIGHT,'-') AS weight,
+        IFNULL(a.PD_CODE,'-') AS pdCode,
+        IFNULL(t.GRADE_CODE,'-') AS gradeCode,
+        IFNULL(t.GRADE,'-') AS grade,
+        IFNULL(convert(b.WAYGRADE_PRICE,decimal(10,2)), '-') AS applyPrice,
+        '-' AS stockQty from SP_SELLER_PD_PRICE a
+        LEFT JOIN sp_seller_pd_price_detail AS b
+        ON a.PRICE_ID = b.PRICE_ID
+        AND b.WAYGRADE_CODE = '5'
+        LEFT JOIN sp_logs_product t on t.PD_CODE = a.PD_CODE AND t.LGCS_CODE = a.LGCS_CODE
+        WHERE a.DEL_FLG = 0 AND b.DEL_FLG = 0
+            <if test="filterMap.pricePeriod!=null and filterMap.pricePeriod!=''">
+                AND a.PRICE_PERIOD = #{filterMap.pricePeriod}
+            </if>
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND a.SL_CODE = #{filterMap.slCode}
+            </if>
+
+        <include refid="whereCondition"/>
+        ) AS ct
+    </select>
+
+    <select id="findYearMonthList" parameterType="BaseParam" resultType="com.msk.price.bean.SP171109Bean">
+        SELECT
+        PRICE_PERIOD AS pricePeriod,
+        PRICE_STARTDATE AS priceStartDate,
+        PRICE_ENDDATE AS priceEndDate
+        FROM sp_seller_pd_price
+        WHERE DEL_FLG = 0
+        GROUP BY
+        pricePeriod
+        ORDER BY
+        pricePeriod DESC
+    </select>
+    <!--根据卖家旗下产品获取产品信息列表-->
+    <select id="getProductList" parameterType="BaseParam" resultType="com.msk.price.bean.SP171109Bean">
+       SELECT IFNULL(t.LGCS_CODE,'-') AS lgcsCode,
+        IFNULL(t.LGCS_NAME,'-') AS lgcsName,
+        '-' AS pdTypeCode,
+        IFNULL(t.PD_NAME,'-') AS pdName,
+        IFNULL(t.CLASSES_CODE,'-') AS classesCode,
+        IFNULL(t.CLASSES,'-') AS classesName,
+        IFNULL(t.MACHINING_CODE,'-') AS machiningCode,
+        IFNULL(t.MACHINING,'-') AS machining,
+        IFNULL(t.FEATURE_CODE,'-') AS featureCode,
+        IFNULL(t.FEATURE,'-') AS feature,
+        IFNULL(t.BREED_CODE,'-') AS breedCode,
+        IFNULL(t.BREED,'-') AS breed,
+        IFNULL(t.WEIGHT_CODE,'-') AS weightCode,
+        IFNULL(t.WEIGHT,'-') AS weight,
+		IFNULL(t.PD_CODE,'-') AS pdCode,
+        IFNULL(t.GRADE_CODE,'-') AS gradeCode,
+        IFNULL(t.GRADE,'-') AS grade,
+        '-' AS applyPrice,
+        '-' AS stockQty,'1' AS isNewPrice
+        FROM sp_logs_product t
+
+        WHERE t.DEL_FLG = 0
+            <if test="filterMap.pdTypeCodeList!=null and filterMap.pdTypeCodeList.size()!=0">
+                AND
+                <foreach collection="filterMap.list" index="index" item="item"  open="(" separator="OR" close=")">
+                    (t.PD_CODE=#{item.pdCode}
+                    AND t.LGCS_CODE = #{item.lgcsCode})
+                </foreach>
+            </if>
+        <include refid="whereCondition"/>
+        ORDER BY t.LGCS_CODE,t.PD_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCountProduct" resultType="Integer" parameterType="BaseParam">
+        SELECT COUNT(1) FROM(
+        SELECT IFNULL(t.LGCS_CODE,'-') AS lgcsCode,
+        IFNULL(t.LGCS_NAME,'-') AS lgcsName,
+        '-' AS pdTypeCode,
+        IFNULL(t.PD_NAME,'-') AS pdName,
+        IFNULL(t.CLASSES_CODE,'-') AS classesCode,
+        IFNULL(t.CLASSES,'-') AS classesName,
+        IFNULL(t.MACHINING_CODE,'-') AS machiningCode,
+        IFNULL(t.MACHINING,'-') AS machining,
+        IFNULL(t.FEATURE_CODE,'-') AS featureCode,
+        IFNULL(t.FEATURE,'-') AS feature,
+        IFNULL(t.BREED_CODE,'-') AS breedCode,
+        IFNULL(t.BREED,'-') AS breed,
+        IFNULL(t.WEIGHT_CODE,'-') AS weightCode,
+        IFNULL(t.WEIGHT,'-') AS weight,
+        IFNULL(t.PD_CODE,'-') AS pdCode,
+        IFNULL(t.GRADE_CODE,'-') AS gradeCode,
+        IFNULL(t.GRADE,'-') AS grade,
+        '-' AS applyPrice,
+        '-' AS stockQty
+        FROM sp_logs_product t
+        WHERE t.DEL_FLG = 0
+            <if test="filterMap.list!=null and filterMap.list.size()!=0">
+                AND
+                <foreach collection="filterMap.list" index="index" item="item"  open="(" separator="OR" close=")">
+                    (t.PD_CODE=#{item.pdCode}
+                    AND t.LGCS_CODE = #{item.lgcsCode})
+                </foreach>
+        </if>
+        <include refid="whereCondition"/>
+        ) AS ct
+    </select>
+    <sql id="whereCondition">
+        <if test="filterMap.lgcsCodes!=null and filterMap.lgcsCodes!=''">
+            AND t.LGCS_CODE IN
+            <foreach collection="filterMap.lgcsCodes" item="lgcsCode" open="(" separator="," close=")">
+                #{lgcsCode}
+            </foreach>
+        </if>
+        <if test="filterMap.pdTypeCode!=null and filterMap.pdTypeCode!=''">
+            AND t.PD_CODE like #{filterMap.pdTypeCode}
+        </if>
+        <if test="filterMap.classesName!=null and filterMap.classesName!=''">
+            AND t.CLASSES like #{filterMap.classesName}
+        </if>
+        <if test="filterMap.pdName!=null and filterMap.pdName!=''">
+            AND t.PD_NAME like #{filterMap.pdName}
+        </if>
+        <if test="filterMap.machining!=null and filterMap.machining!=''">
+            AND t.MACHINING like #{filterMap.machining}
+        </if>
+        <if test="filterMap.breed!=null and filterMap.breed!=''">
+            AND t.BREED like #{filterMap.breed}
+        </if>
+        <if test="filterMap.feature!=null and filterMap.feature!=''">
+            AND t.FEATURE like #{filterMap.feature}
+        </if>
+        <if test="filterMap.weight!=null and filterMap.weight!=''">
+            AND t.WEIGHT like #{filterMap.weight}
+        </if>
+
+        <if test="filterMap.gradeCodes!=null and filterMap.gradeCodes!=''">
+            AND t.GRADE_CODE IN
+            <foreach collection="filterMap.gradeCodes" item="gradeCode" open="(" separator="," close=")">
+                #{gradeCode}
+            </foreach>
+        </if>
+    </sql>
+</mapper>

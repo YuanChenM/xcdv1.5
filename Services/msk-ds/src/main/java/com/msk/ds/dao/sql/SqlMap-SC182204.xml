@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ds.logic.SC182204Logic">
+    <select id="getVirtualStockActualList" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182204Bean">
+        SELECT
+        NORMS_CODE as normsCode,
+        PD_CODE as pdCode,
+        SUM(NEW_ACTUAL_NUM) as sumNewActNum,
+        LGCS_CODE as lgcsCode,
+        SUPP_CODE as suppCode
+        FROM
+        ds_pd_virtual_stock_actual
+        WHERE
+        DIST_MONTH = #{filterMap.distMonth}
+        AND PD_STOCK_TYPE = #{filterMap.pdStockType}
+        AND HALF_CODE = #{filterMap.halfCode}
+        AND DEL_FLG = 0
+        <if test="filterMap.lgcsCode!=null and filterMap.lgcsCode!=''">
+            AND LGCS_CODE = #{filterMap.lgcsCode}
+        </if>
+        <if test="filterMap.suppCode!=null and filterMap.suppCode!=''">
+            AND SUPP_CODE = #{filterMap.suppCode}
+        </if>
+        GROUP BY
+        DIST_MONTH,
+        LGCS_CODE,
+        SUPP_CODE,
+        PD_STOCK_TYPE,
+        HALF_CODE,
+        PD_CODE
+    </select>
+    <insert id="save" parameterType="BaseParam">
+        INSERT INTO ds_product_lot(ds_product_lot.read_pro_lot_num,
+        ds_product_lot.machining_code,
+        ds_product_lot.feature_code,
+        ds_product_lot.weight_code,
+        ds_product_lot.grade_code,
+        ds_product_lot.manu_date,
+        ds_product_lot.shelf_life,
+        ds_product_lot.stor_condition,
+        ds_product_lot.pro_stan_code,
+        ds_product_lot.food_manu_licen,
+        ds_product_lot.client,
+        ds_product_lot.un_client,
+        ds_product_lot.client_addr,
+        ds_product_lot.un_client_addr,
+        ds_product_lot.client_phone,
+        ds_product_lot.un_client_phone,
+        ds_product_lot.manu_origin,
+        ds_product_lot.brand_logo,
+        ds_product_lot.pro_lot_num,
+        ds_product_lot.sum_new_act_num,
+        ds_product_lot.classes_code,
+        ds_product_lot.breed_code,
+        ds_product_lot.lgcs_code,
+        ds_product_lot.supp_code,
+        ds_product_lot.norms_code,
+        ds_product_lot.half_period,
+        <!-- Add for Bug#2547 at 2016/09/09 by li_kai1 Start -->
+        ds_product_lot.del_flg,
+        ds_product_lot.upd_id,
+        ds_product_lot.upd_time,
+        ds_product_lot.crt_id,
+        ds_product_lot.crt_time,
+        ds_product_lot.act_id,
+        ds_product_lot.act_time,
+        ds_product_lot.ver
+        <!-- Add for Bug#2547 at 2016/09/09 by li_kai1 End -->
+        )
+        VALUES(
+        #{readProLotNum},
+        #{machiningCode},
+        #{featureCode},
+        #{weightCode},
+        #{gradeCode},
+        #{manuDate},
+        #{shelfLife},
+        #{storCondition},
+        #{proStanCode},
+        #{foodManuLicen},
+        #{client},
+        #{unClient},
+        #{clientAddr},
+        #{unClientAddr},
+        #{clientPhone},
+        #{unClientPhone},
+        #{manuOrigin},
+        #{brandLogo},
+        #{proLotNum},
+        #{sumNewActNum},
+        #{classesCode},
+        #{breedCode},
+        #{lgcsCode},
+        #{suppCode},
+        #{normsCode},
+        #{halfPeriod},
+        <!-- Add for Bug#2547 at 2016/09/09 by li_kai1 Start -->
+        0,
+        #{updId},
+        #{updTime},
+        #{crtId},
+        #{crtTime},
+        #{actId},
+        #{actTime},
+        1
+        <!-- Add for Bug#2547 at 2016/09/09 by li_kai1 End -->
+        )
+    </insert>
+    <select id="getSlEnterprise" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182204Bean">
+        /*已调用接口SELECT
+        slenterprise.EP_NAME as suppName,
+        slseller.SL_CODE as suppCode
+        FROM
+        sl_seller slseller,
+        sl_enterprise slenterprise
+        WHERE
+        slseller.EP_ID = slenterprise.EP_ID
+        AND slseller.LGCS_AREA_CODE=#{lgcsCode}*/
+    </select>
+    <select id="getMdLogisticsArea" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182204Bean">
+        /*已调用接口SELECT
+        md_logistics_area.LGCS_AREA_NAME as lgcsName,
+        md_logistics_area.LGCS_AREA_CODE as lgcsCode
+        FROM
+        md_logistics_area*/
+    </select>
+
+    <select id="getLgcsAndSupp" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182204Bean">
+        /*已调用SELECT
+        mdlogisticsarea.LGCS_AREA_NAME as lgcsName,
+        slseller.LGCS_AREA_CODE as lgcsCode,
+        slenterprise.EP_NAME as suppName,
+        slseller.SL_CODE as suppCode
+        FROM
+        sl_seller slseller,
+        sl_enterprise slenterprise,
+        md_logistics_area mdlogisticsarea
+        WHERE
+        slseller.LGCS_AREA_CODE = mdlogisticsarea.LGCS_AREA_CODE
+        AND slseller.EP_ID = slenterprise.EP_ID
+        AND slseller.SL_ACCOUNT=#{slAccount}*/
+    </select>
+    <select id="getDsProductLot" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182204Bean">
+        SELECT
+        ds_product_lot.PRO_LOT_NUM as proLotNum
+        FROM
+        ds_product_lot
+        WHERE
+        ds_product_lot.PRO_LOT_NUM = #{proLotNum}
+        AND del_flg = 0
+    </select>
+
+    <select id="getManufactureAndBrand" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182204Bean">
+        /*已调用SELECT
+        slpdbrand.BRAND_ID as brandId,
+        slseller.SL_CODE_MANUFACTURE as slCodeManufacture
+        FROM
+        sl_seller slseller,
+        sl_pd_brand slpdbrand
+        WHERE
+        slseller.SL_CODE = slpdbrand.SL_CODE
+        AND slseller.SL_CODE = #{suppCode}*/
+    </select>
+
+</mapper>

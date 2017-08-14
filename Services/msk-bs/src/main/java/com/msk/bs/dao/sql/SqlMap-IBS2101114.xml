@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101114RsLogic">
+
+    <select id="findBsBuyer" parameterType="com.msk.bs.bean.IBS2101114Param" resultType="com.msk.bs.bean.IBS2101114Bean">
+        SELECT
+        bs.SL_CODE AS slCode,
+        bs.HOUSE_CODE AS  houseCode,
+        bs.BUYER_ID AS buyerId,
+        bs.START_TIME AS startTime,
+        bs.END_TIME AS endTime,
+        bs.APPLY_SIDE AS applySide,
+        ifnull(bs.APPLY_STATUS,'') AS applyStatus,
+        bs.APPLY_TIME AS applyTime,
+        '0' AS flag,
+        ifnull(house.HOUSE_SHOW_NAME,'')AS  houseShowName
+        <!--Modif for Bug #3223 at 2016/10/10 by ni_shaotang Start-->
+         FROM  sl_bs_buyer bs
+        INNER JOIN  sl_house_account house
+            on bs.HOUSE_CODE = house.HOUSE_CODE
+            and bs.SL_CODE = house.SL_CODE
+            and (house.DEL_FLG =0 OR house.DEL_FLG IS NULL )
+        WHERE
+        (bs.DEL_FLG = 0 OR bs.DEL_FLG IS NULL )
+        <!--Modif for Bug #3223 at 2016/10/10 by ni_shaotang End-->
+         <if test="buyerIdList !=null and buyerIdList.size() > 0 ">
+             and  bs.BUYER_ID in
+             <foreach item="buyerId" index="index" collection="buyerIdList"
+                      open="(" separator="," close=")">
+                 #{buyerId}
+             </foreach>
+        </if>
+        <if test="buyerFlag == null or buyerFlag ==''">
+            Union All
+            SELECT
+            his.SL_CODE AS slCode,
+            his.HOUSE_CODE AS  houseCode,
+            his.BUYER_ID AS buyerId,
+            his.START_TIME AS startTime,
+            his.END_TIME AS endTime,
+            his.APPLY_SIDE AS applySide,
+            ifnull(his.APPLY_STATUS,'') AS applyStatus,
+            his.APPLY_TIME AS applyTime,
+            '1' AS flag,
+            ifnull(house.HOUSE_SHOW_NAME,'') AS  houseShowName
+            FROM  sl_bs_buyer_his his
+            INNER JOIN  sl_house_account house
+            on his.HOUSE_CODE = house.HOUSE_CODE
+            and his.SL_CODE = house.SL_CODE
+            and (house.DEL_FLG =0 OR house.DEL_FLG IS NULL )
+            where
+            (his.DEL_FLG = 0 OR his.DEL_FLG IS NULL )
+            <if test="buyerIdList !=null and buyerIdList.size() > 0 ">
+                and his.BUYER_ID in
+                <foreach item="buyerId" index="index" collection="buyerIdList"
+                         open="(" separator="," close=")">
+                    #{buyerId}
+                </foreach>
+            </if>
+        </if>
+        ORDER BY  buyerId,startTime
+    </select>
+
+
+</mapper>
+

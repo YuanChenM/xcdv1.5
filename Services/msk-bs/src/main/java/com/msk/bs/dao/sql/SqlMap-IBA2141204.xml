@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBA2141204RsLogic">
+
+
+    <select id="findList" parameterType="com.msk.bs.bean.IBA2141204RsParam" resultType="com.msk.bs.bean.IBA2141204RsResult">
+        SELECT
+        sha.house_code  AS houseCode
+        FROM
+        sl_house_account sha
+        LEFT JOIN sl_bs_buyer sbb ON sbb.SL_CODE = sha.SL_CODE
+        AND sha.HOUSE_CODE = sbb.HOUSE_CODE
+        WHERE
+        sbb.BUYER_ID = #{buyerId}
+        AND (
+        sha.DEL_FLG = 0
+        OR sha.DEL_FLG IS NULL
+        )
+    </select>
+
+</mapper>
+

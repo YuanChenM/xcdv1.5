@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="./resources/js/BY121203.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>选择作业物流区</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div style="width: 80%;margin-left:30px;" class="divCommon1">选择作业物流区</div>
+            <div style="width:100%;">
+                <div style="width: 70%;margin-left:50px;" class="divCommon2">物流区</div>
+                <div style="width: 70%;margin-left:50px;">
+                    <select id="s_logsArea" onchange="logsChange()"></select>
+                </div>
+                <div style="width: 70%;margin-left:50px;" class="divCommon2">城市(地区)</div>
+                <div style="width: 70%;margin-left:50px;">
+                    <select id="s_city" onchange="cityChange()"></select>
+                </div>
+                <div style="width: 70%;margin-left:50px;" class="divCommon2">区县</div>
+                <div style="width: 70%;margin-left:50px;">
+                    <select id="s_district"></select>
+                </div>
+            </div>
+            <br/>
+            <div id="message" style="width: 66%;margin-left:50px;display: none;height:30px;padding-left:10px;line-height:35px;font-size:17px;">
+            </div>
+            <br/>
+            <br/>
+            <div>
+                <div style="margin-left:50px;width:100px;" class="buttonDiv" onclick="researchStart()" onmouseover="javascript:this.style.backgroundColor='#4169E1'">开始</div>
+            </div>
+		</div>
+	</body>
+</html>

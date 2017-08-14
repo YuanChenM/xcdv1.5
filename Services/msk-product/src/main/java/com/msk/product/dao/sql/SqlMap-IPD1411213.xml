@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD1411213Logic">
+
+
+    <insert id="save" parameterType="com.msk.core.entity.PdReportInfo">
+        INSERT INTO PD_REPORT_INFO
+        (
+        REPORT_ID,
+        USER_TYPE,
+        USER_ID,
+        PD_CODE,
+        LGCS_CODE,
+        REPORT_TYPE_CODE,
+        REPORT_DESC,
+        REPORT_IMG1,
+        REPORT_IMG2,
+        REPORT_IMG3,
+        REPORT_IMG4,
+        REPORT_IMG5,
+        REPORT_STATUS,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{reportId},
+        #{userType},
+        #{userId},
+        #{pdCode},
+        #{lgcsCode},
+        #{reportTypeCode},
+        #{reportDesc},
+        #{reportImg1},
+        #{reportImg2},
+        #{reportImg3},
+        #{reportImg4},
+        #{reportImg5},
+        #{reportStatus},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        #{ver}
+        )
+    </insert>
+
+    <update id="modify" parameterType="com.msk.core.entity.PdReportInfo">
+        UPDATE
+        PD_REPORT_INFO
+        SET
+        <if test="userType != null and userType != ''">
+            USER_TYPE = #{userType},
+        </if>
+        <if test="userId != null and userId != ''">
+            USER_ID = #{userId},
+        </if>
+        <if test="pdCode != null and pdCode != ''">
+            PD_CODE = #{pdCode},
+        </if>
+        <if test="lgcsCode != null and lgcsCode != ''">
+            LGCS_CODE = #{lgcsCode},
+        </if>
+        <if test="reportTypeCode != null and reportTypeCode != ''">
+            REPORT_TYPE_CODE = #{reportTypeCode},
+        </if>
+        <if test="reportDesc != null and reportDesc != ''">
+            REPORT_DESC = #{reportDesc},
+        </if>
+            REPORT_IMG1 = #{reportImg1},
+            REPORT_IMG2 = #{reportImg2},
+            REPORT_IMG3 = #{reportImg3},
+            REPORT_IMG4 = #{reportImg4},
+            REPORT_IMG5 = #{reportImg5},
+        <if test="reportStatus != null and reportStatus != ''">
+            REPORT_STATUS = #{reportStatus},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER+1
+        WHERE
+        REPORT_ID = #{reportId}
+    </update>
+
+    <select id="findOne" parameterType="com.msk.product.bean.IPD1411213RsParam"
+            resultType="com.msk.core.entity.PdReportInfo">
+        SELECT
+        REPORT_ID AS reportId
+        FROM
+        PD_REPORT_INFO
+        WHERE REPORT_ID = #{reportId}
+    </select>
+
+    <!-- 查询举报类型是否存在 -->
+    <select id="queryReportType" parameterType="com.msk.product.bean.IPD1411213RsParam" resultType="int">
+        SELECT
+        count(1)
+        FROM
+        PD_REPORT_TYPE
+        WHERE
+        REPORT_TYPE_CODE = #{reportType}
+    </select>
+
+</mapper>

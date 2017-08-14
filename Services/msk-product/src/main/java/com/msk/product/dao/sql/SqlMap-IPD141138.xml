@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141138Logic">
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141138RsResult">
+        SELECT
+        A.WEIGHT_CODE AS weightCode
+        ,A.WEIGHT_NAME AS weightName
+        FROM PD_WEIGHT AS A
+        WHERE A.CLASSES_CODE = #{filterMap.classesCode}
+        AND A.MACHINING_CODE = #{filterMap.machiningCode}
+        AND A.BREED_CODE = #{filterMap.breedCode}
+        AND A.FEATURE_CODE = #{filterMap.featureCode}
+    </select>
+</mapper>

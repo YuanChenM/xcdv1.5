@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC1130403Logic">
+    <!-- ssc_contract_pr_detail表字段 -->
+    <sql id="contractProductFields">
+        A.DETAIL_ID AS detailId,
+        A.CONTRACT_ID AS contractId,
+        ifnull(A.PD_CODE, '') AS pdCode,
+        ifnull(A.PD_DESC, '') AS pdName,
+        ifnull(A.CLASSES_CODE, '') AS classesCode,
+        ifnull(A.CLASSES_NAME, '') AS classesName,
+        ifnull(A.MACHINING_CODE, '') AS machiningCode,
+        ifnull(A.MACHINING_NAME, '') AS machiningName,
+        ifnull(A.BREED_CODE, '') AS breedCode,
+        ifnull(A.BREED_NAME, '') AS breedName,
+        ifnull(A.FEATURE_CODE, '') AS featureCode,
+        ifnull(A.FEATURE_NAME, '') AS featureName,
+        ifnull(A.WEIGHT_CODE, '') AS weightCode,
+        ifnull(A.WEIGHT_NAME, '') AS weightName,
+        A.WEIGHT_VAL AS weightVal,
+        ifnull(A.NORMS_CODE, '') AS normsCode,
+        ifnull(A.NORMS_NAME, '') AS normsName,
+        ifnull(A.GRADE_CODE, '') AS gradeCode,
+        ifnull(A.GRADE_NAME, '') AS gradeName,
+        ifnull(A.PRODUCT_QUALITY_STANDARD, '') AS productQualityStandard,
+        A.PRODUCT_QUA AS productQua,
+        A.PRODUCT_BOX AS productBox,
+        A.FOB_FREE_PACKAGE AS fobFreePackage,
+        A.PACKAGE_COST AS packageCost,
+        A.FOB_INCLUDE_PACKAGE AS fobIncludePackage,
+        A.TRUNK_FREIGHT AS trunkFreight,
+        A.CIF AS cif,
+        A.SETTKEMENT_STANDARD_PRICE AS settkementStandardPrice,
+        A.DOWN_PAYMENT AS downPayment,
+        A.PAYMENT_AMOUNT AS paymentAmount,
+        A.PRODUCT_VALUE AS productValue,
+        ifnull(A.REMARK, '') AS remark,
+        A.VER AS ver
+    </sql>
+
+    <!-- 单表查询条件 -->
+    <sql id="contractProductCriteria">
+        <if test="productId != null">
+            AND A.DETAIL_ID = #{productId}
+        </if>
+        <if test="contractId != null">
+            AND A.CONTRACT_ID = #{contractId}
+        </if>
+    </sql>
+
+    <!-- 单表查询 -->
+    <select id="getProducts" parameterType="com.msk.ssc.bean.SSC11304Param" resultType="com.msk.ssc.bean.SSC11304ProductBean">
+        SELECT
+            <include refid="contractProductFields" />
+        FROM
+            ssc_contract_pr_detail AS A
+        WHERE
+            A.DEL_FLG = 0
+            <include refid="contractProductCriteria"/>
+    </select>
+
+    <!-- 根据合同ID，查询合同中的产品，及其交货计划 -->
+    <select id="findProductsByContractId" parameterType="com.msk.ssc.bean.SSC11304Param" resultType="com.msk.ssc.bean.SSC11304ProductBean">
+        SELECT
+            <include refid="contractProductFields" />,
+            sum(B.ARRIVE_BOXES) AS plannedBoxes,
+            CASE
+                WHEN (count(B.LOT_ID) = 0 OR sum(B.ARRIVE_BOXES) = 0) THEN '未分配'
+                WHEN sum(B.ARRIVE_BOXES) = A.PRODUCT_BOX THEN '已分配完'
+                ELSE '部分分配'
+            END AS deliveryPlan
+        FROM
+            ssc_contract_pr_detail AS A
+        LEFT JOIN ssc_delivery_plan_basic AS B ON A.CONTRACT_ID = B.CONTRACT_ID AND A.PD_CODE = B.PD_CODE AND B.DEL_FLG = 0
+        WHERE
+            A.DEL_FLG = 0
+        AND A.CONTRACT_ID = #{contractId}
+        GROUP BY A.DETAIL_ID
+    </select>
+
+    <!-- 根据合同产品ID，删除产品 -->
+    <update id="deleteProductById" parameterType="com.msk.ssc.bean.SSC11304ProductBean">
+        UPDATE ssc_contract_pr_detail
+        SET DEL_FLG = 1,
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            DEL_FLG = 0
+        AND DETAIL_ID = #{detailId}
+    </update>
+
+    <!-- 根据合同产品ID，更新产品 -->
+    <update id="updateProductById" parameterType="com.msk.ssc.bean.SSC11304ProductBean">
+        UPDATE ssc_contract_pr_detail
+        SET PRODUCT_QUA = #{productQua},
+            PRODUCT_BOX = #{productBox},
+            PRODUCT_VALUE = #{productValue},
+            DOWN_PAYMENT = #{downPayment},
+            PAYMENT_AMOUNT = #{paymentAmount},
+            SETTKEMENT_STANDARD_PRICE = #{settkementStandardPrice},
+            FOB_FREE_PACKAGE = #{fobFreePackage},
+            PACKAGE_COST = #{packageCost},
+            FOB_INCLUDE_PACKAGE = #{fobIncludePackage},
+            TRUNK_FREIGHT = #{trunkFreight},
+            CIF = #{cif},
+            REMARK = #{remark},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            DEL_FLG = 0
+        AND DETAIL_ID = #{detailId}
+    </update>
+
+    <!-- 新增产品 -->
+    <insert id="save" parameterType="com.msk.ssc.bean.SSC11304ProductBean">
+        INSERT INTO ssc_contract_pr_detail (
+            DETAIL_ID,
+            CONTRACT_ID,
+            PD_CODE,
+            PD_DESC,
+            CLASSES_CODE,
+            CLASSES_NAME,
+            MACHINING_CODE,
+            MACHINING_NAME,
+            BREED_CODE,
+            BREED_NAME,
+            FEATURE_CODE,
+            FEATURE_NAME,
+            WEIGHT_CODE,
+            WEIGHT_NAME,
+            WEIGHT_VAL,
+            NORMS_CODE,
+            NORMS_NAME,
+            GRADE_CODE,
+            GRADE_NAME,
+            PRODUCT_QUALITY_STANDARD,
+            PRODUCT_QUA,
+            PRODUCT_BOX,
+            FOB_FREE_PACKAGE,
+            PACKAGE_COST,
+            FOB_INCLUDE_PACKAGE,
+            TRUNK_FREIGHT,
+            CIF,
+            SETTKEMENT_STANDARD_PRICE,
+            DOWN_PAYMENT,
+            PAYMENT_AMOUNT,
+            PRODUCT_VALUE,
+            REMARK,
+            BRAND_EP_ID,
+            BRAND_ID,
+            BRAND_NAME,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUES (
+            #{detailId},
+            #{contractId},
+            #{pdCode},
+            #{pdDesc},
+            #{classesCode},
+            #{classesName},
+            #{machiningCode},
+            #{machiningName},
+            #{breedCode},
+            #{breedName},
+            #{featureCode},
+            #{featureName},
+            #{weightCode},
+            #{weightName},
+            #{weightVal},
+            #{normsCode},
+            #{normsName},
+            #{gradeCode},
+            #{gradeName},
+            #{productQualityStandard},
+            #{productQua},
+            #{productBox},
+            #{fobFreePackage},
+            #{packageCost},
+            #{fobIncludePackage},
+            #{trunkFreight},
+            #{cif},
+            #{settkementStandardPrice},
+            #{downPayment},
+            #{paymentAmount},
+            #{productValue},
+            #{remark},
+            #{brandEpId},
+            #{brandId},
+            #{brandName},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{crtId},
+            #{crtTime},
+            #{crtId},
+            #{crtTime},
+            1
+        )
+    </insert>
+</mapper>

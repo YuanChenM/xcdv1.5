@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141136Logic">
+    <!--二级联动查询-->
+
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.treeLevel != null and filterMap.treeLevel != ''">
+                AND A.TREE_LEVEL = #{filterMap.treeLevel}
+            </if>
+            <if test="filterMap.parentCode!=null and filterMap.parentCode!=''">
+                AND A.PARENT_CODE = #{filterMap.parentCode}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="wherePage">
+        <where>
+            (A.DEL_FLG IS NULL OR A.DEL_FLG=0)
+            <if test="filterMap.classesCode != null and filterMap.classesCode != ''">
+                AND A.PD_CLASSES_CODE = #{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE = #{filterMap.machiningCode}
+                AND A.PD_BREED_CODE IS NOT NULL
+                AND A.PD_BREED_CODE != ''
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.PD_BREED_CODE = #{filterMap.breedCode}
+            </if>
+            AND A.PD_CLASSES_CODE IS NOT NULL
+            AND A.PD_CLASSES_CODE != ''
+            AND A.MACHINING_CODE IS NOT NULL
+            AND A.MACHINING_CODE != ''
+        </where>
+    </sql>
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestree">
+        SELECT
+        A.LEVEL_CODE AS levelCode
+        ,A.LEVEL_NAME AS levelName
+        FROM PD_CLASSESTREE AS A
+        <include refid="whereCondition"/>
+    </select>
+
+
+    <!--分页查询-->
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.product.bean.PD141136Bean">
+        SELECT
+        <!-- Modfiy: #2497 卖家产品池注册总控表列表：查询个别的产品，报错   20160907  BY  杨春艳  Start-->
+         IFNULL(A.PD_CLASSES_CODE,'') AS classesCode
+        ,IFNULL(B.CLASSES_NAME,'') AS classesName
+        ,IFNULL(A.MACHINING_CODE,'') AS machiningCode
+        <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+            ,IFNULL(A.PD_BREED_CODE,'') AS breedCode
+        </if>
+        <!-- Modfiy: #2497 卖家产品池注册总控表列表：查询个别的产品，报错   20160907  BY  杨春艳  End-->
+        ,IFNULL(C.MACHINING_NAME,'') AS machiningName
+        ,IFNULL(A.SL_CODE,'') AS slCode
+        ,IFNULL(D.SL_CODE_DIS,'') AS slCodeDis
+        ,A.STATUS_MONITOR_DATE AS statusMonitorDate
+        ,IFNULL(D.SL_CON_FLG,'') AS sl_con_flg
+        ,IFNULL(E.EP_NAME,'') AS epName
+        FROM SL_PRODUCT AS A
+        LEFT JOIN PD_CLASSES B ON A.PD_CLASSES_CODE = B.CLASSES_CODE
+        LEFT JOIN PD_MACHINING C ON A.MACHINING_CODE = C.MACHINING_CODE
+        LEFT JOIN SL_SELLER D ON A.SL_CODE = D.SL_CODE
+        LEFT JOIN SL_ENTERPRISE E ON D.EP_ID = E.EP_ID
+        <include refid="wherePage"/>
+
+        <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+            GROUP BY A.PD_CLASSES_CODE,A.MACHINING_CODE,A.PD_BREED_CODE
+        </if>
+        <if test="filterMap.breedCode == null or filterMap.breedCode ==''">
+            GROUP BY A.PD_CLASSES_CODE,A.MACHINING_CODE
+        </if>
+        ORDER BY A.PD_CLASSES_CODE,A.MACHINING_CODE,A.PD_BREED_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" parameterType="BaseParam" resultType="Integer">
+        SELECT
+        COUNT(*)
+        FROM
+        SL_PRODUCT
+        WHERE DEL_FLG IS NULL OR DEL_FLG=0
+    </select>
+</mapper>

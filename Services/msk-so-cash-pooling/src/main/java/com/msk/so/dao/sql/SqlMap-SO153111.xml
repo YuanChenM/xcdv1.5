@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.SO153111Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        SELLER_BILL_ID AS sellerBillId,
+        IFNULL(SELLER_BILL_NO,'') AS sellerBillNo,
+        BUSINESS_MAIN_ID AS businessMainId,
+        BUSINESS_MAIN_CODE AS businessMainCode,
+        BUSINESS_MAIN_NAME AS businessMainName,
+
+        BUSINESS_MAIN_ROLE AS businessMainRole,
+        IFNULL(SETTLEMENT_STATUS,'') AS settlementStatus,
+        IFNULL(STATEMENT_FLG ,'') AS statementFlg,
+        START_DATE AS startDate,
+        END_DATE AS endDate,
+
+        IFNULL(PAYMENT_TYPE,'') AS paymentType,
+        IFNULL(SUPPLY_PLATFORM,'') AS supplyPlatform,
+        IFNULL(BILL_TYPE,'') AS billType,
+        IFNULL(BILL_AMOUNT,'') AS billAmount,
+        IFNULL(RECEIVEABLE, 0) AS receiveable,<!--应收金额 -->
+
+        IFNULL(RECEIVED, 0) AS received,<!--实收金额 -->
+        IFNULL(REFUNDABLE, 0) AS refundable,<!--应退金额 -->
+        IFNULL(REAL_REFUND, 0) AS realRefund,<!--实退金额 -->
+        IFNULL(TRANS_PAID_STATUS,'') AS transPaidStatus,
+        IFNULL(CHARGE_RATE ,'') AS chargeRate,
+
+        IFNULL(HANDING_CHARGE,'') AS handingCharge,
+        IFNULL(CHARGE_STATUS,'') AS chargeStatus,
+        IFNULL(MATCH_VER_FLG,'') AS matchVerFlg,
+        IFNULL(SETTLEMENT_FLG,'') AS settlementFlg,
+        IFNULL(REMARK,'') AS remark,
+        IFNUll(AJUST_AMOUNT,0)   AS  ajustAmount,
+
+        IFNULL(DEL_FLG,'') AS delFlg,
+        IFNULL(CRT_ID,'') AS crtId,
+        CRT_TIME AS crtTime,
+        IFNULL(UPD_ID,'') AS updId,
+        UPD_TIME AS updTime,
+        IFNULL(ACT_ID,'') AS actId,
+        ACT_TIME AS actTime,
+        IFNULL(VER,'') AS ver,
+
+        DATE_FORMAT(START_DATE,'%Y-%m-%d') AS startDateStr,
+        DATE_FORMAT(END_DATE ,'%Y-%m-%d') AS endDateStr,
+        IFNULL(RECEIVEABLE, 0)-IFNULL(REFUNDABLE, 0) AS realReceiveable, <!--实际应收 -->
+        IFNULL(RECEIVED, 0) - IFNULL(REAL_REFUND, 0) AS realSettlementAmount,<!--实际结算金额-->
+        (IFNULL(RECEIVEABLE, 0) - IFNULL(REFUNDABLE, 0) - IFNULL(RECEIVED, 0) + IFNULL(REAL_REFUND, 0)-IFNUll(AJUST_AMOUNT,0)) AS unSettlementAmount,<!--未结算金额-->
+        CONCAT(DATE_FORMAT(START_DATE,'%Y%m%d'),'-',DATE_FORMAT(END_DATE,'%Y%m%d')) AS accountDate
+    </sql>
+
+    <sql id="selectSqlLeft">
+        ,IFNULL(crss.PAID_TYPE,'') AS  paidType
+    </sql>
+
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <!--收款方编码-->
+            <if test="filterMap.businessMainCode!=null and filterMap.businessMainCode!=''">
+                AND BUSINESS_MAIN_CODE like #{filterMap.businessMainCode}
+            </if>
+            <!--收款方名称-->
+            <if test="filterMap.businessMainName!=null and filterMap.businessMainName!=''">
+                AND BUSINESS_MAIN_NAME like #{filterMap.businessMainName}
+            </if>
+            <!--支付类型-->
+            <if test="filterMap.paymentTypes!=null">
+                AND PAYMENT_TYPE IN
+                <foreach collection="filterMap.paymentTypes" item="paymentType" open="(" separator="," close=")">
+                    #{paymentType}
+                </foreach>
+            </if>
+            <!--计费类型-->
+            <if test="filterMap.billTypes!=null">
+                AND BILL_TYPE IN
+                <foreach collection="filterMap.billTypes" item="billType" open="(" separator="," close=")">
+                    #{billType}
+                </foreach>
+            </if>
+            <!--结算标志-->
+            <if test="filterMap.settlementStatusArr!=null">
+                AND SETTLEMENT_STATUS IN
+                <foreach collection="filterMap.settlementStatusArr" item="settlementStatus" open="(" separator="," close=")">
+                    #{settlementStatus}
+                </foreach>
+            </if>
+            <!--结算状态-->
+            <if test="filterMap.settlementFlgs!=null">
+                AND SETTLEMENT_FLG IN
+                <foreach collection="filterMap.settlementFlgs" item="settlementFlg" open="(" separator="," close=")">
+                    #{settlementFlg}
+                </foreach>
+            </if>
+
+            <!--备注-->
+            <if test="filterMap.remark!=null and filterMap.remark!=''">
+                AND REMARK like #{filterMap.remark}
+            </if>
+
+
+            <!--开始、结束时间-->
+            <if test="filterMap.startTime!=null and filterMap.startTime!=''">
+                <![CDATA[ AND DATE_FORMAT(END_DATE,'%Y-%m-%d') >= #{filterMap.startTime}]]>
+            </if>
+            <if test="filterMap.endTime!=null and filterMap.endTime!=''">
+                <![CDATA[ AND DATE_FORMAT(END_DATE,'%Y-%m-%d') <= #{filterMap.endTime}]]>
+            </if>
+            <if test="filterMap.paidTypes!=null">
+                AND crss.PAID_TYPE IN
+                <foreach collection="filterMap.paidTypes" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            AND DEL_FLG = 0
+            AND BUSINESS_MAIN_ROLE = 3<!--3卖家-->
+        </where>
+    </sql>
+
+    <sql id="selectFrom">
+        FROM SO_CP_SELLER_BILL AS S
+        LEFT JOIN
+        ( SELECT
+            crs.PAID_TYPE,crs.BILL_ID  FROM
+            (
+            SELECT  cr.PAID_TYPE,cr.BILL_ID  FROM so_cp_running  cr
+            WHERE cr.DEL_FLG = 0
+            ORDER BY  cr.RUNNING_ID
+            ) crs
+        GROUP BY  crs.BILL_ID
+        ) crss ON  crss.BILL_ID = S.SELLER_BILL_ID
+    </sql>
+
+    <select id="findPageList" parameterType="BasePageParam" resultType="com.msk.so.bean.SOCp153111Bean">
+        select
+        <include refid="selectSql"/>
+        <include refid="selectSqlLeft" />
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        ORDER BY SELLER_BILL_ID DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getCurrentInfo" resultType="com.msk.so.bean.SOCp153111Bean"
+            parameterType="BasePageParam">
+        SELECT
+        IFNULL(SUM(t1.billAmount),0) AS currentBillAmount,
+        IFNULL(SUM(t1.realReceiveable),0) AS currentRealReceiveable,
+        IFNULL(SUM(t1.realSettlementAmount),0) AS currentRealSettlementAmount,
+        IFNULL(SUM(t1.ajustAmount),0) AS currentAjustAmount,
+        IFNULL(SUM(t1.unSettlementAmount),0) AS currentUnSettlementAmount
+        from
+        (
+        SELECT
+        IFNULL(BILL_AMOUNT,0) AS billAmount,
+        IFNULL(RECEIVEABLE, 0)-IFNULL(REFUNDABLE, 0) AS realReceiveable,
+        IFNULL(RECEIVED, 0) - IFNULL(REAL_REFUND, 0) AS realSettlementAmount,
+        IFNUll(AJUST_AMOUNT,0)   AS  ajustAmount,
+        (IFNULL(RECEIVEABLE, 0) - IFNULL(REFUNDABLE, 0) - IFNULL(RECEIVED, 0) + IFNULL(REAL_REFUND, 0)-IFNUll(AJUST_AMOUNT,0)) AS unSettlementAmount
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        ORDER BY SELLER_BILL_ID DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+        ) as t1
+    </select>
+
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        select count(1)
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+    </select>
+
+    <select id="findById" parameterType="BaseParam" resultType="com.msk.so.bean.SOCp153111Bean">
+        SELECT
+        <include refid="selectSql"/>
+        from SO_CP_SELLER_BILL AS S
+        WHERE S.SELLER_BILL_ID = #{filterMap.sellerBillId}
+    </select>
+
+    <update id="updateFlg" parameterType="BaseParam">
+      UPDATE SO_CP_SELLER_BILL SET SETTLEMENT_FLG=#{filterMap.settlementFlag} WHERE SELLER_BILL_ID=#{filterMap.sellerBillId}
+    </update>
+
+
+</mapper>

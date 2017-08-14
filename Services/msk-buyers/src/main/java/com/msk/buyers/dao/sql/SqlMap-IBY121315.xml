@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121315Logic">
+    <select id="findOne" resultType ="com.msk.buyers.bean.BY121315Bean" parameterType ="BaseParam">
+        SELECT
+           BUYER_ID AS buyerId,
+           MARKETINGS_STATUS AS marketingsStatus,
+           MARKET_EXCEPTION_STATUS AS marketExceptionStatus,
+           MARKET_EXCEPTION_REMARK AS marketExceptionRemark
+        FROM
+           by_buyer_basic_info
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+           AND DEL_FLG = 0
+    </select>
+    <update id="modify" parameterType ="BaseParam">
+        UPDATE
+           by_buyer_basic_info
+        SET
+           MARKETINGS_STATUS = #{filterMap.marketingsStatus},
+           MARKET_EXCEPTION_STATUS = #{filterMap.marketExceptionStatus},
+           MARKET_EXCEPTION_REMARK = #{filterMap.marketExceptionRemark}
+
+          ,UPD_ID = #{updId}
+          ,UPD_TIME = #{updTime}
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+           AND DEL_FLG = 0
+    </update>
+    <select id="findBuyerCodeByBuyerId" resultType ="com.msk.core.entity.ByBuyerBasicInfo" parameterType ="BaseParam">
+        SELECT
+           BUYER_CODE AS buyerCode
+        FROM
+           by_buyer_basic_info
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+           AND DEL_FLG = 0
+    </select>
+    <update id="modifyBuyerCodeByBuyerId" parameterType ="BaseParam">
+        UPDATE
+           by_buyer_basic_info
+        SET
+           BUYER_CODE = #{filterMap.buyerCode}
+
+          ,UPD_ID = #{updId}
+          ,UPD_TIME = #{updTime}
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+           AND DEL_FLG = 0
+    </update>
+</mapper>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121323Logic">
+    <select id="findList" resultType="com.msk.buyers.bean.IBY121323Bean"
+            parameterType="com.msk.buyers.bean.IBY121323RsParam">
+        SELECT
+        IFNULL(binfo.BUYER_ID, '') AS buyerId,
+        IFNULL(binfo.BUYER_CODE, '') AS buyerCode,
+        IFNULL(binfo.BUYER_NAME, '') AS buyerName,
+        IFNULL(ac.TEL_NO, '') AS telNo,
+        IFNULL(ac.ACCOUNT_NAME, '') AS accountName,
+        IFNULL(binfo.SUPERIOR_NAME, '') AS superiorName,
+        IFNULL(binfo.LGCS_AREA_CODE, '') AS lgcsAreaCode,
+        IFNULL(binfo.LGCS_AREA_NAME, '') AS lgcsAreaName,
+        IFNULL(binfo.CITY_CODE, '') AS cityCode,
+        IFNULL(binfo.CITY_NAME, '') AS cityName,
+        IFNULL(binfo.DISTRICT_CODE, '') AS districtCode,
+        IFNULL(binfo.DISTRICT_NAME, '') AS districtName,
+        IFNULL(binfo.BUYER_ADDR, '') AS buyerAddr,
+        IFNULL(emp.EMPLOYEE_TEL, '') AS bossTel,
+        IFNULL(emp.EMPLOYEE_NAME, '') AS bossName,
+        IFNULL(binfo.STORE_NO, '') AS storeNo,
+        IFNULL(binfo.BUSI_TEL,'') AS busiTel,
+        CASE WHEN binfo.SUPERIOR_TYPE= '01'
+        THEN IFNULL(ter.MARKET_NAME,'')
+        WHEN binfo.SUPERIOR_TYPE= '02'
+        THEN IFNULL(food.MARKET_NAME,'')
+        WHEN binfo.SUPERIOR_TYPE = '05' AND binfo.SUPERIOR_SUB_TYPE = '01' THEN
+        IFNULL(food.MARKET_NAME,'')
+        ELSE ''
+        END AS marketName,
+
+        CASE WHEN binfo.SUPERIOR_TYPE= '01'
+        THEN IFNULL(ter.TER_MARKET_ID,'')
+        WHEN binfo.SUPERIOR_TYPE= '02'
+        THEN IFNULL(food.FOD_MARKET_ID,'')
+        WHEN binfo.SUPERIOR_TYPE = '05' AND binfo.SUPERIOR_SUB_TYPE = '01' THEN
+        IFNULL(food.FOD_MARKET_ID,'')
+        ELSE ''
+        END AS marketId,
+
+        IFNULL(binfo.MARKETINGS_STATUS, '') AS marketingsStatusCode,
+        GROUP_CONCAT(IFNULL (sal.SALES_TARGET_TYPE,'')) AS salestarget
+        FROM
+        by_buyer_basic_info binfo
+        LEFT JOIN by_buyer_account ac ON ac.BUYER_ID = binfo.BUYER_ID AND  binfo.DEL_FLG = ac.DEL_FLG
+        LEFT JOIN by_buyer_employee emp ON emp.BUYER_ID = binfo.BUYER_ID AND binfo.DEL_FLG = emp.DEL_FLG
+        AND emp.EMPLOYEE_TYPE = '1'
+        LEFT JOIN by_market_terminal ter ON binfo.SUPERIOR_ID = ter.TER_MARKET_ID AND binfo.DEL_FLG = ter.DEL_FLG
+        LEFT JOIN by_market_food food ON binfo.SUPERIOR_ID = food.FOD_MARKET_ID AND binfo.DEL_FLG = food.DEL_FLG
+        LEFT JOIN BY_BUYER_SALESTARGET sal ON binfo.BUYER_ID = sal.BUYER_ID AND binfo.DEL_FLG = sal.DEL_FLG
+        WHERE
+        binfo.DEL_FLG = 0
+        <![CDATA[ AND binfo.BUYER_CODE IS NOT NULL AND binfo.BUYER_CODE <> '' ]]>
+        <if test="marketingsStatusArray != null and marketingsStatusArray.length >0">
+            AND  binfo.MARKETINGS_STATUS IN
+            <foreach collection="marketingsStatusArray" item="marketingsStatus" open="(" separator="," close=")">
+                #{marketingsStatus}
+            </foreach>
+        </if>
+        <if test="marketName != null and marketName != ''" >
+            AND binfo.MARKET_NAME LIKE #{marketName}
+        </if>
+        <if test="accountName != null and accountName != '' ">
+            AND ac.ACCOUNT_NAME LIKE #{accountName}
+        </if>
+        <if test="telNo != null and telNo != '' ">
+            AND ac.TEL_NO LIKE #{telNo}
+        </if>
+        <if test="lgcsAreaName != null and lgcsAreaName != '' ">
+            AND binfo.LGCS_AREA_NAME LIKE #{lgcsAreaName}
+        </if>
+        <if test="lgcsAreaCode != null and lgcsAreaCode != '' ">
+            AND binfo.LGCS_AREA_CODE =#{lgcsAreaCode}
+        </if>
+        <if test="cityCode != null and cityCode != '' ">
+            AND binfo.CITY_CODE =#{cityCode}
+        </if>
+        <if test="bossName != null and bossName != '' ">
+            AND emp.EMPLOYEE_NAME LIKE #{bossName}
+        </if>
+        <if test="districtCode != null and districtCode != '' ">
+            AND binfo.DISTRICT_CODE =#{districtCode}
+        </if>
+        <if test="buyerAddr != null and buyerAddr != '' ">
+            AND binfo.BUYER_ADDR =#{buyerAddr}
+        </if>
+        <if test="busiTel != null and busiTel != '' ">
+            AND binfo.BUSI_TEL LIKE #{busiTel}
+        </if>
+        <if test="buyerName != null and buyerName != '' ">
+            AND binfo.BUYER_NAME LIKE #{buyerName}
+        </if>
+        <if test="storeNo != null and storeNo != '' ">
+            AND binfo.STORE_NO LIKE #{storeNo}
+        </if>
+        <if test="superiorName != null and superiorName != '' ">
+            AND binfo.SUPERIOR_NAME LIKE #{superiorName}
+        </if>
+        <if test="buyerCode != null and buyerCode != '' ">
+            AND binfo.BUYER_CODE LIKE #{buyerCode}
+        </if>
+
+        GROUP  BY binfo.BUYER_ID
+        ORDER BY binfo.BUYER_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int"
+            parameterType="com.msk.buyers.bean.IBY121323RsParam">
+        SELECT
+        COUNT(DISTINCT binfo.BUYER_ID)
+        FROM
+        by_buyer_basic_info binfo
+        LEFT JOIN by_buyer_account ac ON ac.BUYER_ID = binfo.BUYER_ID
+        AND binfo.DEL_FLG = ac.DEL_FLG
+        LEFT JOIN by_buyer_employee emp ON emp.BUYER_ID = binfo.BUYER_ID
+        AND binfo.DEL_FLG = emp.DEL_FLG
+        AND emp.EMPLOYEE_TYPE = '1'
+        LEFT JOIN by_market_terminal ter ON binfo.SUPERIOR_ID = ter.TER_MARKET_ID
+        AND binfo.DEL_FLG = ter.DEL_FLG
+        LEFT JOIN by_market_food food ON binfo.SUPERIOR_ID = food.FOD_MARKET_ID
+        AND binfo.DEL_FLG = food.DEL_FLG
+        LEFT JOIN BY_BUYER_SALESTARGET sal ON binfo.BUYER_ID = sal.BUYER_ID
+        AND binfo.DEL_FLG = sal.DEL_FLG
+        WHERE
+        binfo.DEL_FLG = 0
+        <![CDATA[ AND binfo.BUYER_CODE IS NOT NULL AND binfo.BUYER_CODE <> '' ]]>
+        <if test="marketingsStatusArray != null and marketingsStatusArray.length >0">
+            AND  binfo.MARKETINGS_STATUS IN
+            <foreach collection="marketingsStatusArray" item="marketingsStatus" open="(" separator="," close=")">
+                #{marketingsStatus}
+            </foreach>
+        </if>
+        <if test="marketName != null and marketName != ''" >
+            AND binfo.MARKET_NAME LIKE #{marketName}
+        </if>
+        <if test="accountName != null and accountName != '' ">
+            AND ac.ACCOUNT_NAME LIKE #{accountName}
+        </if>
+        <if test="telNo != null and telNo != '' ">
+            AND ac.TEL_NO LIKE #{telNo}
+        </if>
+        <if test="lgcsAreaName != null and lgcsAreaName != '' ">
+            AND binfo.LGCS_AREA_NAME LIKE #{lgcsAreaName}
+        </if>
+        <if test="lgcsAreaCode != null and lgcsAreaCode != '' ">
+            AND binfo.LGCS_AREA_CODE =#{lgcsAreaCode}
+        </if>
+        <if test="cityCode != null and cityCode != '' ">
+            AND binfo.CITY_CODE =#{cityCode}
+        </if>
+        <if test="bossName != null and bossName != '' ">
+            AND emp.EMPLOYEE_NAME LIKE #{bossName}
+        </if>
+        <if test="districtCode != null and districtCode != '' ">
+            AND binfo.DISTRICT_CODE =#{districtCode}
+        </if>
+        <if test="buyerAddr != null and buyerAddr != '' ">
+            AND binfo.BUYER_ADDR LIKE  #{buyerAddr}
+        </if>
+        <if test="busiTel != null and busiTel != '' ">
+            AND binfo.BUSI_TEL LIKE #{busiTel}
+        </if>
+        <if test="buyerName != null and buyerName != '' ">
+            AND binfo.BUYER_NAME LIKE #{buyerName}
+        </if>
+        <if test="storeNo != null and storeNo != '' ">
+            AND binfo.STORE_NO LIKE #{storeNo}
+        </if>
+        <if test="superiorName != null and superiorName != '' ">
+            AND binfo.SUPERIOR_NAME LIKE #{superiorName}
+        </if>
+        <if test="buyerCode != null and buyerCode != '' ">
+            AND binfo.BUYER_CODE LIKE #{buyerCode}
+        </if>
+    </select>
+</mapper>

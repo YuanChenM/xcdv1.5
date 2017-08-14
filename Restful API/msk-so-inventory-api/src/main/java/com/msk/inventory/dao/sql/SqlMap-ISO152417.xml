@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.ISO152417ServiceImpl">
+    <select id="getOwnersInHistory" parameterType="com.msk.inventory.bean.ISO152417ParamBean"
+            resultType="com.msk.inventory.bean.ISO152417SupplierBean">
+        SELECT DISTINCT
+        CONCAT(
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/CLS_C'),
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/MACH_C'),
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/BRE_C'),
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/FEAT_C'),
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/WEI_C'),
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/GRAD_C')
+        )AS pdCode,
+        OWNER_CODE AS supplierCode,
+        EXTRACTVALUE(A.BELONE_XML, '/AREA') AS lgcsCode
+        from ivm_inventory_detail A
+        inner join ivm_parts_master B on A.pm_id= B.pm_id
+        WHERE
+        EXTRACTVALUE(A.BELONE_XML,'/PLT')=#{salePlatform}
+        <if test="lgcsCode!=null and lgcsCode!=''">
+            AND EXTRACTVALUE(A.BELONE_XML,'/AREA')=#{lgcsCode}
+        </if>
+        ORDER BY supplierCode
+    </select>
+</mapper>

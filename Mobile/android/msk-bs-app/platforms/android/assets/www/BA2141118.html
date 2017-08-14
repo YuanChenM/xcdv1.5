@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="css/css.css" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="js/constantDef.js"></script>
+    <script src="js/commonUtil.js"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+    <title>囤货订单详细信息</title>
+</head>
+
+<body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<!--页眉开始-->
+<div class="wapp-head">囤货订单详细信息
+    <a href="javascript:void(0);" id="fanhui" class="head-back">返回</a>
+</div>
+<!--页眉结束/-->
+<!--详情信息主体开始-->
+<div class="lbxx-list04" id="orderDetailedInfo">
+</div>
+<!--列表信息主体结束-->
+<div id="detInfo" style="display: none">
+    <ul>
+        <li>产品编码<span>pdCode</span></li>
+        <li>产品名称<span>pdName</span></li>
+        <li>产品规格<span>normsName</span></li>
+        <li>单箱净重<span>weightName</span></li>
+        <li>产品等级<span>pdGradeName</span></li>
+        <li>单价<span>pdPrice</span></li>
+        <li>金额<span>pdTotalPrice</span></li>
+        <li>订购数量<span>orderQty</span></li>
+        <li>发货数量<span>sendQty</span></li>
+        <li>收货数量<span>receiveQty</span></li>
+        <li>取消数量<span>cancelQty</span></li>
+        <li>退货数量<span>returnQty</span></li>
+        <li>拒收数量<span>rejectionQty</span></li>
+    </ul>
+</div>
+</body>
+<script src="js/BA2141118.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

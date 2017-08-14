@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141103Logic">
+	<!-- 查询产品销售状态一览查询 -->
+	<select id="findListStatus" resultType="com.msk.product.bean.IPD141103RsParam">
+		SELECT
+		A.SALE_STATUS_CODE
+		AS
+		saleStatusCode
+		,A.SALE_STATUS_NAME AS saleStatusName
+		FROM
+		PD_SALE_STATUS
+		AS A
+	</select>
+
+</mapper>

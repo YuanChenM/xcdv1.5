@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24110109Logic">
+
+    <update id="modifyOne" parameterType="com.msk.seller.bean.SL241103070Bean">
+        UPDATE sl_ec_team SET
+        MEMBER_NAME=#{ememberName},
+        MEMBER_AGE=#{ememberAge},
+        MEMBER_EDUC=#{ememberEduc},
+        MEMBER_TEL=#{ememberTel},
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+        WHERE
+        SL_CODE=#{eslCode} AND MEMBER_ID=#{ememberId}
+    </update>
+
+    <!--修改卖家电商团队-->
+    <update id="updateSLEcTeamPort" parameterType="com.msk.core.entity.SlEcTeam">
+       UPDATE sl_ec_team
+            SET
+            SL_CODE = #{slCode},
+            MEMBER_ID = #{memberId},
+            LEADER_FLG = #{leaderFlg},
+            BIRTHDAY = #{birthday},
+            MEMBER_NAME = #{memberName},
+            MEMBER_AGE = #{memberAge},
+            MEMBER_EDUC = #{memberEduc},
+            MEMBER_TEL = #{memberTel},
+            UPD_ID = #{updId},
+            UPD_TIME=#{updTime},
+            VER = VER + 1
+            WHERE
+	   SL_CODE = #{slCode} AND MEMBER_ID=#{memberId}
+    </update>
+    <delete id="deleteETeam" parameterType="com.msk.seller.bean.SL241103070Bean">
+        DELETE FROM sl_ec_team WHERE
+        SL_CODE=#{eslCode} AND MEMBER_ID=#{ememberId}
+    </delete>
+
+    <delete id="removeETeamPort" parameterType="com.msk.core.entity.SlEcTeam">
+        DELETE FROM sl_ec_team WHERE
+        SL_CODE=#{slCode}
+        <if test="memberId != null and memberId != ''">
+        AND MEMBER_ID=#{memberId}
+        </if>
+    </delete>
+      <!--查询输入的isCode对应的是否有数据-->
+    <select id="findList" resultType="com.msk.core.entity.SlEcTeam" parameterType="BaseParam">
+        SELECT A.SL_CODE FROM sl_ec_team AS A
+        WHERE A.SL_CODE = #{filterMap.slCode}
+           AND  A.DEL_FLG = 0
+    </select>
+
+</mapper>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>订单提交</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="resources/css/common.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/BA2141110.css" type="text/css" rel="stylesheet"/>
+    <script src="./resources/js/com/common.js"></script>
+    <script type="text/javascript" src="resources/js/com/jquery-1.7.1.min.js"></script>
+</head>
+<body>
+<div  class="main">
+
+    <div class="header">
+        <div class="fanhui" onclick="BA2141110.returnTo()"></div>
+        <div class="title">
+           <span class="title_span">订单提交</span>
+        </div>
+    </div>
+
+    <div  class="address_class" id="addAddress" onclick="BA2141110.tapAddress()">
+        <div class="add_address">选择收货地址></div>
+        <div id="hiddiv" style="display: none;">
+            <div class="buyerInfo">
+                <span>收货人：</span>
+                <span class="buyer"></span>
+                <span class="tum"></span>
+            </div>
+            <div class="addressInfo">
+                <span>收货地址：</span>
+                <span class="address"></span>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="list">
+        <p><span>订单列表</span></p>
+    </div>
+
+
+    <div class="productDiv">
+        <ul id="productList">
+            <li style="display: none;list-style:none">
+               <div class="imgDiv">
+                   <img  class="img" src="resources/images/u3.png"/>
+               </div>
+                <div class="product">
+                    <div class="breed"><span></span></div>
+                    <div class="attribute">
+                        <span>产品特征：</span>
+                        <span class="featureClass"></span>
+                        <span>产品等级：</span>
+                        <span class="gradeClass"></span><br>
+                        <span>产品品牌：神农客</span>
+                        <span>包装净重：</span>
+                        <span class="normsClass"></span>
+                    </div>
+                    <div>
+                        <span class="unitPrice"></span><span class="pdNum">x<span class="num"></span></span></p>
+                    </div>
+                 </div>
+            </li>
+        </ul>
+    </div>
+
+
+    <div class="money">
+        <ul>
+            <li>
+                <span >运费：</span>
+                <span class="fuhao">￥<span  class="yunFei">0.00</span></span>
+            </li>
+            <li class="total">
+                <span>合计：</span>
+                <span class="totalMoney">￥
+                    <span class="price">0.00</span>
+                    <span>+￥</span>
+                    <span class="freight"></span>
+                    <span>=￥</span>
+                    <span class="sum"></span>
+                </span>
+            </li>
+            <li>
+                <span>支付方式:</span>
+                <span class="chooseClass">
+                    <img class="chooseImg" src="resources/images/choose1.png" onclick="BA2141110.changeImg()"/>
+                    <span class="font-size:30px;">货到付款</span>
+                </span>
+            </li>
+        </ul>
+
+    </div>
+
+    <div class="interval"></div>
+
+    <div class="account">
+        <ul>
+            <li class="totalNum">
+                <span>共</span>
+                <span class="number"></span>
+                <span>件商品</span>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span>合计</span>
+                <span>￥</span>
+                <span class="totalPrice"></span>
+            </li>
+            <li class="accountButton">
+                <div class="end" onclick="BA2141110.commitOrder()">
+                    <div class="title">
+                        <p><span class="commitClass">提交订单</span></p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+    </div>
+</div>
+</body>
+<script src="./static/js/BA2141110.js"></script>
+</html>

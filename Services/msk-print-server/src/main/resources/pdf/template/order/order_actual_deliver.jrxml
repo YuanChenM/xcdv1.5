@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="order_actual_deliver" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="0227c89c-6a5b-4a87-ae34-2c5e3ac8ce01">
+	<property name="ireport.zoom" value="1.4641000000000017"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="deliverCode" class="java.lang.String"/>
+	<field name="deliverVehicle" class="java.lang.String"/>
+	<field name="subOrderId" class="java.lang.Long"/>
+	<field name="deliverPerson" class="java.lang.String"/>
+	<field name="personMobile" class="java.lang.String"/>
+	<field name="deliverDate" class="java.lang.String"/>
+	<field name="deliverMode" class="java.lang.String"/>
+	<field name="expectReceiveDate" class="java.lang.String"/>
+	<field name="actualReceiveDate" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="57" splitType="Stretch">
+			<staticText>
+				<reportElement x="272" y="37" width="72" height="17" uuid="aaa022a8-8733-459f-97c2-d89d6235dd4f"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[配送电话]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="350" y="37" width="120" height="17" uuid="ee54464d-ed2e-4e0c-94bb-73829f9a1b49"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[配送时间]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="195" y="37" width="73" height="17" uuid="16aaf0c3-9bdd-4e4d-9218-327e1cbc148d"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[配送人]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="475" y="37" width="70" height="17" uuid="38a80f2b-b0c9-48ec-8a68-6627b8c963a6"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[配送方式]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="550" y="37" width="120" height="20" uuid="b97dfcb4-fbce-44a8-9944-857a6a945aa6"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[预计到货时间]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="680" y="37" width="120" height="17" uuid="2d96b68c-e932-4559-b22f-6da1900a7878"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[实际到货时间]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="37" width="120" height="17" uuid="f832b24e-5a05-470e-9da5-aa763d3bcb59"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<text><![CDATA[配送单编码]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="10" width="804" height="19" uuid="01678605-b281-4947-94f2-728fbfbb8a60"/>
+				<textElement>
+					<font fontName="ArialUnicodeMS" size="14" isBold="false" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[实际配送信息]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="125" y="37" width="65" height="17" uuid="7e9ef3d5-3151-46c4-a26d-a7402765e79b"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[分批订单ID]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="32" width="802" height="1" uuid="13f499fb-454e-4b7e-9ff6-6c36c1455281"/>
+			</line>
+			<line>
+				<reportElement x="0" y="11" width="802" height="1" uuid="74425d48-b83d-4ce3-8a07-b327c3cde7c0"/>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="27" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="2" width="120" height="15" uuid="c3bd62dd-d910-4543-ba8c-acb582df50a5"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{deliverCode}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="125" y="2" width="65" height="15" uuid="81ba3935-f459-4c28-90ff-dd7e0a2a9439"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{subOrderId}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="195" y="2" width="73" height="15" uuid="8813c740-6577-448d-afad-2e89d22451fb"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{deliverPerson}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="272" y="2" width="72" height="15" uuid="5d563394-876a-4039-8a6e-4b8d04c1ba90"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{personMobile}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="350" y="2" width="120" height="15" uuid="ed599e2e-69aa-4c32-9a55-bfc09bc22e2f"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{deliverDate}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="550" y="2" width="120" height="15" uuid="750bb62e-18db-414d-b43d-315eeb541586"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{expectReceiveDate}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="680" y="2" width="120" height="15" uuid="6b01c848-c30e-4e81-a0cf-549d847dd19f"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{actualReceiveDate}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="475" y="2" width="70" height="15" uuid="a4022152-4c59-43e3-97ae-5f1e0a2aa8ff"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{deliverMode}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

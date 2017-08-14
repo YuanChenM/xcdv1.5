@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11305Logic">
+    <!--查询发货单列表-->
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11305RsBean"
+            parameterType="com.msk.ssc.bean.SSC11305RsParam">
+        SELECT
+        A.CONTRACT_CODE AS contractCode
+        ,A.CONTRACT_ID as contractId
+        ,A.CONTRACT_RELATION_TYPE as contractRelationType
+        ,IFNULL(TRANSPORT_COST, '') AS transportCost
+        ,IFNULL( B.CONTRACT_NAME, '') AS contractName
+        ,IFNULL( A.AMOUNT, 0) AS amount
+        ,A.SUPPLIER_ID AS supplierId
+        ,IFNULL( A.SUPPLIER_NAME, '') AS supplierName
+        ,A.PURCHASER_ID AS purchaserId
+        ,IFNULL( A.PURCHASER_NAME, '') AS purchaserName
+        ,A.DELIVERY_ID AS deliveryId
+        ,A.DELIVERY_CODE AS deliveryCode
+        ,A.DELIVERY_BATCH AS deliveryBatch
+        ,DATE_FORMAT(A.ETA,'%Y-%m-%d') AS etaStr
+        ,A.DELIVERY_STATUS AS deliveryStatus
+        ,A.FREIGHT_SETTLE_METHOD AS freightSettleMethod
+        ,A.LGCS_AREA_CODE AS lgcsAreaCode
+        ,A.LGCS_AREA_NAME AS lgcsAreaName
+        ,A.VER AS ver
+        FROM
+        SSC_DELIVERY_ORDER_BASIC AS A
+        LEFT JOIN
+        SSC_CONTRACT_BASIC  AS B
+        ON
+        A.CONTRACT_ID=B.CONTRACT_ID AND B.DEL_FLG = 0
+        <include refid="whereCondition"/>
+        ORDER BY DELIVERY_ID DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.ssc.bean.SSC11305RsParam">
+        select count(1)
+        FROM
+        SSC_DELIVERY_ORDER_BASIC AS A
+        LEFT JOIN
+        SSC_CONTRACT_BASIC  AS B
+        ON
+        A.CONTRACT_ID=B.CONTRACT_ID
+        AND B.DEL_FLG = 0
+        <include refid="whereCondition"/>
+    </select>
+
+
+    <sql id="whereCondition">
+        <where>
+            A.PURCHASER_ID IS NOT NULL
+            <if test="deliveryId!=null and deliveryId!=''">
+                AND A.delivery_Id = #{deliveryId}
+            </if>
+            <!--<if test="deliveryCode!=null and deliveryCode!=''">
+                AND a.delivery_Code = #{deliveryCode}
+            </if>-->
+            <!--<if test="contractCode!=null and contractCode!=''">
+                AND B.CONTRACT_CODE LIKE '%${contractCode}%'
+            </if>-->
+
+            <if test="contractId!=null and contractId!=''">
+                AND A.CONTRACT_ID = #{contractId}
+            </if>
+            <if test="delFlg!=null and delFlg!=''">
+                AND A.DEL_FLG = #{delFlg}
+            </if>
+            <if test="contractCode!=null and contractCode!=''">
+                AND A.CONTRACT_CODE LIKE #{contractCode}
+            </if>
+            <if test="contractName!=null and contractName!=''">
+                AND B.CONTRACT_NAME LIKE #{contractName}
+            </if>
+            <if test="supplierName!=null and supplierName!=''">
+                AND A.SUPPLIER_NAME  LIKE #{supplierName}
+            </if>
+            <if test="purchaserName!=null and purchaserName!=''">
+                AND A.PURCHASER_NAME LIKE #{purchaserName}
+            </if>
+            <if test="deliveryCode!=null and deliveryCode!=''">
+                AND A.DELIVERY_CODE LIKE #{deliveryCode}
+            </if>
+            <if test="lgcsAreaName!=null and lgcsAreaName!=''">
+                AND A.LGCS_AREA_NAME LIKE #{lgcsAreaName}
+            </if>
+            <if test="deliveryStatus!=null and deliveryStatus!=''">
+                AND A.DELIVERY_STATUS = #{deliveryStatus}
+            </if>
+
+            <if test="statusArr !=null and statusArr.length>0">
+                AND A.DELIVERY_STATUS in
+                <foreach item="statusArrItem" index="index" collection="statusArr"
+                         open="(" separator="," close=")">
+                    #{statusArrItem}
+                </foreach>
+            </if>
+            /*关联合同类型*/
+            <if test="relationTypeArr !=null and relationTypeArr.length > 0">
+                AND A.CONTRACT_RELATION_TYPE in
+                <foreach item="relationType" index="index" collection="relationTypeArr"
+                         open="(" separator="," close=")">
+                    #{relationType}
+                </foreach>
+            </if>
+            <if test="filterMap.etaStr!=null and filterMap.etaStr!=''">
+                AND DATE_FORMAT(A.ETA,'%Y-%m-%d') = #{filterMap.etaStr}
+            </if>
+            <if test="deliveryBatch!=null and deliveryBatch!=''">
+                AND A.DELIVERY_BATCH = #{deliveryBatch}
+            </if>
+            <if test="isDeliveryConfirm == 'true'">
+                AND A.DELIVERY_ID NOT IN (
+                select DELIVERY_ID from ssc_delivery_confirm_basic WHERE DEL_FLG = 0)
+            </if>
+            <if test="isPaymentRequest == 'true'">
+                AND
+                A.DELIVERY_ID NOT IN (
+                SELECT DELIVERY_ID
+                FROM ssc_payment_request
+                WHERE DEL_FLG = 0 AND PAYMENT_TYPE = #{paymentType}
+                AND DELIVERY_ID is not null
+                )
+            </if>
+        </where>
+    </sql>
+
+
+    <!--查询合同基本信息-->
+    <select id="findSsccContractBasic" resultType="com.msk.core.entity.SscContractBasic"
+            parameterType="com.msk.core.entity.SscContractBasic">
+        SELECT
+        CONTRACT_ID as contractId,
+        CONTRACT_CODE as contractCode,
+        BID_ID as bidId,
+        BID_PROJECT_NO as bidProjectNo,
+        CONTRACT_NAME as contractName,
+        CONTRACT_TYPE as contractType,
+        SUPPLIER_ID as supplierId,
+        SUPPLIER_NAME as supplierName,
+        SUPPLIER_CODE as supplierCode,
+        PURCHASER_ID as purchaserId,
+        PURCHASER_NAME as purchaserName,
+        PURCHASER_CODE as purchaserCode,
+        CONTRACT_ACT_DATE as contractActDate,
+        CONTRACT_STATUS  as contractStatus,
+        CONTRACT_AMOUNT  as contractAmount
+        FROM  ssc_contract_basic  scb
+        WHERE  scb.CONTRACT_ID=#{contractId}
+        AND (DEL_FLG = 0 OR DEL_FLG IS NULL)
+    </select>
+
+
+    <!--获取deliveryCode-->
+    <select id="getMaxDeliveryCode" resultType="com.msk.ssc.bean.SSC11305RsBean"
+            parameterType="com.msk.ssc.bean.SSC11305RsParam">
+        select MAX(SUBSTRING(DELIVERY_CODE,3)) AS deliveryCode
+        from ssc_delivery_order_basic
+        where DELIVERY_CODE like '${deliveryCode}%'
+    </select>
+
+    <!--查询交货批次-->
+    <select id="findDeliveryBatch" resultType="com.msk.core.entity.SscDeliveryPlanBasic"
+            parameterType="com.msk.core.entity.SscDeliveryPlanBasic">
+        SELECT
+        CONTRACT_ID as contractId,
+        PD_CODE as pdCode,
+        BATCH_CODE as batchCode
+        FROM SSC_DELIVERY_PLAN_BASIC dlb
+        WHERE  dlb.CONTRACT_ID = #{contractId}
+        AND dlb.BATCH_CODE =#{batchCode}
+        AND dlb.DEL_FLG = 0
+    </select>
+
+    <!--查询发货单是否生成-->
+    <select id="checkDeliveryOrder" resultType="int" parameterType="com.msk.ssc.bean.SSC11305RsParam">
+        select count(1)
+        FROM  SSC_DELIVERY_ORDER_BASIC AS A
+        WHERE  A.CONTRACT_ID = #{contractId}
+        AND    A.DELIVERY_BATCH = #{deliveryBatch}
+        AND    A.DEL_FLG = 0
+    </select>
+
+
+    <!--查询合同产品详细信息-->
+    <select id="findContractPd" parameterType="com.msk.ssc.bean.SSC11305RsParam" resultType="com.msk.ssc.bean.SSC11305DeliveryPdParam">
+      SELECT
+            sscpd.DETAIL_ID AS detailId,
+            sscpd.CONTRACT_ID AS contractId,
+            sscpd.PD_CODE AS pdCode,
+            sscpd.PD_DESC AS pdDesc,
+            sscpd.CLASSES_CODE AS classesCode,
+            sscpd.CLASSES_NAME AS classesName,
+            sscpd.MACHINING_CODE AS machiningCode,
+            sscpd.MACHINING_NAME AS machiningName,
+            sscpd.BREED_CODE AS breedCode,
+            sscpd.BREED_NAME AS breedName,
+            sscpd.FEATURE_CODE AS featureCode,
+            sscpd.FEATURE_NAME AS featureName,
+            sscpd.WEIGHT_CODE AS weightCode,
+            sscpd.WEIGHT_NAME AS weightName,
+            sscpd.WEIGHT_VAL AS weightVal,
+            sscpd.NORMS_CODE AS normsCode,
+            sscpd.NORMS_NAME AS normsName,
+            sscpd.GRADE_CODE AS gradeCode,
+            sscpd.GRADE_NAME AS gradeName,
+            sscpd.PRODUCT_QUALITY_STANDARD AS productQualityStandard,
+            ssdpb.ARRIVE_BOXES*sscpd.WEIGHT_VAL AS productQua,
+            ssdpb.ARRIVE_BOXES AS productBox,
+            sscpd.FOB_FREE_PACKAGE AS fobFreePackage,
+            sscpd.PACKAGE_COST AS packageCost,
+            sscpd.FOB_INCLUDE_PACKAGE AS fobIncludePackage,
+            sscpd.TRUNK_FREIGHT AS trunkFreight,
+            sscpd.CIF AS cif,
+            sscpd.SETTKEMENT_STANDARD_PRICE AS settkementStandardPrice,
+            sscpd.DOWN_PAYMENT AS downPayment,
+            sscpd.PAYMENT_AMOUNT AS paymentAmount,
+            ssdpb.ARRIVE_BOXES*sscpd.WEIGHT_VAL*sscpd.SETTKEMENT_STANDARD_PRICE AS productValue,
+            sscpd.REMARK AS remark,
+            sscpd.BRAND_EP_ID AS brandEpId,
+            sscpd.BRAND_ID AS brandId,
+            sscpd.BRAND_NAME AS brandName
+        FROM
+	        ssc_contract_pr_detail sscpd
+        INNER JOIN
+            ssc_delivery_plan_basic ssdpb
+        ON
+            sscpd.CONTRACT_ID = ssdpb.CONTRACT_ID
+        AND
+            sscpd.PD_CODE = ssdpb.PD_CODE
+        WHERE
+	       sscpd.DEL_FLG = 0
+        AND ssdpb.DEL_FLG = 0
+        AND
+           sscpd.CONTRACT_ID = #{contractId}
+        AND
+           ssdpb.BATCH_CODE = #{deliveryBatch}
+
+    </select>
+
+    <!--发货订单基本信息数据插入 -->
+    <insert id="saveSscDeliveryOrderBasic" parameterType="BaseParam">
+        INSERT INTO ssc_delivery_order_basic
+        (
+        DELIVERY_ID,
+        DELIVERY_CODE,
+        CONTRACT_ID,
+        CONTRACT_CODE,
+        CONTRACT_RELATION_TYPE,
+        SUPPLIER_ID,
+        SUPPLIER_NAME,
+        SUPPLIER_CODE,
+        PURCHASER_ID,
+        PURCHASER_NAME,
+        PURCHASER_CODE,
+        ETA,
+        DELIVERY_BATCH,
+        DELIVERY_STATUS,
+        FREIGHT_SETTLE_METHOD,
+        FREIGHT_UNIT,
+        MILEAGE,
+        TRANSPORT_UNIT,
+        TRANSPORT_COST,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER
+        )
+        VALUES
+        (
+            #{deliveryId},
+            #{deliveryCode},
+            #{contractId},
+            #{contractCode},
+            #{contractRelationType},
+            #{supplierId},
+            #{supplierName},
+            #{supplierCode},
+            #{purchaserId},
+            #{purchaserName},
+            #{purchaserCode},
+            #{etaStr},
+            #{deliveryBatch},
+            #{deliveryStatus},
+            #{freightSettleMethod},
+            #{freightUnit},
+            #{mileage},
+            #{transportUnit},
+            #{transportCost},
+            #{remark},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            1
+        )
+    </insert>
+
+    <!--发货订单产品信息数据插入 -->
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO ssc_delivery_order_pd (
+        DETAIL_ID,
+        DELIVERY_ID,
+        DELIVERY_CODE,
+        PD_CODE,
+        PD_DESC,
+        CLASSES_CODE,
+        CLASSES_NAME,
+        MACHINING_CODE,
+        MACHINING_NAME,
+        BREED_CODE,
+        BREED_NAME,
+        FEATURE_CODE,
+        FEATURE_NAME,
+        WEIGHT_CODE,
+        WEIGHT_NAME,
+        WEIGHT_VAL,
+        NORMS_CODE,
+        NORMS_NAME,
+        GRADE_CODE,
+        GRADE_NAME,
+        PRODUCT_QUALITY_STANDARD,
+        PRODUCT_QUA,
+        PRODUCT_BOX,
+        FOB_FREE_PACKAGE,
+        PACKAGE_COST,
+        FOB_INCLUDE_PACKAGE,
+        TRUNK_FREIGHT,
+        CIF,
+        SETTKEMENT_STANDARD_PRICE,
+        PRODUCT_VALUE,
+        REMARK,
+        BRAND_EP_ID,
+        BRAND_ID,
+        BRAND_NAME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (
+            #{item.detailId},
+            #{item.deliveryId},
+            #{item.deliveryCode},
+            #{item.pdCode},
+            #{item.pdDesc},
+            #{item.classesCode},
+            #{item.classesName},
+            #{item.machiningCode},
+            #{item.machiningName},
+            #{item.breedCode},
+            #{item.breedName},
+            #{item.featureCode},
+            #{item.featureName},
+            #{item.weightCode},
+            #{item.weightName},
+            #{item.weightVal},
+            #{item.normsCode},
+            #{item.normsName},
+            #{item.gradeCode},
+            #{item.gradeName},
+            #{item.productQualityStandard},
+            #{item.productQua},
+            #{item.productBox},
+            #{item.fobFreePackage},
+            #{item.packageCost},
+            #{item.fobIncludePackage},
+            #{item.trunkFreight},
+            #{item.cif},
+            #{item.settkementStandardPrice},
+            #{item.productValue},
+            #{item.remark},
+            #{item.brandEpId},
+            #{item.brandId},
+            #{item.brandName},
+            0,
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            1
+            )
+        </foreach>
+    </insert>
+</mapper>

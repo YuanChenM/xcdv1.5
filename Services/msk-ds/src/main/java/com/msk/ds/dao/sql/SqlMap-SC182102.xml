@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.msk.ds.logic.SC182102Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectFiled">
+        DELIVERY_STOCK_ID AS deliveryStockId,
+        PD_CODE AS pdCode,
+        NORMS_CODE AS normsCode,
+        APPLY_DELIVERY_NUM AS applyDeliveryNum,
+        CONFIRM_DELIVERY_NUM AS confirmDeliveryNum,
+        PLAN_DELIVERY_NUM AS planDeliveryNum,
+        ACTUAL_DELIVERY_NUM AS actualDeliveryNum,
+        MEMO AS memo
+    </sql>
+
+
+    <sql id="selectFrom">
+        FROM ds_delivery_stock_detail AS DS
+    </sql>
+
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.deliveryStockId!=null and filterMap.deliveryStockId!=''">
+                AND DELIVERY_STOCK_ID=#{deliveryStockId}
+            </if>
+            <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+                AND PD_CODE=#{pdCode}
+            </if>
+            <if test="filterMap.normsCode!=null and filterMap.normsCode!=''">
+                AND NORMS_CODE=#{normsCode}
+            </if>
+            <if test="filterMap.applyDeliveryNum!=null and filterMap.applyDeliveryNum!=''">
+                AND APPLY_DELIVERY_NUM=#{applyDeliveryNum}
+            </if>
+            <if test="filterMap.confirmDeliveryNum!=null and filterMap.confirmDeliveryNum!=''">
+                AND CONFIRM_DELIVERY_NUM=#{confirmDeliveryNum}
+            </if>
+            <if test="filterMap.planDeliveryNum!=null and filterMap.planDeliveryNum!=''">
+                AND PLAN_DELIVERY_NUM=#{planDeliveryNum}
+            </if>
+            <if test="filterMap.actualDeliveryNum!=null and filterMap.actualDeliveryNum!=''">
+                AND ACTUAL_DELIVERY_NUM=#{actualDeliveryNum}
+            </if>
+            <if test="filterMap.memo!=null and filterMap.memo!=''">
+                AND MEMO=#{memo}
+            </if>
+            --             AND DS.SOURCE_FLG = 1
+            AND DS.DEL_FLG = 0
+        </where>
+    </sql>
+
+    <!--数据插入 -->
+    <insert id="saveStockDetail" parameterType="com.msk.ds.bean.SC182102Bean">
+        INSERT INTO ds_delivery_stock_detail
+        (
+        <if test="deliveryStockId!=null">
+            DELIVERY_STOCK_ID,
+        </if>
+        <if test="pdCode!=null">
+            PD_CODE,
+        </if>
+        <if test="normsCode!=null">
+            NORMS_CODE,
+        </if>
+        <if test="applyDeliveryNum!=null">
+            APPLY_DELIVERY_NUM,
+        </if>
+        <if test="confirmDeliveryNum!=null">
+            CONFIRM_DELIVERY_NUM,
+        </if>
+        <if test="planDeliveryNum!=null">
+            PLAN_DELIVERY_NUM,
+        </if>
+        <if test="actualDeliveryNum!=null">
+            ACTUAL_DELIVERY_NUM,
+        </if>
+        <if test="pdOutNw != null">
+            PD_OUT_NW,
+        </if>
+        ACTUAL_RECEIVE_NUM,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER,
+        SOURCE_FLG
+        )
+        VALUES
+        (
+        <if test="deliveryStockId!=null">
+            #{deliveryStockId},
+        </if>
+        <if test="pdCode!=null">
+            #{pdCode},
+        </if>
+        <if test="normsCode!=null">
+            #{normsCode},
+        </if>
+        <if test="applyDeliveryNum!=null">
+            #{applyDeliveryNum},
+        </if>
+        <if test="confirmDeliveryNum!=null">
+            #{confirmDeliveryNum},
+        </if>
+        <if test="planDeliveryNum!=null">
+            #{planDeliveryNum},
+        </if>
+        <if test="actualDeliveryNum!=null">
+            #{actualDeliveryNum},
+        </if>
+        <if test="pdOutNw != null">
+            #{pdOutNw},
+        </if>
+        0,
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        1,
+        1
+        )
+    </insert>
+    <update id="edit" parameterType="com.msk.ds.bean.SC182102Bean">
+        update ds_delivery_stock_detail
+        set
+        APPLY_DELIVERY_NUM=#{applyDeliveryNum},
+        CONFIRM_DELIVERY_NUM=#{confirmDeliveryNum},
+        PLAN_DELIVERY_NUM=#{planDeliveryNum},
+        ACTUAL_DELIVERY_NUM=#{actualDeliveryNum},
+        MEMO=#{memo},
+        VER = VER + 1
+        WHERE
+        DELIVERY_STOCK_ID=#{deliveryStockId}
+        AND PD_CODE=#{pdCode}
+        AND NORMS_CODE=#{normsCode}
+        AND SOURCE_FLG = 1
+        AND DEL_FLG = 0
+    </update>
+
+    <select id="findList" resultType="com.msk.ds.bean.SC182102Bean"
+            parameterType="BaseParam">
+        SELECT
+        <include refid="selectFiled" />
+        <include refid="selectFrom" />
+        <include refid="whereCondition" />
+    </select>
+
+    <select id="findPageList" resultType="com.msk.ds.bean.SC182102Bean"
+            parameterType="BaseParam">
+        SELECT
+        <include refid="selectFiled" />
+        <include refid="selectFrom" />
+        <include refid="whereCondition" />
+    </select>
+
+    <select id="findProductList" resultType="com.msk.ds.bean.SC182102Param"
+            parameterType="BaseParam">
+        select
+        actual.PD_CODE as productCode,
+        actual.OUT_SPEC as productSpecifical,
+        actual.OUT_NW as netWeight,
+        actual.NORMS_CODE as packageCode,
+        actual.NEW_ACTUAL_NUM as sendNum,
+        actual.NEW_ACTUAL_NUM as sendActualNum,
+        actual.OUT_NW*actual.NEW_ACTUAL_NUM as sendQty,
+        actual.INPUT_DATE as inputDate
+        from ds_pd_virtual_stock_actual as actual
+        where actual.DIST_MONTH=#{distMonth}
+        AND actual.LGCS_CODE=#{areaCode}
+        AND actual.SUPP_CODE=#{supplierCode}
+        and actual.PD_STOCK_TYPE = #{filterMap.pdStockType}
+        and actual.HALF_CODE = #{halfCode}
+        AND actual.DEL_FLG = 0
+        ORDER BY actual.PD_CODE
+    </select>
+
+    <select id="findProductSumList" resultType="com.msk.ds.bean.SC182102Param"
+            parameterType="BaseParam">
+        select
+        IFNULL(actual.PD_CODE,'') as productCode,
+        IFNULL(actual.OUT_SPEC,'') as productSpecifical,
+        IFNULL(actual.OUT_NW,'') as netWeight,
+        IFNULL(actual.NORMS_CODE,'') as packageCode,
+        IFNULL(ROUND(SUM(actual.NEW_ACTUAL_NUM)/actual.OUT_NW,2), 0) AS sendNum,
+        IFNULL(ROUND(SUM(actual.NEW_ACTUAL_NUM)/actual.OUT_NW,2), 0) AS sendActualNum,
+        IFNULL(SUM(actual.NEW_ACTUAL_NUM), 0) AS sendQty,
+        IFNULL(SUM(actual.NEW_ACTUAL_NUM), 0) AS sendPlanQty
+        FROM ds_pd_virtual_stock_actual as actual
+        WHERE actual.DIST_MONTH=#{distMonth}
+        AND actual.LGCS_CODE=#{areaCode}
+        AND actual.SUPP_CODE=#{supplierCode}
+        AND actual.PD_STOCK_TYPE = 2
+        AND actual.HALF_CODE = #{halfCode}
+        AND actual.DEL_FLG = 0
+        GROUP BY
+        actual.PD_CODE,
+        actual.OUT_SPEC,
+        actual.OUT_NW,
+        actual.NORMS_CODE
+        ORDER BY actual.PD_CODE
+    </select>
+
+    <select id="findDetailList" resultType="com.msk.ds.bean.SC182102Param"
+            parameterType="BaseParam">
+        SELECT
+        IFNULL(stockDetail.PD_CODE,'') as productCode,
+        IFNULL(stockDetail.PD_OUT_NW,'') as netWeight,
+        IFNULL(stockDetail.NORMS_CODE,'') as packageCode,
+        IFNULL(stockDetail.ACTUAL_RECEIVE_NUM , 0) AS receiveNum,
+        IFNULL(stockDetail.PLAN_DELIVERY_NUM, 0) AS sendNum,
+        IFNULL(stockDetail.ACTUAL_DELIVERY_NUM, 0) AS sendActualNum,
+        IFNULL(stockDetail.PD_OUT_NW, 0) * IFNULL(stockDetail.ACTUAL_DELIVERY_NUM, 0) AS sendQty,
+        IFNULL(stockDetail.PD_OUT_NW, 0) * IFNULL(stockDetail.PLAN_DELIVERY_NUM, 0) AS sendPlanQty,
+        IFNULL(stockDetail.PD_OUT_NW, 0) * IFNULL(stockDetail.ACTUAL_RECEIVE_NUM, 0) AS recriveQty,
+        IFNULL(stockDetail.ACTUAL_RECEIVE_NUM, 0) - IFNULL(stockDetail.PLAN_DELIVERY_NUM, 0) AS differNum,
+        IFNULL(stockDetail.PD_OUT_NW, 0) * (IFNULL(stockDetail.ACTUAL_RECEIVE_NUM, 0) - IFNULL(stockDetail.PLAN_DELIVERY_NUM, 0) )
+        AS differQty
+        FROM
+        ds_delivery_stock_detail AS stockDetail
+        WHERE
+        stockDetail.DELIVERY_STOCK_ID = #{filterMap.deliveryStockId}
+        AND stockDetail.DEL_FLG = 0
+        <if test="filterMap.sourceFlg != null and filterMap.sourceFlg != ''">
+            AND stockDetail.SOURCE_FLG = #{filterMap.sourceFlg}
+        </if>
+        ORDER BY stockDetail.DELIVERY_STOCK_ID
+    </select>
+
+    <update id="modifyActual" parameterType="BaseParam">
+        update
+        ds_pd_virtual_stock_actual actual
+        set
+        NEW_ACTUAL_NUM = NEW_ACTUAL_NUM + #{filterMap.newActualNum},
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId},
+        VER = VER + 1
+        where actual.DIST_MONTH=#{filterMap.distMonth} AND actual.LGCS_CODE=#{filterMap.areaCode} AND actual.SUPP_CODE=#{filterMap.supplierCode}
+        and actual.PD_STOCK_TYPE = #{filterMap.pdStockType} and actual.HALF_CODE = #{filterMap.halfCode} AND actual.PD_CODE = #{filterMap.pdCode} AND actual.DEL_FLG = 0
+        <if test="filterMap.inputDate != null and filterMap.inputDate != ''">
+            and actual.INPUT_DATE = #{filterMap.inputDate}
+        </if>
+    </update>
+
+    <!--数据插入 -->
+    <insert id="save" parameterType="com.msk.ds.bean.SC182101Bean">
+        INSERT INTO ds_delivery_stock
+        (
+        <if test="deliveryStockId!=null">
+            DELIVERY_STOCK_ID,
+        </if>
+        <if test="distMonth!=null">
+            DIST_MONTH,
+        </if>
+        <if test="lgcsCode!=null">
+            LGCS_CODE,
+        </if>
+        <if test="suppCode!=null">
+            SUPP_CODE,
+        </if>
+        <if test="halfCode!=null">
+            HALF_CODE,
+        </if>
+        <if test="deliveryStockStatus!=null">
+            DELIVERY_STOCK_STATUS,
+        </if>
+        <!-- #1763 添加实际到货时间   create by likai  start -->
+        <if test="deliveryReceiveStockTime!=null">
+            DELIVERY_RECEIVE_STOCK_TIME,
+        </if>
+        <!-- #1763 添加实际到货时间   create by likai  end -->
+        <if test="deliveryWarehouseAddr!=null">
+            DELIVERY_WAREHOUSE_ADDR,
+        </if>
+        <if test="deliveryResponName!=null">
+            DELIVERY_RESPON_NAME,
+        </if>
+        <if test="deliveryResponTel!=null">
+            DELIVERY_RESPON_TEL,
+        </if>
+        <if test="deliveryExecuteName!=null">
+            DELIVERY_EXECUTE_NAME,
+        </if>
+        <if test="deliveryExecuteTel!=null">
+            DELIVERY_EXECUTE_TEL,
+        </if>
+        <if test="transportUnitName!=null">
+            TRANSPORT_UNIT_NAME,
+        </if>
+        <if test="transportUnitResponName!=null">
+            TRANSPORT_UNIT_RESPON_NAME,
+        </if>
+        <if test="transportUnitResponTel!=null">
+            TRANSPORT_UNIT_RESPON_TEL,
+        </if>
+        <if test="transportUnitExecuteName!=null">
+            TRANSPORT_UNIT_EXECUTE_NAME,
+        </if>
+        <if test="transportUnitExecuteTel!=null">
+            TRANSPORT_UNIT_EXECUTE_TEL,
+        </if>
+        <if test="deliveryMemo!=null">
+            DELIVERY_MEMO,
+        </if>
+        <if test="stockMemo!=null">
+            STOCK_MEMO,
+        </if>
+        <if test="deliveryStockTimeReq!=null">
+            DELIVERY_STOCK_TIME_REQ,
+        </if>
+        <if test="stockAddr!=null">
+            STOCK_ADDR,
+        </if>
+        <if test="stockResponName!=null">
+            STOCK_RESPON_NAME,
+        </if>
+        <if test="stockResponTel!=null">
+            STOCK_RESPON_TEL,
+        </if>
+        <if test="stockExecuteName!=null">
+            STOCK_EXECUTE_NAME,
+        </if>
+        <if test="stockExecuteTel!=null">
+            STOCK_EXECUTE_TEL,
+        </if>
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER,
+        SOURCE_FLG
+        )
+        VALUES
+        (
+        <if test="deliveryStockId!=null">
+            #{deliveryStockId},
+        </if>
+        <if test="distMonth!=null">
+            #{distMonth},
+        </if>
+        <if test="lgcsCode!=null">
+            #{lgcsCode},
+        </if>
+        <if test="suppCode!=null">
+            #{suppCode},
+        </if>
+        <if test="halfCode!=null">
+            #{halfCode},
+        </if>
+        <if test="deliveryStockStatus!=null">
+            #{deliveryStockStatus},
+        </if>
+        <!-- #1763添加实际到货时间   create by likai  start -->
+        <if test="deliveryReceiveStockTime!=null">
+            #{deliveryReceiveStockTime},
+        </if>
+        <!-- #1763添加实际到货时间   create by likai  end -->
+        <if test="deliveryWarehouseAddr!=null">
+            #{deliveryWarehouseAddr},
+        </if>
+        <if test="deliveryResponName!=null">
+            #{deliveryResponName},
+        </if>
+        <if test="deliveryResponTel!=null">
+            #{deliveryResponTel},
+        </if>
+        <if test="deliveryExecuteName!=null">
+            #{deliveryExecuteName},
+        </if>
+        <if test="deliveryExecuteTel!=null">
+            #{deliveryExecuteTel},
+        </if>
+        <if test="transportUnitName!=null">
+            #{transportUnitName},
+        </if>
+        <if test="transportUnitResponName!=null">
+            #{transportUnitResponName},
+        </if>
+        <if test="transportUnitResponTel!=null">
+            #{transportUnitResponTel},
+        </if>
+        <if test="transportUnitExecuteName!=null">
+            #{transportUnitExecuteName},
+        </if>
+        <if test="transportUnitExecuteTel!=null">
+            #{transportUnitExecuteTel},
+        </if>
+        <if test="deliveryMemo!=null">
+            #{deliveryMemo},
+        </if>
+        <if test="stockMemo!=null">
+            #{stockMemo},
+        </if>
+        <if test="deliveryStockTimeReq!=null">
+            #{deliveryStockTimeReq},
+        </if>
+        <if test="stockAddr!=null">
+            #{stockAddr},
+        </if>
+        <if test="stockResponName!=null">
+            #{stockResponName},
+        </if>
+        <if test="stockResponTel!=null">
+            #{stockResponTel},
+        </if>
+        <if test="stockExecuteName!=null">
+            #{stockExecuteName},
+        </if>
+        <if test="stockExecuteTel!=null">
+            #{stockExecuteTel},
+        </if>
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        1,
+        1
+        )
+    </insert>
+    <update id="modify" parameterType="com.msk.ds.bean.SC182101Bean">
+        update ds_delivery_stock
+        set
+        DIST_MONTH=#{distMonth},
+        LGCS_CODE=#{lgcsCode},
+        SUPP_CODE=#{suppCode},
+        HALF_CODE=#{halfCode},
+        DELIVERY_STOCK_STATUS=#{deliveryStockStatus},
+        <!-- #1763添加实际到货时间 create by likai on 2016/8/15 start -->
+        DELIVERY_RECEIVE_STOCK_TIME=#{deliveryReceiveStockTime},
+        <!-- #1763添加实际到货时间 create by likai on 2016/8/15 end -->
+        DELIVERY_WAREHOUSE_ADDR=#{deliveryWarehouseAddr},
+        DELIVERY_RESPON_NAME=#{deliveryResponName},
+        DELIVERY_RESPON_TEL=#{deliveryResponTel},
+        DELIVERY_EXECUTE_NAME=#{deliveryExecuteName},
+        DELIVERY_EXECUTE_TEL=#{deliveryExecuteTel},
+        TRANSPORT_UNIT_NAME=#{transportUnitName},
+        TRANSPORT_UNIT_RESPON_NAME=#{transportUnitResponName},
+        TRANSPORT_UNIT_RESPON_TEL=#{transportUnitResponTel},
+        TRANSPORT_UNIT_EXECUTE_NAME=#{transportUnitExecuteName},
+        TRANSPORT_UNIT_EXECUTE_TEL=#{transportUnitExecuteTel},
+        DELIVERY_MEMO=#{deliveryMemo},
+        STOCK_MEMO=#{stockMemo},
+        DELIVERY_STOCK_TIME_REQ=#{deliveryStockTimeReq},
+        STOCK_ADDR=#{stockAddr},
+        STOCK_RESPON_NAME=#{stockResponName},
+        STOCK_RESPON_TEL=#{stockResponTel},
+        STOCK_EXECUTE_NAME=#{stockExecuteName},
+        STOCK_EXECUTE_TEL=#{stockExecuteTel},
+        DEL_FLG = #{delFlg},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        DELIVERY_STOCK_ID=#{deliveryStockId}
+        AND SOURCE_FLG = 1
+        AND DEL_FLG = 0
+    </update>
+
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182101Bean">
+        SELECT
+        DELIVERY_STOCK_ID AS deliveryStockId,
+        DIST_MONTH AS distMonth,
+        LGCS_CODE AS lgcsCode,
+        SUPP_CODE AS suppCode,
+        HALF_CODE AS halfCode,
+        DELIVERY_STOCK_STATUS AS deliveryStockStatus,
+        <!-- #1763添加实际到货时间 create by likai on 2016/8/15 start -->
+        IFNULL(DELIVERY_RECEIVE_STOCK_TIME,'') AS deliveryReceiveStockTime,
+        <!-- #1763添加实际到货时间 create by likai on 2016/8/15 end -->
+        DELIVERY_WAREHOUSE_ADDR AS deliveryWarehouseAddr,
+        DELIVERY_RESPON_NAME AS deliveryResponName,
+        DELIVERY_RESPON_TEL AS deliveryResponTel,
+        DELIVERY_EXECUTE_NAME AS deliveryExecuteName,
+        DELIVERY_EXECUTE_TEL AS deliveryExecuteTel,
+        TRANSPORT_UNIT_NAME AS transportUnitName,
+        TRANSPORT_UNIT_RESPON_NAME AS transportUnitResponName,
+        TRANSPORT_UNIT_RESPON_TEL AS transportUnitResponTel,
+        TRANSPORT_UNIT_EXECUTE_NAME AS transportUnitExecuteName,
+        TRANSPORT_UNIT_EXECUTE_TEL AS transportUnitExecuteTel,
+        DELIVERY_MEMO AS deliveryMemo,
+        STOCK_MEMO AS stockMemo,
+        DELIVERY_STOCK_TIME_REQ AS deliveryStockTimeReq,
+        STOCK_ADDR AS stockAddr,
+        STOCK_RESPON_NAME AS stockResponName,
+        STOCK_RESPON_TEL AS stockResponTel,
+        STOCK_EXECUTE_NAME AS stockExecuteName,
+        STOCK_EXECUTE_TEL AS stockExecuteTel,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime
+        FROM ds_delivery_stock
+        WHERE DELIVERY_STOCK_ID = #{filterMap.deliveryStockId}
+        AND SOURCE_FLG = 1
+        AND DEL_FLG = 0
+    </select>
+
+    <select id = "getDeliveryNum" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182101Bean">
+        SELECT  count(*) as deliveryNums FROM  ds_delivery_stock
+        WHERE DIST_MONTH=#{distMonth}
+        AND LGCS_CODE=#{areaCode}
+        AND SUPP_CODE=#{supplierCode}
+        AND HALF_CODE=#{halfCode}
+        --         AND SOURCE_FLG = 1
+        AND DEL_FLG = 0
+    </select>
+
+    <insert id="saveActualStock" parameterType="BaseParam">
+        INSERT INTO ds_pd_virtual_stock_actual (
+        SUPP_DS_ID,
+        VIRTUAL_STOCK_ACTUAL_ID,
+        DIST_MONTH,
+        LGCS_CODE,
+        SUPP_CODE,
+        PD_STOCK_TYPE,
+        HALF_CODE,
+        CLASSES_CODE,
+        BREED_CODE,
+        FEATURE_CODE,
+        GRADE_CODE,
+        OUT_SPEC,
+        OUT_NW,
+        PD_CODE,
+        NORMS_CODE,
+        INPUT_DATE,
+        OLD_ACTUAL_NUM,
+        NEW_ACTUAL_NUM,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        SELECT
+        actual.SUPP_DS_ID,#{filterMap.virtualStockActualId},actual.DIST_MONTH,actual.LGCS_CODE,actual.SUPP_CODE, #{filterMap.pdStockTypeTo},actual.HALF_CODE
+        ,actual.CLASSES_CODE,actual.BREED_CODE,actual.FEATURE_CODE,actual.GRADE_CODE,actual.OUT_SPEC,actual.OUT_NW,actual.PD_CODE,actual.NORMS_CODE
+        ,#{filterMap.inputDate},0,#{filterMap.newActualNum},0,#{crtId},#{crtTime},#{crtId},#{crtTime}
+        ,NULL,NULL,1
+        FROM ds_pd_virtual_stock_actual AS actual
+        WHERE actual.DIST_MONTH=#{filterMap.distMonth}
+        AND actual.LGCS_CODE=#{filterMap.areaCode}
+        AND actual.SUPP_CODE=#{filterMap.supplierCode}
+        AND actual.PD_STOCK_TYPE = #{filterMap.pdStockTypeFm}
+        AND actual.HALF_CODE = #{filterMap.halfCode}
+        AND actual.PD_CODE = #{filterMap.pdCode}
+        AND actual.DEL_FLG = 0
+        LIMIT 0,1
+    </insert>
+
+    <update id="editReceiveNum" parameterType="BaseParam">
+        update ds_delivery_stock_detail
+        SET
+        ACTUAL_DELIVERY_NUM=#{filterMap.actualDeliveryNum},
+        ACTUAL_RECEIVE_NUM = ACTUAL_RECEIVE_NUM + #{filterMap.actualReceiveNum},
+        <if test="filterMap.memo!=null and filterMap.memo!=''">
+            MEMO=#{filterMap.memo},
+        </if>
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId},
+        VER = VER +1
+        WHERE
+        DELIVERY_STOCK_ID=#{filterMap.deliveryStockId}
+        AND PD_CODE=#{filterMap.pdCode}
+        AND NORMS_CODE=#{filterMap.normsCode}
+        AND SOURCE_FLG = 1
+        AND DEL_FLG = 0
+    </update>
+    <select id = "countDetailListTotal" resultType="com.msk.ds.bean.SC182102Param" parameterType="BaseParam">
+        SELECT
+        sum(IFNULL(stockDetail.ACTUAL_RECEIVE_NUM , 0)) AS currentReceiveNum,
+        sum(IFNULL(stockDetail.PLAN_DELIVERY_NUM, 0)) AS currentSendPlanNum,
+        sum(IFNULL(stockDetail.ACTUAL_DELIVERY_NUM, 0) )AS currentSendActualNum,
+        sum(IFNULL(stockDetail.PD_OUT_NW, 0) * IFNULL(stockDetail.ACTUAL_DELIVERY_NUM, 0)) AS currentSendActualQty,
+        sum(IFNULL(stockDetail.PD_OUT_NW, 0) * IFNULL(stockDetail.PLAN_DELIVERY_NUM, 0)) AS currentSendPlanQty,
+        sum(IFNULL(stockDetail.PD_OUT_NW, 0) * IFNULL(stockDetail.ACTUAL_RECEIVE_NUM, 0)) AS currentRecriveQty,
+        sum(IFNULL(stockDetail.ACTUAL_RECEIVE_NUM, 0) - IFNULL(stockDetail.PLAN_DELIVERY_NUM, 0))AS currentDifferNum,
+        sum(IFNULL(stockDetail.PD_OUT_NW, 0) * (IFNULL(stockDetail.ACTUAL_RECEIVE_NUM, 0) - IFNULL(stockDetail.PLAN_DELIVERY_NUM, 0)))
+        AS currentDifferQty
+        FROM
+        ds_delivery_stock_detail AS stockDetail
+        WHERE
+        stockDetail.DELIVERY_STOCK_ID = #{filterMap.deliveryStockId}
+        AND stockDetail.DEL_FLG = 0
+        --         AND stockDetail.SOURCE_FLG = 1
+
+    </select>
+
+    <select id = "countActualListTotal" resultType="com.msk.ds.bean.SC182102Param" parameterType="BaseParam">
+        SELECT
+        sum(IFNULL(sendNum, 0)) AS currentSendPlanNum,
+        sum(IFNULL(sendActualNum, 0) )AS currentSendActualNum,
+        sum(IFNULL(sendQty, 0)) AS currentSendActualQty,
+        sum(IFNULL(sendPlanQty, 0)) AS currentSendPlanQty
+        FROM
+        (select
+        IFNULL(ROUND(SUM(actual.NEW_ACTUAL_NUM)/actual.OUT_NW,2), 0) AS sendNum,
+        IFNULL(ROUND(SUM(actual.NEW_ACTUAL_NUM)/actual.OUT_NW,2), 0) AS sendActualNum,
+        IFNULL(SUM(actual.NEW_ACTUAL_NUM), 0) AS sendQty,
+        IFNULL(SUM(actual.NEW_ACTUAL_NUM), 0) AS sendPlanQty
+        FROM ds_pd_virtual_stock_actual as actual
+        WHERE actual.DIST_MONTH=#{distMonth}
+        AND actual.LGCS_CODE=#{areaCode}
+        AND actual.SUPP_CODE=#{supplierCode}
+        AND actual.PD_STOCK_TYPE = 2
+        AND actual.HALF_CODE = #{halfCode}
+        AND actual.DEL_FLG = 0
+        GROUP BY
+        actual.PD_CODE,
+        actual.OUT_SPEC,
+        actual.OUT_NW,
+        actual.NORMS_CODE
+        ORDER BY actual.PD_CODE) n
+        --         AND stockDetail.SOURCE_FLG = 1
+
+    </select>
+</mapper>

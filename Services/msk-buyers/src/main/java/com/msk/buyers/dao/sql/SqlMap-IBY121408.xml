@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121408Logic">
+
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.ByMarketFoodBasic">
+      SELECT
+          MARKET_NAME AS marketName,
+          MARKET_ADDR AS marketAddr,
+          LGCS_AREA_NAME AS lgcsAreaName,
+          CITY_NAME AS cityName,
+          DISTRICT_NAME AS districtName
+        FROM BY_MARKET_FOOD_BASIC
+      WHERE
+        MARKET_ID = #{filterMap.marketId}
+        AND IS_PHASE_NEW = 1
+        AND IS_MARKET_NEW = 1
+        AND DEL_FLG = 0
+    </select>
+
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.buyers.bean.BY121408Bean">
+      SELECT
+           IFNULL(ID,'') AS id,
+           IFNULL(MARKET_ID,'')    AS marketId,
+           IFNULL(FILE_TYPE,'')    AS fileType,
+           IFNULL(PIC_TYPE,'')   AS picType,
+           IFNULL(FILE_SERVER_ID,'')    AS fileServerId,
+           CONCAT(FILE_NAME,'.',FILE_SUFF) AS fileName,
+           IFNULL(CRT_ID,'')   AS crtId,
+          IFNULL(DATE_FORMAT(CRT_TIME,'%Y-%m-%d %H:%i:%S'),'')  AS crtTimeStr
+      FROM BY_MARKET_FOOD_FILE_INFO
+      WHERE
+            MARKET_ID = #{filterMap.marketId}
+        <if test="filterMap.fileName != null and filterMap.fileName != '' ">
+            <!--AND CONCAT(FILE_NAME,'.',FILE_SUFF) LIKE '%${filterMap.fileName}%'-->
+            AND CONCAT(FILE_NAME,'.',FILE_SUFF) LIKE #{filterMap.fileName}
+        </if>
+        <if test="filterMap.crtId != null and filterMap.crtId != '' ">
+            <!--AND CRT_ID LIKE '%${filterMap.crtId}%'-->
+            AND CRT_ID LIKE #{filterMap.crtId}
+        </if>
+        <if test="filterMap.crtTimeStrStart != null and filterMap.crtTimeStrStart != '' ">
+            <![CDATA[AND CRT_TIME >= '${filterMap.crtTimeStrStart} 00:00:00' ]]>
+        </if>
+        <if test="filterMap.crtTimeStrEnd != null and filterMap.crtTimeStrEnd != '' ">
+            <![CDATA[AND CRT_TIME <= '${filterMap.crtTimeStrEnd} 23:59:59' ]]>
+        </if>
+      <!--  <if test="filterMap.crtTimeStr != null and filterMap.crtTimeStr != '' ">
+            AND CRT_TIME <![CDATA[ = DATE_FORMAT(#{filterMap.crtTimeStr},'%Y-%c-%d %H:%i:%S')]]>
+        </if>-->
+            AND DEL_FLG = 0
+        ORDER BY ID
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" parameterType="BaseParam" resultType="Integer">
+        SELECT
+          count(1)
+        FROM BY_MARKET_FOOD_FILE_INFO
+        WHERE
+        MARKET_ID = #{filterMap.marketId}
+        <if test="filterMap.fileName != null and filterMap.fileName != '' ">
+            <!--AND CONCAT(FILE_NAME,'.',FILE_SUFF) LIKE '%${filterMap.fileName}%'-->
+            AND CONCAT(FILE_NAME,'.',FILE_SUFF) LIKE #{filterMap.fileName}
+        </if>
+        <if test="filterMap.crtId != null and filterMap.crtId != '' ">
+            <!--AND CRT_ID LIKE '%${filterMap.crtId}%'-->
+            AND CRT_ID LIKE #{filterMap.crtId}
+        </if>
+        <if test="filterMap.crtTimeStrStart != null and filterMap.crtTimeStrStart != '' ">
+            <![CDATA[AND CRT_TIME >= '${filterMap.crtTimeStrStart} 00:00:00' ]]>
+        </if>
+        <if test="filterMap.crtTimeStrEnd != null and filterMap.crtTimeStrEnd != '' ">
+            <![CDATA[AND CRT_TIME <= '${filterMap.crtTimeStrEnd} 23:59:59' ]]>
+        </if>
+       <!-- <if test="filterMap.crtTimeStr != null and filterMap.crtTimeStr != '' ">
+            AND CRT_TIME <![CDATA[ = DATE_FORMAT(#{filterMap.crtTimeStr},'%Y-%c-%d %H:%i:%S')]]>
+        </if>-->
+        AND DEL_FLG = 0
+    </select>
+
+    <insert id="byMarketFoodFileInfoSave" parameterType="com.msk.core.entity.ByMarketFoodFileInfo">
+        INSERT INTO
+            BY_MARKET_FOOD_FILE_INFO(
+                ID,
+                MARKET_ID,
+                FILE_TYPE,
+                PIC_TYPE,
+                FILE_NAME,
+                FILE_SUFF,
+                FILE_SERVER_ID,
+                CRT_ID,
+                CRT_TIME,
+                UPD_ID,
+                UPD_TIME,
+                ACT_ID,
+                ACT_TIME,
+                DEL_FLG
+                )
+            VALUES(
+                  #{id},
+                  #{marketId},
+                  #{fileType},
+                  #{picType},
+                  #{fileName},
+                  #{fileSuff},
+                  #{fileServerId},
+                  #{updId},
+                  #{updTime},
+                  #{updId},
+                  #{updTime},
+                  #{updId},
+                  #{updTime},
+                  0
+            )
+    </insert>
+
+    <update id="modify" parameterType="BaseParam">
+        UPDATE BY_MARKET_FOOD_FILE_INFO
+        SET
+        DEL_FLG = '1',
+        CRT_ID = #{crtId},
+        CRT_TIME = #{crtTime},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        ACT_ID = #{actId},
+        ACT_TIME = #{actTime}
+        WHERE DEL_FLG = '0'
+        AND ID = #{filterMap.id}
+    </update>
+</mapper>

@@ -1,0 +1,24 @@
+spring:
+  redis:
+      database: 8
+      host: 10.20.16.152
+      port: 6379
+      password: Admin123#
+      pool:
+        max-active: -1
+        max-idle: 100
+        max-wait: -1
+  configServer:
+          environment: test
+          modelName: MQ
+          configServerUrl: http://10.20.16.152:8888/msk-config-server/api/load/properties
+
+  mvc:
+    static-path-pattern: /static/**
+amqp:
+    queues[0]: order-create-queue
+    queues[1]: order-payment-queue
+    queues[2]: order-delivery-queue
+server:
+  port: 9092
+  context-path: /msk-mq-client/

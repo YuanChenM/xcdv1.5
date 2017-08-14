@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241118Logic">
+	<!-- Deprecated by xia_xiaojie on 2016/6/28.
+	<sql id="PdMctStdSql">
+		A.STANDARD_ID AS standardId,
+		A.MCT_STD_ITEM_ID AS mctStdItemId,
+		A.MCT_OK_VAL AS mctOkVal,
+		A.MCT_NG_VAL AS mctNgVal
+	</sql>
+	<sql id="PdMctStdItemSql">
+		B.MCT_STD_ITEM_ID AS mctStdItemId,
+		B.MCT_STD_ITEM_NAME AS mctStdItemName,
+		B.LEVEL_ID AS levelId,
+		B.PARENT_ID AS parentId,
+		B.IS_CATALOG AS isCatalog,
+		IFNULL(C.STD_VAL,'') AS stdVal,
+		IFNULL(C.AGREE_FLG,'') AS agreeFlg,
+		C.SL_CODE AS slCode,
+		C.SL_PD_ID AS slPdId
+	</sql> -->
+
+	<!-- Deprecated by xia_xiaojie on 2016/6/24.
+	<select id="getMctStdInfo" resultType="com.msk.seller.bean.SL241118Bean" parameterType="BaseParam">
+		SELECT
+		<include refid="PdMctStdItemSql"/>
+		,
+		<include refid="PdMctStdSql"/>
+		FROM PD_MCT_STD A
+		LEFT JOIN PD_MCT_STD_ITEM B ON A.MCT_STD_ITEM_ID=B.MCT_STD_ITEM_ID
+		LEFT JOIN sl_pd_mct_std_new C ON A.STANDARD_ID=C.STANDARD_ID AND B.MCT_STD_ITEM_ID=C.STD_ITEM_ID
+		AND C.SL_CODE=#{filterMap.slCode} AND C.SL_PD_ID=#{filterMap.slPdId}
+		WHERE  B.LEVEL_ID=#{filterMap.levelId}
+		AND A.STANDARD_ID=#{filterMap.standardId}
+	</select> -->
+
+	<select id="findSlPdMctStdNew" resultType="com.msk.core.entity.SlPdMctStdNew" parameterType="BaseParam">
+		SELECT
+		SL_CODE AS slCode,
+		SL_PD_ID as slPdId,
+		STANDARD_ID as standardId,
+		STD_ITEM_ID as stdItemId,
+		AGREE_FLG as agreeFlg,
+		STD_VAL as stdVal,
+		DEL_FLG as delFlg,
+		VER as ver
+		FROM
+		sl_pd_mct_std_new AS A
+		WHERE
+		A.SL_CODE=#{filterMap.slCode} AND
+		A.SL_PD_ID=#{filterMap.slPdId} AND
+		A.STD_ITEM_ID=#{filterMap.stdItemId}
+		AND  A.DEL_FLG = 0
+	</select>
+	<select id="findSlPdMctStdNews" resultType="com.msk.core.entity.SlPdMctStdNew" parameterType="BaseParam">
+		SELECT
+		SL_CODE AS slCode,
+		SL_PD_ID as slPdId,
+		STANDARD_ID as standardId,
+		STD_ITEM_ID as stdItemId,
+		AGREE_FLG as agreeFlg,
+		STD_VAL as stdVal,
+		DEL_FLG as delFlg,
+		VER as ver
+		FROM
+		sl_pd_mct_std_new AS A
+		WHERE
+		A.DEL_FLG = 0
+		<if test="filterMap.slCodeSlPdIdStdItemIds !=null and filterMap.slCodeSlPdIdStdItemIds.size() >0">
+			and CONCAT(SL_CODE,SL_PD_ID,STD_ITEM_ID) in
+			<foreach collection="filterMap.slCodeSlPdIdStdItemIds" item="slCodeSlPdIdStdItemId" open="(" close=")" separator=",">
+				#{slCodeSlPdIdStdItemId}
+			</foreach>
+		</if>
+	</select>
+	<update id="modify" parameterType="com.msk.core.entity.SlPdMctStdNew">
+		UPDATE sl_pd_mct_std_new SET
+		AGREE_FLG=#{agreeFlg},
+		STD_VAL=#{stdVal},
+		UPD_ID=#{updId},
+		UPD_TIME=#{updTime},
+		VER=VER+1
+		WHERE
+		SL_CODE = #{slCode} AND
+		SL_PD_ID = #{slPdId} AND
+		STANDARD_ID = #{standardId} AND
+		STD_ITEM_ID = #{stdItemId}
+	</update>
+	<insert id="save" parameterType="com.msk.core.entity.SlPdMctStdNew">
+		INSERT INTO sl_pd_mct_std_new (
+		SL_CODE,
+		SL_PD_ID,
+		STANDARD_ID,
+		STD_ITEM_ID,
+		AGREE_FLG,
+		STD_VAL,
+		DEL_FLG,
+		CRT_ID,
+		CRT_TIME,
+	    UPD_ID,
+		UPD_TIME,
+		ACT_ID,
+		ACT_TIME,
+		VER
+		)
+		VALUES
+		(
+		#{slCode},
+		#{slPdId},
+		#{standardId},
+		#{stdItemId},
+		#{agreeFlg},
+		#{stdVal},
+		0,
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		1
+		)
+	</insert>
+	<!--<insert id="saveNotAgree" parameterType="com.msk.core.entity.PdMctStdDiscussProvider">-->
+		<!--INSERT INTO pd_mct_std_discuss_provider (-->
+		<!--KEY_ID,-->
+		<!--STANDARD_ID,-->
+		<!--SL_PD_ID,-->
+		<!--MCT_STD_ITEM_ID,-->
+		<!--MCT_STD_VAL,-->
+		<!--RAISE_DATE,-->
+		<!--PROVIDER_CODE,-->
+		<!--PROVIDER_NAME,-->
+		<!--DISCUSS_STATUS,-->
+		<!--DEL_FLG,-->
+		<!--CRT_ID,-->
+		<!--CRT_TIME,-->
+		<!--VER-->
+		<!--)-->
+		<!--VALUES-->
+		<!--(-->
+		<!--#{keyId},-->
+		<!--#{standardId},-->
+		<!--#{slPdId},-->
+		<!--#{mctStdItemId},-->
+		<!--#{mctStdVal},-->
+		<!--now(),-->
+		<!--#{providerCode},-->
+		<!--#{providerName},-->
+		<!--#{discussStatus},-->
+		<!--#{delFlg},-->
+		<!--#{crtId},-->
+		<!--now(),-->
+		<!--#{ver}-->
+		<!--)-->
+	<!--</insert>-->
+	<update id="modifySlProduct" parameterType="com.msk.core.entity.SlProduct">
+		UPDATE sl_product SET
+		SL_QLT_GRADE_CODE=#{slQltGradeCode},
+		UPD_TIME=#{updTime},
+		UPD_ID=#{updId},
+		VER = VER + 1
+		WHERE
+		SL_CODE = #{slCode} AND
+		SL_PD_ID=#{slPdId}
+	</update>
+
+	<select id="findSLPdMctCount" resultType="int" parameterType="com.msk.core.entity.SlPdMctStdNew">
+		SELECT
+		COUNT(1)
+		FROM
+		sl_pd_mct_std_new AS A
+		WHERE
+		A.SL_CODE=#{slCode}
+		AND A.SL_PD_ID=#{slPdId}
+		<if test="stdItemId!=null and stdItemId!=''">
+			AND A.STD_ITEM_ID = #{stdItemId}
+		</if>
+		AND  A.DEL_FLG = 0
+	</select>
+
+
+	<!-- 数据信息补全 -->
+	<select id="completeMctDate" resultType="com.msk.seller.bean.SL241118Bean" parameterType="BaseParam">
+		SELECT
+		STANDARD_ID AS standardId,
+		STD_ITEM_ID AS stdItemId,
+		AGREE_FLG AS agreeFlg,
+		STD_VAL AS stdVal
+		FROM
+		sl_pd_mct_std_new
+		WHERE
+		SL_PD_ID = #{slPdId}
+		AND SL_CODE = #{slCode}
+		AND DEL_FLG = 0
+		<if test="mctList != null and mctList.size() > 0">
+			AND
+			<foreach collection="mctList" item="mct" open="(" separator="OR" close=")">
+				STANDARD_ID = #{mct.standardId} AND STD_ITEM_ID = #{mct.mctStdItemId}
+			</foreach>
+		</if>
+	</select>
+</mapper>

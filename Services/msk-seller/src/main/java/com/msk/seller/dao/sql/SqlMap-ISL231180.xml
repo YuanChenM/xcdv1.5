@@ -1,0 +1,832 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231180RsLogic">
+	<update id="deleteSlAccount" parameterType="com.msk.core.entity.SlAccount">
+		UPDATE SL_ACCOUNT SET
+		DEL_FLG=#{delFlg},
+		UPD_ID=#{updId},
+		UPD_TIME=#{updTime},
+		VER=VER+1
+		WHERE SL_ACCOUNT=#{slAccount}
+	</update>
+
+	<update id="updateSlAccount" parameterType="com.msk.core.entity.SlAccount">
+		UPDATE
+		SL_ACCOUNT AS A
+		SET
+		A.SL_ACCOUNT=#{slAccount},
+		A.SL_TEL =#{slTel},
+		A.SL_CONTACT=#{slContact},
+		A.ACCOUNT_PSD=#{accountPsd},
+		A.SL_SHOW_NAME=#{slShowName},
+		A.AUTH_STATUS=#{authStatus},
+		A.FROM_FLG =#{fromFlg},
+		A.UPD_ID =#{updId},
+		A.UPD_TIME=#{updTime},
+		A.VER = A.VER + 1
+		WHERE A.SL_ACCOUNT=#{slAccount}
+	</update>
+
+	<update id="updateSlSeller" parameterType="com.msk.core.entity.SlSeller">
+		UPDATE
+		SL_SELLER
+		SET
+		SL_CODE =#{slCode},
+		SL_ACCOUNT=#{slAccount},
+		SL_CODE_DIS=#{slCodeDis},
+		SL_CON_FLG =#{slConFlg},
+
+		AREA_CODE =#{areaCode},
+		LGCS_AREA_CODE=#{lgcsAreaCode},
+		PROVINCE_CODE=#{provinceCode},
+		CITY_CODE=#{cityCode},
+		DISTRICT_CODE=#{districtCode},
+
+        AREA_NAME =#{areaName},
+        LGCS_AREA_NAME =#{lgcsAreaName},
+        PROVINCE_NAME =#{provinceName},
+        CITY_NAME =#{cityName},
+        DISTRICT_NAME = #{districtName},
+
+		EP_ID=#{epId},
+		SL_MAIN_CLASS=#{slMainClass},
+		SNK_FLG=#{snkFlg},
+		SELF_FLG=#{selfFlg},
+		AGENT_FLG =#{agentFlg},
+		OEM_FLG=#{oemFlg},
+		BUYER_FLG=#{buyerFlg},
+		SQA_STATUS =#{sqaStatus},
+		DIST_QUA=#{distQua},
+		SHOP_QUA=#{shopQua},
+		UPD_ID=#{updId},
+		UPD_TIME=#{updTime},
+		VER=VER+1,
+		MEMO1=#{memo1},
+		MEMO2=#{memo2},
+		MEMO3=#{memo3},
+		MEMO4=#{memo4},
+		MEMO5=#{memo5},
+		MEMO6=#{memo6},
+		MEMO7=#{memo7},
+		MEMO8=#{memo8},
+		MEMO9=#{memo9},
+		MEMO10=#{memo10},
+		MEMO11=#{memo11},
+		MEMO12=#{memo12},
+		MEMO13=#{memo13},
+		MEMO14=#{memo14},
+		MEMO15=#{memo15},
+		MEMO16=#{memo16},
+		MEMO17=#{memo17},
+		MEMO18=#{memo18},
+		MEMO19=#{memo19},
+		MEMO20=#{memo20}
+		WHERE SL_CODE=#{slCode}
+	</update>
+	<update id="updateSlEpCertItem" parameterType="com.msk.core.entity.SlEpCertItem">
+		UPDATE SL_EP_CERT_ITEM
+		SET
+		CERT_ITEM_VALUE=#{certItemValue},
+		UPD_ID=#{updId},
+		UPD_TIME=#{updTime},
+		VER = VER + 1
+		WHERE EP_ID=#{epId} AND CERT_ID=#{certId} AND CERT_ITEM_ID=#{certItemId}
+	</update>
+	<update id="updateSlEpBrand" parameterType="com.msk.core.entity.SlEpBrand">
+		UPDATE SL_EP_BRAND
+		SET
+		BRAND_NAME=#{brandName},
+		BRAND_NO=#{brandNo},
+		BRAND_CLASS=#{brandClass},
+		BRAND_TERM_BEGIN=#{brandTermBegin},
+		BRAND_TERM_END=#{brandTermEnd},
+		UPD_ID=#{updId},
+		UPD_TIME=#{updTime},
+		VER=VER+1
+		WHERE EP_ID=#{epId} AND BRAND_ID=#{brandId}
+	</update>
+	<update id="updateSlEpCap" parameterType="com.msk.core.entity.SlEpCap">
+		UPDATE SL_EP_CAP SET
+		FTY_ASSET=#{ftyAsset},
+		FTY_REG_CAPITAL=#{ftyRegCapital},
+		FTY_LAND_AREA=#{ftyLandArea},
+		FTY_FLOOR_AREA=#{ftyFloorArea},
+		FTY_EQUIPMENT=#{ftyEquipment},
+		FTY_DESIGN_CAP=#{ftyDesignCap},
+		FTY_ACTUAL_CAP=#{ftyActualCap},
+		FTY_FT_RATE=#{ftyFtRate},
+		FTY_DS_RATE=#{ftyDsRate},
+		FTY_AS_RATE=#{ftyAsRate},
+		SCAP_MATERIAL=#{scapMaterial},
+		SCAP_PRODUCT=#{scapProduct},
+		LAB_AREA=#{labArea},
+		LAB_FUNCTION=#{labFunction},
+		LAB_INVESTMENT=#{labInvestment},
+		LAB_MEMBER=#{labMember},
+		DD_EQUIPMENT=#{ddEquipment},
+		UPD_ID=#{updId},
+		UPD_TIME=#{updTime},
+		VER= VER+1
+		WHERE EP_ID=#{epId}
+	</update>
+	<update id="updateSlPdBrand" parameterType="com.msk.core.entity.SlPdBrand">
+		UPDATE SL_PD_BRAND SET
+        BRAND_NAME = #{brandName},
+        BRAND_TYPE = #{brandType},
+        CONTRACT_NO = #{contractNo},
+        TERM_BEGIN = #{termBegin},
+        TERM_END = #{termEnd},
+        BRAND_CLASS=#{brandClass},
+        UPD_ID = #{updId},
+        UPD_TIME=#{updTime},
+        VER = VER + 1
+        WHERE
+        SL_CODE = #{slCode}
+        AND BRAND_EP_ID=#{brandEpId}
+        AND BRAND_ID = #{brandId}
+	</update>
+	<update id="updateSlEpAgentAuth" parameterType="com.msk.core.entity.SlEpAgentAuth">
+		UPDATE SL_EP_AGENT_AUTH SET
+		CONTRACT_NO=#{contractNo},
+		AUTH_EP_NAME=#{authEpName},
+		AUTH_TERM_BEGIN=#{authTermBegin},
+		AUTH_TERM_END=#{authTermEnd},
+		AUTH_TERM_UNLIIMITED=#{authTermUnliimited},
+		UPD_ID=#{updId},
+		UPD_TIME=#{updTime},
+		VER=VER+1
+		WHERE SL_CODE=#{slCode} AND  PRODUCER_EP_ID=#{producerEpId}
+	</update>
+	<update id="updateSlEpOemAuth" parameterType="com.msk.seller.bean.SlEpOemAuth">
+		UPDATE SL_EP_OEM_AUTH SET
+		CONTRACT_NO=#{contractNo},
+		AUTH_EP_NAME=#{authEpName},
+		AUTH_TERM_BEGIN=#{authTermBegin},
+		AUTH_TERM_END=#{authTermEnd},
+		AUTH_TERM_UNLIIMITED=#{authTermUnliimited},
+		UPD_ID=#{updId},
+		UPD_TIME=#{updTime},
+		VER=VER+1
+		WHERE SL_CODE=#{slCode} AND  PRODUCER_EP_ID=#{producerEpId}
+	</update>
+	<select id="findSlPdBrandIfExist" parameterType="BaseParam" resultType="com.msk.core.entity.SlPdBrand">
+		SELECT
+		    SL_CODE AS slCode
+		from
+		    SL_PD_BRAND
+		WHERE
+		    SL_CODE = #{filterMap.slCode}
+		    AND BRAND_EP_ID =#{filterMap.brandEpId}
+		    AND BRAND_ID=#{filterMap.brandId}
+		    AND DEL_FLG = 0
+	</select>
+	<select id="findSlSellerList" parameterType="BaseParam" resultType="com.msk.core.entity.SlSeller">
+		SELECT
+			SL_CODE AS slCode,
+			SL_MAIN_CLASS AS slMainClass
+		FROM
+			SL_SELLER
+		WHERE
+			SL_ACCOUNT=#{filterMap.slAccount}
+			AND  DEL_FLG = 0
+	</select>
+	<select id="findSlSellerEpId" parameterType="BaseParam" resultType="com.msk.core.entity.SlSeller">
+		SELECT
+			SL_CODE AS slCode,
+			SL_MAIN_CLASS AS slMainClass
+		FROM
+			SL_SELLER
+		WHERE
+			EP_ID=#{filterMap.epId}
+			AND  DEL_FLG = 0
+	</select>
+
+	<select id="findSlAccountIfExist" parameterType="BaseParam" resultType="com.msk.core.entity.SlAccount">
+		SELECT A.SL_ACCOUNT AS slAccount from SL_ACCOUNT AS A WHERE A.SL_ACCOUNT = #{filterMap.slAccount}
+	</select>
+	<select id="findSlEnterprise" parameterType="BaseParam" resultType="com.msk.core.entity.SlEnterprise">
+		SELECT EP_ID AS epId from SL_ENTERPRISE
+		 WHERE EP_ID = #{filterMap.epId}
+		 AND DEL_FLG = 0
+	</select>
+	<select id="findSlEpBrandByEpIdAndBrandId" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpBrand" >
+		SELECT EP_ID AS epId
+		FROM SL_EP_BRAND
+		WHERE EP_ID=#{filterMap.brandEpId}
+		 AND BRAND_ID=#{filterMap.brandId}
+		 AND DEL_FLG = 0
+	</select>
+	<select id="findCertId" parameterType="BaseParam" resultType="com.msk.core.entity.SlMstPdCert">
+		SELECT CERT_ID
+		FROM SL_MST_PD_CERT
+		WHERE
+		PD_CLASSES_CODE=#{filterMap.pdClassesCode}
+		AND MACHINING_CODE=#{filterMap.machiningCode}
+		AND DEL_FLG = 0
+	</select>
+	<select id="findSlSeller" parameterType="BaseParam" resultType="com.msk.core.entity.SlSeller">
+		SELECT
+		   SL_CODE AS slCode
+		FROM
+		   SL_SELLER
+		WHERE
+		   EP_ID=#{filterMap.epId}
+		   AND  DEL_FLG = 0
+	</select>
+	<!-- 查询生产商账户-->
+	<select id="findManufactureAccount" parameterType="BaseParam" resultType="com.msk.core.entity.SlAccount">
+		SELECT
+			MAX(a.sl_account) as slAccount
+		FROM
+			sl_account a
+			INNER JOIN sl_seller s ON a.SL_ACCOUNT = s.sl_account
+			AND a.DEL_FLG = s.DEL_FLG AND s.SL_MAIN_CLASS = '0'
+			AND s.DEL_FLG = '0'
+		WHERE
+		a.DEL_FLG = '0'
+	</select>
+	<insert id="saveSlPdClasses" parameterType="com.msk.core.entity.SlPdClasses">
+		INSERT INTO SL_PD_CLASSES
+		(SL_CODE,PD_CLASSES_CODE,MACHINING_CODE,DEL_FLG,
+		CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER)
+		VALUES (#{slCode},#{pdClassesCode},#{machiningCode},0,
+		#{crtId},#{crtTime},#{crtId},#{crtTime},#{crtId},#{crtTime},1)
+	</insert>
+	<insert id="saveSlEpWorkshop" parameterType="com.msk.core.entity.SlEpWorkshop">
+		INSERT INTO SL_EP_WORKSHOP
+		(EP_ID,WORKSHOP_ID,WORKSHOP_NAME,PRODUCT,PROCESS,DEL_FLG,
+		CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER)
+		VALUES (#{epId},#{workshopId},#{workshopName},#{product},#{process},0,
+		#{crtId},#{crtTime},#{crtId},#{crtTime},#{crtId},#{crtTime},1)
+	</insert>
+	<insert id="saveSlPdBrand" parameterType="com.msk.core.entity.SlPdBrand">
+		INSERT INTO SL_PD_BRAND (
+		SL_CODE,
+		BRAND_EP_ID,
+		BRAND_ID,
+		BRAND_NAME,
+		BRAND_TYPE,
+		CONTRACT_NO,
+		TERM_BEGIN,
+		TERM_END,
+		BRAND_CLASS,
+		CRT_ID,
+		CRT_TIME,
+	        UPD_ID,
+	        UPD_TIME,
+	        ACT_ID,
+	        ACT_TIME,
+	        DEL_FLG,
+		VER
+		)
+		VALUES
+		(
+		#{slCode},
+		#{brandEpId},
+		#{brandId},
+		#{brandName},
+		#{brandType},
+		#{contractNo},
+		#{termBegin},
+		#{termEnd},
+		#{brandClass},
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		0,
+		1
+		)
+	</insert>
+	<insert id="saveSlEpAgentAuth" parameterType="com.msk.core.entity.SlEpAgentAuth">
+		INSERT  INTO SL_EP_AGENT_AUTH (
+		SL_CODE,
+		PRODUCER_EP_ID,
+		CONTRACT_NO,
+		AUTH_EP_NAME,
+		AUTH_TERM_BEGIN,
+		AUTH_TERM_END,
+		AUTH_TERM_UNLIIMITED,
+		DEL_FLG,
+		CRT_ID,
+		CRT_TIME,
+		UPD_ID,
+	        UPD_TIME,
+	        ACT_ID,
+	        ACT_TIME,
+		VER
+		)
+		VALUES
+		(
+		#{slCode},
+		#{producerEpId},
+		#{contractNo},
+		#{authEpName},
+		#{authTermBegin},
+		#{authTermEnd},
+		#{authTermUnliimited},
+		0,
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		1
+		)
+	</insert>
+	<insert id="saveSlEpOemAuth" parameterType="com.msk.core.entity.SlEpOemAuth">
+		INSERT  INTO SL_EP_OEM_AUTH (
+		SL_CODE,
+		PRODUCER_EP_ID,
+		CONTRACT_NO,
+		AUTH_EP_NAME,
+		AUTH_TERM_BEGIN,
+		AUTH_TERM_END,
+		AUTH_TERM_UNLIIMITED,
+		DEL_FLG,
+		CRT_ID,
+		CRT_TIME,
+		UPD_ID,
+	        UPD_TIME,
+	        ACT_ID,
+	        ACT_TIME,
+		VER
+		)
+		VALUES
+		(
+		#{slCode},
+		#{producerEpId},
+		#{contractNo},
+		#{authEpName},
+		#{authTermBegin},
+		#{authTermEnd},
+		#{authTermUnliimited},
+		0,
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		1
+		)
+	</insert>
+	<insert id="saveSlEpManager" parameterType="com.msk.core.entity.SlEpManager">
+		INSERT INTO sl_ep_manager (
+		EP_ID,
+		MEMBER_ID,
+		MEMBER_DUTIES,
+		MEMBER_NAME,
+		MEMBER_AGE,
+		MEMBER_EDUC,
+		MEMBER_TEL,
+		DEL_FLG,
+		CRT_ID,
+		CRT_TIME,
+		UPD_ID,
+	        UPD_TIME,
+	        ACT_ID,
+	        ACT_TIME,
+		VER
+		)
+		VALUES
+		(
+		#{epId},
+		#{memberId},
+		#{memberDuties},
+		#{memberName},
+		#{memberAge},
+		#{memberEduc},
+		#{memberTel},
+	    0,
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		1
+		)
+	</insert>
+	<insert id="saveSlEcTeam" parameterType="com.msk.core.entity.SlEcTeam">
+		INSERT INTO SL_EC_TEAM (
+		SL_CODE,
+		MEMBER_ID,
+		LEADER_FLG,
+		MEMBER_NAME,
+		MEMBER_AGE,
+		BIRTHDAY,
+		MEMBER_EDUC,
+		MEMBER_TEL,
+		DEL_FLG,
+		CRT_ID,
+		CRT_TIME,
+		UPD_ID,
+	        UPD_TIME,
+	        ACT_ID,
+	        ACT_TIME,
+		VER
+		)
+		VALUES
+		(
+		#{slCode},
+		#{memberId},
+		#{leaderFlg},
+		#{memberName},
+		#{memberAge},
+		#{birthday},
+		#{memberEduc},
+		#{memberTel},
+		0,
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		1
+		)
+	</insert>
+	<update id="updateSlEpBrandHonor" parameterType="com.msk.core.entity.SlEpBrandHonor">
+		UPDATE SL_EP_BRAND_HONOR SET
+		HONOR_DES = #{honorDes},
+		HONOR_NO=#{honorNo},
+		CERT_DATE=#{certDate},
+		CERT_ISSUER=#{certIssuer},
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime},
+        VER = VER +1
+        WHERE
+        EP_ID=#{epId} AND BRAND_ID=#{brandId} AND HONOR_ID=#{honorId}
+	</update>
+	<update id="updateSlSelfPdBrand" parameterType="com.msk.core.entity.SlPdBrand">
+		UPDATE SL_PD_BRAND SET
+		BRAND_NAME =#{brandName},
+		BRAND_TYPE=#{brandType},
+		TERM_BEGIN=#{termBegin},
+		TERM_END=#{termEnd},
+		BRAND_CLASS=#{brandClass},
+		UPD_ID=#{updId},
+		UPD_TIME=#{updTime},
+		VER = VER + 1
+		WHERE
+        SL_CODE=#{slCode} AND BRAND_ID=#{brandId} AND BRAND_EP_ID=#{brandEpId}
+	</update>
+	<select id="findSlCode" parameterType="BaseParam" resultType="com.msk.core.entity.SlSeller">
+		SELECT SL_CODE AS slCode FROM SL_SELLER WHERE EP_ID=#{filterMap.epId} AND DEL_FLG = 0
+	</select>
+
+	<update id="findUpdateSlseller" parameterType="com.msk.core.entity.SlSeller">
+		UPDATE sl_seller SET
+		EP_ID = #{epId},
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+		WHERE
+		SL_CODE=#{slCode}
+	</update>
+
+	<select id="queryOneSlCode" parameterType="BaseParam" resultType="int">
+		SELECT count(1) FROM SL_SELLER WHERE SL_CODE=#{filterMap.slCode} AND DEL_FLG = 0
+	</select>
+	<!--企业检测设备添加-->
+	<insert id="saveSlEpDd" parameterType="com.msk.core.entity.SlEpDd">
+		INSERT INTO sl_ep_dd (
+		EP_ID,
+		DD_ID,
+		DD_NAME,
+		DD_EQUIPMENT,
+		DEL_FLG,
+		CRT_ID,
+		CRT_TIME,
+		UPD_ID,
+	        UPD_TIME,
+	        ACT_ID,
+	        ACT_TIME,
+		VER
+		)
+		VALUES
+		(
+		#{epId},
+		#{ddId},
+		#{ddName},
+		#{ddEquipment},
+		0,
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		#{crtId},
+		#{crtTime},
+		1
+		)
+	</insert>
+	<!--企业检测设备更新-->
+	<insert id="updateSlEpDd" parameterType="com.msk.core.entity.SlEpDd">
+		update sl_ep_dd set
+		DD_NAME=#{ddName},
+		DD_EQUIPMENT=#{ddEquipment},
+		UPD_ID=#{updId},
+		UPD_TIME=#{updTime},
+		VER = VER + 1
+		<where>
+			<if test="epId!=null and epId!=''">
+				and EP_ID=#{epId}
+			</if>
+			<if test="ddId!=null and ddId!=''">
+				and DD_ID=#{ddId}
+			</if>
+		</where>
+	</insert>
+	<!--根据电话号码查询是否存在记录-->
+	<select id="querySlTel" parameterType="BaseParam" resultType="int">
+		  select count(1)
+		  from sl_account
+		  where SL_TEL=#{filterMap.slTel}
+		    AND  DEL_FLG = 0
+	</select>
+	<!--营业执照号唯一-->
+	<select id="queryLicNoData" resultType="int" parameterType="BaseParam">
+		  select count(1)
+		  from sl_enterprise
+		  <where>
+			  DEL_FLG = 0
+			  <if test="filterMap.licNo!=null and filterMap.licNo!=''">
+				  AND LIC_NO=#{filterMap.licNo}
+			  </if>
+		  </where>
+	</select>
+	<!--根据卖家ID查询卖家产品类别数据-->
+	<select id="querySlPdClass" resultType="int" parameterType="BaseParam">
+		select count(1)
+		from sl_pd_classes
+		<where>
+			DEL_FLG = 0
+			<if test="filterMap.slCode!=null and filterMap.slCode!=''">
+				AND SL_CODE=#{filterMap.slCode}
+			</if>
+		</where>
+	</select>
+	<!--根据卖家ID删除卖家产品类别数据-->
+	<delete id="deleteSlPdClass" parameterType="BaseParam">
+		delete from sl_pd_classes
+		<where>
+			<if test="filterMap.slCode!=null and filterMap.slCode!=''">
+				AND SL_CODE=#{filterMap.slCode}
+			</if>
+		</where>
+	</delete>
+	<!--删除企业专业资质-->
+	<update id="deleteSlEpCert" parameterType="com.msk.seller.bean.ISL231127CertInfoList">
+		update sl_ep_cert set
+		DEL_FLG= 1,
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+		<where>
+			<if test="epId!=null and epId!=''">
+				AND EP_ID=#{epId}
+			</if>
+			<if test="certId!=null and certId!=''">
+				AND CERT_ID=#{certId}
+			</if>
+		</where>
+	</update>
+	<!--删除企业荣誉-->
+	<update id="deleteSlEpHonor" parameterType="com.msk.core.entity.SlEpHonor">
+		update sl_ep_honor set
+		DEL_FLG= 1,
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+		<where>
+			<if test="epId!=null and epId!=''">
+				AND EP_ID=#{epId}
+			</if>
+			<if test="honorId!=null and honorId!=''">
+				AND HONOR_ID=#{honorId}
+			</if>
+		</where>
+	</update>
+	<!--删除企业产品品牌-->
+	<update id="deleteSlEpBrand" parameterType="com.msk.seller.bean.ISL231180SlEpBrandList">
+		update sl_ep_brand set
+		DEL_FLG= 1,
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+		<where>
+			<if test="epId!=null and epId!=''">
+				AND EP_ID=#{epId}
+			</if>
+			<if test="brandId!=null and brandId!=''">
+				AND BRAND_ID=#{brandId}
+			</if>
+		</where>
+	</update>
+	<!--删除企业产品品牌荣誉-->
+	<update id="deleteSlEpBrandHonor" parameterType="com.msk.core.entity.SlEpBrandHonor">
+		update sl_ep_brand_honor set
+		DEL_FLG= 1,
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+		<where>
+			<if test="epId!=null and epId!=''">
+				AND EP_ID=#{epId}
+			</if>
+			<if test="brandId!=null and brandId!=''">
+				AND BRAND_ID=#{brandId}
+			</if>
+			<if test="honorId!=null and honorId!=''">
+				AND HONOR_ID=#{honorId}
+			</if>
+		</where>
+	</update>
+	<!--删除卖家产品品牌-->
+	<update id="deleteSlPdBrand" parameterType="com.msk.seller.bean.ISlPdBrand">
+		update sl_pd_brand set
+		DEL_FLG= 1,
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+		<where>
+			<if test="slCode!=null and slCode!=''">
+				AND SL_CODE=#{slCode}
+			</if>
+			<if test="brandId!=null and brandId!=''">
+				AND BRAND_ID=#{brandId}
+			</if>
+			<if test="brandEpId!=null and brandEpId!=''">
+				AND BRAND_EP_ID=#{brandEpId}
+			</if>
+		</where>
+	</update>
+	<!--删除企业车间-->
+	<update id="deleteWorkShopId" parameterType="com.msk.core.entity.SlEpWorkshop">
+		update sl_ep_workshop set
+		DEL_FLG= 1,
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+		<where>
+			<if test="epId!=null and epId!=''">
+				AND EP_ID=#{epId}
+			</if>
+			<if test="workShopId!=null and workShopId!=''">
+				AND WORKSHOP_ID=#{workShopId}
+			</if>
+		</where>
+	</update>
+	<!--删除代理商-->
+	<update id="deleteSLEpAgentAuth" parameterType="com.msk.seller.bean.ISL231180SLEpAuth">
+		update sl_ep_agent_auth set
+		DEL_FLG= 1,
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+		<where>
+			<if test="slCode!=null and slCode!=''">
+				AND SL_CODE=#{slCode}
+			</if>
+			<if test="epId!=null and epId!=''">
+				AND PRODUCER_EP_ID=#{epId}
+			</if>
+		</where>
+	</update>
+	<!--删除OEM商-->
+	<update id="deleteSLEpOemAuth" parameterType="com.msk.seller.bean.ISL231180SLEpAuth">
+		update sl_ep_oem_auth set
+		DEL_FLG= 1,
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+		<where>
+			<if test="slCode!=null and slCode!=''">
+				AND SL_CODE=#{slCode}
+			</if>
+			<if test="epId!=null and epId!=''">
+				AND PRODUCER_EP_ID=#{epId}
+			</if>
+		</where>
+	</update>
+	<!--删除企业管理团队-->
+	<update id="deleteSLEpManager" parameterType="com.msk.core.entity.SlEpManager">
+		update sl_ep_manager set
+		DEL_FLG= 1,
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+		<where>
+			<if test="memberId!=null and memberId!=''">
+				AND MEMBER_ID=#{memberId}
+			</if>
+			<if test="epId!=null and epId!=''">
+				AND EP_ID=#{epId}
+			</if>
+		</where>
+	</update>
+	<!--删除卖家电商团队-->
+	<update id="deleteSLEcTeam" parameterType="com.msk.core.entity.SlEcTeam">
+		update sl_ec_team set
+		DEL_FLG= 1,
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+		<where>
+			<if test="memberId!=null and memberId!=''">
+				AND MEMBER_ID=#{memberId}
+			</if>
+			<if test="slCode!=null and slCode!=''">
+				AND SL_CODE=#{slCode}
+			</if>
+		</where>
+	</update>
+	<!--删除企业检测设备-->
+	<update id="deleteSlEpDd" parameterType="com.msk.core.entity.SlEpDd">
+		update sl_ep_dd set
+		DEL_FLG = 1,
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+		<where>
+			<if test="ddId!=null and ddId!=''">
+				AND DD_ID=#{ddId}
+			</if>
+			<if test="epId!=null and epId!=''">
+				AND EP_ID=#{epId}
+			</if>
+		</where>
+	</update>
+	<!--查询企业专业资质-->
+	<select id="querySlEpCert" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpCert">
+		select
+		CERT_NAME AS certName,
+		DEL_FLG AS delFlg
+		from sl_ep_cert
+		<where>
+			DEL_FLG = 0
+			<if test="filterMap.certId!=null and filterMap.certId!=''">
+				AND CERT_ID=#{filterMap.certId}
+			</if>
+			<if test="filterMap.epId!=null and filterMap.epId!=''">
+				AND EP_ID=#{filterMap.epId}
+			</if>
+		</where>
+	</select>
+	<!--查询卖家产品品牌-->
+	<select id="querySlPdBreed" parameterType="BaseParam" resultType="com.msk.core.entity.SlPdBrand">
+		select
+		BRAND_NAME AS brandName,
+		DEL_FLG AS delFlg
+		from sl_pd_brand
+		<where>
+			<if test="filterMap.slCode!=null and filterMap.slCode!=''">
+				AND SL_CODE=#{filterMap.slCode}
+			</if>
+			<if test="filterMap.brandId!=null and filterMap.brandId!=''">
+				AND BRAND_ID=#{filterMap.brandId}
+			</if>
+			<if test="filterMap.brandEpId!=null and filterMap.brandEpId!=''">
+				AND BRAND_EP_ID=#{filterMap.brandEpId}
+			</if>
+		</where>
+	</select>
+	<!--查询代理商-->
+	<select id="querySlEpAgentAuth" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpAgentAuth">
+		select
+		SL_CODE AS brandName,
+		PRODUCER_EP_ID AS producerEpId,
+		AUTH_EP_NAME AS authEpName,
+		DEL_FLG AS delFlg
+		from sl_ep_agent_auth
+		<where>
+			<if test="filterMap.slCode!=null and filterMap.slCode!=''">
+				AND SL_CODE=#{filterMap.slCode}
+			</if>
+			<if test="filterMap.epId!=null and filterMap.epId!=''">
+				AND PRODUCER_EP_ID=#{filterMap.epId}
+			</if>
+		</where>
+	</select>
+	<!--查询OEM商-->
+	<select id="querySlEpOemAuth" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpOemAuth">
+	select
+	SL_CODE AS brandName,
+	PRODUCER_EP_ID AS producerEpId,
+	AUTH_EP_NAME AS authEpName,
+	DEL_FLG AS delFlg
+	from sl_ep_oem_auth
+	<where>
+		<if test="filterMap.slCode!=null and filterMap.slCode!=''">
+			AND SL_CODE=#{filterMap.slCode}
+		</if>
+		<if test="filterMap.epId!=null and filterMap.epId!=''">
+			AND PRODUCER_EP_ID=#{filterMap.epId}
+		</if>
+	</where>
+	</select>
+</mapper>

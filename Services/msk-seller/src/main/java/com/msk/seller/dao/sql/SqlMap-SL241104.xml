@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241104Logic">
+
+    <sql id="PdTncStdItemSql">
+        IFNULL(C.STD_VAL,'') AS stdVal,
+        IFNULL(C.AGREE_FLG,'') AS agreeFlg,
+        C.SL_CODE AS slCode,
+        C.SL_PD_ID AS slPdId,
+        C.STD_ITEM_ID AS  stdItemId,
+        C.STANDARD_ID AS standardId
+    </sql>
+    <select id="findSlPdTncStd" resultType="com.msk.seller.bean.SL241117Bean" parameterType="BaseParam">
+      SELECT
+        <include refid="PdTncStdItemSql"/>
+        <!--,
+        <include refid="PdTncStdSql"/>-->
+        FROM
+        sl_pd_tnc_std_new AS C
+        <!--INNER JOIN pd_tnc_std_item AS B ON C.STD_ITEM_ID = B.TNC_STD_ITEM_ID
+        INNER JOIN pd_tnc_std AS A ON A.TNC_STD_ITEM_ID = B.TNC_STD_ITEM_ID AND A.STANDARD_ID = C.STANDARD_ID-->
+        WHERE
+        C.SL_CODE = #{filterMap.slCode} AND
+        C.SL_PD_ID = #{filterMap.slPdId}
+        AND  C.DEL_FLG = 0
+    </select>
+</mapper>

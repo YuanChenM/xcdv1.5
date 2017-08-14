@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.SO153102Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSoRunningSql">
+        RUNNING_ID  AS runningId,
+        AMOUNT_TYPE AS amountType,
+        IFNULL(BACK_TYPE,'') AS backType,
+        BILL_ID AS billId ,
+        (CASE WHEN TRANS_CODE IS NULL THEN '-'
+              WHEN TRANS_CODE = '' THEN '-'
+              ELSE  TRANS_CODE
+          END) AS transCode,
+        IFNULL(TRANS_TYPE,'') AS transType,
+        IFNULL(REFUND_ID,'') AS refundId,
+        (CASE WHEN REFUND_CODE IS NULL THEN '-'
+              WHEN REFUND_CODE = '' THEN '-'
+              ELSE  REFUND_CODE
+          END) AS refundCode,
+        PAID_AMOUNT AS paidAmount,
+        IFNULL(PAID_TYPE,'') AS paidType,
+        (CASE WHEN PAID_SEQ IS NULL THEN '-'
+              WHEN PAID_SEQ = '' THEN '-'
+              ELSE PAID_SEQ
+        END) AS paidSeq,
+        IFNULL(VER_SEQ,'') AS verSeq,
+        PAID_TIME AS paidTime,
+        IFNULL(PAYER_ID,'') AS payerId,
+        IFNULL(PAYEE_ID,'') AS payeeId,
+        (CASE WHEN REMARK IS NULL THEN '-'
+              WHEN REMARK = '' THEN '-'
+              ELSE REMARK
+        END) AS remark
+    </sql>
+    <!--条件 -->
+    <sql id="whereSoRunningCondition">
+        <where>
+            <if test="filterMap.backType!=null and filterMap.backType!=''">
+                AND BACK_TYPE = #{filterMap.backType}
+            </if>
+            <if test="filterMap.billId!=null and filterMap.billId!=''">
+                AND BILL_ID = #{filterMap.billId}
+            </if>
+            AND DEL_FLG = 0
+        </where>
+    </sql>
+
+    <select id="findSORunning" parameterType="BaseParam" resultType="com.msk.so.bean.SoCpRunningBean">
+        SELECT
+        <include refid="selectSoRunningSql"/>
+        from SO_CP_RUNNING
+        <include refid="whereSoRunningCondition"/>
+    </select>
+
+    <!--添加买家资金池详细页面合计 modify by renyi on 2016/8/11 start-->
+    <select id="getTotalPaidAmountInfo" parameterType="BaseParam" resultType="com.msk.so.bean.SO153102Bean">
+        SELECT
+        IFNULL(SUM(t1.paidAmount),'') AS totalPaidAmount
+        FROM (
+        SELECT
+        <include refid="selectSoRunningSql"/>
+        from SO_CP_RUNNING
+        <include refid="whereSoRunningCondition"/>
+        )AS t1
+    </select>
+    <!--添加买家资金池详细页面合计 modify by renyi on 2016/8/11 end-->
+
+    <sql id="selectSoRefundSql">
+        RE.REFUND_ID   AS    refundId,
+        (CASE WHEN RE.TRANS_CODE IS NULL THEN '-'
+              WHEN RE.TRANS_CODE = '' THEN '-'
+              ELSE  RE.TRANS_CODE
+        END) AS transCode,
+        SELLER_BILL_ID AS  sellerBillId,
+        (CASE WHEN RE.REFUND_CODE IS NULL THEN '-'
+              WHEN RE.REFUND_CODE = '' THEN '-'
+              ELSE  RE.REFUND_CODE
+        END) AS refundCode,
+        RE.REFUND_AMOUNT  AS refundAmount,
+        RE.REFUND_TIME    AS refundTime,
+        RE.REFUND_TYPE    AS refundType,
+        IFNULL(RE.RE_SHIP_FLG,'') AS reShipFlg,
+        IFNULL(RE.PAYER_ID,'')    AS payerId,
+        IFNULL(RE.PAYEE_ID,'')    AS payeeId,
+        (CASE WHEN RE.REMARK IS NULL THEN '-'
+              WHEN RE.REMARK = '' THEN '-'
+              ELSE RE.REMARK
+        END) AS remark
+    </sql>
+
+    <select id="findSORefund" parameterType="BaseParam" resultType="com.msk.so.bean.SoCpRefundBean">
+        select
+        <include refid="selectSoRefundSql"/>
+        from SO_CP_REFUND AS RE
+        WHERE RE.TRANS_CODE = #{filterMap.transCode}
+        <!-- 添加买家资金池详细列表更新功能 modify by lihuiqian on 2016/8/31 start -->
+        AND DEL_FLG = 0
+        <!-- 添加买家资金池详细列表更新功能 modify by lihuiqian on 2016/8/31 end -->
+    </select>
+    <!--添加买家资金池详细页面合计 modify by renyi on 2016/8/11 start-->
+    <select id="getTotalRefundAmountInfo" parameterType="BaseParam" resultType="com.msk.so.bean.SO153102Bean">
+        SELECT
+        IFNULL(SUM(t1.refundAmount),'') AS totalRefundAmount
+        FROM (
+        select
+        <include refid="selectSoRefundSql"/>
+        from SO_CP_REFUND AS RE
+        WHERE RE.TRANS_CODE = #{filterMap.transCode}
+        <!--Bug#3252 modify by li_huiqian on 2016/10/12 start-->
+        AND DEL_FLG = 0
+        <!--Bug#3252 modify by li_huiqian on 2016/10/12 end-->
+        )AS t1
+    </select>
+    <!--添加买家资金池详细页面合计 modify by renyi on 2016/8/11 end-->
+
+    <!-- 添加买家资金池详细列表更新删除功能 modify by lihuiqian on 2016/8/31 start -->
+    <update id="deleteSoRunning" parameterType="com.msk.core.entity.SoCpRunning">
+        UPDATE so_cp_running
+        SET
+        DEL_FLG = 1,
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        RUNNING_ID = #{runningId}
+    </update>
+
+    <update id="updateSoCpBuyerBillByRunning" parameterType="com.msk.core.entity.SoCpBuyerBill">
+        UPDATE so_cp_buyer_bill
+        SET
+        <if test="paid!=null">
+            PAID = #{paid},
+        </if>
+        <if test="realRefund!=null">
+            REAL_REFUND = #{realRefund},
+        </if>
+        VER = VER + 1,
+        SETTLEMENT_STATUS = #{settlementStatus},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        BUYER_BILL_ID=#{buyerBillId}
+    </update>
+
+    <update id="deleteSoRefund" parameterType="com.msk.core.entity.SoCpRefund">
+        UPDATE so_cp_refund
+        SET
+        DEL_FLG = 1,
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        REFUND_ID = #{refundId}
+    </update>
+
+    <update id="updateSoCpBuyerBillByRefund" parameterType="com.msk.core.entity.SoCpBuyerBill">
+        UPDATE so_cp_buyer_bill
+        SET
+        <if test="reliefAmount!=null">
+            RELIEF_AMOUNT = #{reliefAmount},
+        </if>
+        VER = VER + 1,
+        SETTLEMENT_STATUS = #{settlementStatus},
+        <if test="refundable!=null">
+            REFUNDABLE = #{refundable},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        BUYER_BILL_ID=#{buyerBillId}
+    </update>
+    <!-- 添加买家资金池详细列表更新删除功能 modify by lihuiqian on 2016/8/31 end -->
+
+</mapper>

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC1130401Logic">
+    <!--查询合同基本信息-->
+    <select id="findBidBasci" resultType="com.msk.core.entity.SscContractBasic"
+            parameterType="BaseParam">
+        SELECT
+       BID_ID  as  bidId,
+     BID_PROJECT_NO as bidProjectNo,
+     SUPPLIER_ID as supplierId,
+     SUPPLIER_NAME as supplierName,
+     SUPPLIER_CODE as supplierCode,
+     PURCHASER_ID  as  purchaserId,
+     PURCHASER_NAME as purchaserName,
+     PURCHASER_CODE as purchaserCode
+        FROM SSC_BID_BASIC_INFO
+        WHERE
+         BID_ID = #{filterMap.bidId}
+        AND DEL_FLG = 0
+
+    </select>
+
+    <select id="findContractBasciByBid" parameterType="BaseParam" resultType="Long">
+        SELECT count(*) FROM ssc_contract_basic
+        WHERE BID_ID=#{filterMap.bid} AND DEL_FLG=0
+    </select>
+
+    <select id="findBidDetail" resultType="com.msk.core.entity.SscContractPrDetail" parameterType="BaseParam">
+         SELECT
+            DETAIL_ID AS detailId,
+            ifnull(PD_CODE, '') AS pdCode,
+            ifnull(PD_DESC, '') AS pdDesc,
+            ifnull(CLASSES_CODE, '') AS classesCode,
+            ifnull(CLASSES_NAME, '') AS classesName,
+            ifnull(MACHINING_CODE, '') AS machiningCode,
+            ifnull(MACHINING_NAME, '') AS machiningName,
+            ifnull(BREED_CODE, '') AS breedCode,
+            ifnull(BREED_NAME, '') AS breedName,
+            ifnull(FEATURE_CODE, '') AS featureCode ,
+            ifnull(FEATURE_NAME, '') AS featureName,
+            ifnull(WEIGHT_CODE, '') AS weightCode,
+            ifnull(WEIGHT_NAME, '') AS weightName,
+            ifnull(NORMS_CODE, '') AS normsCode,
+            ifnull(NORMS_NAME, '') AS normsName,
+            ifnull(GRADE_CODE, '') AS gradeCode,
+            ifnull(GRADE_NAME, '') AS gradeName,
+            PRODUCT_QUALITY_STANDARD as productQualityStandard,
+            PRODUCT_QUA AS productQua,
+            PRODUCT_BOX AS productBox,
+            FOB_FREE_PACKAGE AS fobFreePackage,
+            PACKAGE_COST AS packageCost,
+            FOB_INCLUDE_PACKAGE AS fobIncludePackage,
+            TRUNK_FREIGHT AS trunkFreight,
+            CIF AS cif,
+            WEIGHT_VAL AS weightVal,
+            SETTKEMENT_STANDARD_PRICE AS settkementStandardPrice,
+            PRODUCT_VALUE AS productValue,
+            IFNULL(REMARK, '') AS remark,
+            BRAND_EP_ID AS brandEpId,
+            BRAND_ID AS brandId,
+            BRAND_NAME AS brandName
+        FROM
+            SSC_BID_PRODUCT_DETAIL
+        WHERE
+            DEL_FLG = 0
+        AND BID_ID = #{filterMap.bidId}
+    </select>
+
+
+    <insert id="saveContractBasic" parameterType="com.msk.core.entity.SscContractBasic">
+        INSERT  INTO ssc_contract_basic (
+        CONTRACT_ID,
+        CONTRACT_CODE,
+        BID_ID,
+        BID_PROJECT_NO,
+        BID_RELATION_TYPE,
+        CONTRACT_NAME,
+        CONTRACT_TYPE,
+        SUPPLIER_ID,
+        SUPPLIER_NAME,
+        SUPPLIER_CODE,
+        PURCHASER_ID,
+        PURCHASER_NAME,
+        PURCHASER_CODE,
+        CONTRACT_ACT_DATE,
+        CONTRACT_STATUS,
+        CONTRACT_AMOUNT,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES (
+        #{contractId},
+        #{contractCode},
+        #{bidId},
+        #{bidProjectNo},
+        #{bidRelationType},
+        #{contractName},
+        #{contractType},
+        #{supplierId},
+        #{supplierName},
+        #{supplierCode},
+        #{purchaserId},
+        #{purchaserName},
+        #{purchaserCode},
+        #{contractActDate},
+        #{contractStatus},
+        #{contractAmount},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        1
+        )
+    </insert>
+    <!--save合同产品订单信息-->
+    <insert id="saveContractOrder" parameterType="BaseEntity">
+        INSERT  INTO  ssc_contract_pr_detail(
+        DETAIL_ID,
+        CONTRACT_ID,
+        PD_CODE,
+        PD_DESC,
+        CLASSES_CODE,
+        CLASSES_NAME,
+        MACHINING_CODE,
+        MACHINING_NAME,
+        BREED_CODE,
+        BREED_NAME,
+        FEATURE_CODE,
+        FEATURE_NAME,
+        WEIGHT_CODE,
+        WEIGHT_NAME,
+        WEIGHT_VAL,
+        NORMS_CODE,
+        NORMS_NAME,
+        GRADE_CODE,
+        GRADE_NAME,
+        PRODUCT_QUALITY_STANDARD,
+        PRODUCT_QUA,
+        PRODUCT_BOX,
+        FOB_FREE_PACKAGE,
+        PACKAGE_COST,
+        FOB_INCLUDE_PACKAGE,
+        TRUNK_FREIGHT,
+        CIF,
+        SETTKEMENT_STANDARD_PRICE,
+        DOWN_PAYMENT,
+        PAYMENT_AMOUNT,
+        PRODUCT_VALUE,
+        REMARK,
+        BRAND_EP_ID,
+        BRAND_ID,
+        BRAND_NAME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES (
+        #{detailId},
+        #{contractId},
+        #{pdCode},
+        #{pdDesc},
+        #{classesCode},
+        #{classesName},
+        #{machiningCode},
+        #{machiningName},
+        #{breedCode},
+        #{breedName},
+        #{featureCode},
+        #{featureName},
+        #{weightCode},
+        #{weightName},
+        #{weightVal},
+        #{normsCode},
+        #{normsName},
+        #{gradeCode},
+        #{gradeName},
+        #{productQualityStandard},
+        #{productQua},
+        #{productBox},
+        #{fobFreePackage},
+        #{packageCost},
+        #{fobIncludePackage},
+        #{trunkFreight},
+        #{cif},
+        #{settkementStandardPrice},
+        #{downPayment},
+        #{paymentAmount},
+        #{productValue},
+        #{remark},
+        #{brandEpId},
+        #{brandId},
+        #{brandName},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        1
+        )
+
+    </insert>
+</mapper>

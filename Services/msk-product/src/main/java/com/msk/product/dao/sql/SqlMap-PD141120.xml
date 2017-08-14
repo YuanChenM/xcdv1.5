@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141120Logic">
+    <select id="findPdOrderlevel" resultType="com.msk.core.entity.PdOrderlevel"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        SELECT
+        A.ORDERLEVEL_CODE AS orderlevelCode,
+        A.ORDERLEVEL_NAME AS orderlevelName,
+        TRUNCATE(A.PRICE_PERCENT*100,1) AS pricePercent,
+        A.BOX_CNT AS boxCnt,
+        A.BOX_CNTMIN AS boxCntmin,
+        A.BOX_CNTMAX AS boxCntmax
+        FROM
+        pd_orderlevel AS A
+        <where>
+            <if test="filterMap.wayCode!=null and filterMap.wayCode!=''">
+                AND A.WAY_CODE=#{filterMap.wayCode}
+            </if>
+        </where>
+        ORDER BY (A.ORDERLEVEL_CODE+0) ASC
+    </select>
+    <select id="findPdWayInfo" resultType="com.msk.core.entity.PdOrderlevel">
+		SELECT DISTINCT
+			WAY_CODE AS wayCode,
+			WAY_NAME AS wayName
+		FROM
+			pd_orderlevel AS A
+	</select>
+    <select id="findLogisticsArea" resultType="com.msk.core.entity.MdLogisticsArea">
+		SELECT
+		LGCS_AREA_CODE AS lgcsAreaCode,
+		LGCS_AREA_NAME AS lgcsAreaName
+		FROM md_logistics_area
+		ORDER BY (LGCS_AREA_ID+0)
+	</select>
+    <insert id="save" parameterType="com.msk.product.bean.PD141120Bean">
+		INSERT INTO PD_PRICEPRD_LOGIAREA(
+		PRICECYCLE_ID
+		,PRICECYCLE_PERIOD
+		,PDT_MIXCODE
+		,CLASSES_CODE
+		,CLASSES_NAME
+		,MACHINING_CODE
+		,MACHINING_NAME
+		,BREED_CODE
+		,BREED_NAME
+		,FEATURE_CODE
+		,FEATURE_NAME
+		,WEIGHT_CODE
+		,PKG_CODE
+		,GRADE_CODE
+		,PDT_NAME
+		,LOGIAREA_CODE
+		,LOGIAREA_NAME
+		,ORDERLEVEL_CODE
+		,ORDERLEVEL_NAME
+		,NETWEIGHT
+		,PRICEOFKG
+		,PRICEOFBOX
+		,DEL_FLG
+		,CRT_ID
+		,CRT_TIME
+		,VER
+		)VALUES(
+		#{pricecycleId},
+		#{pricecyclePeriod},
+		#{pdtMixcode},
+		#{classesCode},
+		#{classesName},
+		#{machiningCode},
+		#{machiningName},
+		#{breedCode},
+		#{breedName},
+		#{featureCode},
+		#{featureName},
+		#{weightCode},
+		#{pkgCode},
+		#{gradeCode},
+		#{pdtName},
+		#{logiareaCode},
+		#{logiareaName},
+		#{orderlevelCode},
+		#{orderlevelName},
+		#{netweight},
+		#{priceofkg},
+		#{priceofbox},
+		#{delFlg},
+		#{crtId},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		#{crtTime},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		#{ver}
+		)
+	</insert>
+    <insert id="savePdLogiareaOrderlevel" parameterType="com.msk.product.bean.PD141120Bean">
+		INSERT INTO pd_logiarea_orderlevel (
+			CLASSES_CODE,
+			BREED_CODE,
+			MACHINING_CODE,
+			FEATURE_CODE,
+			WEIGHT_CODE,
+			PKG_CODE,
+			GRADE_CODE,
+			LOGIAREA_CODE,
+			ORDERLEVEL_CODE,
+			ORDERLEVEL_NAME,
+			PRICE_PERCENT,
+			BOX_CNTLVL,
+			BOX_CNTMIN,
+			BOX_CNTMAX,
+			DEL_FLG,
+			CRT_ID,
+			CRT_TIME,
+			VER
+		)
+		VALUES
+			(
+				#{classesCode},
+				#{breedCode},
+				#{machiningCode},
+				#{featureCode},
+				#{weightCode},
+				#{pkgCode},
+				#{gradeCode},
+				#{logiareaCode},
+				#{orderlevelCode},
+				#{orderlevelName},
+				#{pricePercent},
+				#{boxCnt},
+				#{boxCntmin},
+				#{boxCntmax},
+				#{delFlg},
+				#{crtId},
+		        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+				#{crtTime},
+		        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+				#{ver}
+			)
+    </insert>
+    <select id="getPageCount" parameterType="com.hoperun.core.bean.BaseParam" resultType="int">
+        SELECT COUNT(1) FROM PD_PRICEPRD_LOGIAREA
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND FEATURE_CODE=#{filterMap.featureCode}
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                AND WEIGHT_CODE=#{filterMap.weightCode}
+            </if>
+            <if test="filterMap.pkgCode!=null and filterMap.pkgCode!=''">
+                AND PKG_CODE=#{filterMap.pkgCode}
+            </if>
+            <if test="filterMap.gradeCode!=null and filterMap.gradeCode!=''">
+                AND GRADE_CODE=#{filterMap.gradeCode}
+            </if>
+            <if test="filterMap.logiareaCode!=null and filterMap.logiareaCode!=''">
+                AND LOGIAREA_CODE=#{filterMap.logiareaCode}
+            </if>
+            <if test="filterMap.pricecyclePeriod!=null and filterMap.pricecyclePeriod!=''">
+                AND PRICECYCLE_PERIOD=#{filterMap.pricecyclePeriod}
+            </if>
+        </where>
+    </select>
+    <select id="selectPriceprd" resultType="com.msk.core.entity.PdPriceprdLogiarea" parameterType="BaseParam">
+        SELECT
+        A.PRICECYCLE_PERIOD AS pricecyclePeriod,
+        A.PDT_MIXCODE AS pdtMixcode,
+        A.CLASSES_CODE AS classesCode,
+        A.CLASSES_NAME AS classesName,
+        A.MACHINING_CODE AS machiningCode,
+        A.MACHINING_NAME AS machiningName,
+        A.BREED_CODE AS breedCode,
+        A.BREED_NAME AS breedName,
+        A.FEATURE_CODE AS featureCode,
+        A.FEATURE_NAME AS featureName,
+        A.WEIGHT_CODE AS weightCode,
+        A.PKG_CODE AS pkgCode,
+        A.GRADE_CODE AS gradeCode,
+        A.PDT_NAME AS pdtName,
+        A.LOGIAREA_CODE AS logiareaCode,
+        A.LOGIAREA_NAME AS logiareaName,
+        A.ORDERLEVEL_CODE AS orderlevelCode,
+        A.ORDERLEVEL_NAME AS orderlevelName,
+        A.NETWEIGHT AS netweight,
+        A.PRICEOFKG AS priceofkg,
+        A.PRICEOFBOX AS priceofbox,
+        A.DEL_FLG AS delFlg,
+        A.CRT_ID AS crtId,
+        A.CRT_TIME AS crtTime,
+        A.UPD_ID AS updId,
+        A.UPD_TIME AS updTime,
+        A.ACT_ID AS actId,
+        A.ACT_TIME AS actTime,
+        A.VER AS ver
+        FROM
+        pd_priceprd_logiarea AS A
+        <where>
+            <if test="filterMap.pricecycleId!=null">
+                A.PRICECYCLE_ID=#{filterMap.pricecycleId}
+            </if>
+        </where>
+    </select>
+    <insert id="savePriceprdHistory" parameterType="com.msk.core.entity.PdPriceprdLogiarea">
+		INSERT INTO PD_PRICEPRD_LOGIAREA_HISTORY(
+		HISTORY_ID
+		,PRICECYCLE_PERIOD
+		,PDT_MIXCODE
+		,CLASSES_CODE
+		,CLASSES_NAME
+		,MACHINING_CODE
+		,MACHINING_NAME
+		,BREED_CODE
+		,BREED_NAME
+		,FEATURE_CODE
+		,FEATURE_NAME
+		,WEIGHT_CODE
+		,PKG_CODE
+		,GRADE_CODE
+		,PDT_NAME
+		,LOGIAREA_CODE
+		,LOGIAREA_NAME
+		,ORDERLEVEL_CODE
+		,ORDERLEVEL_NAME
+		,NETWEIGHT
+		,PRICEOFKG
+		,PRICEOFBOX
+		,DEL_FLG
+		,CRT_ID
+		,CRT_TIME
+		,VER
+		)VALUES(
+		#{pricecycleId},
+		#{pricecyclePeriod},
+		#{pdtMixcode},
+		#{classesCode},
+		#{classesName},
+		#{machiningCode},
+		#{machiningName},
+		#{breedCode},
+		#{breedName},
+		#{featureCode},
+		#{featureName},
+		#{weightCode},
+		#{pkgCode},
+		#{gradeCode},
+		#{pdtName},
+		#{logiareaCode},
+		#{logiareaName},
+		#{orderlevelCode},
+		#{orderlevelName},
+		#{netweight},
+		#{priceofkg},
+		#{priceofbox},
+		#{delFlg},
+		#{crtId},
+		#{crtTime},
+		#{ver}
+		)
+	</insert>
+    <delete id="remove" parameterType="com.msk.product.bean.PD141199Param">
+        delete from
+        <!-- 删除产品物流取订单登记表-->
+        <if test="filterMap.table==0">
+            PD_PRICEPRD_LOGIAREA
+			<!-- 根据条件删除 -->
+            <if test="filterMap.removeOne==1">
+                WHERE
+                PRICECYCLE_PERIOD=#{pricecyclePeriod}
+                AND CLASSES_CODE=#{classesCode}
+                AND MACHINING_CODE=#{machiningCode}
+                AND BREED_CODE=#{breedCode}
+                AND FEATURE_CODE=#{featureCode}
+                AND WEIGHT_CODE=#{weightCode}
+                AND GRADE_CODE=#{gradeCode}
+                AND LOGIAREA_CODE=#{logiareaCode}
+                AND PKG_CODE=#{pkgCode}
+            </if>
+        </if>
+        <!-- 删除物流区产品价盘表-->
+        <if test="filterMap.table==1">
+            PD_LOGIAREA_ORDERLEVEL
+            <!-- 根据条件删除 -->
+            <if test="filterMap.removeOne==1">
+                WHERE
+                CLASSES_CODE=#{classesCode}
+                AND MACHINING_CODE=#{machiningCode}
+                AND BREED_CODE=#{breedCode}
+                AND FEATURE_CODE=#{featureCode}
+                AND WEIGHT_CODE=#{weightCode}
+                AND PKG_CODE=#{pkgCode}
+                AND GRADE_CODE=#{gradeCode}
+                AND LOGIAREA_CODE=#{logiareaCode}
+            </if>
+        </if>
+    </delete>
+</mapper>

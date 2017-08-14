@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121412Logic">
+  <select id="queryBuyerMarketStatusAndOrder" resultType="com.msk.br.bean.IBR121412RsBean" parameterType="BaseParam">
+    SELECT
+        buyerInfo.BUYER_ID AS buyerId,
+        COUNT(orderInfo.ORDER_ID) AS orderCount,
+        buyerInfo.MARKETINGS_STATUS AS marketingsStatus,
+        buyerInfo.MARKETINGS_STATUS_NAME AS marketingsStatusName,
+        MIN(orderInfo.ORDER_TIME) AS firstOrderTime,
+        MAX(orderInfo.ORDER_TIME) AS lastOrderTime,
+        statusHistory.OLD_STATUS_CLASS AS oldStatusClass,
+        statusHistory.OLD_STATUS_CLASS_NAME AS oldStatusClassName,
+        statusHistory.OLD_STATUS_BREED AS oldStatusBreed,
+        statusHistory.OLD_STATUS_BREED_NAME AS oldStatusBreedName,
+        statusHistory.NEW_STATUS_CLASS AS newStatusClass,
+        statusHistory.NEW_STATUS_CLASS_NAME AS newStatusClassName,
+        statusHistory.NEW_STATUS_BREED AS newStatusBreed,
+        statusHistory.NEW_STATUS_BREED_NAME AS newStatusBreedName
+    FROM
+        br_o_buyer_info buyerInfo
+    INNER JOIN br_o_order_info orderInfo ON buyerInfo.BUYER_ID = orderInfo.BUYER_ID
+    AND buyerInfo.DEL_FLG = 0
+    AND orderInfo.DEL_FLG = 0
+    <![CDATA[ AND orderInfo.ORDER_STATUS <> '99' ]]>
+    AND buyerInfo.BUYER_TYPE = '01'
+    LEFT JOIN br_buyer_marketing_status_history statusHistory ON buyerInfo.BUYER_ID = statusHistory.BUYER_ID AND statusHistory.CURRENT_STATUS_FLG = '1'
+    AND buyerInfo.DEL_FLG = 0
+    AND statusHistory.DEL_FLG = 0
+    AND statusHistory.CURRENT_STATUS_FLG = '1'
+    GROUP BY
+        buyerInfo.BUYER_ID
+    ORDER BY
+        orderCount DESC
+  </select>
+  <update id="modifyCurrentMarketStatus" parameterType="com.msk.br.bean.IBR121412RsBean">
+    UPDATE br_buyer_marketing_status_history
+    SET CURRENT_STATUS_FLG = '0'
+     ,UPD_ID = #{updId}
+     ,UPD_TIME = #{updTime}
+    WHERE
+       BUYER_ID = #{buyerId} AND CURRENT_STATUS_FLG = '1' AND DEL_FLG = '0'
+  </update>
+  <insert id="addMarketingStatusHistory" parameterType="com.msk.br.bean.IBR121412RsBean">
+    INSERT INTO br_buyer_marketing_status_history (
+	HISTORY_ID,
+	BUYER_ID,
+	OLD_STATUS_CLASS,
+	OLD_STATUS_CLASS_NAME,
+	OLD_STATUS_BREED,
+	OLD_STATUS_BREED_NAME,
+	OLD_EXCEPTION_STATUS,
+	OLD_EXCEPTION_STATUS_NAME,
+	NEW_STATUS_CLASS,
+	NEW_STATUS_CLASS_NAME,
+	NEW_STATUS_BREED,
+	NEW_STATUS_BREED_NAME,
+	NEW_EXCEPTION_STATUS,
+	NEW_EXCEPTION_STATUS_NAME,
+	CURRENT_STATUS_FLG,
+	MODIFY_TIME,
+	DEL_FLG,
+	CRT_ID,
+	CRT_TIME,
+	UPD_ID,
+	UPD_TIME,
+	ACT_ID,
+	ACT_TIME,
+	VER
+  )VALUES(
+    #{historyId},
+    #{buyerId},
+    #{oldStatusClass},
+    #{oldStatusClassName},
+    #{oldStatusBreed},
+    #{oldStatusBreedName},
+    null,
+    null,
+    #{newStatusClass},
+    #{newStatusClassName},
+    #{newStatusBreed},
+    #{newStatusBreedName},
+    null,
+    null,
+    '1',
+    #{modifyTime},
+    '0',
+    #{crtId},
+    #{crtTime},
+    #{updId},
+    #{updTime},
+    #{actId},
+    #{actTime},
+    '1'
+  )
+  </insert>
+  <select id="countOrderByOrderTime" resultType="int" parameterType="BaseParam">
+    SELECT
+    COUNT(ORDER_ID)
+    FROM
+    br_o_order_info
+    WHERE
+    <![CDATA[ DATE_FORMAT(ORDER_TIME,'%Y-%m-%d %H:%i:%S') >= DATE_FORMAT(#{filterMap.orderStartTime},'%Y-%m-%d %H:%i:%S')]]>
+    <![CDATA[ AND DATE_FORMAT(ORDER_TIME,'%Y-%m-%d %H:%i:%S') <= DATE_FORMAT(#{filterMap.orderEndTime},'%Y-%m-%d %H:%i:%S')]]>
+    AND BUYER_ID = #{filterMap.buyerId} AND DEL_FLG = 0
+    <![CDATA[ AND ORDER_STATUS <> '99' ]]>
+  </select>
+  <select id="findCurrentMarketStatusByBuyerId" resultType="com.msk.br.bean.IBR121412RsBean" parameterType="BaseParam">
+    SELECT
+    BUYER_ID AS buyerId,
+	OLD_STATUS_BREED AS oldStatusBreed,
+	OLD_STATUS_BREED_NAME AS oldStatusBreedName,
+	NEW_STATUS_BREED AS newStatusBreed,
+	NEW_STATUS_BREED_NAME AS newStatusBreedName,
+	CURRENT_STATUS_FLG AS currentStatusFlg,
+	MAX(MODIFY_TIME) AS modifyTime
+    FROM
+    br_buyer_marketing_status_history
+    WHERE
+    BUYER_ID = #{filterMap.buyerId} AND CURRENT_STATUS_FLG = '1' AND DEL_FLG = '0'
+  </select>
+  <update id="modifyMarketStatusByBuyerId" parameterType="com.msk.br.bean.IBR121412RsBean">
+    UPDATE
+      br_o_buyer_info
+    SET
+      BUYER_CODE = CONCAT(LEFT(BUYER_CODE,13),#{marketingsStatus},'-',RIGHT(CONCAT('0',CAST((CAST(RIGHT(BUYER_CODE,2) AS SIGNED) + 1) AS CHAR)),2)),
+      MARKETINGS_STATUS = #{marketingsStatus},
+      MARKETINGS_STATUS_NAME = #{newStatusBreedName}
+     ,UPD_ID = #{updId}
+     ,UPD_TIME = #{updTime}
+    WHERE
+      BUYER_ID = #{buyerId}
+      AND DEL_FLG = '0'
+  </update>
+  <select id="findCurrentBuyerCodeByBuyerId" parameterType="BaseParam" resultType="com.msk.br.bean.IBR121412RsBean">
+    SELECT
+      BUYER_CODE AS buyerCode
+    FROM
+      br_o_buyer_info
+    WHERE
+      BUYER_ID = #{filterMap.buyerId}
+      AND DEL_FLG = 0
+  </select>
+  <update id="modifyBuyerPoolCode" parameterType="BaseParam">
+    UPDATE
+      br_buyer_pool_relationship
+    SET
+      POOL_BUYER_CODE = CONCAT(#{filterMap.buyerPoolCode},RIGHT(POOL_BUYER_CODE,7))
+     ,UPD_ID = #{updId}
+     ,UPD_TIME = #{updTime}
+     WHERE
+      BUYER_ID = #{filterMap.buyerId}
+      AND DEL_FLG = 0
+  </update>
+  <insert id="addMarketingStatusPlan" parameterType="com.msk.br.bean.IBR121412RsBean">
+    INSERT INTO br_buyer_marketing_status_plan (
+    PLAN_ID,
+    BUYER_ID,
+    BUYER_CODE,
+    POOL_BUYER_CODE,
+    MARKETINGS_STATUS,
+    MARKETINGS_STATUS_NAME,
+    OLD_STATUS_CLASS,
+    OLD_STATUS_CLASS_NAME,
+    OLD_STATUS_BREED,
+    OLD_STATUS_BREED_NAME,
+    NEW_STATUS_CLASS,
+    NEW_STATUS_CLASS_NAME,
+    NEW_STATUS_BREED,
+    NEW_STATUS_BREED_NAME,
+    EFFECT_TIME,
+    DEL_FLG,
+    CRT_ID,
+    CRT_TIME,
+    UPD_ID,
+    UPD_TIME,
+    ACT_ID,
+    ACT_TIME,
+    VER
+    )VALUES(
+    #{planId},
+    #{buyerId},
+    CONCAT(LEFT(BUYER_CODE,13),#{marketingsStatus},'-',RIGHT(CONCAT('0',CAST((CAST(RIGHT(BUYER_CODE,2) AS SIGNED) + 1) AS CHAR)),2)),
+    CONCAT(#{buyerPoolCode},RIGHT(POOL_BUYER_CODE,7)),
+    #{marketingsStatus},
+    #{marketingsStatusName},
+    #{oldStatusClass},
+    #{oldStatusClassName},
+    #{oldStatusBreed},
+    #{oldStatusBreedName},
+    #{newStatusClass},
+    #{newStatusClassName},
+    #{newStatusBreed},
+    #{newStatusBreedName},
+    #{effectTime},
+    '0',
+    #{crtId},
+    #{crtTime},
+    #{updId},
+    #{updTime},
+    #{actId},
+    #{actTime},
+    '1'
+    )
+  </insert>
+  <update id="modifyBuyerPoolCodeByPlan" parameterType="com.msk.br.bean.IBR121412RsBean">
+    UPDATE
+    br_buyer_pool_relationship
+    SET
+    POOL_BUYER_CODE = CONCAT(#{filterMap.buyerPoolCode},RIGHT(POOL_BUYER_CODE,7))
+    ,UPD_ID = #{updId}
+    ,UPD_TIME = #{updTime}
+    WHERE
+    BUYER_ID = #{buyerId}
+    AND DEL_FLG = 0
+  </update>
+  <select id="queryBuyerMarketStatusChangePlan" resultType="com.msk.br.bean.IBR121412RsBean" parameterType="BaseParam">
+    SELECT
+		BUYER_ID AS buyerId,
+		BUYER_CODE AS buyerCode,
+		POOL_BUYER_CODE AS poolBuyerCode,
+		MARKETINGS_STATUS AS marketingsStatus,
+		MARKETINGS_STATUS_NAME AS marketingsStatusName,
+		OLD_STATUS_CLASS AS oldStatusClass,
+		OLD_STATUS_CLASS_NAME AS oldStatusClassName,
+		OLD_STATUS_BREED AS oldStatusBreed,
+		OLD_STATUS_BREED_NAME AS oldStatusBreedName,
+		NEW_STATUS_CLASS AS newStatusClass,
+		NEW_STATUS_CLASS_NAME AS newStatusClassName,
+		NEW_STATUS_BREED AS newStatusBreed,
+		NEW_STATUS_BREED_NAME AS newStatusBreedName,
+		EFFECT_TIME AS effectTime,
+		DEL_FLG AS delFlg,
+		CRT_ID AS crtId,
+		CRT_TIME AS crtTime,
+		UPD_ID AS updId,
+		UPD_TIME AS updTime,
+		ACT_ID AS actId,
+		ACT_TIME AS actTime,
+		VER AS ver
+	FROM br_buyer_marketing_status_plan
+	WHERE DEL_FLG = 0
+	<![CDATA[ AND EFFECT_TIME <= #{filterMap.nowDate} ]]>
+  </select>
+  <update id="modifyBasicMarketStatusByBuyerId" parameterType="com.msk.br.bean.IBR121412RsBean">
+    UPDATE by_buyer_basic_info
+            SET
+              BUYER_CODE = CONCAT(LEFT(BUYER_CODE,13),#{marketingsStatus},'-',RIGHT(CONCAT('0',CAST((CAST(RIGHT(BUYER_CODE,2) AS SIGNED) + 1) AS CHAR)),2)),
+              MARKETINGS_STATUS = #{marketingsStatus}
+            WHERE
+                BUYER_ID = #{buyerId}
+            AND DEL_FLG = '0'
+            AND SUPERIOR_TYPE = '01'
+  </update>
+  <update id="modifyMarketStatusPlanByBuyerId" parameterType="com.msk.br.bean.IBR121412RsBean">
+    UPDATE br_buyer_marketing_status_plan
+    SET
+    DEL_FLG = 1
+    WHERE
+    BUYER_ID = #{buyerId}
+    AND DEL_FLG = '0'
+  </update>
+  <select id="queryMarketStatusModifyTimeMax" resultType="com.msk.br.bean.IBR121412RsBean" parameterType="BaseParam">
+    SELECT
+    BUYER_ID AS buyerId,
+    MAX(MODIFY_TIME) AS modifyTime
+    FROM
+    br_buyer_marketing_status_history
+    WHERE
+    BUYER_ID = #{filterMap.buyerId} AND CURRENT_STATUS_FLG = '1' AND DEL_FLG = '0'
+  </select>
+  <select id="findStatusChangePlanByBuyerId" parameterType="BaseParam" resultType="com.msk.br.bean.IBR121412RsBean">
+    SELECT
+    PLAN_ID AS planId,
+    BUYER_ID AS buyerId
+    FROM
+    br_buyer_marketing_status_plan
+    WHERE
+    BUYER_ID = #{filterMap.buyerId}
+    AND DEL_FLG = 0
+  </select>
+  <select id="queryHkBuyerRelationshipByBuyerId" resultType="com.msk.core.entity.BrOHkBuyerRelationship" parameterType="BaseParam">
+     SELECT
+    RS_ID AS rsId,
+    HOUSE_CODE AS houseCode,
+    BUYER_ID AS buyerId,
+    BIND_STATUS AS bindStatus
+    FROM
+    br_o_hk_buyer_relationship
+    WHERE
+    BUYER_ID = #{filterMap.buyerId}
+    AND DEL_FLG = 0
+  </select>
+  <select id="findCurrentOrderInfoByBuyerId" resultType="com.msk.core.entity.BrOOrderInfo" parameterType="BaseParam">
+    SELECT
+    BUYER_ID AS buyerId,
+    MIN(order_time) AS orderTime
+    FROM
+    br_o_order_info
+    WHERE
+    BUYER_ID = #{filterMap.buyerId}
+    AND <![CDATA[ DATE_FORMAT(ORDER_TIME,'%Y-%m-%d %H:%i:%S') >= DATE_FORMAT(#{filterMap.outDate},'%Y-%m-%d %H:%i:%S')]]>
+    <![CDATA[ AND ORDER_STATUS <> '99' ]]>
+    AND DEL_FLG = 0
+  </select>
+</mapper>

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121201Logic">
+    <select id="findAccountInfo" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerAccount">
+        SELECT
+        ID AS id,
+        BUYER_ID AS buyerId,
+        TEL_NO AS telNo,
+        ACCOUNT_NAME AS accountName,
+        ACCOUNT_PASS AS accountPass
+        FROM
+        by_buyer_account
+        WHERE
+        DEL_FLG = 0
+        <if test="filterMap.telNo != null and filterMap.telNo != ''">
+            AND TEL_NO = #{filterMap.telNo}
+        </if>
+        <if test="filterMap.accountName != null and filterMap.accountName != ''">
+            AND ACCOUNT_NAME = #{filterMap.accountName}
+        </if>
+        <if test="filterMap.accountPass != null and filterMap.accountPass != ''">
+            AND ACCOUNT_PASS = #{filterMap.accountPass}
+        </if>
+    </select>
+    <select id="countAccountNameInfo" parameterType="BaseParam" resultType="int">
+        SELECT
+            COUNT(1)
+        FROM
+           by_buyer_account
+        WHERE
+           DEL_FLG = 0
+           AND ACCOUNT_NAME = #{filterMap.accountName}
+    </select>
+
+    <select id="countAccountTelInfo" parameterType="BaseParam" resultType="int">
+        SELECT
+        COUNT(1)
+        FROM
+        by_buyer_account
+        WHERE
+        DEL_FLG = 0
+        AND TEL_NO = #{filterMap.telNo}
+    </select>
+
+    <select id="findBuyerNameNum" parameterType="BaseParam" resultType="int">
+        SELECT
+        COUNT(1)
+        FROM
+        by_buyer_basic_info
+        WHERE
+        DEL_FLG = '0'
+        AND BUYER_NAME = #{filterMap.accountName}
+    </select>
+
+    <select id="findAccountByNameAndPwd" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerAccount">
+        SELECT
+        ID AS id,
+        BUYER_ID AS buyerId,
+        TEL_NO AS telNo,
+        ACCOUNT_NAME AS accountName,
+        ACCOUNT_PASS AS accountPass
+        FROM
+        by_buyer_account
+        WHERE
+        DEL_FLG = 0
+        AND (ACCOUNT_NAME = #{filterMap.accountName}
+            OR TEL_NO = #{filterMap.accountName})
+        AND ACCOUNT_PASS = #{filterMap.accountPass}
+    </select>
+
+    <select id="findBuyerAccountByTel" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerAccount">
+        SELECT
+        ID AS id,
+        BUYER_ID AS buyerId,
+        TEL_NO AS telNo,
+        ACCOUNT_NAME AS accountName,
+        ACCOUNT_PASS AS accountPass
+        FROM
+        by_buyer_account
+        WHERE
+        DEL_FLG = 0
+        AND TEL_NO = #{filterMap.accountName}
+    </select>
+
+    <insert id="saveBuyer" parameterType="BaseEntity">
+        INSERT INTO
+            by_buyer_basic_info(
+                BUYER_ID,
+                BUYER_CODE,
+                BUYER_NAME,
+                BUYER_ADDR,
+                SUPERIOR_ID,
+                SUPERIOR_TYPE,
+                SUPERIOR_NAME,
+                SUPERIOR_QUA,
+                PROVINCE_CODE,
+                LGCS_AREA_CODE,
+                CITY_CODE,
+                DISTRICT_CODE,
+                BUYER_WEBSITE,
+                BUYER_WECHAT,
+                STORE_NO,
+                STORE_AREA,
+                BUSI_TEL,
+                EMPLOYEES_NUM,
+                PAYMENT_TYPE,
+                PLAN_ORDER_GAP,
+                PLAN_ORDER_NUM,
+                ACTUAL_ORDER_GAP,
+                ACTUAL_ORDER_NUM,
+                MARKETINGS_STATUS,
+                REGISTER_SOURCE,
+                DEL_FLG,
+
+                CRT_ID,
+                CRT_TIME,
+                UPD_ID,
+                UPD_TIME,
+                ACT_ID,
+                ACT_TIME,
+
+                VER,
+                SUPERIOR_SUB_TYPE,
+                SUPERIOR_SUB_NAME,
+                IS_MARKET_FLG
+            )VALUES (
+                #{buyerId},
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                '',
+                #{lgcsAreaCode},
+                #{cityCode},
+                #{districtCode},
+                '',
+                '',
+                '',
+                0,
+                '',
+                0,
+                '',
+                '',
+                0,
+                '',
+                0,
+                '',
+                #{registerSource},
+                0,
+
+                #{crtId},
+                #{crtTime},
+                #{updId},
+                #{updTime},
+                #{actId},
+                #{actTime},
+
+                1,
+                '',
+                '',
+                '0'
+            )
+    </insert>
+    <insert id="saveAccountInfo" parameterType="BaseEntity">
+        INSERT INTO
+            by_buyer_account(
+                ID,
+                BUYER_ID,
+                TEL_NO,
+                ACCOUNT_NAME,
+                ACCOUNT_PASS,
+                DEL_FLG,
+
+                CRT_ID,
+                CRT_TIME,
+                UPD_ID,
+                UPD_TIME,
+                ACT_ID,
+                ACT_TIME,
+
+                VER
+            )VALUES (
+                #{id},
+                #{buyerId},
+                #{telNo},
+                #{accountName},
+                #{accountPass},
+                0,
+
+                #{crtId},
+                #{crtTime},
+                #{updId},
+                #{updTime},
+                #{actId},
+                #{actTime},
+
+                1
+            )
+    </insert>
+
+    <update id="resetPassword" parameterType="BaseEntity">
+        UPDATE by_buyer_account
+        SET ACCOUNT_PASS = #{accountPass},
+        VER = VER + 1
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE BUYER_ID = #{buyerId}
+        AND TEL_NO = #{telNo}
+        AND  DEL_FLG = 0
+    </update>
+
+    <update id="modifyPassword" parameterType="BaseParam">
+       UPDATE by_buyer_account
+          SET
+              ACCOUNT_PASS = #{filterMap.newAccountPass}
+            , UPD_ID = #{filterMap.updId}
+            , UPD_TIME = #{filterMap.updTime}
+        WHERE BUYER_ID = #{filterMap.buyerId}
+          AND ACCOUNT_PASS = #{filterMap.oldAccountPass}
+    </update>
+    <select id="findAccessInfo" parameterType="BaseParam" resultType="com.msk.core.entity.ByAccessAccount">
+        SELECT
+        ACCOUNT_ID AS accountId,
+        ACCOUNT_NAME AS accountName,
+        ACCOUNT_PWD AS accountPwd,
+        TEL_NO AS telNo
+        FROM
+        by_access_account
+        WHERE
+        ACCOUNT_NAME = #{filterMap.accountName}
+        <if test="filterMap.accountPwd != null and filterMap.accountPwd != ''">
+            AND ACCOUNT_PWD = #{filterMap.accountPwd}
+        </if>
+        AND DEL_FLG = 0
+    </select>
+
+    <update id="modifyPasswordByTelNo" parameterType="BaseParam">
+        UPDATE by_buyer_account
+        SET
+          ACCOUNT_PASS = #{filterMap.newAccountPass}
+        , UPD_ID = #{filterMap.updId}
+        , UPD_TIME = #{filterMap.updTime}
+        WHERE TEL_NO = #{filterMap.telNo}
+    </update>
+
+    <!--通说手机号码查询买家id-->
+    <select id="queryBuyeryBasicInfoByTel" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerAccount">
+        SELECT
+        BUYER_ID AS buyerId
+        FROM
+        BY_BUYER_ACCOUNT
+        WHERE
+        DEL_FLG = 0
+        AND TEL_NO = #{filterMap.telNo}
+    </select>
+
+    <select id="findBuyerId" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerAccount">
+        SELECT
+        BUYER_ID AS buyerId
+        FROM BY_BUYER_ACCOUNT
+        WHERE
+        DEL_FLG = 0 AND
+           (ACCOUNT_NAME = #{filterMap.accountName} OR TEL_NO = #{filterMap.accountName})
+    </select>
+    <!-- add for Bug# at 2016/09/13 by zhao_chen Start-->
+    <select id="findBuyerCode" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerBasicInfo">
+        SELECT  BUYER_CODE AS  buyerCode
+        FROM  BY_BUYER_BASIC_INFO a
+        WHERE
+        DEL_FLG = 0
+        AND a.BUYER_ID =#{filterMap.buyerId}
+    </select>
+    <!-- add for Bug# at 2016/09/13 by zhao_chen end-->
+</mapper>

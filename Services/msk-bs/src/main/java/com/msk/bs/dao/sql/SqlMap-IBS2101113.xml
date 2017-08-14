@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101113RsLogic">
+    <update id="modify" parameterType="com.msk.bs.bean.IBS2101113RsParam">
+        UPDATE sl_house_account SET DEL_FLG = 1,UPD_ID = #{updId},UPD_TIME = #{updTime},VER = VER+1
+        WHERE DEL_FLG != 1 AND HOUSE_CODE = #{houseCode} AND SL_CODE = #{slCode}
+    </update>
+    <select id="findList" parameterType="com.msk.bs.bean.IBS2101113RsParam" resultType="com.msk.core.entity.SlBsBuyer">
+        SELECT
+            SL_CODE AS slCode,
+            HOUSE_CODE AS houseCode,
+            BUYER_ID AS buyerId,
+            START_TIME AS startTime,
+            END_TIME AS endTime,
+            APPLY_SIDE AS applySide,
+            APPLY_STATUS AS applyStatus,
+            APPLY_TIME AS applyTime
+        FROM sl_bs_buyer
+        WHERE DEL_FLG = 0 AND HOUSE_CODE = #{houseCode}
+    </select>
+    <select id="findBuyerGetList" parameterType="com.msk.bs.bean.IBS2101113RsParam" resultType="com.msk.core.entity.SlBsBuyerGet">
+        SELECT
+            SL_CODE AS slCode,
+            HOUSE_CODE AS houseCode,
+            BUYER_ID AS buyerId,
+            START_TIME AS startTime,
+            END_TIME AS endTime
+        FROM sl_bs_buyer_get
+        WHERE DEL_FLG = 0 AND HOUSE_CODE = #{houseCode}
+    </select>
+    <insert id="save" parameterType="com.msk.core.entity.SlBsBuyerHis">
+    INSERT INTO sl_bs_buyer_his (
+        HIS_ID,
+        Sl_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        APPLY_SIDE,
+        APPLY_STATUS,
+        APPLY_TIME,
+        BUYER_REASON,
+        BUYERSHOP_REASON,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+    )
+    VALUE
+        (
+        #{hisId},
+        #{slCode},
+        #{houseCode},
+        #{buyerId},
+        #{startTime},
+        #{endTime},
+        #{applySide},
+        #{applyStatus},
+        #{applyTime},
+        #{buyerReason},
+        #{buyershopReason},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        #{ver}
+        )
+    </insert>
+    <insert id="saveBuyerGetHis" parameterType="com.msk.core.entity.SlBsBuyerGetHis">
+    INSERT INTO sl_bs_buyer_get_his (
+        HIS_ID,
+        Sl_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+	    START_TIME,
+	    END_TIME,
+        REASON,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+    )
+    VALUE
+        (
+        #{hisId},
+        #{slCode},
+        #{houseCode},
+        #{buyerId},
+        #{startTime},
+        #{endTime},
+        #{reason},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        #{ver}
+        )
+    </insert>
+    <update id="modifyBuyer" parameterType="com.msk.bs.bean.IBS2101113RsParam">
+        UPDATE sl_bs_buyer SET DEL_FLG = 1,UPD_ID = #{updId},UPD_TIME = #{updTime},VER = VER+1
+        WHERE DEL_FLG != 1 AND HOUSE_CODE = #{houseCode}
+    </update>
+    <update id="modifybuyerGet" parameterType="com.msk.bs.bean.IBS2101113RsParam">
+        UPDATE sl_bs_buyer_get_his SET DEL_FLG = 1,UPD_ID = #{updId},UPD_TIME = #{updTime},VER = VER+1
+        WHERE DEL_FLG != 1 AND HOUSE_CODE = #{houseCode}
+    </update>
+</mapper>
+

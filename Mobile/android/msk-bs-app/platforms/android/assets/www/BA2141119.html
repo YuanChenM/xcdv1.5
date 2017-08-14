@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>库存信息</title>
+    <link href="css/css.css" type="text/css" rel="stylesheet"/>
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="js/constantDef.js"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+</head>
+<body>
+
+<!--页眉开始-->
+<div class="wapp-head">库存信息
+    <a href="javascript:void(0);" class="head-back">返回</a>
+</div>
+<!--页眉结束/-->
+<!--列表详细开始-->
+<div class="kcxx-list" id="stock">
+    <ul style="display: none">
+        <li>
+            <span class="til">物流区</span>
+            <span class="con"></span>
+        </li>
+        <li>
+            <span class="til">产品编码</span>
+            <span class="con"></span>
+        </li>
+        <!--库存接口暂时没有返回对应的产品名称，先注释-->
+        <!--<li>
+            <span class="til">名称</span>
+            <span class="con"></span>
+        </li>-->
+        <li>
+            <span class="til">可用存库</span>
+            <span class="con"></span>
+        </li>
+        <!--库存接口暂时没有返回库存量数，先注释-->
+       <!-- <li>
+            <span class="til">库存量数</span>
+            <span class="con"></span>
+        </li>-->
+    </ul>
+
+</div>
+
+</body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<script src="js/BA2141119.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

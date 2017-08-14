@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171106Logic">
+
+    <update id="modifyDemandApply" parameterType="com.msk.price.bean.SP171106Param">
+        UPDATE SP_SELLER_PD_DEMANDAPPLY_NUM
+        SET
+        PD_CODE = #{pdCode}
+        ,APPLY_NUM = #{applyNum}
+        ,IS_CONFIRM = 1
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        ,VER = VER + 1
+        WHERE
+        DEMAND_ID=#{demandId}
+        AND DEL_FLG=0
+    </update>
+
+    <insert id="save" parameterType="com.msk.price.bean.SP171106Param">
+        INSERT INTO SP_SELLER_PD_DEMANDAPPLY_NUM_HIS
+        (
+         DEMAND_HIS_ID
+         ,DEMAND_ID
+         ,DEMAND_DETAIL_ID
+         ,MODIFY_NUM
+         ,REMARK
+         ,ROLE
+         ,DEL_FLG
+         ,CRT_ID
+         ,CRT_TIME
+         ,UPD_ID
+         ,UPD_TIME
+         ,ACT_ID
+         ,ACT_TIME
+         ,VER
+          )
+          VALUES (
+           #{filterMap.demandHisId}
+          ,#{demandId}
+          ,#{filterMap.demandDetailId}
+          ,#{applyNum}
+          ,#{remark}
+          ,2
+          ,0
+          ,#{crtId}
+          ,#{crtTime}
+          ,#{updId}
+          ,#{updTime}
+          ,#{actId}
+          ,#{actTime}
+          ,1
+          )
+    </insert>
+
+    <select id="findDemandDetailId" parameterType="com.msk.price.bean.SP171106Param" resultType="java.lang.Object">
+        SELECT
+        IFNULL(MAX(DEMAND_DETAIL_ID),0) + 1
+        FROM
+        SP_SELLER_PD_DEMANDAPPLY_NUM_HIS
+        WHERE
+        DEMAND_ID=#{demandId}
+    </select>
+
+    <select id="findDemandApply" parameterType="com.msk.price.bean.SP171106Param" resultType="com.msk.price.bean.SP171106Bean">
+        SELECT
+        APPLY_NUM AS applyNum
+        ,PASS_NUM AS passNum
+        ,IS_CONFIRM AS isConfirm
+        ,VER AS ver
+        FROM
+        SP_SELLER_PD_DEMANDAPPLY_NUM
+        WHERE
+        DEMAND_ID = #{demandId}
+        AND DEL_FLG=0
+    </select>
+
+    <select id="findConstRatio" parameterType="com.msk.price.bean.SP171106Param" resultType="com.msk.price.bean.SP171106Bean">
+        SELECT
+        RATIO_TYPE_DETAIL AS ratioTypeDetail
+        ,RATIO_TYPE_DETAIL_VAL AS ratioTypeDetailVal
+        FROM
+        SP_CONST_RATIO
+        WHERE RATIO_TYPE = #{filterMap.ratioType}
+        AND DEL_FLG = 0
+    </select>
+
+    <select id="findDemandPublish" parameterType="com.msk.price.bean.SP171106Param" resultType="com.msk.price.bean.SP171106Bean">
+        SELECT
+        PUBLISH_TOTAL_NUM AS publishTotalNum
+        ,GRADE_RATIO1 AS gradeRatio1
+        ,GRADE_RATIO2 AS gradeRatio2
+        ,GRADE_RATIO3 AS gradeRatio3
+        FROM
+        SP_PD_DEMAND_PUBLISH
+        WHERE PUBLISH_YM = #{demandYearMonth}
+        AND  LGCS_CODE = #{lgcsCode}
+        AND PD_TYPE_CODE = #{pdTypeCode}
+        AND DEL_FLG = 0
+    </select>
+
+    <insert id="saveDemandApply" parameterType="com.msk.price.bean.SP171106Param">
+        INSERT INTO SP_SELLER_PD_DEMANDAPPLY_NUM
+        (
+             DEMAND_ID
+            ,DEMAND_YEARMONTH
+            ,DEMAND_STARTDATE
+            ,DEMAND_ENDDATE
+            ,LGCS_CODE
+            ,PD_CODE
+            ,GRADE_CODE
+            ,APPLY_NUM
+            ,PASS_NUM
+            ,IS_AGREE
+            ,IS_CONFIRM
+            ,SL_ACCOUNT
+            ,SL_ID
+            ,SL_CODE
+            ,EP_ID
+            ,EP_NAME
+            ,DEL_FLG
+            ,CRT_ID
+            ,CRT_TIME
+            ,UPD_ID
+            ,UPD_TIME
+            ,ACT_ID
+            ,ACT_TIME
+            ,VER
+        )
+        VALUES (
+        #{demandId}
+        ,#{demandYearMonth}
+        ,#{demandStartDate}
+        ,#{demandEndDate}
+        ,#{lgcsCode}
+        ,#{pdCode}
+        ,#{gradeCode}
+        ,#{applyNum}
+        ,#{passNum}
+        ,#{isAgree}
+        ,1
+        ,#{slAccount}
+        ,#{slId}
+        ,#{slCode}
+        ,#{epId}
+        ,#{epName}
+        ,0
+        ,#{crtId}
+        ,#{crtTime}
+        ,#{updId}
+        ,#{updTime}
+        ,#{actId}
+        ,#{actTime}
+        ,1
+        )
+    </insert>
+    <select id="queryDemandInfo" parameterType="com.msk.price.bean.SP171106Param" resultType="com.msk.price.bean.SP171106Bean">
+       SELECT
+       pdn.DEMAND_ID as demandId,
+       sp.LGCS_CODE as lgcsCode,
+       sp.LGCS_NAME as lgcsName,
+       pdn.DEMAND_YEARMONTH as demandYearMonth,
+       pdn.DEMAND_STARTDATE as demandStartDate,
+       pdn.DEMAND_ENDDATE as demandEndDate,
+       pdn.IS_CONFIRM as isConfirm,
+       pdn.PD_CODE as pdCode,
+       LEFT(pdn.PD_CODE,9) as pdTypeCode,
+       sp.PD_NAME as pdName,
+       sp.CLASSES as classesName,
+       sp.MACHINING as machiningName,
+       sp.BREED as breedName,
+       pdn.GRADE_CODE as gradeCode,
+       sp.FEATURE as featureName,
+       pdn.IS_AGREE as isAgree,
+       pdp.PUBLISH_TOTAL_NUM as publishTotalNum
+      FROM sp_seller_pd_demandapply_num pdn
+      LEFT JOIN sp_logs_product sp ON sp.PD_CODE = pdn.PD_CODE
+      LEFT JOIN sp_pd_demand_publish pdp ON pdp.PD_TYPE_CODE = LEFT(pdn.PD_CODE,9) and pdp.PUBLISH_YM = pdn.DEMAND_YEARMONTH AND pdp.LGCS_CODE = pdn.LGCS_CODE
+      WHERE pdn.DEL_FLG = 0 AND pdn.DEMAND_ID = #{demandId}
+    </select>
+    <select id="queryPdInfo" parameterType="com.msk.price.bean.SP171106Param" resultType="com.msk.price.bean.SP171106Bean">
+       SELECT
+       0 as demandId,
+       sp.LGCS_CODE as lgcsCode,
+       sp.LGCS_NAME as lgcsName,
+       0 as isConfirm,
+       sp.PD_CODE as pdCode,
+       LEFT(sp.PD_CODE,9) as pdTypeCode,
+       sp.PD_NAME as pdName,
+       sp.CLASSES as classesName,
+       sp.MACHINING as machiningName,
+       sp.BREED as breedName,
+       sp.GRADE_CODE as gradeCode,
+       sp.FEATURE as featureName,
+       0 as isAgree
+      FROM sp_logs_product sp
+      WHERE sp.PD_CODE = #{pdCode}
+    </select>
+</mapper>

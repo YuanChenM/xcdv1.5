@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ds.logic.SC181102Logic">
+    <select id="getProdPlanSumNumList" parameterType="BaseParam" resultType="com.msk.ds.bean.DistSuppChain">
+        SELECT
+        stockPlanSum.DIST_MONTH as distMonth,
+        stockPlanSum.LGCS_CODE as areaCode,
+        stockPlanSum.SUPP_CODE as supplierCode,
+        stockPlanSum.PD_STOCK_TYPE as planType,
+        stockPlanSum.HALF_CODE as halfCode,
+        SUM(stockPlanSum.NEW_PLAN_NUM) as sumPlanNum,
+        SUM(stockPlanSum.ORIG_PLAN_NUM) as sumOrigPlanNum
+        FROM
+        ds_pd_virtual_stock_plan stockPlanSum
+        WHERE
+        stockPlanSum.DIST_MONTH=#{distMonth}
+        AND stockPlanSum.LGCS_CODE=#{areaCode}
+        AND stockPlanSum.SUPP_CODE=#{supplierCode}
+        AND stockPlanSum.DEL_FLG = 0
+        GROUP BY
+        stockPlanSum.DIST_MONTH
+        ,stockPlanSum.LGCS_CODE
+        ,stockPlanSum.SUPP_CODE
+        ,stockPlanSum.PD_STOCK_TYPE
+        ,stockPlanSum.HALF_CODE
+    </select>
+    <select id="getProdActualSumNumList" parameterType="BaseParam" resultType="com.msk.ds.bean.DistSuppChain">
+        SELECT
+        stockActualSum.DIST_MONTH as distMonth,
+        stockActualSum.LGCS_CODE as areaCode,
+        stockActualSum.SUPP_CODE as supplierCode,
+        stockActualSum.PD_STOCK_TYPE as planType,
+        stockActualSum.HALF_CODE as halfCode,
+        SUM(stockActualSum.NEW_ACTUAL_NUM) as sumActualNum
+        FROM
+        ds_pd_virtual_stock_actual stockActualSum
+        WHERE
+        stockActualSum.DIST_MONTH=#{distMonth}
+        AND stockActualSum.LGCS_CODE=#{areaCode}
+        AND stockActualSum.SUPP_CODE=#{supplierCode}
+        AND stockActualSum.DEL_FLG = 0
+        GROUP BY
+        stockActualSum.DIST_MONTH
+        ,stockActualSum.LGCS_CODE
+        ,stockActualSum.SUPP_CODE
+        ,stockActualSum.PD_STOCK_TYPE
+        ,stockActualSum.HALF_CODE
+    </select>
+    <select id="getProdPlanSumNumAllList" parameterType="BaseParam" resultType="com.msk.ds.bean.DistSuppChain">
+        SELECT
+        stockPlanSum.DIST_MONTH as distMonth,
+        stockPlanSum.LGCS_CODE as areaCode,
+        stockPlanSum.SUPP_CODE as supplierCode,
+        stockPlanSum.PD_STOCK_TYPE as planType,
+        SUM(stockPlanSum.NEW_PLAN_NUM) as sumSumPlanNum,
+        SUM(stockPlanSum.ORIG_PLAN_NUM) as sumSumOrigPlanNum
+        FROM
+        ds_pd_virtual_stock_plan stockPlanSum
+        WHERE
+        stockPlanSum.DIST_MONTH=#{distMonth}
+        AND stockPlanSum.LGCS_CODE=#{areaCode}
+        AND stockPlanSum.SUPP_CODE=#{supplierCode}
+        AND stockPlanSum.DEL_FLG = 0
+        GROUP BY
+        stockPlanSum.DIST_MONTH
+        ,stockPlanSum.LGCS_CODE
+        ,stockPlanSum.SUPP_CODE
+        ,stockPlanSum.PD_STOCK_TYPE
+    </select>
+    <select id="getProdActualSumNumAllList" parameterType="BaseParam" resultType="com.msk.ds.bean.DistSuppChain">
+        SELECT
+        stockActualSum.DIST_MONTH as distMonth,
+        stockActualSum.LGCS_CODE as areaCode,
+        stockActualSum.SUPP_CODE as supplierCode,
+        stockActualSum.PD_STOCK_TYPE as planType,
+        SUM(stockActualSum.NEW_ACTUAL_NUM) as sumSumActualNum
+        FROM
+        ds_pd_virtual_stock_actual stockActualSum
+        WHERE
+        stockActualSum.DIST_MONTH=#{distMonth}
+        AND stockActualSum.LGCS_CODE=#{areaCode}
+        AND stockActualSum.SUPP_CODE=#{supplierCode}
+        AND stockActualSum.DEL_FLG = 0
+        GROUP BY
+        stockActualSum.DIST_MONTH
+        ,stockActualSum.LGCS_CODE
+        ,stockActualSum.SUPP_CODE
+        ,stockActualSum.PD_STOCK_TYPE
+    </select>
+    <select id="getProdPlanList" parameterType="BaseParam" resultType="com.msk.ds.bean.DistSuppChain">
+        SELECT
+        stockPlan.DIST_MONTH as distMonth,
+        stockPlan.LGCS_CODE as areaCode,
+        stockPlan.SUPP_CODE as supplierCode,
+        stockPlan.PD_STOCK_TYPE as planType,
+        stockPlan.HALF_CODE as halfCode,
+        stockPlan.CLASSES_CODE as productCode,
+        /*已修改
+        pdClass.CLASSES_NAME as productName,*/
+        stockPlan.CLASSES_NAME as productName,
+        SUM(stockPlan.NEW_PLAN_NUM) as newPlanNum,
+        SUM(stockPlan.ORIG_PLAN_NUM) as origPlanNum
+        FROM
+          ds_pd_virtual_stock_plan stockPlan
+          /*已修改INNER JOIN pd_classes pdClass ON pdClass.CLASSES_CODE = stockPlan.CLASSES_CODE AND pdClass.DEL_FLG = 0*/
+        WHERE
+        <if test="filterMap.productName!=null and filterMap.productName!=''">
+            stockPlan.CLASSES_NAME LIKE #{filterMap.productName} AND
+        </if>
+          stockPlan.DIST_MONTH=#{filterMap.distMonth}
+          AND stockPlan.LGCS_CODE=#{filterMap.areaCode}
+          AND stockPlan.SUPP_CODE=#{filterMap.supplierCode}
+          AND stockPlan.DEL_FLG = 0
+        GROUP BY
+        stockPlan.DIST_MONTH
+        ,stockPlan.LGCS_CODE
+        ,stockPlan.SUPP_CODE
+        ,stockPlan.PD_STOCK_TYPE
+        ,stockPlan.HALF_CODE
+        ,stockPlan.CLASSES_CODE
+    </select>
+    <select id="getProdActualList" parameterType="BaseParam" resultType="com.msk.ds.bean.DistSuppChain">
+        SELECT
+        stockActual.DIST_MONTH as distMonth,
+        stockActual.LGCS_CODE as areaCode,
+        stockActual.SUPP_CODE as supplierCode,
+        stockActual.PD_STOCK_TYPE as planType,
+        stockActual.HALF_CODE as halfCode,
+        stockActual.CLASSES_CODE as productCode,
+        SUM(stockActual.NEW_ACTUAL_NUM) as newActualNum
+        FROM
+        ds_pd_virtual_stock_actual stockActual
+        <!--INNER JOIN ds_pd_virtual_stock_plan stockPlan ON stockPlan.CLASSES_CODE = stockActual.CLASSES_CODE AND stockPlan.DEL_FLG = 0
+        <if test="filterMap.productName!=null and filterMap.productName!=''">
+            AND stockPlan.CLASSES_NAME LIKE #{filterMap.productName}
+        </if>-->
+        LEFT JOIN (
+        SELECT DISTINCT
+            plan.CLASSES_CODE classesCode,
+            plan.CLASSES_NAME classesName
+        FROM ds_pd_virtual_stock_plan plan
+        WHERE plan.del_flg = 0
+        <if test="filterMap.productName!=null and filterMap.productName!=''">
+            AND plan.CLASSES_NAME LIKE #{filterMap.productName}
+        </if>
+        ) stockPlan ON stockPlan.classesCode = stockActual.classes_code
+        WHERE
+        stockActual.DIST_MONTH=#{filterMap.distMonth}
+        AND stockActual.LGCS_CODE=#{filterMap.areaCode}
+        AND stockActual.SUPP_CODE=#{filterMap.supplierCode}
+        AND stockActual.DEL_FLG = 0
+        GROUP BY
+        stockActual.DIST_MONTH
+        ,stockActual.LGCS_CODE
+        ,stockActual.SUPP_CODE
+        ,stockActual.PD_STOCK_TYPE
+        ,stockActual.HALF_CODE
+        ,stockActual.CLASSES_CODE
+    </select>
+    <select id="getProdPlanNumAllList" parameterType="BaseParam" resultType="com.msk.ds.bean.DistSuppChain">
+        SELECT
+        stockPlan.DIST_MONTH as distMonth,
+        stockPlan.LGCS_CODE as areaCode,
+        stockPlan.SUPP_CODE as supplierCode,
+        stockPlan.PD_STOCK_TYPE as planType,
+        stockPlan.CLASSES_CODE as productCode,
+        stockPlan.CLASSES_NAME as productName,
+        SUM(stockPlan.NEW_PLAN_NUM) as sumPlanNum,
+        SUM(stockPlan.ORIG_PLAN_NUM) as sumOrigPlanNum
+        FROM
+        ds_pd_virtual_stock_plan stockPlan
+        /*已修改INNER JOIN pd_classes pdClass ON pdClass.CLASSES_CODE = stockPlan.CLASSES_CODE AND pdClass.DEL_FLG = 0*/
+        WHERE
+        <if test="filterMap.productName!=null and filterMap.productName!=''">
+            stockPlan.CLASSES_NAME LIKE #{filterMap.productName} AND
+        </if>
+        stockPlan.DIST_MONTH=#{filterMap.distMonth}
+        AND stockPlan.LGCS_CODE=#{filterMap.areaCode}
+        AND stockPlan.SUPP_CODE=#{filterMap.supplierCode}
+        AND stockPlan.DEL_FLG = 0
+        GROUP BY
+        stockPlan.DIST_MONTH
+        ,stockPlan.LGCS_CODE
+        ,stockPlan.SUPP_CODE
+        ,stockPlan.PD_STOCK_TYPE
+        ,stockPlan.CLASSES_CODE
+    </select>
+    <select id="getProdActualNumAllList" parameterType="BaseParam" resultType="com.msk.ds.bean.DistSuppChain">
+        SELECT
+        stockActual.DIST_MONTH as distMonth,
+        stockActual.LGCS_CODE as areaCode,
+        stockActual.SUPP_CODE as supplierCode,
+        stockActual.PD_STOCK_TYPE as planType,
+        stockActual.CLASSES_CODE as productCode,
+        SUM(stockActual.NEW_ACTUAL_NUM) as sumActualNum
+        FROM
+        ds_pd_virtual_stock_actual stockActual
+        /*已修改INNER JOIN pd_classes pdClass ON pdClass.CLASSES_CODE = stockActual.CLASSES_CODE AND pdClass.DEL_FLG = 0*/
+        LEFT JOIN (
+          SELECT DISTINCT
+                 plan.CLASSES_CODE classesCode,
+                 plan.CLASSES_NAME classesName
+          FROM ds_pd_virtual_stock_plan plan
+          WHERE plan.del_flg = 0
+          <if test="filterMap.productName!=null and filterMap.productName!=''">
+              AND plan.CLASSES_NAME LIKE #{filterMap.productName}
+          </if>
+          ) stockPlan ON stockPlan.classesCode = stockActual.classes_code
+        <!--INNER JOIN ds_pd_virtual_stock_plan stockPlan ON stockPlan.CLASSES_CODE = stockActual.CLASSES_CODE AND stockPlan.DEL_FLG = 0
+        <if test="filterMap.productName!=null and filterMap.productName!=''">
+            AND stockPlan.CLASSES_NAME LIKE #{filterMap.productName}
+        </if>-->
+        WHERE
+        stockActual.DIST_MONTH=#{filterMap.distMonth}
+        AND stockActual.LGCS_CODE=#{filterMap.areaCode}
+        AND stockActual.SUPP_CODE=#{filterMap.supplierCode}
+        AND stockActual.DEL_FLG = 0
+        GROUP BY
+        stockActual.DIST_MONTH
+        ,stockActual.LGCS_CODE
+        ,stockActual.SUPP_CODE
+        ,stockActual.PD_STOCK_TYPE
+        ,stockActual.CLASSES_CODE
+    </select>
+</mapper>

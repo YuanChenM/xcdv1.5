@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231185RsLogic">
+    <select id="findSLCode" resultType="com.msk.seller.bean.ISL231185RsResult"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        select
+            IFNULL(A.SL_CODE,'') AS slCode,
+            IFNULL(A.AREA_CODE,'') AS areaCode,
+            IFNULL(A.LGCS_AREA_CODE,'') AS lgcsRreaCode
+        from
+            sl_seller  A
+        WHERE
+            A.DEL_FLG = 0
+    </select>
+</mapper>

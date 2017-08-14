@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ds.logic.SC182213Logic">
+
+    <sql id="selectSql">
+        SELECT
+        LOT_ID AS lotId,
+        SERIAL_ID AS serialId,
+        LOT_CODE AS lotCode,
+        READ_CODE AS readCode,
+        CRT_TIME AS crtTime
+    </sql>
+
+    <select id="findPageList" parameterType="com.hoperun.core.bean.BasePageParam"
+            resultType="com.msk.ds.bean.SC182213Bean">
+        <include refid="selectSql" />
+        FROM ds_lot_serial
+        <!--<if test="filterMap.lotId!=null and filterMap.lotId!=''">
+            WHERE LOT_ID = #{filterMap.lotId}
+        </if>-->
+        <where>
+            <if test="filterMap.lotId!=null and filterMap.lotId!=''">
+                AND LOT_ID = #{filterMap.lotId}
+            </if>
+            AND DEL_FLG = 0
+        </where>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer"
+            parameterType="com.hoperun.core.bean.BasePageParam">
+        select COUNT(1)
+        FROM ds_lot_serial
+        WHERE DEL_FLG = 0
+    </select>
+
+    <delete id="remove">
+        DELETE FROM ds_lot_serial
+        <if test="filterMap.lotId!=null and filterMap.lotId!=''">
+            WHERE LOT_ID = #{filterMap.lotId}
+        </if>
+        <if test="filterMap.serialId!=null and filterMap.serialId!=''">
+            AND SERIAL_ID = #{filterMap.serialId}
+        </if>
+    </delete>
+</mapper>

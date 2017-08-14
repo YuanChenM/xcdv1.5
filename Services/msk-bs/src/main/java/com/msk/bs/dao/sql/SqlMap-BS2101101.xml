@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2101101Logic">
+
+    <sql id="selectFiled">
+        A.SL_CODE AS slCode,
+        IFNULL(A.SL_CODE_DIS,'-') AS slCodeDis,
+        A.SL_CON_FLG AS slConFlg,
+        A.AREA_CODE AS areaCode,
+        A.LGCS_AREA_CODE AS lgcsAreaCode,
+        A.PROVINCE_CODE AS provinceCode,
+        A.CITY_CODE AS cityCode,
+        A.DISTRICT_CODE AS districtCode,
+        A.EP_ID AS epId,
+        A.SL_MAIN_CLASS AS slMainClass,
+        A.SNK_FLG AS snkFlg,
+        A.SELF_FLG AS selfFlg,
+        A.AGENT_FLG AS agentFlg,
+        A.OEM_FLG AS oemFlg,
+        A.BUYER_FLG AS buyerFlg,
+        A.SQA_STATUS AS sqaStatus,
+        A.DIST_QUA AS distQua,
+        A.SHOP_QUA AS shopQua,
+        IFNULL(A.AGENT_TYPE,'') AS agentType,
+        IFNULL(A.DISTRIBUTION,'') AS distribution,
+        IFNULL(A.DEMESNE,'') AS demesne,
+        IFNULL(A.REGISTER_SOURCE,'') AS registerSource,
+        IFNULL(E.SL_TEL,'') AS slTel,
+        IFNULL(E.SL_CONTACT,'') AS slContact,
+        IFNULL(F.SL_IDCARD,'') AS slIdcard,
+        IFNULL(F.SL_ADDRESS,'') AS slAddress,
+        IFNULL(TEMP1.stewardNum,0) AS stewardNum,
+        IFNULL(TEMP2.stewardNum,0) AS buyerNum,
+ 		E.SL_ACCOUNT AS slAccount,
+        E.SL_SHOW_NAME AS slShowName,
+        E.ACCOUNT_PSD AS accountPsd,
+        E.ACCOUNT_IMG AS accountImg,
+        E.AUTH_STATUS AS authStatus,
+        E.FROM_FLG AS fromFlg,
+        A.MEMO1 AS memo1,
+        A.MEMO2 AS memo2,
+        A.MEMO3 AS memo3,
+        A.MEMO4 AS memo4,
+        A.MEMO5 AS memo5,
+        A.MEMO6 AS memo6,
+        A.MEMO7 AS memo7,
+        A.MEMO8 AS memo8,
+        IFNULL(A.MEMO9,'-') AS memo9,
+        A.MEMO10 AS memo10,
+        A.MEMO11 AS memo11,
+        A.MEMO12 AS memo12,
+        A.MEMO13 AS memo13,
+        A.MEMO14 AS memo14,
+        A.MEMO15 AS memo15,
+        A.MEMO16 AS memo16,
+        A.MEMO17 AS memo17,
+        A.MEMO18 AS memo18,
+        A.MEMO19 AS memo19,
+        A.MEMO20 AS memo20,
+        F.SL_IDCARD AS slIdcard,
+        F.SL_SORT AS slSort,
+        F.SL_ADDRESS AS slAddress,
+        F.LAT AS lat,
+        F.LON AS lon,
+        F.FLAG10 AS flag10,
+        F.FLAG9 AS flag9,
+        F.FLAG8 AS flag8,
+        F.FLAG7 AS flag7,
+        F.FLAG6 AS flag6,
+        F.FLAG5 AS flag5,
+        F.FLAG4 AS flag4,
+        F.FLAG3 AS flag3,
+        F.FLAG2 AS flag2,
+        IFNULL(F.FLAG1,'') AS flag1,
+        D.SHOP_ID AS shopId,
+        IFNULL(D.SHOP_NAME,'') AS shopName,
+        D.SHOP_LOGO AS shopLogo,
+        D.MANAGING_CHARACT10 AS managingCharact10,
+        D.MANAGING_CHARACT9 AS managingCharact9,
+        D.MANAGING_CHARACT8 AS managingCharact8,
+        D.MANAGING_CHARACT7 AS managingCharact7,
+        D.MANAGING_CHARACT6 AS managingCharact6,
+        D.MANAGING_CHARACT5 AS managingCharact5,
+        D.MANAGING_CHARACT4 AS managingCharact4,
+        D.MANAGING_CHARACT3 AS managingCharact3,
+        D.MANAGING_CHARACT2 AS managingCharact2,
+        D.MANAGING_CHARACT1 AS managingCharact1,
+        D.SHOP_FLAG30 AS shopFlag30,
+        D.SHOP_FLAG29 AS shopFlag29,
+        D.SHOP_FLAG28 AS shopFlag28,
+        D.SHOP_FLAG27 AS shopFlag27,
+        D.SHOP_FLAG26 AS shopFlag26,
+        D.SHOP_FLAG25 AS shopFlag25,
+        D.SHOP_FLAG24 AS shopFlag24,
+        D.SHOP_FLAG23 AS shopFlag23,
+        D.SHOP_FLAG22 AS shopFlag22,
+        D.SHOP_FLAG21 AS shopFlag21,
+        D.SHOP_FLAG20 AS shopFlag20,
+        D.SHOP_FLAG19 AS shopFlag19,
+        D.SHOP_FLAG18 AS shopFlag18,
+        D.SHOP_FLAG17 AS shopFlag17,
+        D.SHOP_FLAG16 AS shopFlag16,
+        D.SHOP_FLAG15 AS shopFlag15,
+        D.SHOP_FLAG14 AS shopFlag14,
+        D.SHOP_FLAG13 AS shopFlag13,
+        D.SHOP_FLAG12 AS shopFlag12,
+        D.SHOP_FLAG11 AS shopFlag11,
+        D.SHOP_FLAG10 AS shopFlag10,
+        D.SHOP_FLAG9 AS shopFlag9,
+        D.SHOP_FLAG8 AS shopFlag8,
+        D.SHOP_FLAG7 AS shopFlag7,
+        D.SHOP_FLAG6 AS shopFlag6,
+        D.SHOP_FLAG5 AS shopFlag5,
+        D.SHOP_FLAG4 AS shopFlag4,
+        D.SHOP_FLAG3 AS shopFlag3,
+        D.SHOP_FLAG2 AS shopFlag2,
+        D.SHOP_FLAG1 AS shopFlag1
+    </sql>
+    <sql id="selectFrom">
+        FROM sl_bs_account E
+		  LEFT JOIN sl_bs_basic_info AS A ON E.SL_ACCOUNT = A.SL_ACCOUNT
+		  LEFT JOIN sl_bs_buyershop F ON F.SL_CODE = A.SL_CODE
+		  LEFT JOIN sl_bs_shop_info AS D ON D.SL_CODE = F.SL_CODE
+		  LEFT JOIN (
+            SELECT
+                COUNT(1) AS stewardNum,
+                A.SL_CODE
+            FROM
+                sl_house_account AS A
+                WHERE A.DEL_FLG IS NULL OR A.DEL_FLG = 0
+            GROUP BY
+                A.SL_CODE
+        ) AS TEMP1 ON TEMP1.SL_CODE = A.SL_CODE
+        LEFT JOIN (
+            SELECT
+                A.SL_CODE,
+                COUNT(1) AS stewardNum
+            FROM
+            sl_bs_buyer A WHERE A.APPLY_STATUS = '2'
+                AND (A.DEL_FLG IS NULL OR A.DEL_FLG = 0)
+            GROUP BY
+                A.SL_CODE
+        ) AS TEMP2 ON TEMP2.SL_CODE = A.SL_CODE
+    </sql>
+
+    <sql id="whereCondition">
+        <where>
+            (E.DEL_FLG IS NULL OR E.DEL_FLG = 0)
+            <if test="filterMap.slContact!=null and filterMap.slContact!=''">
+                AND E.SL_CONTACT like #{filterMap.slContact}
+            </if>
+            <if test="filterMap.slIdcard!=null and filterMap.slIdcard!=''">
+                AND F.SL_IDCARD like #{filterMap.slIdcard}
+            </if>
+            <if test="filterMap.slTel!=null and filterMap.slTel!=''">
+                AND E.SL_TEL like #{filterMap.slTel}
+            </if>
+            <if test="filterMap.slAddress!=null and filterMap.slAddress!=''">
+                AND F.SL_ADDRESS like #{filterMap.slAddress}
+            </if>
+            <if test="filterMap.slAccount!=null and filterMap.slAccount!=''">
+                AND A.SL_ACCOUNT = #{filterMap.slAccount}
+            </if>
+            <if test="filterMap.accountPsd!=null and filterMap.accountPsd!=''">
+                AND E.ACCOUNT_PSD = #{filterMap.accountPsd}
+            </if>
+
+            <if test="filterMap.provinceCode!=null and filterMap.provinceCode!=''">
+                AND A.PROVINCE_CODE = #{filterMap.provinceCode}
+            </if>
+            <if test="filterMap.cityCode!=null and filterMap.cityCode!=''">
+                AND A.CITY_CODE = #{filterMap.cityCode}
+            </if>
+            <if test="filterMap.districtCode!=null and filterMap.districtCode!=''">
+                AND A.DISTRICT_CODE = #{filterMap.districtCode}
+            </if>
+            <if test="filterMap.agentType != null and filterMap.agentType != ''">
+                AND A.AGENT_TYPE LIKE #{filterMap.agentType}
+            </if>
+            <if test="filterMap.distribution != null and filterMap.distribution != ''">
+                AND A.DISTRIBUTION LIKE #{filterMap.distribution}
+            </if>
+            <if test="filterMap.demesne != null and filterMap.demesne != ''">
+                AND A.DEMESNE LIKE #{filterMap.demesne}
+            </if>
+            <if test="filterMap.registerSource != null and filterMap.registerSource != ''">
+                AND A.REGISTER_SOURCE LIKE #{filterMap.registerSource}
+            </if>
+
+            <if test="filterMap.shopName!=null and filterMap.shopName!=''">
+                AND D.SHOP_NAME like #{filterMap.shopName}
+            </if>
+            <if test="filterMap.applyStatus==null or filterMap.applyStatus==''">
+                <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                    AND A.SL_CODE = #{filterMap.slCode}
+                </if>
+            </if>
+            <if test="filterMap.applyStatus!=null and filterMap.applyStatus!='' and filterMap.applyStatus==1">
+                <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                    AND A.SL_CODE != #{filterMap.slCode}
+                </if>
+            </if>
+            <if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+                AND A.SL_CODE_DIS like #{filterMap.slCodeDis}
+            </if>
+        </where>
+    </sql>
+    <select id="getPageCount" resultType="int" parameterType="BasePageParam">
+        SELECT COUNT(1)
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+    </select>
+    <select id="findPageList" resultType="com.msk.bs.bean.IBS210110301Bean"
+            parameterType="BasePageParam">
+        SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        order by E.CRT_TIME DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <update id="modify" parameterType="com.msk.bs.bean.BS2101101Bean">
+      UPDATE sl_house_account
+       SET DEL_FLG = 1,
+       VER =VER+1,
+       UPD_ID = #{updId},
+       UPD_TIME = #{updTime}
+       WHERE SL_CODE = #{slCode}  AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </update>
+
+    <!-- 将查询到的管家专属会员表信息保存到管家买家关系履历表中 -->
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO sl_bs_buyer_his (
+        HIS_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        APPLY_SIDE,
+        APPLY_STATUS,
+        APPLY_TIME,
+        BUYER_REASON,
+        BUYERSHOP_REASON,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.hisId},
+            #{item.slCode},
+            #{item.houseCode},
+            #{item.buyerId},
+            #{item.startTime},
+            #{item.endTime},
+            #{item.applySide},
+            #{item.applyStatus},
+            #{item.applyTime},
+            #{item.buyerReason},
+            #{item.buyershopReason},
+            #{item.delFlg},
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            #{item.actId},
+            #{item.actTime},
+            #{item.ver}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 修改delFlag 为 1 -->
+    <update id="updateBsBuyerInfo" parameterType="com.msk.bs.bean.BS2101101BsBean">
+        UPDATE sl_bs_buyer buyer
+        SET buyer.DEL_FLG = 1 ,buyer.UPD_ID = #{updId},buyer.UPD_TIME = #{updTime},buyer.VER = VER+1
+        WHERE
+        (buyer.DEL_FLG IS NULL OR buyer.DEL_FLG = 0)
+        AND buyer.BUYER_ID IN
+        <foreach collection="filterMap.buyerIdList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!-- 根据买手编码查询管家专属会员表信息 -->
+    <select id="findSlBsBuyerInfo" resultType="com.msk.core.entity.SlBsBuyer"
+            parameterType="com.msk.bs.bean.BS2101101BsBean">
+        SELECT
+        SL_CODE AS slCode,
+        HOUSE_CODE AS houseCode,
+        BUYER_ID AS buyerId,
+        START_TIME AS startTime,
+        END_TIME AS endTime,
+        APPLY_SIDE AS applySide,
+        APPLY_STATUS AS applyStatus,
+        APPLY_TIME AS applyTime,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+        FROM sl_bs_buyer
+        WHERE (DEL_FLG IS NULL OR DEL_FLG =0)
+        <if test="slCode !=null and slCode !=''">
+            AND SL_CODE = #{slCode}
+        </if>
+    </select>
+
+</mapper>

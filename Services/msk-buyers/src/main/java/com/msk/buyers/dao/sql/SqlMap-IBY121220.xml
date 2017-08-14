@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121220Logic">
+    <select id="countResearchNew" resultType="int" parameterType="BaseParam">
+        SELECT count(1)
+          FROM by_research_category
+         WHERE BUYER_ID = #{filterMap.buyerId}
+           AND CLASSES_CODE = #{filterMap.classesCode}
+           AND MACHINING_CODE = #{filterMap.machiningCode}
+           AND IS_STANDARD = '0'
+           AND DEL_FLG = '0'
+    </select>
+    <select id="getResearchNew" resultType="com.msk.buyers.bean.IBY121220Bean" parameterType="BaseParam">
+        SELECT a.BUYER_ID AS buyerId
+             , a.CLASSES_CODE AS classesCode
+             , a.MACHINING_CODE AS machiningCode
+             , a.BREED_CODE AS breedCode
+             , a.SALE_NAME AS breedName
+             , a.IS_STANDARD AS isStandard
+             , (CASE WHEN COUNT(b.CATEGORY_ID) = 0 THEN '0' ELSE '1' END) AS researchStatus
+          FROM by_research_category a
+          LEFT JOIN by_research_cat_detail b
+            ON b.CATEGORY_ID = a.CATEGORY_ID
+            AND b.DEL_FLG = a.DEL_FLG
+         WHERE a.BUYER_ID = #{filterMap.buyerId}
+           AND a.CLASSES_CODE = #{filterMap.classesCode}
+           AND a.MACHINING_CODE = #{filterMap.machiningCode}
+           AND a.IS_STANDARD = '0'
+           AND a.DEL_FLG = '0'
+         GROUP BY a.BUYER_ID
+             , a.CLASSES_CODE
+             , a.MACHINING_CODE
+             , a.BREED_CODE
+             , a.SALE_NAME
+             , a.IS_STANDARD
+    </select>
+</mapper>

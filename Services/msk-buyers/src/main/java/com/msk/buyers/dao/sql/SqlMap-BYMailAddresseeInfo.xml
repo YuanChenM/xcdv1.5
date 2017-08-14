@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BYMailAddresseeInfoLogic">
+
+
+    <select id="getAddressEmailList" resultType="com.msk.buyers.bean.BYMailAddresseeInfoBean" parameterType="BaseParam">
+        SELECT  MAIL_ADDRESSEE_ID  AS mailAddresseeId
+        ,ADDRESSEE_NAME AS addresseeName
+        ,ADDRESSEE_EMAIL AS addresseeEmail
+        ,SEND_TYPE AS sendType
+        ,SEND_GROUP AS sendGroup
+        FROM  BY_MAIL_ADDRESSEE_INFO
+        WHERE DEL_FLG = 0
+    </select>
+</mapper>

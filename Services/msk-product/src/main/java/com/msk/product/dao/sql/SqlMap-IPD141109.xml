@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141109Logic">
+	<!--插入操作 -->
+	<insert id="savePdNormsStd" parameterType="com.msk.product.bean.IPD141109RsParam">
+		INSERT INTO
+		PD_NORMS_STD (
+		STANDARD_ID,
+		NORMS_CODE,
+		NORMS_SUTTLE,
+		NORMS_ERROR,
+		NORMS_NUMBER,
+		NORMS_SIZE,
+		NORMS_TEXTURE,
+		NORMS_OUT,
+		NORMS_KG,
+		NORMS_OUT_SIZE,
+		NORMS_OUT_TEXTURE,
+		NORMS_TEN,
+		NORMS_LENGTH,
+		NORMS_WIDTH,
+		NORMS_HEIGHT,
+		NORMS_VOLUME,
+		NETWEIGHT_INNER,
+		NETWEIGHT_OUT,
+		DEL_FLG,
+		CRT_ID,
+		CRT_TIME,
+		UPD_ID,
+		UPD_TIME,
+		ACT_ID,
+		ACT_TIME,
+		VER
+		)
+		VALUES
+		(
+		#{standardId},
+		#{normsCode},
+		#{normsSuttle},
+		#{normsError},
+		#{normsNumber},
+		#{normsSize},
+		#{normsTexture},
+		#{normsOut},
+		#{normsKg},
+		#{normsOutSize},
+		#{normsOutTexture},
+		#{normsTen},
+		#{normsLength},
+		#{normsWidth},
+		#{normsHeight},
+		#{normsVolume},
+		#{netWeightInner},
+		#{netWeightOut},
+		<!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+		0,
+		#{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+		#{actId},
+		#{actTime},
+		0
+		<!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+		);
+	</insert>
+
+
+	<!-- 查询产品标准表 -->
+	<select id="findPdStandard" parameterType="BaseParam"
+		resultType="com.msk.core.entity.PdStandard">
+		SELECT
+		A.STANDARD_ID AS standardId
+		FROM
+		PD_STANDARD AS A
+		WHERE
+		CLASSES_CODE =
+		#{filterMap.classesCode} AND BREED_CODE =
+		#{filterMap.breedCode}
+		AND A.FEATURE_CODE = #{filterMap.featureCode}
+		AND A.GRADE_CODE = #{filterMap.gradeCode}
+	</select>
+    <!--ADD:添加machingCode生成 任强 2016/09/27 Start-->
+	<select id="CreateMaxCode" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141109RsParam">
+		SELECT
+		CASE
+		WHEN MAX(NORMS_CODE) IS NULL THEN 1
+		ELSE MAX(NORMS_CODE)+1 END AS normsCode
+		FROM PD_NORMS_STD
+		WHERE STANDARD_ID = #{standardId}
+	</select>
+	<!--ADD:添加machingCode生成 任强 2016/09/27 End-->
+</mapper>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141114Logic">
+    <!-- 查询物流区 -->
+    <select id="findAllLogiarea" resultType="com.msk.product.bean.IPD14111401RsResult">
+        SELECT
+        LGCS_AREA_CODE AS logiAreaCode,
+        LGCS_AREA_NAME AS logiAreaName
+        FROM md_logistics_area
+    </select>
+</mapper>

@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD14112601Logic">
+    <!--根据classestreeCode查询原料描述-->
+    <select id="findClassData" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestreeMat">
+        select
+         SCIENTIFIC_NAME AS scientificName
+        ,LOCAL_NAME AS localName
+        ,SALES_NAME AS salesName
+        ,PLACE_ORIGIN AS placeOrigin
+        ,PLACE_CURRENT AS placeCurrent
+        ,SOURCE AS source
+        ,CHILD_TYPE AS childType
+        ,FEED_TYPE AS feedType
+        ,FEED_PERIOD AS feedPeriod
+        from pd_classestree_mat
+        <where>
+            <if test="filterMap.classCode!=null and filterMap.classCode!=''">
+                AND CLASSESTREE_CODE=#{filterMap.classCode}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND DEL_FLG=#{filterMap.delFlg}
+            </if>
+        </where>
+    </select>
+
+    <!--根据二级分类编码查询三级分类编码-->
+    <select id="findThreeCodeData" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestree">
+     SELECT
+	A.CLASSESTREE_CODE AS classestreeCode
+    FROM
+	pd_classestree AS A
+	WHERE A.PARENT_CODE=#{filterMap.classCode}
+	AND A.TREE_LEVEL=#{filterMap.treeLevel}
+	AND A.DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <!--查询总控目录管理表-->
+    <select id="findData" parameterType="BaseParam" resultType="com.msk.product.bean.PD14112601Param">
+      SELECT
+      IFNULL(A.LEVEL_CODE,'') AS levelCode,
+	  IFNULL(A.LEVEL_NAME,'') AS levelName,
+	  IFNULL(B.SCIENTIFIC_NAME,'') AS scientificName,
+	  IFNULL(B.LOCAL_NAME,'') AS localName,
+	  IFNULL(A.CLASSESTREE_CODE,'') AS classestreeCode
+      FROM
+	  pd_classestree AS A
+      LEFT JOIN pd_classestree_mat AS B ON (
+	  A.CLASSESTREE_CODE = B.CLASSESTREE_CODE
+      )
+      WHERE
+	  A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	  AND A.DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <!--查询市场需求审核注册-->
+    <select id="findMarket" parameterType="BaseParam" resultType="com.msk.product.bean.PD141128Param">
+        SELECT
+        IFNULL(A.TC_ONLINE_ID,'') AS tcOnlineId,
+        IFNULL(A.FEATURE_FLG,'') AS featureFlg,
+        IFNULL(A.FEATURE_NAME,'') AS featureName
+        FROM
+        pd_tc_market AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND A.DEL_FLG=#{filterMap.delFlg}
+            </if>
+        </where>
+    </select>
+
+    <!--删除市场需求审核注册-->
+    <update id="deleteMarket" parameterType="BaseParam">
+        update pd_tc_market set DEL_FLG=#{filterMap.delFlg}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        ,UPD_ID = #{updId},
+        UPD_TIME=#{updTime}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        where TC_ONLINE_ID=#{filterMap.tcOnlineId}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+           AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+    <!--更新市场需求审核注册-->
+    <update id="updateMarket" parameterType="BaseParam">
+        update pd_tc_market set FEATURE_FLG=#{filterMap.featureFlg}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        ,UPD_ID = #{updId},
+        UPD_TIME=#{updTime}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        where TC_ONLINE_ID=#{filterMap.tcOnlineId}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+
+    <!--查询卖家供应备案注册-->
+    <select id="queryProvider" parameterType="BaseParam" resultType="com.msk.product.bean.PdTcProviderPackageParam">
+        SELECT
+        A.TC_PROVIDER_ID AS tcProviderId,
+        A.FEATURE_NAME AS featureName,
+        A.FEATURE_FLG AS featureFlg,
+        A.SALES_TARGET AS salesTarget,
+        A.MACHINING_WAY AS machiningWay
+        FROM
+        pd_tc_provider_package AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND A.DEL_FLG=#{filterMap.delFlg}
+            </if>
+        </where>
+    </select>
+
+    <!--删除卖家供应备案注册-->
+    <update id="deleteProvider" parameterType="BaseParam">
+        update pd_tc_provider_package set DEL_FLG=#{filterMap.delFlg}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        ,UPD_ID = #{updId},
+        UPD_TIME=#{updTime}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        where TC_PROVIDER_ID = #{filterMap.tcProviderId}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+          AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+    <!--更新卖家供应备案注册-->
+    <update id="updateProvider" parameterType="BaseParam">
+        update pd_tc_provider_package set FEATURE_FLG=#{filterMap.featureFlg}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        ,UPD_ID = #{updId},
+        UPD_TIME=#{updTime}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        where TC_PROVIDER_ID = #{filterMap.tcProviderId}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+          AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+    <!--查询正式上线-->
+    <select id="queryOnLine" parameterType="BaseParam" resultType="com.msk.product.bean.PdTcOnlineParam">
+        SELECT
+        A.TC_ONLINE_ID AS tcOnlineId,
+        A.FEATURE_NAME AS featureName,
+        A.FEATURE_FLG AS featureFlg
+        FROM
+        pd_tc_online AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND A.DEL_FLG=#{filterMap.delFlg}
+            </if>
+        </where>
+    </select>
+
+    <!--删除卖家供应备案注册-->
+    <update id="deleteOnLine" parameterType="BaseParam">
+        update pd_tc_online set DEL_FLG=#{filterMap.delFlg}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        ,UPD_ID = #{updId},
+        UPD_TIME=#{updTime}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        where TC_ONLINE_ID = #{filterMap.tcOnlineId}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+          AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+    <!--查询卖家供应商注册标准目录-->
+    <select id="queryProviderContent" parameterType="BaseParam" resultType="com.msk.product.bean.PdTcProviderContentParam">
+        SELECT
+        A.TC_CONTENT_ID AS tcContentId,
+        A.FEATURE_NAME AS featureName,
+        A.FEATURE_FLG AS featureFlg,
+        A.SALES_TARGET AS salesTarget,
+        A.MACHINING_WAY AS machiningWay
+        FROM
+        pd_tc_provider_content AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND A.DEL_FLG=#{filterMap.delFlg}
+            </if>
+        </where>
+    </select>
+
+    <!--删除卖家供应商注册标准目录-->
+    <update id="deleteProviderContent" parameterType="BaseParam">
+        update pd_tc_provider_content set DEL_FLG=#{filterMap.delFlg}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        ,UPD_ID = #{updId},
+        UPD_TIME=#{updTime}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        where TC_CONTENT_ID = #{filterMap.tcContentId}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+         AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+
+    <!--查询OEM上现场产品-->
+    <select id="queryOnlineOem" parameterType="BaseParam" resultType="com.msk.product.bean.PdTcOnlineOemParam">
+        SELECT
+        A.TC_OEM_ID AS tcOemId,
+        A.FEATURE_NAME AS featureName,
+        A.FEATURE_FLG AS featureFlg
+        FROM
+        pd_tc_online_oem AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND A.DEL_FLG=#{filterMap.delFlg}
+            </if>
+        </where>
+    </select>
+
+    <!--删除OEM上现场产品-->
+    <update id="deleteOnlineOem" parameterType="BaseParam">
+        update pd_tc_online_oem set DEL_FLG=#{filterMap.delFlg}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        ,UPD_ID = #{updId},
+        UPD_TIME=#{updTime}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        where TC_OEM_ID = #{filterMap.tcOemId}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+          AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+    <!--查询分类!-->
+    <select id="findListLevel4List" parameterType="BaseParam" resultType="com.msk.product.bean.PD14112601Bean">
+        SELECT
+        CONCAT(A.CLASSESTREE_CODE,2) AS attributeCode,
+        A.LEVEL_CODE AS featureCode,
+        A.LEVEL_NAME AS featureName,
+        B.LEVEL_CODE AS normsCode,
+        B.LEVEL_NAME AS normsOut,
+        A.PARENT_CODE AS parentCode,
+        CONCAT(A.LEVEL_CODE,B.LEVEL_CODE) AS pdNormCode
+        FROM
+        pd_classestree AS A
+        INNER JOIN pd_classestree AS B ON A.CLASSESTREE_CODE = B.PARENT_CODE
+        <where>
+            <if test="filterMap.parentCode!=null and filterMap.parentCode!=''">
+                AND A.PARENT_CODE=#{filterMap.parentCode}
+            </if>
+            <if test="filterMap.treeLevel!=null and filterMap.treeLevel!=''">
+                AND A.TREE_LEVEL=#{filterMap.treeLevel}
+            </if>
+        </where>
+    </select>
+    <!--查询禁止准入产品-->
+    <select id="queryTcForBid" parameterType="BaseParam" resultType="com.msk.product.bean.PdTcForbidParam">
+        SELECT
+        A.TC_FORBID_ID AS tcForbidId,
+        A.FEATURE_NAME AS featureName,
+        A.FEATURE_FLG AS featureFlg
+        FROM
+        pd_tc_forbid AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND A.DEL_FLG=#{filterMap.delFlg}
+            </if>
+        </where>
+    </select>
+
+    <!--删除禁止准入产品-->
+    <update id="deleteTcForDid" parameterType="BaseParam">
+        update pd_tc_forbid set DEL_FLG=#{filterMap.delFlg}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        ,UPD_ID = #{updId},
+        UPD_TIME=#{updTime}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        where TC_FORBID_ID = #{filterMap.tcForbidId}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+         AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+</mapper>

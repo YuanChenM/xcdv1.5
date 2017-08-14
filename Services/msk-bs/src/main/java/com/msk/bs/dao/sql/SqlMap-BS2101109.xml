@@ -1,0 +1,530 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2101109Logic">
+    <insert id="save" parameterType="com.msk.core.entity.BsAccount">
+INSERT INTO sl_bs_account (
+        SL_ACCOUNT,
+        SL_TEL,
+        SL_SHOW_NAME,
+        SL_CONTACT,
+        ACCOUNT_PSD,
+        ACCOUNT_IMG,
+        AUTH_STATUS,
+        FROM_FLG,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{slAccount},
+        #{slTel},
+        #{slShowName},
+        #{slContact},
+        #{accountPsd},
+        #{accountImg},
+        #{authStatus},
+        #{fromFlg},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+</insert>
+    <insert id="saveBsBasicInfo" parameterType="com.msk.core.entity.BsBasicInfo">
+        INSERT INTO sl_bs_basic_info (
+        SL_CODE,
+        SL_ACCOUNT,
+        SL_CODE_DIS,
+        SL_CODE_MANUFACTURE,
+        SL_CODE_SELF,
+        SL_CODE_AGENT,
+        SL_CODE_OEM,
+        SL_CON_FLG,
+        AREA_CODE,
+        LGCS_AREA_CODE,
+        PROVINCE_CODE,
+        CITY_CODE,
+        DISTRICT_CODE,
+        AREA_NAME,
+        LGCS_AREA_NAME,
+        PROVINCE_NAME,
+        CITY_NAME,
+        DISTRICT_NAME,
+        EP_ID,
+        SL_MAIN_CLASS,
+        SNK_FLG,
+        SELF_FLG,
+        AGENT_FLG,
+        OEM_FLG,
+        BUYER_FLG,
+        SQA_STATUS,
+        DIST_QUA,
+        SHOP_QUA,
+        AGENT_TYPE ,
+        DISTRIBUTION,
+        DEMESNE,
+        REGISTER_SOURCE,
+        MEMO1,
+        MEMO2,
+        MEMO3,
+        MEMO4,
+        MEMO5,
+        MEMO6,
+        MEMO7,
+        MEMO8,
+        MEMO9,
+        MEMO10,
+        MEMO11,
+        MEMO12,
+        MEMO13,
+        MEMO14,
+        MEMO15,
+        MEMO16,
+        MEMO17,
+        MEMO18,
+        MEMO19,
+        MEMO20,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{slCode},
+        #{slAccount},
+        #{slCodeDis},
+        #{slCodeManufacture},
+        #{slCodeSelf},
+        #{slCodeAgent},
+        #{slCodeOem},
+        #{slConFlg},
+        #{areaCode},
+        #{lgcsAreaCode},
+        #{provinceCode},
+        #{cityCode},
+        #{districtCode},
+        #{areaName},
+        #{lgcsAreaName},
+        #{provinceName},
+        #{cityName},
+        #{districtName},
+        #{epId},
+        #{slMainClass},
+        #{snkFlg},
+        #{selfFlg},
+        #{agentFlg},
+        #{oemFlg},
+        #{buyerFlg},
+        #{sqaStatus},
+        #{distQua},
+        #{shopQua},
+        #{agentType},
+        #{distribution},
+        #{demesne},
+        #{registerSource},
+        #{memo1},
+        #{memo2},
+        #{memo3},
+        #{memo4},
+        #{memo5},
+        #{memo6},
+        #{memo7},
+        #{memo8},
+        #{memo9},
+        #{memo10},
+        #{memo11},
+        #{memo12},
+        #{memo13},
+        #{memo14},
+        #{memo15},
+        #{memo16},
+        #{memo17},
+        #{memo18},
+        #{memo19},
+        #{memo20},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+    <update id="modify" parameterType="com.msk.core.entity.BsAccount">
+        UPDATE sl_bs_account SET
+        <if test="slTel != null and slTel != ''">
+            SL_TEL = #{slTel},
+        </if>
+        <if test="slShowName != null and slShowName != ''">
+            SL_SHOW_NAME = #{slShowName},
+        </if>
+        <if test="slContact != null and slContact != ''">
+            SL_CONTACT = #{slContact},
+        </if>
+        <if test="accountPsd != null and accountPsd != ''">
+            ACCOUNT_PSD = #{accountPsd},
+        </if>
+        <if test="accountImg != null and accountImg != ''">
+            ACCOUNT_IMG = #{accountImg},
+        </if>
+        <if test="authStatus != null and authStatus != ''">
+            AUTH_STATUS = #{authStatus},
+        </if>
+        <if test="fromFlg != null and fromFlg != ''">
+            FROM_FLG = #{fromFlg},
+        </if>
+        <if test="delFlg != null and delFlg != ''">
+            DEL_FLG = #{delFlg},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        ,VER=VER+1
+        WHERE SL_ACCOUNT = #{slAccount}
+        and (DEL_FLG IS NULL OR DEL_FLG =0)
+    </update>
+    <update id="updateBsBasicInfo" parameterType="com.msk.core.entity.BsBasicInfo">
+        UPDATE sl_bs_basic_info SET
+        <if test="slAccount != null and slAccount != ''">
+            SL_ACCOUNT = #{slAccount},
+        </if>
+        <if test="slCodeDis != null and slCodeDis != ''">
+            SL_CODE_DIS = #{slCodeDis},
+        </if>
+        <if test="slCodeManufacture != null and slCodeManufacture != ''">
+            SL_CODE_MANUFACTURE = #{slCodeManufacture},
+        </if>
+        <if test="slCodeSelf != null and slCodeSelf != ''">
+            SL_CODE_SELF = #{slCodeSelf},
+        </if>
+        <if test="slCodeAgent != null and slCodeAgent != ''">
+            SL_CODE_AGENT = #{slCodeAgent},
+        </if>
+        <if test="slCodeOem != null and slCodeOem != ''">
+            SL_CODE_OEM = #{slCodeOem},
+        </if>
+        <if test="slConFlg != null and slConFlg != ''">
+            SL_CON_FLG = #{slConFlg},
+        </if>
+        <if test="areaCode != null and areaCode != ''">
+            AREA_CODE = #{areaCode},
+        </if>
+        <if test="lgcsAreaCode != null and lgcsAreaCode != ''">
+            LGCS_AREA_CODE = #{lgcsAreaCode},
+        </if>
+        <if test="provinceCode != null and provinceCode != ''">
+            PROVINCE_CODE = #{provinceCode},
+        </if>
+        <if test="cityCode != null and cityCode != ''">
+            CITY_CODE = #{cityCode},
+        </if>
+        <if test="districtCode != null and districtCode != ''">
+            DISTRICT_CODE = #{districtCode},
+        </if>
+        <if test="areaName != null and areaName != ''">
+            AREA_NAME = #{areaName},
+        </if>
+        <if test="lgcsAreaName != null and lgcsAreaName != ''">
+            LGCS_AREA_NAME = #{lgcsAreaName},
+        </if>
+        <if test="provinceName != null and provinceName != ''">
+            PROVINCE_NAME = #{provinceName},
+        </if>
+        <if test="cityName != null and cityName != ''">
+            CITY_NAME = #{cityName},
+        </if>
+        <if test="districtName != null and districtName != ''">
+            DISTRICT_NAME = #{districtName},
+        </if>
+        <if test="epId != null and epId != ''">
+            EP_ID = #{epId},
+        </if>
+        <if test="slMainClass != null and slMainClass != ''">
+            SL_MAIN_CLASS = #{slMainClass},
+        </if>
+        <if test="snkFlg != null and snkFlg != ''">
+            SNK_FLG = #{snkFlg},
+        </if>
+        <if test="selfFlg != null and selfFlg != ''">
+            SELF_FLG = #{selfFlg},
+        </if>
+        <if test="agentFlg != null and agentFlg != ''">
+            AGENT_FLG = #{agentFlg},
+        </if>
+        <if test="oemFlg != null and oemFlg != ''">
+            OEM_FLG = #{oemFlg},
+        </if>
+        <if test="buyerFlg != null and buyerFlg != ''">
+            BUYER_FLG = #{buyerFlg},
+        </if>
+        <if test="sqaStatus != null and sqaStatus != ''">
+            SQA_STATUS = #{sqaStatus},
+        </if>
+        <if test="distQua != null and distQua != ''">
+            DIST_QUA = #{distQua},
+        </if>
+        <if test="shopQua != null and shopQua != ''">
+            SHOP_QUA = #{shopQua},
+        </if>
+        <if test="agentType != null and agentType != ''">
+            AGENT_TYPE = #{agentType},
+        </if>
+        <if test="distribution != null and distribution != ''">
+            DISTRIBUTION = #{distribution},
+        </if>
+        <if test="demesne != null and demesne != ''">
+            DEMESNE = #{demesne},
+        </if>
+        <if test="registerSource != null and registerSource != ''">
+            REGISTER_SOURCE = #{registerSource},
+        </if>
+        <if test="memo1 != null">
+            MEMO1 = #{memo1},
+        </if>
+        <if test="memo2 != null">
+            MEMO2 = #{memo2},
+        </if>
+        <if test="memo3 != null ">
+            MEMO3 = #{memo3},
+        </if>
+        <if test="memo4 != null ">
+            MEMO4 = #{memo4},
+        </if>
+        <if test="memo5 != null ">
+            MEMO5 = #{memo5},
+        </if>
+        <if test="memo6 != null and memo6 != ''">
+            MEMO6 = #{memo6},
+        </if>
+        <if test="memo7 != null">
+            MEMO7 = #{memo7},
+        </if>
+        <if test="memo8 != null and memo8 != ''">
+            MEMO8 = #{memo8},
+        </if>
+        <if test="memo9 != null and memo9 != ''">
+            MEMO9 = #{memo9},
+        </if>
+        <if test="memo10 != null and memo10 != ''">
+            MEMO10 = #{memo10},
+        </if>
+        <if test="memo11 != null and memo11 != ''">
+            MEMO11 = #{memo11},
+        </if>
+        <if test="memo12 != null and memo12 != ''">
+            MEMO12 = #{memo12},
+        </if>
+        <if test="memo13 != null and memo13 != ''">
+            MEMO13 = #{memo13},
+        </if>
+        <if test="memo14 != null and memo14 != ''">
+            MEMO14 = #{memo14},
+        </if>
+        <if test="memo15 != null and memo15 != ''">
+            MEMO15 = #{memo15},
+        </if>
+        <if test="memo16 != null and memo16 != ''">
+            MEMO16 = #{memo16},
+        </if>
+        <if test="memo17 != null and memo17 != ''">
+            MEMO17 = #{memo17},
+        </if>
+        <if test="memo18 != null and memo18 != ''">
+            MEMO18 = #{memo18},
+        </if>
+        <if test="memo19 != null and memo19 != ''">
+            MEMO19 = #{memo19},
+        </if>
+        <if test="memo20 != null and memo20 != ''">
+            MEMO20 = #{memo20},
+        </if>
+        <if test="delFlg != null and delFlg != ''">
+            DEL_FLG = #{delFlg},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        ,VER=VER+1
+        WHERE SL_CODE = #{slCode}
+        and (DEL_FLG IS NULL OR DEL_FLG =0)
+    </update>
+    <select id="findOne" parameterType="com.msk.core.entity.BsBasicInfo" resultType="com.msk.bs.bean.IBS2101115RsBean">
+        SELECT
+        SL_CODE AS slCode,
+        SL_ACCOUNT AS slAccount,
+        SL_CODE_DIS AS slCodeDis,
+        SL_CODE_MANUFACTURE AS slCodeManufacture,
+        SL_CODE_SELF AS slCodeSelf,
+        SL_CODE_AGENT AS slCodeAgent,
+        SL_CODE_OEM AS slCodeOem,
+        SL_CON_FLG AS slConFlg,
+        AREA_CODE AS areaCode,
+        LGCS_AREA_CODE AS lgcsAreaCode,
+        PROVINCE_CODE AS provinceCode,
+        CITY_CODE AS cityCode,
+        DISTRICT_CODE AS districtCode,
+        AREA_NAME AS areaName,
+        LGCS_AREA_NAME AS lgcsAreaName,
+        PROVINCE_NAME AS provinceName,
+        CITY_NAME AS cityName,
+        DISTRICT_NAME AS districtName,
+        EP_ID AS epId,
+        SL_MAIN_CLASS AS slMainClass,
+        SNK_FLG AS snkFlg,
+        SELF_FLG AS selfFlg,
+        AGENT_FLG AS agentFlg,
+        OEM_FLG AS oemFlg,
+        BUYER_FLG AS buyerFlg,
+        SQA_STATUS AS sqaStatus,
+        DIST_QUA AS distQua,
+        SHOP_QUA AS shopQua,
+        MEMO1 AS memo1,
+        MEMO2 AS memo2,
+        MEMO3 AS memo3,
+        MEMO4 AS memo4,
+        MEMO5 AS memo5,
+        MEMO6 AS memo6,
+        MEMO7 AS memo7,
+        MEMO8 AS memo8,
+        MEMO9 AS memo9,
+        MEMO10 AS memo10,
+        MEMO11 AS memo11,
+        MEMO12 AS memo12,
+        MEMO13 AS memo13,
+        MEMO14 AS memo14,
+        MEMO15 AS memo15,
+        MEMO16 AS memo16,
+        MEMO17 AS memo17 ,
+        MEMO18 AS memo18,
+        MEMO19 AS memo19 ,
+        MEMO20 AS memo20,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+        FROM sl_bs_basic_info
+        WHERE (DEL_FLG = 0 OR DEL_FLG IS NULL ) AND SL_CODE = #{slCode}
+    </select>
+    <insert id="saveBsBasicInfoHis" parameterType="com.msk.bs.bean.IBS2101115RsBean">
+        INSERT INTO sl_bs_basic_info_his (
+        HIS_ID,
+        SL_CODE,
+        SL_ACCOUNT,
+        SL_CODE_DIS,
+        SL_CON_FLG,
+        AREA_CODE,
+        LGCS_AREA_CODE,
+        PROVINCE_CODE,
+        CITY_CODE,
+        DISTRICT_CODE,
+        EP_ID,
+        SL_MAIN_CLASS,
+        SNK_FLG,
+        SELF_FLG,
+        AGENT_FLG,
+        OEM_FLG,
+        BUYER_FLG,
+        SQA_STATUS,
+        DIST_QUA,
+        SHOP_QUA,
+        MEMO1,
+        MEMO2,
+        MEMO3,
+        MEMO4,
+        MEMO5,
+        MEMO6,
+        MEMO7,
+        MEMO8,
+        MEMO9,
+        MEMO10,
+        MEMO11,
+        MEMO12,
+        MEMO13,
+        MEMO14,
+        MEMO15,
+        MEMO16,
+        MEMO17,
+        MEMO18,
+        MEMO19,
+        MEMO20,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{hisId},
+        #{slCode},
+        #{slAccount},
+        #{slCodeDis},
+        #{slConFlg},
+        #{areaCode},
+        #{lgcsAreaCode},
+        #{provinceCode},
+        #{cityCode},
+        #{districtCode},
+        #{epId},
+        #{slMainClass},
+        #{snkFlg},
+        #{selfFlg},
+        #{agentFlg},
+        #{oemFlg},
+        #{buyerFlg},
+        #{sqaStatus},
+        #{distQua},
+        #{shopQua},
+        #{memo1},
+        #{memo2},
+        #{memo3},
+        #{memo4},
+        #{memo5},
+        #{memo6},
+        #{memo7},
+        #{memo8},
+        #{memo9},
+        #{memo10},
+        #{memo11},
+        #{memo12},
+        #{memo13},
+        #{memo14},
+        #{memo15},
+        #{memo16},
+        #{memo17},
+        #{memo18},
+        #{memo19},
+        #{memo20},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+</mapper>

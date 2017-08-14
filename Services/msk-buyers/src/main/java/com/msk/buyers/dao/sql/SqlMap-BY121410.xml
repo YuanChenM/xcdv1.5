@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121410Logic">
+    <select id="findOne" parameterType = "BaseParam" resultType = "com.msk.core.entity.ByMarketFoodByInfo">
+        SELECT
+           ID AS id,
+           MARKET_ID AS marketId,
+           MERCHANT_NAME AS merchantName,
+           MERCHANT_TYPE AS merchantType,
+           TOTAL_MERCHANT AS totalMerchant,
+           ANNUAL_TURNOVER AS annualTurnover,
+           IS_TARGET_MERCHANT AS isTargetMerchant
+        FROM
+           by_market_food_by_info
+        WHERE
+        ID = #{filterMap.id}
+        AND MARKET_ID = #{filterMap.marketId}
+           AND DEL_FLG = 0
+    </select>
+    <select id="count" parameterType = "BaseParam" resultType = "int">
+        SELECT
+        COUNT (1)
+        FROM by_market_food_by_info
+        WHERE
+           MARKET_ID = #{filterMap.marketId}
+           AND DEL_FLG = 0
+    </select>
+    <insert id="save" parameterType = "com.msk.buyers.bean.BY121410Bean">
+        INSERT INTO by_market_food_by_info(
+        ID,
+        MARKET_ID,
+        MERCHANT_NAME,
+        MERCHANT_TYPE,
+        TOTAL_MERCHANT,
+        ANNUAL_TURNOVER,
+        IS_TARGET_MERCHANT,
+        DEL_FLG,
+
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+
+        VER
+        )VALUES (
+        #{id},
+        #{marketId},
+        #{merchantName},
+        #{merchantType},
+        #{totalMerchant},
+        #{annualTurnover},
+        #{isTargetMerchant},
+        0,
+
+       #{crtId},
+       #{crtTime},
+       #{updId},
+       #{updTime},
+       #{actId},
+       #{actTime},
+
+        1
+        )
+    </insert>
+    <update id="modify" parameterType = "com.msk.buyers.bean.BY121410Bean">
+        UPDATE by_market_food_by_info
+        SET
+        MERCHANT_NAME = #{merchantName},
+        MERCHANT_TYPE = #{merchantType},
+        TOTAL_MERCHANT = #{totalMerchant},
+        ANNUAL_TURNOVER = #{annualTurnover},
+        IS_TARGET_MERCHANT = #{isTargetMerchant},
+        DEL_FLG = #{delFlg}
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE
+        ID = #{id}
+        AND DEL_FLG = 0
+    </update>
+</mapper>

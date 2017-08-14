@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.bs.logic.BBS1101102Logic">
+
+    <sql id="selectFiled">
+        GRADE_ID AS gradeId,
+        SL_CODE AS slCode,
+        HOUSE_CODE AS houseCode,
+        LGCS_AREA_CODE AS lgcsAreaCode,
+        LGCS_AREA_NAME AS lgcsAreaName,
+        HOUSE_CATEGORY_CODE AS houseCategoryCode,
+        HOUSE_RECLASSIFY_CODE AS houseReclassifyCode,
+        GRADE_CODE AS gradeCode,
+        VALID_YEAR_MONTH AS validYearMonth,
+        END_TIME AS endTime,
+        EXTEND_TIME AS extendTime,
+        STATUS AS status,
+        REMARK AS remark,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+    </sql>
+
+    <insert id="saveGradeCodeMonth" parameterType="List">
+      INSERT INTO sl_house_grade
+      (
+        GRADE_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        LGCS_AREA_CODE,
+        LGCS_AREA_NAME,
+        HOUSE_CATEGORY_CODE,
+        HOUSE_RECLASSIFY_CODE,
+        GRADE_CODE,
+        VALID_YEAR_MONTH,
+        END_TIME,
+        EXTEND_TIME,
+        STATUS,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+      )
+      VALUES
+      <foreach collection="list" item="item" index="index" separator=",">
+          (
+          #{item.gradeId},
+          #{item.slCode},
+          #{item.houseCode},
+          #{item.lgcsAreaCode},
+          #{item.lgcsAreaName},
+          #{item.houseCategoryCode},
+          #{item.houseReclassifyCode},
+          #{item.gradeCode},
+          #{item.validYearMonth},
+          #{item.endTime},
+          #{item.extendTime},
+          #{item.status},
+          #{item.remark},
+          #{item.delFlg},
+          #{item.crtId},
+          #{item.crtTime},
+          #{item.updId},
+          #{item.updTime},
+          #{item.actId},
+          #{item.actTime},
+          #{item.ver}
+          )
+      </foreach>
+    </insert>
+
+    <select id="findHouseGrade" resultType="com.msk.batch.bs.bean.BBS1101102Bean" parameterType="BaseParam">
+        SELECT
+        <include refid="selectFiled"/>
+        FROM
+        sl_house_grade
+        WHERE
+        (DEL_FLG IS NULL OR DEL_FLG = 0)
+        <!-- 是否查询非见习的等级数据 -->
+        <if test="filterMap.flag != null and filterMap.flag == 1">
+            AND STATUS != 9
+        </if>
+        <if test="filterMap.flag != null and filterMap.flag == 2">
+            AND GRADE_CODE = '3'
+            AND STATUS = 0
+        </if>
+        <if test="filterMap.validYearMonth != null and filterMap.validYearMonth != ''">
+          AND VALID_YEAR_MONTH = #{filterMap.validYearMonth}
+        </if>
+    </select>
+
+    <select id="findHouseGradeConst" resultType="com.msk.core.entity.SlHouseGradeConst" >
+      SELECT
+        GRADE_ID AS gradeId,
+        LGCS_AREA_CODE AS lgcsAreaCode,
+        HOUSE_RECLASSIFY_CODE AS houseReclassifyCode,
+        GRADE_CODE AS gradeCode,
+        SALE_MAX AS saleMax,
+        SALE_MIN AS saleMin,
+        SALE_UNIT AS saleUnit,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+        FROM sl_house_grade_const
+        WHERE
+        (DEL_FLG IS NULL OR DEL_FLG = 0)
+    </select>
+
+    <select id="findHouseBuyerProduct" resultType="com.msk.core.entity.SlHouseBuyerProduct" parameterType="Map">
+        SELECT
+        RELATION_ID AS relationId,
+        HOUSE_CATEGORY_CODE AS houseCategoryCode,
+        HOUSE_RECLASSIFY_CODE AS houseReclassifyCode,
+        BY_PD_CLASSES_CODE AS byPdClassesCode,
+        BY_PD_MACHINING_CODE AS byPdMachiningCode
+        FROM sl_house_buyer_product
+        WHERE
+        (DEL_FLG IS NULL OR DEL_FLG = 0)
+        AND
+        HOUSE_RECLASSIFY_CODE IN
+        <foreach collection="houseGradeList" item="item" index="index" open="(" separator="," close=")">
+            #{item.houseReclassifyCode}
+        </foreach>
+
+    </select>
+
+    <update id="updateGradeCodeMonth" parameterType="BaseParam">
+        UPDATE sl_house_grade
+        SET GRADE_CODE = CASE GRADE_CODE
+            WHEN 0 THEN 2
+            WHEN 1 THEN 2
+            WHEN 2 THEN 2
+        END
+        WHERE
+        (DEL_FLG IS NULL OR DEL_FLG = 0)
+        AND GRADE_ID IN
+        <foreach collection="filterMap.houseGradeList" item="item" index="index" open="(" separator="," close=")">
+          #{item.gradeId}
+        </foreach>
+    </update>
+
+
+    <update id="updateGradeCodeDay" parameterType="BaseParam">
+        UPDATE sl_house_grade
+        SET GRADE_CODE = ${gradeCode},
+        VER = VER + 1,
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId}
+        WHERE GRADE_ID = #{gradeId}
+        AND (DEL_FLG IS NULL OR DEL_FLG = 0)
+    </update>
+
+    <update id="updateHouseGradeStatus" parameterType="BaseParam">
+      UPDATE sl_house_grade
+      SET STATUS = '9',
+      VER = VER + 1,
+      UPD_TIME = #{filterMap.updTime},
+      UPD_ID = #{filterMap.updId}
+      WHERE GRADE_ID IN
+      <foreach collection="filterMap.cancelList" item="item" index="index" open="(" separator="," close=")">
+          #{item.gradeId}
+      </foreach>
+    </update>
+
+    <update id="updateHouseGradeExtendTime" parameterType="com.msk.batch.bs.bean.BBS1101102Bean">
+        UPDATE sl_house_grade
+        SET EXTEND_TIME = #{extendTime},
+        VER = VER + 1,
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId}
+        WHERE GRADE_ID = #{gradeId}
+    </update>
+
+    <update id="deleteOldHouseGrade" parameterType="BaseParam">
+        UPDATE sl_house_grade
+        SET DEL_FLG = '1',
+        UPD_TIME = #{filterMap.updTime},
+        UPD_ID = #{filterMap.updId}
+        WHERE GRADE_ID IN
+        <foreach collection="filterMap.houseGradeList" item="item" index="index" open="(" separator="," close=")">
+            #{item.gradeId}
+        </foreach>
+    </update>
+</mapper>

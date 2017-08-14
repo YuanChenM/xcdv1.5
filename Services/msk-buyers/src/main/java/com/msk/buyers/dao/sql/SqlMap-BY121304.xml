@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121304Logic">
+    <select id="findAccountInfo" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerAccount">
+        SELECT
+        ID AS id,
+        BUYER_ID AS buyerId,
+        TEL_NO AS telNo,
+        ACCOUNT_NAME AS accountName,
+        ACCOUNT_PASS AS accountPass
+        FROM
+        by_buyer_account
+        WHERE
+        DEL_FLG = 0
+        AND BUYER_ID = #{filterMap.buyerId}
+    </select>
+    <select id="findLinece" parameterType="BaseParam" resultType="com.msk.buyers.bean.IBY121205RsParam">
+        SELECT
+        licence.ID AS id,
+        BUYER_ID AS buyerId,
+        LIC_NAME AS licName,
+        LIC_NUMBER AS licNumber,
+        LEGAL_NAME AS legalName,
+        LEGAL_LIC_TYPE AS legalLicType,
+        LEGAL_LIC_NUMBER AS legalLicNumber
+        FROM
+        by_buyer_licence licence
+        WHERE
+        BUYER_ID = #{filterMap.buyerId}
+        AND licence.DEL_FLG = 0
+    </select>
+    <sql id="whereCondition">
+        <where>
+            AND employee.DEL_FLG = 0
+            <if test="filterMap.buyerId!=null and filterMap.buyerId!=''">
+                AND BUYER_ID=#{filterMap.buyerId}
+            </if>
+            <if test="filterMap.employeeName!=null and filterMap.employeeName!=''">
+                AND EMPLOYEE_NAME like #{filterMap.employeeName}
+            </if>
+            <if test="filterMap.employeeTel!=null and filterMap.employeeTel!=''">
+                AND EMPLOYEE_TEL like #{filterMap.employeeTel}
+            </if>
+            <if test="filterMap.employeeQq!=null and filterMap.employeeQq!=''">
+                AND EMPLOYEE_QQ like #{filterMap.employeeQq}
+            </if>
+            <if test="filterMap.employeeWechat!=null and filterMap.employeeWechat!=''">
+                AND EMPLOYEE_WECHAT like #{filterMap.employeeWechat}
+            </if>
+        </where>
+    </sql>
+    <select id="findPageList" resultType="com.msk.buyers.bean.IBY121207RsParam" parameterType="BaseParam">
+        select
+        employee.ID AS id,
+        BUYER_ID AS buyerId,
+        IFNULL(EMPLOYEE_TYPE,'') AS employeeType,
+        IFNULL(EMPLOYEE_NAME,'') AS employeeName,
+        IFNULL(EMPLOYEE_TEL,'') AS employeeTel,
+        IFNULL(EMPLOYEE_QQ,'') AS employeeQq,
+        IFNULL(EMPLOYEE_WECHAT,'') AS employeeWechat,
+        CASE WHEN BUS_CARD_FLG = '0' THEN '无' ELSE '有' END AS busCardFlgName,
+        BUS_CARD_FLG AS busCardFlg,
+        CASE WHEN CONTACT_PERSON = '0' THEN '否' ELSE '是'END AS contactPersonName,
+        CONTACT_PERSON AS contactPerson,
+        CASE WHEN PURCHASE = '0' THEN '否' ELSE '是'END AS purchaseName,
+        PURCHASE AS purchase,
+        CASE WHEN RECEIVE_PERSON = '0' THEN '否' ELSE '是'END AS receivePersonName,
+        RECEIVE_PERSON AS receivePerson
+        from by_buyer_employee employee
+        <include refid="whereCondition"/>
+        ORDER BY id,buyerId
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        from by_buyer_employee employee
+        <include refid="whereCondition"/>
+    </select>
+    <select id="findMarkerTerminalList" resultType="com.msk.core.entity.ByMarketTerminal" parameterType="BaseParam">
+        SELECT
+        TER_MARKET_ID AS terMarketId,
+        MARKET_NAME AS marketName,
+        MARKET_LEVEL AS marketLevel,
+        MARKET_LEVEL_NAME AS marketLevelName
+        FROM
+        by_market_terminal
+        WHERE
+        LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+        AND CITY_CODE = #{filterMap.cityCode}
+        <if test="filterMap.districtCode!=null and filterMap.districtCode!=''">
+            AND DISTRICT_CODE = #{filterMap.districtCode}
+        </if>
+        AND DEL_FLG = 0
+    </select>
+    <select id="findMarkerTerminal" resultType="com.msk.core.entity.ByMarketTerminal" parameterType="BaseParam">
+        SELECT
+        TER_MARKET_ID AS terMarketId,
+        MARKET_NAME AS marketName,
+        MARKET_LEVEL AS marketLevel,
+        MARKET_LEVEL_NAME AS marketLevelName
+        FROM
+        by_market_terminal
+        WHERE
+        TER_MARKET_ID = #{filterMap.terMarketId}
+        AND DEL_FLG = 0
+    </select>
+    <select id="findMarkerFoodList" resultType="com.msk.core.entity.ByMarketFood" parameterType="BaseParam">
+        SELECT
+        FOD_MARKET_ID AS fodMarketId,
+        MARKET_NAME AS marketName,
+        MARKET_TYPE AS marketType,
+        MARKET_TYPE_NAME AS marketTypeName
+        FROM
+        by_market_food
+        WHERE
+        LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+        AND CITY_CODE = #{filterMap.cityCode}
+            AND DISTRICT_CODE = #{filterMap.districtCode}
+        AND DEL_FLG = 0
+    </select>
+    <select id="findMarkerFood" resultType="com.msk.core.entity.ByMarketFood" parameterType="BaseParam">
+        SELECT
+        FOD_MARKET_ID AS fodMarketId,
+        MARKET_NAME AS marketName,
+        MARKET_TYPE AS marketType,
+        MARKET_TYPE_NAME AS marketTypeName
+        FROM
+        by_market_food
+        WHERE
+        FOD_MARKET_ID = #{filterMap.fodMarketId}
+        AND DEL_FLG = 0
+    </select>
+    <update id="deleteEmployee" parameterType="BaseEntity">
+        UPDATE
+            by_buyer_employee
+        SET DEL_FLG = 1
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE
+            ID = #{id}
+            AND BUYER_ID = #{buyerId}
+    </update>
+
+    <update id="updateAccountPwd" parameterType="BaseEntity">
+        UPDATE
+        by_buyer_account
+        SET
+        TEL_NO = #{telNo},
+        ACCOUNT_NAME = #{accountName}
+        ,ACCOUNT_PASS = #{accountPass}
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        WHERE BUYER_ID = #{buyerId}
+        AND  DEL_FLG = '0'
+    </update>
+
+    <select id="findAccount" resultType="int" parameterType="BaseEntity">
+        SELECT COUNT(1) FROM by_buyer_account
+        WHERE (TEL_NO = #{telNo}
+        OR  ACCOUNT_NAME=#{accountName})
+        AND DEL_FLG = '0'
+        AND  BUYER_ID != #{buyerId};
+    </select>
+
+    <select id="findBuyerNameNum" parameterType="BaseEntity" resultType="int">
+    SELECT
+    COUNT(1)
+    FROM
+    by_buyer_basic_info
+    WHERE
+    DEL_FLG = '0'
+    AND BUYER_NAME = #{accountName}
+    AND BUYER_ID != #{buyerId}
+    </select>
+
+    <!--<insert id="save" parameterType="BaseEntity">
+        INSERT INTO by_buyer_account(
+        ID,
+        BUYER_ID,
+        TEL_NO,
+        ACCOUNT_NAME,
+        ACCOUNT_PASS,
+        DEL_FLG,
+        CRT_TIME,
+        UPD_TIME,
+        ACT_TIME,
+        VER
+        )VALUE(
+        #{id},
+        #{buyerId},
+        #{telNo},
+        #{accountName},
+        #{accountPass},
+        0,
+        #{crtTime},
+        #{updTime},
+        #{actTime},
+        0
+        )
+    </insert>-->
+</mapper>

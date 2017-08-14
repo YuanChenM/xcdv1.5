@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241103Logic">
+    <select id="queryList" parameterType="BaseParam" resultType="com.msk.seller.bean.SL24110302Bean">
+        select 
+        EP_ID AS epId,
+        CERT_SEQ AS certSeq,
+        CERT_ID AS certId,
+        CERT_NAME AS certName
+        from SL_EP_CERT
+        where EP_ID=#{filterMap.epId}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+    <select id="querytOne" parameterType="BaseParam" resultType="com.msk.core.entity.SlSeller">
+        select
+        A.SELF_FLG AS selfFlg,
+        A.AGENT_FLG AS agentFlg,
+        A.OEM_FLG AS oemFlg,
+        A.SL_MAIN_CLASS AS slMainClass
+        from  SL_SELLER AS A
+        where A.EP_ID=#{filterMap.epId}
+        AND A.DEL_FLG = 0
+        limit 0,1
+    </select>
+    <select id="queryList2" parameterType="BaseParam" resultType="com.msk.seller.bean.SL24110302_1Bean">
+        select
+        EP_ID AS epId,
+        CERT_SEQ AS certSeq,
+        CERT_ITEM_SEQ AS certItemSeq,
+        CERT_ID AS certId,
+        CERT_ITEM_ID AS certItemId,
+        CERT_ITEM_NAME AS certItemName,
+        CERT_ITEM_VALUE AS certItemValue
+        from SL_EP_CERT_ITEM
+        where CERT_ID=#{filterMap.certId}
+        AND EP_ID=#{filterMap.epId}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+</mapper>

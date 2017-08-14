@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans 
+  http://www.springframework.org/schema/beans/spring-beans-4.2.xsd  
+  http://www.springframework.org/schema/context 
+  http://www.springframework.org/schema/context/spring-context-4.2.xsd  
+  http://www.springframework.org/schema/mvc 
+  http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+  http://www.springframework.org/schema/aop   
+  http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+">
+  <context:component-scan base-package="com.msk.log">
+  </context:component-scan>
+  <bean id="jacksonObjectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
+    <!-- 设置null值属性不输出 -->
+    <property name="serializationInclusion">
+      <value type="com.fasterxml.jackson.annotation.JsonInclude.Include">NON_NULL</value>
+    </property>
+  </bean>
+  <!-- 忽略未知属性 -->
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="jacksonObjectMapper" />
+    <property name="targetMethod" value="configure" />
+    <property name="arguments">
+      <list>
+        <value type="com.fasterxml.jackson.databind.DeserializationFeature">FAIL_ON_UNKNOWN_PROPERTIES</value>
+        <value>false</value>
+      </list>
+    </property>
+  </bean>
+  <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+    <property name="messageConverters">
+      <list>
+        <ref bean="jsonConverter" />
+        <ref bean="xmlConverter" />
+      </list>
+    </property>
+  </bean>
+  <!-- 对json支持 -->
+  <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+    <property name="supportedMediaTypes" value="application/json;charset=utf-8" />
+    <property name="prettyPrint" value="true" />
+    <property name="objectMapper" ref="jacksonObjectMapper" />
+  </bean>
+  <bean id="xmlConverter" class="org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter">
+    <property name="supportedMediaTypes" value="application/xml;charset=UTF-8" />
+  </bean>
+
+  <aop:aspectj-autoproxy />
+  <!-- active annotation config mode -->
+  <mvc:annotation-driven>
+    <mvc:message-converters>
+      <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+        <property name="supportedMediaTypes">
+          <list>
+            <value>text/plain;charset=UTF-8</value>
+          </list>
+        </property>
+      </bean>
+      <bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+        <property name="supportedMediaTypes">
+          <list>
+            <value>application/json;charset=UTF-8</value>
+          </list>
+        </property>
+        <property name="objectMapper" ref="jacksonObjectMapper" />
+      </bean>
+    </mvc:message-converters>
+  </mvc:annotation-driven>
+  <!-- Global view resolver -->
+  <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+    <property name="prefix" value="/jsp/" />
+    <property name="suffix" value=".jsp" />
+    <property name="order" value="0"/>
+  </bean>
+</beans>

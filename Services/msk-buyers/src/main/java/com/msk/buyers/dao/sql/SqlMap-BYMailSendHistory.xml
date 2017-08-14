@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BYMailSendHistoryLogic">
+
+
+    <insert id="save" parameterType = "com.msk.buyers.bean.BYMailSendHistoryBean">
+        INSERT INTO
+        BY_MAIL_SEND_HISTORY(
+        MAIL_SEND_HISTORY_ID,
+        BUYER_ID,
+        EMAIL_TOPIC,
+        EMAIL_CONTENT,
+        SEND_GROUP,
+        IS_SUCCESS,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES (
+        #{mailSendHistoryId},
+        #{buyerId},
+        #{emailTopic},
+        #{emailContent},
+        #{sendGroup},
+        #{isSuccess},
+        0,
+
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+
+        1
+        )
+    </insert>
+</mapper>

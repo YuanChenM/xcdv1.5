@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141153Logic">
+    <sql id="selectSql">
+        A.STANDARD_ID AS standardId,
+        A.NORMS_CODE AS normsCode,
+        A.NORMS_SUTTLE AS normsSuttle,
+        A.NORMS_ERROR AS normsError,
+        A.NORMS_NUMBER AS normsNumber,
+        A.NORMS_SIZE AS normsSize,
+        A.NORMS_TEXTURE AS normsTexture,
+        A.NORMS_OUT AS normsOut,
+        A.NORMS_KG AS normsKg,
+        A.NORMS_OUT_SIZE AS normsOutSize,
+        A.NORMS_OUT_TEXTURE AS normsOutTexture,
+        A.NETWEIGHT_INNER AS netweightInner,
+        A.NETWEIGHT_OUT AS netweightOut,
+        A.NORMS_LENGTH AS normsLength,
+        A.NORMS_WIDTH AS normsWidth,
+        A.NORMS_HEIGHT AS normsHeight,
+        A.NORMS_VOLUME AS normsVolume,
+        A.GROSSWEIGHT_OUT AS grossweightOut
+    </sql>
+    <!--查询语句-->
+    <sql id="whereCondition">
+        <where>
+            <if test="pdNorms.normsSuttle!=null and pdNorms.normsSuttle!=''">
+                AND A.NORMS_SUTTLE = #{pdNorms.normsSuttle}
+            </if>
+            <if test="pdNorms.normsError!=null and pdNorms.normsError!=''">
+                AND A.NORMS_ERROR = #{pdNorms.normsError}
+            </if>
+            <if test="pdNorms.normsNumber!=null and pdNorms.normsNumber!=''">
+                AND A.NORMS_NUMBER = #{pdNorms.normsNumber}
+            </if>
+            <if test="pdNorms.normsSize!=null and pdNorms.normsSize!=''">
+                AND A.NORMS_SIZE = #{pdNorms.normsSize}
+            </if>
+            <if test="pdNorms.normsTexture!=null and pdNorms.normsTexture!=''">
+                AND A.NORMS_TEXTURE = #{pdNorms.normsTexture}
+            </if>
+            <if test="pdNorms.normsOutSize!=null and pdNorms.normsOutSize!=''">
+                AND A.NORMS_OUT = #{pdNorms.normsOut}
+            </if>
+            <if test="pdNorms.normsKg!=null and pdNorms.normsKg!=''">
+                AND A.NORMS_KG = #{pdNorms.normsKg}
+            </if>
+            <if test="pdNorms.normsOutSize!=null and pdNorms.normsOutSize!=''">
+                AND A.NORMS_OUT_SIZE = #{pdNorms.normsOutSize}
+            </if>
+            <if test="pdNorms.normsOutTexture!=null and pdNorms.normsOutTexture!=''">
+                AND A.NORMS_OUT_TEXTURE = #{pdNorms.normsOutTexture}
+            </if>
+            <if test="pdNorms.netweightInner!=null and pdNorms.netweightInner!=''">
+                AND A.NETWEIGHT_INNER = #{pdNorms.netweightInner}
+            </if>
+            <if test="pdNorms.netweightOut!=null and pdNorms.netweightOut!=''">
+                AND A.NETWEIGHT_OUT = #{pdNorms.netweightOut}
+            </if>
+            <if test="pdNorms.standardId!=null and pdNorms.standardId!=''">
+                AND A.STANDARD_ID = #{pdNorms.standardId}
+            </if>
+            <if test="pdNorms.normsLength!=null and pdNorms.normsLength!=''">
+                AND A.NORMS_LENGTH = #{pdNorms.normsLength}
+            </if>
+            <if test="pdNorms.normsWidth!=null and pdNorms.normsWidth!=''">
+                AND A.NORMS_WIDTH = #{pdNorms.normsWidth}
+            </if>
+            <if test="pdNorms.normsHeight!=null and pdNorms.normsHeight!=''">
+                AND A.NORMS_HEIGHT = #{pdNorms.normsHeight}
+            </if>
+            <if test="pdNorms.normsVolume!=null and pdNorms.normsVolume!=''">
+                AND A.NORMS_VOLUME = #{pdNorms.normsVolume}
+            </if>
+            <if test="pdNorms.grossweightOut!=null and pdNorms.grossweightOut!=''">
+                AND A.GROSSWEIGHT_OUT = #{pdNorms.grossweightOut}
+            </if>
+        </where>
+    </sql>
+    <select id="findCount" resultType="int" parameterType="HashMap">
+        SELECT
+        COUNT(1)
+        FROM PD_NORMS_STD AS A
+        WHERE A.NORMS_SUTTLE = #{pdNorms.normsSuttle}
+        AND A.NORMS_ERROR = #{pdNorms.normsError}
+        AND A.NORMS_NUMBER = #{pdNorms.normsNumber}
+        AND A.NORMS_SIZE = #{pdNorms.normsSize}
+        AND A.NORMS_TEXTURE = #{pdNorms.normsTexture}
+        AND A.NORMS_OUT = #{pdNorms.normsOut}
+        AND A.NORMS_KG = #{pdNorms.normsKg}
+        AND A.NORMS_OUT_SIZE = #{pdNorms.normsOutSize}
+        AND A.NORMS_OUT_TEXTURE = #{pdNorms.normsOutTexture}
+        AND A.NETWEIGHT_INNER = #{pdNorms.netweightInner}
+        AND A.NETWEIGHT_OUT = #{pdNorms.netweightOut}
+        AND A.STANDARD_ID = #{pdNorms.standardId}
+        AND A.NORMS_LENGTH = #{pdNorms.normsLength}
+        AND A.NORMS_WIDTH = #{pdNorms.normsWidth}
+        AND A.NORMS_HEIGHT = #{pdNorms.normsHeight}
+        AND A.NORMS_VOLUME = #{pdNorms.normsVolume}
+        AND A.GROSSWEIGHT_OUT = #{pdNorms.grossweightOut}
+    </select>
+    <select id="findOne" resultType="com.msk.core.entity.PdNormsStd" parameterType="BaseParam">
+        SELECT
+        <include refid="selectSql"/>
+        FROM PD_NORMS_STD AS A WHERE A.CLASSESTREE_CODE=#{filterMap.classestreeCode}
+    </select>
+    <update id="modify" parameterType="com.msk.core.entity.PdNormsStd">
+        UPDATE PD_NORMS_STD AS A SET
+        A.NORMS_SUTTLE=#{normsSuttle},
+        A.NORMS_ERROR=#{normsError},
+        A.NORMS_NUMBER=#{normsNumber},
+        A.NORMS_SIZE=#{normsSize},
+        A.NORMS_TEXTURE=#{normsTexture},
+        A.NORMS_OUT=#{normsOut},
+        A.NORMS_KG=#{normsKg},
+        A.NORMS_OUT_SIZE=#{normsOutSize},
+        A.NORMS_OUT_TEXTURE=#{normsOutTexture},
+        A.NETWEIGHT_INNER=#{netweightInner},
+        A.NETWEIGHT_OUT=#{netweightOut},
+        A.NORMS_LENGTH=#{normsLength},
+        A.NORMS_WIDTH=#{normsWidth},
+        A.NORMS_HEIGHT=#{normsHeight},
+        A.NORMS_VOLUME=#{normsVolume},
+        A.GROSSWEIGHT_OUT=#{grossweightOut},
+        A.UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        A.UPD_TIME=#{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        WHERE A.CLASSESTREE_CODE= #{classestreeCode}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+    <update id="updateStandardId" parameterType="com.msk.core.entity.PdStandard">
+        update PD_STANDARD set
+        NOR_FLG=#{norFlg}
+        where STANDARD_ID=#{standardId}
+    </update>
+
+    <update id="modifyClassestree" parameterType="com.msk.core.entity.PdNormsStd">
+        update PD_CLASSESTREE set
+        LEVEL_NAME=#{normsOut},
+        UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME=#{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        where CLASSESTREE_CODE=#{classestreeCode}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        AND  DEL_FLG='0'
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+</mapper>

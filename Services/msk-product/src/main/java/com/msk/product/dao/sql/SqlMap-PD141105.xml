@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141105Logic">
+	<select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.QltStdCla">
+		select QLT_STD_CLA_ID AS qltStdClaId,
+		QLT_STD_CLA_NAME AS qltStdClaName
+		from PD_QLT_STD_CLA
+	</select>
+	<select id="findListByQltStdClaId" parameterType="BaseParam"
+		resultType="com.msk.product.bean.QltStdSubCla">
+		select QLT_STD_SUB_ID AS qltStdSubId,
+		QLT_STD_SUB_NAME AS
+		qltStdSubName
+		from PD_QLT_STD_SUB_CLA
+		where
+		QLT_STD_CLA_ID=#{filterMap.qltStdClaId}
+	</select>
+	<select id="findOne" parameterType="BaseParam"
+		resultType="com.msk.core.entity.PdStandard">
+		select QLT_FLG AS qltFlg
+		,TNC_FLG AS tncFlg
+		,NOR_FLG AS
+		norFlg
+		from PD_STANDARD
+		where STANDARD_ID=#{filterMap.standardId}
+	</select>
+	<select id="findListByQltStdSubId" parameterType="BaseParam"
+		resultType="com.msk.product.bean.QltStdItemAndQltstd">
+		select A.QLT_STD_CLA_ID AS qltStdClaId
+		,A.QLT_STD_SUB_ID AS qltStdSubId
+		,B.STANDARD_ID AS standardId
+		,A.QLT_STD_ITEM_ID AS qltStdItemId
+		,A.QLT_STD_ITEM_NAME AS qltStdItemName
+		,B.QLT_STD_EXC_VAL AS
+		qltStdExcVal
+		,B.QLT_STD_SUIT_VAL AS qltStdSuitVal
+		,B.QLT_STD_UNQUAL_VAL
+		  AS qltStdUnqualVal
+		,B.REMARK AS remark
+		,B.DEL_FLG AS delFlg
+		from PD_QLT_STD_ITEM AS A
+		LEFT JOIN PD_QLT_STD AS B
+		ON A.QLT_STD_ITEM_ID = B.QLT_STD_ITEM_ID
+		AND
+		<if test="filterMap.standardId!=null and filterMap.standardId!=''">
+			B.STANDARD_ID =#{filterMap.standardId}
+		</if>
+		where A.QLT_STD_SUB_ID=#{filterMap.qltStdSubId}
+	</select>
+	<update id="modify" parameterType="com.msk.core.entity.PdQltStd">
+	   UPDATE PD_QLT_STD SET
+	   QLT_STD_EXC_VAL=#{qltStdExcVal},
+	   QLT_STD_SUIT_VAL=#{qltStdSuitVal},
+	   QLT_STD_UNQUAL_VAL=#{qltStdUnqualVal},
+	   REMARK=#{remark},
+	   DEL_FLG=#{delFlg},
+	   UPD_ID=#{updId},
+	   UPD_TIME=#{updTime}
+	   WHERE STANDARD_ID=#{standardId} AND QLT_STD_ITEM_ID=#{qltStdItemId}
+	</update>
+	<insert id="save" parameterType="com.msk.core.entity.PdQltStd" >
+       INSERT INTO PD_QLT_STD(
+        STANDARD_ID,
+        QLT_STD_ITEM_ID,
+        QLT_STD_EXC_VAL,
+        QLT_STD_SUIT_VAL,
+        QLT_STD_UNQUAL_VAL,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        VER
+       )VALUES(
+       #{standardId},
+       #{qltStdItemId},
+       #{qltStdExcVal},
+       #{qltStdSuitVal},
+       #{qltStdUnqualVal},
+       #{remark},
+       #{delFlg},
+       #{crtId},
+       #{crtTime},
+       #{ver}
+       )
+    </insert>
+    <select id="count" parameterType="BaseParam" resultType="int">
+        SELECT COUNT(1) FROM PD_QLT_STD WHERE 
+        STANDARD_ID=#{filterMap.standardId} AND QLT_STD_ITEM_ID=#{filterMap.qltStdItemId}
+    </select>
+    <update id="updateStandardId" parameterType="com.msk.core.entity.PdStandard">
+        update PD_STANDARD set
+        QLT_FLG=#{qltFlg},
+		<!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+		UPD_ID = #{updId},
+		UPD_TIME =  #{updTime},
+		VER = VER + 1
+		<!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+        where STANDARD_ID=#{standardId}
+    </update>
+</mapper>

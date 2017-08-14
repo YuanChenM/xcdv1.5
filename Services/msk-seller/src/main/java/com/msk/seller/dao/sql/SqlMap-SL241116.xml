@@ -1,0 +1,796 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.Sl241116Logic">
+    <select id="findSlEpInfo" parameterType="BaseParam" resultType="com.msk.core.entity.SlEnterprise">
+        SELECT A.EP_ID as epId,A.EP_NAME as epName FROM (
+        SELECT A1.EP_ID,A1.EP_NAME,A.SL_CODE FROM
+        sl_seller A
+        INNER JOIN sl_enterprise A1 ON A.EP_ID=A1.EP_ID AND A.SELF_FLG='1'
+        WHERE  A.DEL_FLG = 0 AND  A1.DEL_FLG = 0
+
+        UNION
+        SELECT B2.EP_ID,B2.EP_NAME,B.SL_CODE FROM
+        sl_ep_agent_auth B1
+        LEFT  JOIN sl_seller B ON B.SL_CODE=B1.SL_CODE AND B.AGENT_FLG='1' AND  B.DEL_FLG = 0
+        INNER JOIN sl_enterprise B2 ON B1.PRODUCER_EP_ID=B2.EP_ID
+        WHERE B1.DEL_FLG = 0 AND  B2.DEL_FLG = 0
+
+        UNION
+        SELECT C2.EP_ID,C2.EP_NAME,C.SL_CODE FROM
+        sl_ep_oem_auth C1
+        LEFT JOIN sl_seller C ON C.SL_CODE=C1.SL_CODE AND C.OEM_FLG='1' AND  C.DEL_FLG = 0
+        INNER JOIN sl_enterprise C2 ON C1.PRODUCER_EP_ID=C2.EP_ID
+        WHERE  C1.DEL_FLG = 0 AND C2.DEL_FLG = 0
+        ) A WHERE A.SL_CODE=#{filterMap.slCode}
+    </select>
+    <select id="findSlPdBrand" parameterType="BaseParam" resultType="com.msk.core.entity.SlPdBrand">
+        SELECT
+        A.BRAND_ID AS brandId,
+        A.BRAND_NAME AS brandName,
+        A.BRAND_EP_ID AS brandEpId,
+        CONCAT(A.BRAND_ID,'-',A.BRAND_EP_ID) AS contractNo
+        FROM
+        SL_PD_BRAND A
+        <where>
+            A.SL_CODE =#{filterMap.slCode}
+            AND  A.DEL_FLG = 0
+            <if test="filterMap.brandId !=null and filterMap.brandId!=''">
+                AND A.BRAND_ID = #{filterMap.brandId}
+            </if>
+        </where>
+    </select>
+    <sql id="selectSlPd">
+        A.PROD_EP_ID AS prodEpId,
+        A.BRAND_EP_ID AS brandEpId,
+        A.BRAND_ID AS brandId,
+        IFNULL(A.DIST_FLG,'') AS distFlg,
+        IFNULL(A.DISTMSK_FLG,'') AS distmskFlg,
+        A.PD_CLASSES_CODE AS pdClassesCode,
+        A.PD_BREED_CODE AS pdBreedCode,
+        A.PD_FEATURE_CODE AS pdFeatureCode,
+        IFNULL(B.EP_NAME,'') AS prodEpName,
+        IFNULL(C.EP_NAME,'') AS brandEpName,
+        IFNULL(A.PD_CLASSES_NAME,'') AS pdClassesName,
+        IFNULL(A.PD_BREED_NAME,'') AS pdBreedName,
+        IFNULL(A.PD_FEATURE_NAME,'') AS pdFeatureName,
+        A.PD_CLASSES_CODE AS pdClassesCode,
+        A.PD_BREED_CODE AS pdBreedCode,
+        A.PD_FEATURE_CODE AS pdFeatureCode,
+        A.SL_CODE AS slCode,
+        A.SL_PD_ID AS slPdId,
+        IFNULL(G.BRAND_NAME,'') AS brandName,
+        A.SL_TNC_GRADE_CODE AS slTncGradeCode,
+        (CASE A.SL_TNC_GRADE_CODE
+        WHEN 1 THEN 'A1'
+        WHEN 2 THEN 'A2'
+        WHEN 3 THEN 'A3'
+        WHEN 4 THEN '不通过'
+        ELSE '' END)AS slTncGradeCodeName,
+        A.SL_QLT_GRADE_CODE AS slQltGradeCode,
+        IFNULL(A.MACHINING_NAME,'') AS machiningName,
+        IFNULL(A.WEIGHT_NAME,'') AS weightName,
+        IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(A.WEIGHT_CODE,'') AS weightCode,
+        IFNULL(A.STATUS,'') AS status,
+        <if test="filterMap.searchArtno==1">
+            IFNULL(Z.SL_PD_ARTNO,'') AS slPdArtNo,
+        </if>
+        A.VER AS ver
+    </sql>
+    <sql id="whereSql">
+        <where>
+            A.DEL_FLG = 0
+            <if test="filterMap.slCode !=null and filterMap.slCode!=''">
+                AND A.SL_CODE = #{filterMap.slCode}
+            </if>
+            <if test="filterMap.prodEpId !=null and filterMap.prodEpId!=''">
+                AND A.PROD_EP_ID = #{filterMap.prodEpId}
+            </if>
+            <if test="filterMap.brandEpId !=null and filterMap.brandEpId!=''">
+                AND A.BRAND_EP_ID = #{filterMap.brandEpId}
+            </if>
+            <if test="filterMap.brandId !=null and filterMap.brandId!=''">
+                AND A.BRAND_ID = #{filterMap.brandId}
+            </if>
+            <if test="filterMap.pdClassesCode !=null and filterMap.pdClassesCode!=''">
+                AND A.PD_CLASSES_CODE = #{filterMap.pdClassesCode}
+            </if>
+            <if test="filterMap.pdBreedCode !=null and filterMap.pdBreedCode!=''">
+                AND A.PD_BREED_CODE = #{filterMap.pdBreedCode}
+            </if>
+            <if test="filterMap.pdFeatureCode !=null and filterMap.pdFeatureCode!=''">
+                AND A.PD_FEATURE_CODE = #{filterMap.pdFeatureCode}
+            </if>
+            <if test="filterMap.slPdId !=null and filterMap.slPdId!=''">
+                AND A.SL_PD_ID = #{filterMap.slPdId}
+            </if>
+            <if test="filterMap.pdClassesName !=null and filterMap.pdClassesName!=''">
+                AND A.PD_CLASSES_NAME like #{filterMap.pdClassesName}
+            </if>
+            <if test="filterMap.prodEpName !=null and filterMap.prodEpName!=''">
+                AND B.EP_NAME like #{filterMap.prodEpName}
+            </if>
+            <if test="filterMap.brandName !=null and filterMap.brandName!=''">
+                AND G.BRAND_NAME like #{filterMap.brandName}
+            </if>
+            <if test="filterMap.machiningName !=null and filterMap.machiningName!=''">
+                AND A.MACHINING_NAME like #{filterMap.machiningName}
+            </if>
+            <if test="filterMap.pdBreedName !=null and filterMap.pdBreedName!=''">
+                AND A.PD_BREED_NAME like #{filterMap.pdBreedName}
+            </if>
+            <if test="filterMap.pdFeatureName !=null and filterMap.pdFeatureName!=''">
+                AND A.PD_FEATURE_NAME like #{filterMap.pdFeatureName}
+            </if>
+            <if test="filterMap.weightName !=null and filterMap.weightName!=''">
+                AND A.WEIGHT_NAME like #{filterMap.weightName}
+            </if>
+            <if test="filterMap.machiningCode !=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE = #{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.weightCode !=null and filterMap.weightCode!=''">
+                AND A.WEIGHT_CODE = #{filterMap.weightCode}
+            </if>
+            <if test="filterMap.slPdArtNo !=null and filterMap.slPdArtNo!=''">
+                AND Z.SL_PD_ARTNO like #{filterMap.slPdArtNo}
+            </if>
+            <if test="filterMap.statusNames !=null">
+                AND A.STATUS in
+                <foreach collection="filterMap.statusNames" item="status" separator="," open="(" close=")">
+                    #{status}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+    <select id="findSlProductList" parameterType="com.hoperun.core.bean.BasePageParam"
+            resultType="com.msk.seller.bean.SL241116Bean">
+        SELECT
+        A.PROD_EP_ID AS prodEpId,
+        A.BRAND_EP_ID AS brandEpId,
+        A.BRAND_ID AS brandId,
+        A.PD_CLASSES_CODE AS pdClassesCode,
+        A.PD_BREED_CODE AS pdBreedCode,
+        A.PD_FEATURE_CODE AS pdFeatureCode,
+        A.PD_CLASSES_CODE AS pdClassesCode,
+        A.PD_BREED_CODE AS pdBreedCode,
+        A.PD_FEATURE_CODE AS pdFeatureCode,
+        A.SL_CODE AS slCode,
+        A.SL_PD_ID AS slPdId,
+        A.SL_TNC_GRADE_CODE AS slTncGradeCode,
+        A.SL_QLT_GRADE_CODE AS slQltGradeCode,
+        IFNULL(A.STATUS,'') AS status,
+        A.TNC_AUDIT_STATUS AS tncAuditStatus,
+        A.QLT_AUDIT_STATUS AS qltAuditStatus,
+        A.VER AS ver
+        FROM
+        sl_product AS A
+        <include refid="whereSql"/>
+    </select>
+
+    <select id="findOne" parameterType="com.hoperun.core.bean.BasePageParam"
+            resultType="com.msk.seller.bean.SL241116Bean">
+        SELECT
+        A.PROD_EP_ID AS prodEpId,
+        A.BRAND_EP_ID AS brandEpId,
+        A.BRAND_ID AS brandId,
+        A.PD_CLASSES_CODE AS pdClassesCode,
+        A.PD_BREED_CODE AS pdBreedCode,
+        A.PD_FEATURE_CODE AS pdFeatureCode,
+        A.PD_CLASSES_CODE AS pdClassesCode,
+        A.PD_BREED_CODE AS pdBreedCode,
+        A.PD_FEATURE_CODE AS pdFeatureCode,
+        A.SL_CODE AS slCode,
+        A.SL_PD_ID AS slPdId,
+        A.SL_TNC_GRADE_CODE AS slTncGradeCode,
+        A.SL_QLT_GRADE_CODE AS slQltGradeCode,
+        IFNULL(A.STATUS,'') AS status,
+        A.TNC_AUDIT_STATUS AS tncAuditStatus,
+        A.QLT_AUDIT_STATUS AS qltAuditStatus,
+        A.VER AS ver,
+        IFNULL(B.EP_NAME,'') AS prodEpName,
+        IFNULL(G.BRAND_NAME,'') AS brandName
+        FROM
+        sl_product AS A
+        <include refid="whereSql"/>
+        LIMIT 1
+    </select>
+
+    <sql id="whereSqlNotNull">
+        AND   A.PD_FEATURE_CODE != '00'
+    </sql>
+
+    <select id="findPageList" parameterType="com.hoperun.core.bean.BasePageParam"
+            resultType="com.msk.seller.bean.SL241116Bean">
+        SELECT
+        <include refid="selectSlPd"/>
+        FROM
+        SL_PRODUCT AS A
+        LEFT JOIN sl_enterprise AS B ON A.PROD_EP_ID = B.EP_ID AND  B.DEL_FLG = 0
+        LEFT JOIN sl_enterprise AS C ON A.BRAND_EP_ID = C.EP_ID AND  C.DEL_FLG = 0
+        LEFT JOIN sl_pd_brand G ON A.BRAND_EP_ID=G.BRAND_EP_ID AND A.BRAND_ID=G.BRAND_ID
+                                AND G.SL_CODE=A.SL_CODE  AND  G.DEL_FLG = 0
+        <if test="filterMap.searchArtno==1">
+            LEFT JOIN sl_pd_artno Z
+            ON Z.WEIGHT_CODE = A.WEIGHT_CODE
+            AND Z.CLASSES_CODE = A.PD_CLASSES_CODE
+            AND Z.MACHINING_CODE = A.MACHINING_CODE
+            AND Z.BREED_CODE = A.PD_BREED_CODE
+            AND Z.FEATURE_CODE = A.PD_FEATURE_CODE
+            AND Z.GRADE_CODE = A.SL_TNC_GRADE_CODE
+            AND Z.SL_CODE=A.SL_CODE
+            AND Z.DEL_FLG = 0
+        </if>
+        <include refid="whereSql"/>
+        <include refid="whereSqlNotNull"/>
+        ORDER BY A.SL_PD_ID DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer"
+            parameterType="com.hoperun.core.bean.BasePageParam">
+        SELECT
+        COUNT(1)
+        FROM
+        sl_product AS A
+        LEFT JOIN sl_enterprise AS B ON A.PROD_EP_ID = B.EP_ID AND  B.DEL_FLG = 0
+        LEFT JOIN sl_enterprise AS C ON A.BRAND_EP_ID = C.EP_ID AND  C.DEL_FLG = 0
+        LEFT JOIN sl_pd_brand G ON A.BRAND_EP_ID=G.BRAND_EP_ID AND A.BRAND_ID=G.BRAND_ID
+                                AND G.SL_CODE=A.SL_CODE  AND  G.DEL_FLG = 0
+        <if test="filterMap.searchArtno==1">
+            LEFT JOIN sl_pd_artno Z
+            ON Z.WEIGHT_CODE = A.WEIGHT_CODE
+            AND Z.CLASSES_CODE = A.PD_CLASSES_CODE
+            AND Z.MACHINING_CODE = A.MACHINING_CODE
+            AND Z.BREED_CODE = A.PD_BREED_CODE
+            AND Z.FEATURE_CODE = A.PD_FEATURE_CODE
+            AND Z.GRADE_CODE = A.SL_TNC_GRADE_CODE
+            AND Z.SL_CODE=A.SL_CODE
+            AND Z.DEL_FLG = 0
+        </if>
+        <include refid="whereSql"/>
+        <if test="filterMap.pdFeatureCode != '00'">
+            AND  A.PD_FEATURE_CODE != '00'
+        </if>
+    </select>
+
+    <!-- Deprecated by xia_xiaojie on 2016/6/27.
+    <insert id="save" parameterType="com.msk.core.entity.SlProduct">
+      INSERT INTO sl_product(
+        SL_CODE,
+        SL_PD_ID,
+        PROD_EP_ID,
+        BRAND_EP_ID,
+        BRAND_ID,
+        PD_CLASSES_CODE,
+        MACHINING_CODE,
+        PD_BREED_CODE,
+        PD_FEATURE_CODE,
+        WEIGHT_CODE,
+        DIST_FLG,
+        DISTMSK_FLG,
+        STATUS,
+        CRT_ID,
+        CRT_TIME,
+        VER,
+        DEL_FLG
+        )VALUES(#{slCode},#{slPdId},#{prodEpId},#{brandEpId},#{brandId},#{pdClassesCode},#{machiningCode},#{pdBreedCode},#{pdFeatureCode},#{weightCode},#{distFlg},#{distmskFlg},#{status},#{crtId},now(),#{ver},#{delFlg})
+    </insert> -->
+
+    <!-- Created by xia_xiaojie on 2016/6/27. -->
+    <insert id="save" parameterType="com.msk.core.entity.SlProduct">
+        INSERT INTO sl_product
+        (SL_CODE, SL_PD_ID, PROD_EP_ID, BRAND_EP_ID, BRAND_ID, PD_CLASSES_CODE, MACHINING_CODE, PD_BREED_CODE,
+        PD_FEATURE_CODE, WEIGHT_CODE, DIST_FLG, DISTMSK_FLG, SL_TNC_GRADE_CODE, STATUS,
+        DEL_FLG, CRT_ID,CRT_TIME,UPD_ID, UPD_TIME, ACT_ID,ACT_TIME,VER,
+        PD_CLASSES_NAME, MACHINING_NAME, PD_BREED_NAME, PD_FEATURE_NAME, WEIGHT_NAME)
+        VALUES
+        (#{slCode}, #{slPdId}, #{prodEpId}, #{brandEpId}, #{brandId}, #{pdClassesCode}, #{machiningCode},#{pdBreedCode},
+        #{pdFeatureCode}, #{weightCode}, #{distFlg}, #{distmskFlg}, #{slTncGradeCode}, #{status},
+        0, #{crtId}, #{crtTime}, #{crtId}, #{crtTime},#{crtId}, #{crtTime}, 1,
+        #{pdClassesName}, #{machiningName}, #{pdBreedName},#{pdFeatureName}, #{weightName})
+    </insert>
+
+    <update id="modify" parameterType="com.msk.core.entity.SlProduct">
+        UPDATE sl_product
+        SET
+        DIST_FLG = #{distFlg},
+        DISTMSK_FLG=#{distmskFlg},
+        UPD_ID = #{updId},
+        UPD_TIME=#{updTime},
+        VER=VER + 1
+        WHERE
+        SL_CODE = #{slCode} AND
+        PROD_EP_ID = #{prodEpId} AND
+        BRAND_EP_ID = #{brandEpId} AND
+        BRAND_ID = #{brandId} AND
+        PD_CLASSES_CODE = #{pdClassesCode} AND
+        PD_BREED_CODE = #{pdBreedCode} AND
+        PD_FEATURE_CODE = #{pdFeatureCode}
+    </update>
+    <update id="deleteProduct" parameterType="com.msk.core.entity.SlProduct">
+        update sl_product
+        SET
+        DEL_FLG= 1,
+        UPD_ID = #{updId},
+        UPD_TIME=#{updTime},
+        VER = VER + 1
+        WHERE
+        SL_PD_ID=#{slPdId}
+    </update>
+    <insert id="saveSlPdPkg" parameterType="com.msk.core.entity.SlPdPkg">
+        INSERT INTO sl_pd_pkg(
+        SL_CODE,
+        SL_PD_ID,
+        SL_PD_PKG_ID,
+        STANDARD_ID,
+        PKG_CODE,
+        PROD_EP_ID,
+        BRAND_EP_ID,
+        BRAND_ID,
+        PD_CLASSES_CODE,
+        PD_BREED_CODE,
+        PD_FEATURE_CODE,
+        IN_SGL_NW,
+        IN_SGL_NW_RANGE,
+        IN_NW,
+        IN_NUMBER,
+        IN_SIZE,
+        IN_MTS,
+        OUT_SPEC,
+        OUT_NW,
+        OUT_GW,
+        OUT_SIZE,
+        OUT_MTS,
+        PKG_TEN,
+        OUT_LENGTH,
+        OUT_WIDTH,
+        OUT_HEIGHT,
+        OUT_VOLUME,
+        CRT_ID,
+        CRT_TIME,
+
+        <!-- Modified by xia_xiaojie on 2016/7/1. Modified start. -->
+        DEL_FLG,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        <!-- Modified end. -->
+
+        VER
+        )VALUES(
+        #{slCode},
+        #{slPdId},
+        #{slPdPkgId},
+        #{standardId},
+        #{pkgCode},
+        #{prodEpId},
+        #{brandEpId},
+        #{brandId},
+        #{pdClassesCode},
+        #{pdBreedCode},
+        #{pdFeatureCode},
+        #{inSglNw},
+        #{inSglNwRange},
+        #{inNw},
+        #{inNumber},
+        #{inSize},
+        #{inMts},
+        #{outSpec},
+        #{outNw},
+        #{outGw},
+        #{outSize},
+        #{outMts},
+        #{pkgTen},
+        #{outLength},
+        #{outWidth},
+        #{outHeight},
+        #{outVolume},
+        #{crtId},
+        #{crtTime},
+
+        <!-- Modified by xia_xiaojie on 2016/7/1. Modified start. -->
+        0,
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        <!-- Modified end. -->
+
+        1
+        )
+    </insert>
+    <update id="modifySlPdPkg" parameterType="com.msk.core.entity.SlPdPkg">
+        UPDATE sl_pd_pkg
+        SET
+        IN_SGL_NW = #{inSglNw},
+        IN_SGL_NW_RANGE = #{inSglNwRange},
+        IN_NW = #{inNw},
+        IN_NUMBER = #{inNumber},
+        IN_SIZE = #{inSize},
+        IN_MTS = #{inMts},
+        OUT_SPEC = #{outSpec},
+        OUT_NW = #{outNw},
+        OUT_GW = #{outGw},
+        OUT_SIZE = #{outSize},
+        OUT_MTS = #{outMts},
+        PKG_TEN = #{pkgTen},
+        OUT_LENGTH = #{outLength},
+        OUT_WIDTH = #{outWidth},
+        OUT_HEIGHT = #{outHeight},
+        OUT_VOLUME = #{outVolume},
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime},
+        DEL_FLG=#{delFlg},
+        VER = VER + 1
+        WHERE
+        SL_PD_ID = #{slPdId}
+        and PKG_CODE = #{pkgCode}
+    </update>
+    <update id="upSlPdStatus" parameterType="com.msk.core.entity.SlProduct">
+        UPDATE sl_product
+        SET
+        STATUS=#{status},
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime},
+        VER=VER+1
+        WHERE
+        SL_PD_ID = #{slPdId}
+    </update>
+    <insert id="saveSlProductHis" parameterType="com.msk.seller.bean.SL241116Bean">
+        INSERT INTO sl_product_status_his(
+        HIS_ID,
+        SL_CODE,
+        SL_PD_ID,
+        PROD_EP_ID,
+        BRAND_EP_ID,
+        BRAND_ID,
+        PD_CLASSES_CODE,
+        MACHINING_CODE,
+        PD_BREED_CODE,
+        PD_FEATURE_CODE,
+        WEIGHT_CODE,
+        DIST_FLG,
+        DISTMSK_FLG,
+        DISTMSK_RATE,
+        SL_TNC_STD,
+        SL_TNC_GRADE_CODE,
+        TNC_NG_REASON,
+        TNC_AUDIT_STATUS,
+        TNC_AUDITOR,
+        TNC_AUDIT_DATE,
+        TNC_MONITOR_RESULT,
+        TNC_MONITOR_AUDITOR,
+        TNC_MONITOR_DATE,
+        SL_QLT_STD,
+        SL_QLT_GRADE_CODE,
+        QLT_NG_REASON,
+        QLT_AUDIT_STATUS,
+        QLT_AUDITOR,
+        QLT_AUDIT_DATE,
+        QLT_MONITOR_RESULT,
+        QLT_MONITOR_AUDITOR,
+        QLT_MONITOR_DATE,
+        STATUS,
+        STATUS_MONITOR_RESULT,
+        STATUS_MONITOR_AUDITOR,
+        STATUS_MONITOR_DATE,
+	    DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES(#{hisId},#{slCode},#{slPdId},#{prodEpId},#{brandEpId},#{brandId},#{pdClassesCode},
+        #{machiningCode},#{pdBreedCode},#{pdFeatureCode},#{weightCode},#{distFlg},
+        #{distmskFlg},#{distmskRate},#{slTncStd},#{slTncGradeCode},#{tncNgReason},
+        #{tncAuditStatus},#{tncAuditor},#{tncAuditDate},#{tncMonitorResult},
+        #{tncMonitorAuditor},#{tncMonitorDate},#{slQltStd},#{slQltGradeCode},
+        #{qltNgReason},#{qltAuditStatus},#{qltAuditor},#{qltAuditDate},
+        #{qltMonitorResult},#{qltMonitorAuditor},#{qltMonitorDate},#{status},
+        #{statusMonitorResult},#{statusMonitorAuditor},#{statusMonitorDate},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        1)
+    </insert>
+
+    <select id="findSlProductsList" parameterType="com.hoperun.core.bean.BasePageParam"
+            resultType="com.msk.seller.bean.SL241116Bean">
+        SELECT
+        A.PROD_EP_ID AS prodEpId,
+        A.BRAND_EP_ID AS brandEpId,
+        A.BRAND_ID AS brandId,
+        A.PD_CLASSES_CODE AS pdClassesCode,
+        A.PD_BREED_CODE AS pdBreedCode,
+        A.PD_FEATURE_CODE AS pdFeatureCode,
+        A.PD_CLASSES_CODE AS pdClassesCode,
+        A.PD_BREED_CODE AS pdBreedCode,
+        A.PD_FEATURE_CODE AS pdFeatureCode,
+        A.MACHINING_CODE AS machiningCode,
+        A.WEIGHT_CODE AS weightCode,
+        A.SL_CODE AS slCode,
+        A.SL_PD_ID AS slPdId,
+        A.SL_TNC_GRADE_CODE AS slTncGradeCode,
+        A.SL_QLT_GRADE_CODE AS slQltGradeCode,
+        IFNULL(A.STATUS,'') AS status,
+        A.VER AS ver
+        FROM
+        sl_product AS A
+        <include refid="whereSqlList"/>
+    </select>
+    <sql id="whereSqlList">
+        <where>
+             A.DEL_FLG = 0
+            <if test="filterMap.slCodes !=null and filterMap.slCodes!=''">
+                AND A.SL_CODE in
+                <foreach collection="filterMap.slCodes" item="slCode" separator="," open="(" close=")">
+                    #{slCode}
+                </foreach>
+            </if>
+            <if test="filterMap.slPdIds !=null and filterMap.slPdIds!=''">
+                AND A.SL_PD_ID in
+                <foreach collection="filterMap.slPdIds" item="slPdId" separator="," open="(" close=")">
+                    #{slPdId}
+                </foreach>
+            </if>
+            <if test="filterMap.prodEpIds !=null and filterMap.prodEpIds!=''">
+                AND A.PROD_EP_ID in
+                <foreach collection="filterMap.prodEpIds" item="prodEpId" separator="," open="(" close=")">
+                    #{prodEpId}
+                </foreach>
+            </if>
+            <if test="filterMap.brandEpIds !=null and filterMap.brandEpIds!=''">
+                AND A.BRAND_EP_ID in
+                <foreach collection="filterMap.brandEpIds" item="brandEpId" separator="," open="(" close=")">
+                    #{brandEpId}
+                </foreach>
+            </if>
+            <if test="filterMap.brandIds !=null and filterMap.brandIds!=''">
+                AND A.BRAND_ID in
+                <foreach collection="filterMap.brandIds" item="brandId" separator="," open="(" close=")">
+                    #{brandId}
+                </foreach>
+            </if>
+            <!--<if test="filterMap.pdClassesCodes !=null and filterMap.pdClassesCodes!=''">-->
+            <!--AND A.PD_CLASSES_CODE in-->
+            <!--<foreach collection="filterMap.pdClassesCodes" item="pdClassesCode" separator="," open="(" close=")">-->
+            <!--#{pdClassesCode}-->
+            <!--</foreach>-->
+            <!--</if>-->
+            <!--<if test="filterMap.pdBreedCodes !=null and filterMap.pdBreedCodes!=''">-->
+            <!--AND A.PD_BREED_CODE in-->
+            <!--<foreach collection="filterMap.pdBreedCodes" item="pdBreedCode" separator="," open="(" close=")">-->
+            <!--#{pdBreedCode}-->
+            <!--</foreach>-->
+            <!--</if>-->
+            <!--<if test="filterMap.pdFeatureCodes !=null and filterMap.pdFeatureCodes!=''">-->
+            <!--AND A.PD_FEATURE_CODE in-->
+            <!--<foreach collection="filterMap.pdFeatureCodes" item="pdFeatureCode" separator="," open="(" close=")">-->
+            <!--#{pdFeatureCode}-->
+            <!--</foreach>-->
+            <!--</if>-->
+            <!--<if test="filterMap.machiningCodes !=null and filterMap.machiningCodes!=''">-->
+            <!--AND A.SL_PD_ID in-->
+            <!--<foreach collection="filterMap.machiningCodes" item="machiningCode" separator="," open="(" close=")">-->
+            <!--#{machiningCode}-->
+            <!--</foreach>-->
+            <!--</if>-->
+            <!--<if test="filterMap.weightCodes !=null and filterMap.weightCodes!=''">-->
+            <!--AND A.WEIGHT_CODE in-->
+            <!--<foreach collection="filterMap.weightCodes" item="weightCode" separator="," open="(" close=")">-->
+            <!--#{weightCode}-->
+            <!--</foreach>-->
+            <!--</if>-->
+            <if test="filterMap.pdCodes != null and filterMap.pdCodes!=''">
+                AND CONCAT(A.PD_CLASSES_CODE,A.MACHINING_CODE,A.PD_BREED_CODE,A.PD_FEATURE_CODE,A.WEIGHT_CODE)
+                IN
+                <foreach collection="filterMap.pdCodes" item="pdCode" open="(" close=")" separator=",">
+                    #{pdCode}
+                </foreach>
+            </if>
+            <if test="filterMap.prodEpName !=null and filterMap.prodEpName!=''">
+                AND B.EP_NAME like #{filterMap.prodEpName}
+            </if>
+            <if test="filterMap.brandName !=null and filterMap.brandName!=''">
+                AND G.BRAND_NAME like #{filterMap.brandName}
+            </if>
+            <if test="filterMap.slPdArtNo !=null and filterMap.slPdArtNo!=''">
+                AND Z.SL_PD_ARTNO like #{filterMap.slPdArtNo}
+            </if>
+            <if test="filterMap.statusNames !=null">
+                AND A.STATUS in
+                <foreach collection="filterMap.statusNames" item="status" separator="," open="(" close=")">
+                    #{status}
+                </foreach>
+            </if>
+            <if test="filterMap.slCodeAndSlPdIds !=null and filterMap.slCodeAndSlPdIds.size() >0">
+                and CONCAT(A.SL_CODE,A.SL_PD_ID) in
+                <foreach collection="filterMap.slCodeAndSlPdIds" item="slCodeAndSlPdId" open="(" close=")"
+                         separator=",">
+                    #{slCodeAndSlPdId}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+    <select id="findSlProductCount" parameterType="com.msk.core.entity.SlProduct" resultType="Integer">
+        SELECT
+        count(1)
+        FROM
+        sl_product AS A
+        WHERE
+        A.SL_PD_ID = #{slPdId}
+        AND A.SL_CODE = #{slCode}
+        AND A.SL_QLT_GRADE_CODE = 2
+        AND A.SL_TNC_GRADE_CODE NOT IN (1,2,3)
+        AND A.DEL_FLG = 0
+    </select>
+    <select id="getSlProCount" parameterType="com.msk.core.entity.SlProduct" resultType="Integer">
+        SELECT
+        count(1)
+        FROM
+        sl_product AS A
+        where
+        A.DEL_FLG = 0
+        <if test="slPdId !=null and slPdId !=''">
+            AND A.SL_PD_ID = #{slPdId}
+        </if>
+        <if test="slCode !=null and slCode !=''">
+            AND A.SL_CODE = #{slCode}
+        </if>
+        <if test="prodEpId !=null and prodEpId !=''">
+            AND A.PROD_EP_ID = #{prodEpId}
+        </if>
+        <if test="brandEpId !=null and brandEpId !=''">
+            AND A.BRAND_EP_ID = #{brandEpId}
+        </if>
+        <if test="brandId !=null and brandId !=''">
+            AND A.BRAND_ID = #{brandId}
+        </if>
+        <if test="pdClassesCode !=null and pdClassesCode !=''">
+            AND A.PD_CLASSES_CODE = #{pdClassesCode}
+        </if>
+        <if test="machiningCode !=null and machiningCode !=''">
+            AND A.MACHINING_CODE = #{machiningCode}
+        </if>
+        <if test="pdBreedCode !=null and pdBreedCode !=''">
+            AND A.PD_BREED_CODE = #{pdBreedCode}
+        </if>
+        <if test="pdFeatureCode !=null and pdFeatureCode !=''">
+            AND A.PD_FEATURE_CODE = #{pdFeatureCode}
+        </if>
+        <if test="weightCode !=null and weightCode !=''">
+            AND A.WEIGHT_CODE = #{weightCode}
+        </if>
+    </select>
+
+    <insert id="insertSlProductList" parameterType="List">
+        INSERT INTO sl_product
+        (
+        SL_CODE,
+        SL_PD_ID,
+        PROD_EP_ID,
+        BRAND_EP_ID,
+        BRAND_ID,
+        PD_CLASSES_CODE,
+        MACHINING_CODE,
+        PD_BREED_CODE,
+        PD_FEATURE_CODE,
+        WEIGHT_CODE,
+        DIST_FLG,
+        DISTMSK_FLG,
+        SL_TNC_GRADE_CODE,
+        STATUS,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER,
+        PD_CLASSES_NAME,
+        MACHINING_NAME,
+        PD_BREED_NAME,
+        PD_FEATURE_NAME,
+        WEIGHT_NAME)
+        VALUES
+        <foreach collection="list" item="slPro" index="index" separator=",">
+            (
+            #{slPro.slCode},
+            #{slPro.slPdId},
+            #{slPro.prodEpId},
+            #{slPro.brandEpId},
+            #{slPro.brandId},
+            #{slPro.pdClassesCode},
+            #{slPro.machiningCode},
+            #{slPro.pdBreedCode},
+            #{slPro.pdFeatureCode},
+            #{slPro.weightCode},
+            #{slPro.distFlg},
+            #{slPro.distmskFlg},
+            #{slPro.slTncGradeCode},
+            1,
+            0,
+            #{slPro.crtId},
+            #{slPro.crtTime},
+            #{slPro.crtId},
+            #{slPro.crtTime},
+            #{slPro.crtId},
+            #{slPro.crtTime},
+            1,
+            #{slPro.pdClassesName},
+            #{slPro.machiningName},
+            #{slPro.pdBreedName},
+            #{slPro.pdFeatureName},
+            #{slPro.weightName}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateSlProductList" parameterType="List">
+        <foreach collection="list" item="slPoruct" separator=";"  open="" close=";" >
+            update sl_product
+            set
+            STATUS=#{slPoruct.status},
+            UPD_ID=#{slPoruct.updId},
+            UPD_TIME= #{updTime},
+            VER=VER+1
+            WHERE
+            SL_CODE = #{slPoruct.slCode} AND
+            PROD_EP_ID = #{slPoruct.prodEpId} AND
+            BRAND_EP_ID = #{slPoruct.brandEpId} AND
+            BRAND_ID = #{slPoruct.brandId} AND
+            PD_CLASSES_CODE = #{slPoruct.pdClassesCode} AND
+            PD_BREED_CODE = #{slPoruct.pdBreedCode} AND
+            MACHINING_CODE = #{slPoruct.machiningCode} AND
+            WEIGHT_CODE = #{slPoruct.weightCode} AND
+            PD_FEATURE_CODE = #{slPoruct.pdFeatureCode}
+        </foreach>
+    </update>
+    <select id="findList" parameterType="com.hoperun.core.bean.BaseParam"
+            resultType="com.msk.seller.bean.SL241116Bean">
+        SELECT
+            IFNULL(B.EP_NAME,'') AS prodEpName,
+            IFNULL(G.BRAND_NAME,'') AS brandName,
+            IFNULL(A.PD_CLASSES_NAME,'') AS pdClassesName,
+            IFNULL(A.PD_BREED_NAME,'') AS pdBreedName,
+            IFNULL(A.PD_FEATURE_NAME,'') AS pdFeatureName,
+            IFNULL(G.BRAND_NAME,'') AS brandName,
+            (CASE A.SL_TNC_GRADE_CODE
+            WHEN 1 THEN 'A1'
+            WHEN 2 THEN 'A2'
+            WHEN 3 THEN 'A3'
+            WHEN 4 THEN '不通过'
+            ELSE '' END)AS slTncGradeCodeName,
+            IFNULL(A.MACHINING_NAME,'') AS machiningName,
+            IFNULL(A.WEIGHT_NAME,'') AS weightName,
+            (CASE A.STATUS
+            WHEN 1 THEN '申请中'
+            WHEN 2 THEN '论证中'
+            WHEN 3 THEN '禁止准入'
+            WHEN 4 THEN '试销'
+            WHEN 5 THEN '正式上线'
+            WHEN 7 THEN '下线'
+            WHEN 8 THEN '黑名单'
+            ELSE '' END) AS status
+        FROM
+        SL_PRODUCT AS A
+        LEFT JOIN sl_enterprise AS B ON A.PROD_EP_ID = B.EP_ID
+        LEFT JOIN sl_enterprise AS C ON A.BRAND_EP_ID = C.EP_ID
+        LEFT JOIN sl_pd_brand G ON A.BRAND_EP_ID=G.BRAND_EP_ID AND A.BRAND_ID=G.BRAND_ID AND G.SL_CODE=A.SL_CODE
+        WHERE
+        A.SL_CODE = #{filterMap.slCode}
+        AND A.DEL_FLG=0
+        AND A.PD_FEATURE_CODE != '00'
+        ORDER BY A.SL_PD_ID DESC
+    </select>
+
+</mapper>

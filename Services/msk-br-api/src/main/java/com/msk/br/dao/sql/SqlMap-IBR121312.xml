@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121312Logic">
+
+
+
+    <select id="count" parameterType="com.msk.br.bean.IBR121312RsParam" resultType="int">
+        SELECT count(1)
+        FROM BR_BUYER_MARKETING_STATUS_HISTORY
+        WHERE BUYER_ID = #{buyerId}
+        AND  DEL_FLG = 0
+
+    </select>
+
+    <select id="checkCount" parameterType="com.msk.br.bean.IBR121312RsParam" resultType="int">
+        SELECT count(1)
+        FROM BR_BUYER_MARKETING_STATUS_HISTORY
+        WHERE BUYER_ID = #{buyerId}
+        AND  DEL_FLG = 0
+        AND NEW_STATUS_CLASS = #{newStatusClass}
+        AND NEW_STATUS_BREED = #{newStatusBreed}
+        AND CURRENT_STATUS_FLG = '1'
+        <if test="newExceptionStatus != null and newExceptionStatus != ''">
+            AND NEW_EXCEPTION_STATUS = #{newExceptionStatus}
+        </if>
+
+    </select>
+
+    <insert id="saveBrBuyerMarketingStatusHistory" parameterType="com.msk.br.bean.IBR121312RsParam">
+        INSERT INTO BR_BUYER_MARKETING_STATUS_HISTORY(
+              HISTORY_ID,
+              BUYER_ID,
+              OLD_STATUS_CLASS,
+              OLD_STATUS_CLASS_NAME,
+              OLD_STATUS_BREED,
+              OLD_STATUS_BREED_NAME,
+              OLD_EXCEPTION_STATUS,
+              OLD_EXCEPTION_STATUS_NAME,
+              NEW_STATUS_CLASS,
+              NEW_STATUS_CLASS_NAME,
+              NEW_STATUS_BREED,
+              NEW_STATUS_BREED_NAME,
+              NEW_EXCEPTION_STATUS,
+              NEW_EXCEPTION_STATUS_NAME,
+              CURRENT_STATUS_FLG,
+              MODIFY_TIME,
+              DEL_FLG,
+              CRT_ID,
+              CRT_TIME,
+              UPD_ID,
+              UPD_TIME,
+              ACT_ID,
+              ACT_TIME,
+              VER
+        )VALUES (
+              #{historyId},
+              #{buyerId},
+              #{oldStatusClass} ,
+              #{oldStatusClassName} ,
+              #{oldStatusBreed} ,
+              #{oldStatusBreedName} ,
+              #{oldExceptionStatus} ,
+              #{oldExceptionStatusName},
+              #{newStatusClass},
+              #{newStatusClassName},
+              #{newStatusBreed},
+              #{newStatusBreedName},
+              #{newExceptionStatus},
+              #{newExceptionStatusName},
+              #{currentStatusFlg},
+              #{modifyTime},
+              0,
+              #{crtId},
+              #{crtTime},
+              #{updId},
+              #{updTime},
+              #{actId},
+              #{actTime},
+              1
+        )
+
+    </insert>
+
+    <update id="updateBrBuyerMarketingStatusHistory" parameterType="com.msk.br.bean.IBR121312RsParam" >
+      UPDATE BR_BUYER_MARKETING_STATUS_HISTORY
+      SET MODIFY_TIME = #{modifyTime},
+      CURRENT_STATUS_FLG = #{currentStatusFlg},
+      UPD_ID = #{updId},
+      UPD_TIME = #{updTime}
+      WHERE
+        BUYER_ID = #{buyerId}
+        AND  DEL_FLG = 0
+        AND CURRENT_STATUS_FLG = '1'
+    </update>
+
+    <select id="findBrBuyerMarketingStatusHistory" resultType="com.msk.core.entity.BrBuyerMarketingStatusHistory" parameterType="com.msk.br.bean.IBR121312RsParam">
+      SELECT
+        NEW_STATUS_CLASS AS newStatusClass,
+        NEW_STATUS_CLASS_NAME AS newStatusClassName,
+        NEW_STATUS_BREED AS newStatusBreed,
+        NEW_STATUS_BREED_NAME AS newStatusBreedName,
+        NEW_EXCEPTION_STATUS AS newExceptionStatus,
+        NEW_EXCEPTION_STATUS_NAME AS newExceptionStatusName
+      FROM
+        BR_BUYER_MARKETING_STATUS_HISTORY
+      WHERE
+        BUYER_ID = #{buyerId}
+        AND  DEL_FLG = 0
+        AND CURRENT_STATUS_FLG = '1'
+    </select>
+</mapper>

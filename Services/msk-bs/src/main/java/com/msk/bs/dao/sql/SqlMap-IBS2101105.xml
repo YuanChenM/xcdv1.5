@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101105RsLogic">
+    <select id="findHouseAccunt" resultType="com.msk.bs.bean.IBS2101105RsResult"
+            parameterType="com.msk.bs.bean.IBS2101105RsParam">
+        SELECT
+        A.SL_CODE AS slCode,
+        A.HOUSE_ACCOUNT AS houseAccount,
+        A.HOUSE_CODE AS houseCode,
+        A.HOUSE_CODE_DIS AS houseCodeDis,
+        A.HOUSE_TEL AS houseTel,
+        A.HOUSE_SHOW_NAME AS houseShowName,
+        A.HOUSE_CONTACT AS houseContact,
+        A.ACCOUNT_PSD AS accountPsd,
+        A.AUTH_STATUS AS authStatus,
+        A.SL_IDCARD AS slIdcard,
+        A.SL_CON_FLG AS slConFlg,
+        A.R_AREA_CODE AS rareaCode,
+        A.R_LGCS_AREA_CODE AS rlgcsAreaCode,
+        A.R_PROVINCE_CODE AS rprovinceCode,
+        A.R_CITY_CODE AS rcityCode,
+        A.R_DISTRICT_CODE AS rdistrictCode,
+        A.R_HOUSE_ADDRESS AS  rhouseAddress,
+        A.AREA_CODE AS areaCode,
+        A.LGCS_AREA_CODE AS lgcsAreaCode,
+        A.PROVINCE_CODE AS provinceCode,
+        A.CITY_CODE AS cityCode,
+        A.DISTRICT_CODE AS districtCode,
+        A.HOUSE_ADDRESS AS houseAddress,
+        A.V_AREA_CODE AS vareaCode,
+        A.V_LGCS_AREA_CODE AS vlgcsAreaCode,
+        A.V_PROVINCE_CODE AS vprovinceCode,
+        A.V_CITY_CODE AS vcityCode,
+        A.V_DISTRICT_CODE AS vdistrictCode,
+        A.V_HOUSE_ADDRESS AS vhouseAddress,
+        A.LAT AS lat,
+        A.LON AS lon,
+        A.V_LAT AS vlat,
+        A.V_LON AS vlon,
+        A.LICENSES AS licenses,
+        A.BUYER_ASIGN AS buyerAsign,
+        A.WECHAT AS wechat,
+        A.QQ AS qq,
+        A.EMAIL AS email,
+        A.FIXED_TEL AS fixedTel,
+        A.FAX AS fax,
+        A.FLAG20 AS flag20,
+        A.FLAG19 AS flag19,
+        A.FLAG18 AS flag18,
+        A.FLAG17 AS flag17,
+        A.FLAG16 AS flag16,
+        A.FLAG15 AS flag15,
+        A.FLAG14 AS flag14,
+        A.FLAG13 AS flag13,
+        A.FLAG12 AS flag12,
+        A.FLAG11 AS flag11,
+        A.FLAG10 AS flag10,
+        A.FLAG9 AS flag9,
+        A.FLAG8 AS flag8,
+        A.FLAG7 AS flag7,
+        A.FLAG6 AS flag6,
+        A.FLAG5 AS flag5,
+        A.FLAG4 AS flag4,
+        A.FLAG3 AS flag3,
+        A.FLAG2 AS flag2,
+        A.FLAG1 AS flag1,
+        A.HOUSE_INTRODUCE AS houseIntroduce,
+        A.HOUSE_CLASS AS houseClass,
+        A.HOUSE_CATEGORY AS houseCategory,
+        A.HOUSE_CATEGORY0 AS houseCategory0,
+        A.HOUSE_CATEGORY1 AS houseCategory1,
+        A.HOUSE_CATEGORY2 AS houseCategory2,
+        A.HOUSE_CATEGORY3 AS houseCategory3,
+        A.HOUSE_CATEGORY4 AS houseCategory4,
+        A.HOUSE_CATEGORY5 AS houseCategory5,
+        A.HOUSE_CATEGORY6 AS houseCategory6,
+        A.HOUSE_CATEGORY7 AS houseCategory7,
+        A.HOUSE_CATEGORY8 AS houseCategory8,
+        A.VER AS ver,
+        B.GREADE AS greade
+        FROM
+        sl_house_account AS A
+        LEFT JOIN sl_bs_house_grade AS B ON B.SL_CODE = A.SL_CODE AND B.HOUSE_CODE = A.HOUSE_CODE
+        <where>
+            (A.DEL_FLG IS NULL OR A.DEL_FLG =0)
+            <if test="slCode!=null and slCode!=''">
+                AND A.SL_CODE=#{slCode}
+            </if>
+            <if test="houseAccount!=null and houseAccount!=''">
+                AND A.HOUSE_ACCOUNT=#{houseAccount}
+            </if>
+            <if test="accountPsd!=null and accountPsd!=''">
+                AND A.ACCOUNT_PSD=#{accountPsd}
+            </if>
+        </where>
+    </select>
+    <select id="findHouseProduct" parameterType="com.msk.bs.bean.IBS2101105RsParam"
+            resultType="com.msk.core.entity.SlHouseProduct">
+     SELECT
+     A.SL_CODE AS slCode,
+     A.HOUSE_CODE AS houseCode,
+     A.PD_ID AS pdId,
+     A.PD_CLASSES_CODE AS pdClassesCode,
+     A.MACHINING_CODE AS machiningCode,
+     A.PD_BREED_CODE AS pdBreedCode,
+     A.PD_FEATURE_CODE AS pdFeatureCode
+     FROM
+     sl_house_product AS A
+     where
+        A.HOUSE_CODE=#{filterMap.houseCode}
+        AND (A.DEL_FLG IS NULL OR A.DEL_FLG =0)
+    </select>
+    <select id="findHouseArea" parameterType="com.msk.bs.bean.IBS2101105RsParam"
+            resultType="com.msk.core.entity.SlHouseArea">
+       SELECT
+        A.SL_AREA_ID AS slAreaId,
+        A.SL_CODE AS slCode,
+        A.HOUSE_CODE AS houseCode,
+        A.LGCS_AREA_CODE AS lgcsAreaCode,
+        A.PROVINCE_CODE AS provinceCode,
+        A.CITY_CODE AS cityCode,
+        A.DISTRICT_CODE AS districtCode,
+        A.ADDRESS AS address
+        FROM
+        sl_house_area AS A
+     where A.HOUSE_CODE=#{filterMap.houseCode}
+        AND (A.DEL_FLG IS NULL OR A.DEL_FLG =0)
+    </select>
+
+    <!--Modify Bug #3592  增加判断冻品管家分类查询  begin  whc 21016.11.08-->
+    <select id="findHouseManage" resultType="com.msk.core.entity.SlHouseManage" parameterType="com.msk.common.bean.RsPageParam">
+      SELECT
+      SL_CODE AS  slCode,
+      HOUSE_CODE AS houseCode,
+      HOUSE_CATEGORY_CODE AS houseCategoryCode,
+      HOUSE_RECLASSIFY_CODE AS houseReclassifyCode
+      FROM sl_house_manage
+      WHERE HOUSE_RECLASSIFY_CODE = #{filterMap.houseCategory}
+      AND  (DEL_FLG IS NULL OR DEL_FLG =0)
+      GROUP BY HOUSE_CODE
+    </select>
+    <!--Modify Bug #3592  增加判断冻品管家分类查询  end  whc 21016.11.08-->
+</mapper>

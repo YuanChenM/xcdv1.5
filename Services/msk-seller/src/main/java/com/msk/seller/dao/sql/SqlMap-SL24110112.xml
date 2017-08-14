@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24110112Logic">
+    <!--修改检测设备-->
+    <update id="updateSlEPDd" parameterType="com.msk.seller.bean.SlEpDdBean">
+       UPDATE sl_ep_dd SET
+         DD_NAME = #{ddName},
+         DD_EQUIPMENT = #{ddEquipment},
+         UPD_ID = #{updId},
+         UPD_TIME= #{updTime},
+         VER = VER + 1
+        <where>
+            <if test="epId!=null and epId!=''">
+                AND EP_ID=#{epId}
+            </if>
+            <if test="ddId!=null and ddId!=''">
+                AND DD_ID=#{ddId}
+            </if>
+        </where>
+    </update>
+    <!--逻辑删除检测设备-->
+    <update id="deleteSlEPDd" parameterType="com.msk.seller.bean.SlEpDdBean">
+        update sl_ep_dd set
+        DEL_FLG= 1,
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        <where>
+            <if test="epId!=null and epId!=''">
+                AND EP_ID=#{epId}
+            </if>
+            <if test="ddId!=null and ddId!=''">
+                AND DD_ID=#{ddId}
+            </if>
+        </where>
+    </update>
+</mapper>

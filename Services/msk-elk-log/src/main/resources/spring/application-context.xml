@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+        "
+    xmlns:task="http://www.springframework.org/schema/task"
+        >
+    <bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath:config/*.properties</value>
+            </list>
+        </property>
+    </bean>
+    <context:component-scan base-package="com.msk.log" use-default-filters="false">
+    </context:component-scan>
+    <context:annotation-config />
+    <task:annotation-driven /> <!-- 定时器开关-->
+        <bean id="task" class="com.msk.log.timerTask.TimerTask"></bean>
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxIdle" value="1" />
+        <property name="maxActive" value="5" />
+        <property name="maxWait" value="100" />
+        <property name="testOnBorrow" value="true" />
+    </bean>
+
+    <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="hostName" value="10.20.16.7"/>
+        <property name="port" value="6379"/>
+        <property name="password" value="Admin123#"/>
+        <property name="poolConfig" ref="poolConfig"/>
+        <property name="database" value="0"/>
+    </bean>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+        <property name="connectionFactory" ref="connectionFactory" />
+    </bean>
+
+    <bean class="com.msk.log.common.RedisConfig" id="redisConfig">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+    <task:scheduled-tasks>
+        <task:scheduled ref="task" method="doDayTask" cron="0 0 0 * * ?" />
+        <task:scheduled ref="task" method="doPeriodTask" cron=" 0 0 * * * ?"/>
+    </task:scheduled-tasks>
+
+</beans>

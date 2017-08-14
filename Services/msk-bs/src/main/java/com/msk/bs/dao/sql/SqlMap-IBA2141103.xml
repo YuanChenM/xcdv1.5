@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBA2141103Logic">
+
+    <select id="findOne" parameterType="com.msk.bs.bean.IBA2141102Param" resultType="com.msk.core.entity.SlHouseAccount">
+       SELECT
+            SL_CODE AS slCode,
+            HOUSE_ACCOUNT as houseAccount,
+            HOUSE_CODE AS houseCode,
+        <!--add 判断库存需要有物流区编码 2016/9/18 by 杨春艳 start-->
+            R_DISTRICT_CODE AS rdistrictCode,
+            V_LGCS_AREA_CODE AS vlgcsAreaCode,
+            V_PROVINCE_CODE AS vprovinceCode,
+            V_CITY_CODE AS vcityCode,
+        <!--add 判断库存需要有物流区编码 2016/9/18 by 杨春艳 end-->
+            HOUSE_SHOW_NAME AS houseShowName
+        FROM
+            Sl_House_Account
+        WHERE
+            AUTH_STATUS = 2
+        <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 start-->
+        AND (DEL_FLG = 0 OR DEL_FLG IS NULL)
+        <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 end-->
+        AND (HOUSE_TEL = #{slTel} OR HOUSE_ACCOUNT = #{slTel})
+        <if test="accountPsd !=null and accountPsd !=''">
+            AND ACCOUNT_PSD = #{accountPsd}
+        </if>
+
+    </select>
+</mapper>
+

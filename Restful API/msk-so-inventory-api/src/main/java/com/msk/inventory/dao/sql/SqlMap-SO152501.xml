@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.SO152501Serviceimpl">
+    <select id="getDistributionList" resultType="com.msk.inventory.bean.SO152501Bean"
+            parameterType="com.msk.inventory.bean.SO152501Bean">
+        SELECT DISTINCT
+        EXTRACTVALUE (A.BELONE_XML, '/AREA') AS lgcsCode,
+        B.AREA_NAME AS lgcsName,
+        A.WH_CODE AS warehouseCode,
+        B.WH_NAME AS warehouseName,
+        (select CODE_DESC from ivm_info_def where CODE_VALUE= EXTRACTVALUE (A.BELONE_XML, '/PLT') ) AS supplyPlayFrom,
+        EXTRACTVALUE (A.BELONE_XML, '/SLID') AS slCodeDis,
+        (select CODE_DESC from ivm_info_def where CODE_VALUE= EXTRACTVALUE (A.BELONE_XML, '/SLID') ) AS slName,
+        A.OWNER_CODE AS supplierCode,
+        (select CODE_DESC from ivm_info_def where CODE_VALUE= A.OWNER_CODE) AS supplierName,
+        SUBSTR(A.PM_CODE,1,10) AS pdCode,
+        (select CODE_DESC from ivm_info_def where CODE_VALUE= SUBSTR(A.PM_CODE,1,10))AS pdName,
+        C.QTY as stockQty
+        FROM
+        ivm_inventory_detail A
+        LEFT JOIN ivm_warehouse B ON A.WH_ID = B.WH_ID
+        LEFT JOIN ivm_inventory_by_prod C ON SUBSTR(A.PM_CODE,1,10) = concat(
+        extractvalue (C.PRODUCT_XML, '/CLS_C'),
+        extractvalue (C.PRODUCT_XML, '/MACH_C'),
+        extractvalue (C.PRODUCT_XML, '/BRE_C'),
+        extractvalue (C.PRODUCT_XML, '/FEAT_C'),
+        extractvalue (C.PRODUCT_XML, '/WEI_C'),
+        extractvalue (C.PRODUCT_XML, '/GRAD_C')
+        )
+        where 1=1
+        <if test="lgcsCode!=null and lgcsCode!='' ">
+            AND EXTRACTVALUE (A.BELONE_XML, '/AREA') like #{lgcsCode}
+        </if>
+        <if test="warehouseCode!=null and warehouseCode!=''">
+            AND A.WH_CODE like #{warehouseCode}
+        </if>
+        <if test="slCodeDis!=null and slCodeDis!=''">
+            AND EXTRACTVALUE (A.BELONE_XML, '/SLID') like #{slCodeDis}
+        </if>
+        <if test="lgcsName!=null and lgcsName!=''">
+            AND B.AREA_NAME like #{lgcsName}
+        </if>
+        <if test="warehouseName!=null and warehouseName!=''">
+            AND B.WH_NAME like #{warehouseName}
+        </if>
+        <if test="slName!=null and lgcsCode!=''">
+            AND (select CODE_DESC from ivm_info_def where CODE_VALUE= EXTRACTVALUE (A.BELONE_XML, '/SLID') ) like
+            #{slName}
+        </if>
+        <if test="pdCode!=null and pdCode!=''">
+            AND SUBSTR(A.PM_CODE,1,10) like #{pdCode}
+        </if>
+        <if test="supplierCode!=null and supplierCode!=''">
+            AND A.OWNER_CODE like #{supplierCode}
+        </if>
+        <if test="supplierName!=null and supplierName!=''">
+            AND (select CODE_DESC from ivm_info_def where CODE_VALUE= A.OWNER_CODE) like #{supplierName}
+        </if>
+        <if test="supplyPlayFrom!=null and supplyPlayFrom!=''">
+            AND (select CODE_DESC from ivm_info_def where CODE_VALUE= EXTRACTVALUE (A.BELONE_XML, '/PLT') ) like
+            #{supplyPlayFrom}
+        </if>
+        <if test="pdName!=null and pdName!=''">
+            AND (select CODE_DESC from ivm_info_def where CODE_VALUE= SUBSTR(A.PM_CODE,1,10)) like #{pdName}
+        </if>
+        <if test="startPos!=0 ">
+            LIMIT #{startPos},#{endPos}
+        </if>
+    </select>
+</mapper>

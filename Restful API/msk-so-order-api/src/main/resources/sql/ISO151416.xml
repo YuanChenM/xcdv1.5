@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151416.getOrderCount">
+        SELECT
+        COUNT(DISTINCT so.ORDER_ID) AS COUNT
+        FROM
+        so_order so
+        LEFT JOIN so_sub_order soo
+        ON soo.ORDER_ID = so.ORDER_ID
+        LEFT JOIN SO_ORDER_DETAIL sod
+        ON sod.ORDER_ID = so.order_id
+        WHERE 1 = 1
+    </sql>
+    <sql id="ISO151416.getOrderSale">
+        SELECT DISTINCT
+        IFNULL(so.ORDER_ID, 0) AS orderId,
+        IFNULL(so.ORDER_CODE, '') AS orderCode,
+        IFNULL(so.ORDER_TIME, '') AS orderTimeStr,
+        IFNULL(so.BUYER_CODE, '') AS buyersCode,
+        IFNULL(so.BUYER_NAME, '') AS buyersName,
+        IFNULL(sso.SELLER_CODE, '') AS sellerCode,
+        IFNULL(sso.SELLER_NAME, '') AS sellerName,
+        IFNULL(so.ORDER_STATUS, '') AS orderStatus,
+        IFNULL(so.DEL_FLG, '') AS delFlg,
+        IFNULL(sso.ORDER_TYPE, '') AS orderType,
+        IFNULL(so.DISTRICT_CODE, '') AS districtCode,
+        IFNULL(so.PAYMENT_TYPE, '') AS paymentType,
+        IFNULL(so.PAY_AMOUNT, 0) AS paidAmount,
+        IFNULL(so.SA_ID, '') AS sellers,
+        IFNULL(so.ORDER_TAKER, '') AS orderTaker,
+        IFNULL(so.VER, 0) AS ver,
+        a.orderAmount AS orderAmount,
+        sso.SUB_ORDER_ID AS subOrderId
+        FROM
+        so_sub_order sso
+        LEFT JOIN so_order so
+        ON so.order_id = sso.order_id
+        LEFT JOIN
+        (SELECT
+        SUM(ssod.PD_PRICE * ssod.ORDER_QTY) AS orderAmount,
+        ssod.SUB_ORDER_ID AS subOrderId
+        FROM
+        so_sub_order_detail ssod
+        GROUP BY ssod.SUB_ORDER_ID) a
+        ON a.subOrderId = sso.sub_order_id
+        LEFT JOIN SO_ORDER_DETAIL sod
+        ON sod.ORDER_ID = sso.order_id
+        WHERE 1 = 1
+    </sql>
+
+    <sql id="ISO151416.getOrderList">
+        SELECT DISTINCT
+        IFNULL(so.ORDER_ID, 0) AS orderId,
+        IFNULL(so.ORDER_CODE, '') AS orderCode,
+        IFNULL(so.ORDER_TIME, '') AS orderTimeStr,
+        IFNULL(so.BUYER_CODE, '') AS buyersCode,
+        IFNULL(so.BUYER_NAME, '') AS buyersName,
+        IFNULL(so.SELLER_CODE, '') AS sellerCode,
+        IFNULL(so.SELLER_NAME, '') AS sellerName,
+        IFNULL(so.ORDER_STATUS, '') AS orderStatus,
+        IFNULL(so.DEL_FLG, '') AS delFlg,
+        IFNULL(so.ORDER_AMOUNT, 0) AS orderAmount,
+        IFNULL(so.ORDER_TYPE, '') AS orderType,
+        IFNULL(so.DISTRICT_CODE, '') AS districtCode,
+        IFNULL(so.PAYMENT_TYPE, '') AS paymentType,
+        IFNULL(so.PAY_AMOUNT, 0) AS paidAmount,
+        IFNULL(so.SA_ID, '') AS sellers,
+        IFNULL(so.ORDER_TAKER, '') AS orderTaker,
+        IFNULL(so.VER, 0) AS ver
+        FROM
+        so_order so
+        LEFT JOIN so_sub_order soo
+        ON soo.ORDER_ID = so.ORDER_ID
+        LEFT JOIN SO_ORDER_DETAIL sod
+        ON sod.ORDER_ID = so.order_id
+        WHERE 1 = 1
+    </sql>
+
+    <sql id="ISO151416.getOrderSaleCount">
+        SELECT
+        COUNT(
+        DISTINCT sso.SUB_ORDER_ID
+        ) AS count
+        FROM
+        so_sub_order sso
+        LEFT JOIN so_order so
+        ON so.order_id = sso.order_id
+        LEFT JOIN
+        (SELECT
+        SUM(ssod.PD_PRICE * ssod.ORDER_QTY) AS orderAmount,
+        ssod.SUB_ORDER_ID AS subOrderId
+        FROM
+        so_sub_order_detail ssod
+        GROUP BY ssod.SUB_ORDER_ID) a
+        ON a.subOrderId = sso.sub_order_id
+        LEFT JOIN SO_ORDER_DETAIL sod
+        ON sod.ORDER_ID = sso.order_id
+        WHERE 1 = 1
+    </sql>
+</sqlList>

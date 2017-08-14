@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD14114901Logic">
+    <!--保存产品标准id -->
+    <insert id="save" parameterType="com.msk.product.bean.PDtncMarkeyBean">
+       INSERT INTO PD_TNC_STD_DISCUSS_MARKET (
+	KEY_ID,
+	STANDARD_ID,
+	TNC_STD_ITEM_ID,
+	TNC_STD_VAL,
+	RAISE_DATE,
+	DISCUSS_STATUS,
+	REMARK,
+	DEL_FLG,
+	CRT_ID,
+	CRT_TIME,
+	UPD_ID,
+	UPD_TIME,
+	ACT_ID,
+	ACT_TIME,
+	VER)
+VALUES
+	(
+		#{keyId},
+		#{standardId},
+		#{tncStdItemId},
+		#{tncStdVal},
+		#{raiseDate},
+		#{discussStatus},
+		#{remark},
+		 '0',
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+	    #{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  Start -->
+		#{actId},
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  End -->
+		#{actTime},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		'1'
+	);
+
+    </insert>
+    <!-- 添加结案日期 -->
+    <update id="modify" parameterType="com.msk.product.bean.PDtncMarkeyBean">
+		UPDATE PD_TNC_STD_DISCUSS_MARKET
+			SET
+			 FIX_DATE = #{fixDate},
+			 DISCUSS_STATUS = #{discussStatus},
+			 UPD_ID = #{updId},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+			 UPD_TIME = #{updTime}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+			,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+			WHERE
+			KEY_ID = #{keyId}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+			AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+		;
+	</update>
+
+    <select id="findCount" parameterType="BaseParam" resultType="int">
+			SELECT
+			    COUNT(1)
+			    FROM PD_TNC_STD_DISCUSS_MARKET AS A
+			      WHERE A.STANDARD_ID=#{filterMap.standardId}
+                  AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+                  AND A.TNC_STD_VAL = #{filterMap.tncStdVal}
+
+	</select>
+
+	<!--获取市场需求时间-->
+	<select id="findListTncMarkey" parameterType="BaseParam"  resultType="com.msk.product.bean.PDtncMarkeyBean">
+		SELECT
+		A.KEY_ID AS keyId
+		,A.TNC_STD_ITEM_ID AS tncStdItemId
+		,A.TNC_STD_VAL AS tncStdVal
+		,A.RAISE_DATE AS raiseDate
+		,A.FIX_DATE AS fixDate
+		,A.DISCUSS_STATUS AS discussStatus
+		FROM PD_TNC_STD_DISCUSS_MARKET A
+		WHERE A.STANDARD_ID=#{filterMap.standardId}
+		AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+		AND A.DISCUSS_STATUS != #{filterMap.discussStatus}
+		ORDER BY A.DISCUSS_STATUS DESC
+	</select>
+
+	<!--获取市场禁用时间-->
+	<select id="findListTncMarkeyJin" parameterType="BaseParam"  resultType="com.msk.product.bean.PDtncMarkeyBean">
+		SELECT
+		A.KEY_ID AS keyId
+		,A.TNC_STD_VAL AS tncStdVal
+		,A.FIX_DATE AS fixDate
+		,A.DISCUSS_STATUS AS discussStatus
+		FROM PD_TNC_STD_DISCUSS_MARKET A
+		WHERE A.STANDARD_ID=#{filterMap.standardId}
+		AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+		AND A.DISCUSS_STATUS = #{filterMap.discussStatus}
+		ORDER BY A.DISCUSS_STATUS DESC
+	</select>
+</mapper>

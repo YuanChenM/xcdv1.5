@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD14112101Logic">
+
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.product.bean.PD141121Bean">
+        SELECT x.*,y.LGCS_ID AS lgcsId,
+        (
+        CASE
+        WHEN y.LGCS_ID IS NOT NULL THEN
+        y.PD_MARKET_CODE
+        ELSE
+        '1'
+        END
+        )  AS pdMarketCode,
+        (
+        CASE
+        WHEN y.LGCS_ID IS NOT NULL THEN
+        '1'
+        ELSE
+        '0'
+        END
+        ) AS checkFlag
+        FROM
+        (SELECT
+        a.*, h.GRADE_CODE AS gradeCode,
+        h.GRADE_NAME AS gradeName
+        FROM
+        (
+        SELECT
+        a.CLASSES_CODE AS classesCode,
+        a.CLASSES_NAME AS classesName,
+        b.MACHINING_CODE AS machiningCode,
+        b.MACHINING_NAME AS machiningName,
+        c.BREED_CODE AS breedCode,
+        c.BREED_NAME AS breedName,
+        d.FEATURE_CODE AS featureCode,
+        d.FEATURE_NAME AS featureName,
+        e.WEIGHT_CODE AS weightCode,
+        e.WEIGHT_NAME AS weightName,
+        #{filterMap.lgcsAreaCode} AS lgcsAreaCode,
+        ifnull(g.LGCS_NAME, #{filterMap.lgcsAreaCode}) AS lgcsAreaName
+        FROM
+        pd_classes a
+        INNER JOIN pd_machining b ON b.CLASSES_CODE = a.CLASSES_CODE
+        INNER JOIN pd_breed c ON c.CLASSES_CODE = a.CLASSES_CODE
+        AND c.MACHINING_CODE = b.MACHINING_CODE
+        INNER JOIN pd_feature d ON d.CLASSES_CODE = a.CLASSES_CODE
+        AND d.MACHINING_CODE = b.MACHINING_CODE
+        AND d.BREED_CODE = c.BREED_CODE
+        INNER JOIN pd_weight e ON e.CLASSES_CODE = a.CLASSES_CODE
+        AND e.MACHINING_CODE = b.MACHINING_CODE
+        AND e.BREED_CODE = c.BREED_CODE
+        AND e.FEATURE_CODE = d.FEATURE_CODE
+        LEFT JOIN pd_logiarea g ON g.LGCS_CODE = #{filterMap.lgcsAreaCode}
+        GROUP BY a.CLASSES_CODE,
+        b.MACHINING_CODE,
+        c.BREED_CODE,
+        d.FEATURE_CODE,
+        e.WEIGHT_CODE
+        ORDER BY
+        a.CLASSES_CODE,
+        b.MACHINING_CODE,
+        c.BREED_CODE,
+        d.FEATURE_CODE,
+        e.WEIGHT_CODE
+
+        ) a,
+        pd_grade h) x LEFT JOIN pd_logiarea y ON y.CLASSES_CODE = x.classesCode
+        AND y.MACHINING_CODE = x.machiningCode
+        AND y.BREED_CODE = x.breedCode
+        AND y.FEATURE_CODE = x.featureCode
+        AND y.WEIGHT_CODE = x.weightCode
+        AND y.GRADE_CODE = x.gradeCode
+        AND y.LGCS_CODE = #{filterMap.lgcsAreaCode}
+
+        <include refid="whereCondition4"/>
+
+        ORDER BY
+        x.classesCode, x.machiningCode,x.breedCode,
+        x.featureCode,x.weightCode,x.gradeCode
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+
+    </select>
+
+    <sql id="whereCondition4">
+        <where>
+            <if test="filterMap.lgcsAreaCode!=null and filterMap.lgcsAreaCode!=''">
+                AND (
+                CASE
+                WHEN y.LGCS_ID IS NOT NULL THEN
+                '1'
+                ELSE
+                '0'
+                END
+                )='1'
+            </if>
+
+            <if test="filterMap.lgcsAreaCode!=null and filterMap.lgcsAreaCode!=''">
+                AND x.lgcsAreaCode like '${filterMap.lgcsAreaCode}%'
+            </if>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND x.classesCode like #{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND x.machiningCode like #{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND x.breedCode like #{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND x.featureCode like #{filterMap.featureCode}
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                AND x.weightCode like #{filterMap.weightCode}
+            </if>
+            <if test="filterMap.gradeCode!=null and filterMap.gradeCode!=''">
+                AND x.gradeCode like #{filterMap.gradeCode}
+            </if>
+
+            <if test="filterMap.lgcsAreaName!=null and filterMap.lgcsAreaName!=''">
+                AND x.lgcsAreaName like #{filterMap.lgcsAreaName}
+            </if>
+
+            <if test="filterMap.classesName!=null and filterMap.classesName!=''">
+                AND x.classesName like #{filterMap.classesName}
+            </if>
+            <if test="filterMap.machiningName!=null and filterMap.machiningName!=''">
+                AND x.machiningName like #{filterMap.machiningName}
+            </if>
+            <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+                AND x.breedName like #{filterMap.breedName}
+            </if>
+            <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+                AND x.featureName like #{filterMap.featureName}
+            </if>
+            <if test="filterMap.weightName!=null and filterMap.weightName!=''">
+                AND x.weightName like #{filterMap.weightName}
+            </if>
+            <if test="filterMap.gradeName!=null and filterMap.gradeName!=''">
+                AND x.gradeName like #{filterMap.gradeName}
+            </if>
+
+        </where>
+    </sql>
+
+    <sql id="whereCondition3">
+        <where>
+            <if test="filterMap.lgcsAreaCode!=null and filterMap.lgcsAreaCode!=''">
+                AND x.lgcsAreaCode like '${filterMap.lgcsAreaCode}%'
+            </if>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND x.classesCode like #{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND x.machiningCode like #{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND x.breedCode like #{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND x.featureCode like #{filterMap.featureCode}
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                AND x.weightCode like #{filterMap.weightCode}
+            </if>
+            <if test="filterMap.gradeCode!=null and filterMap.gradeCode!=''">
+                AND x.gradeCode like #{filterMap.gradeCode}
+            </if>
+
+            <if test="filterMap.lgcsAreaName!=null and filterMap.lgcsAreaName!=''">
+                AND x.lgcsAreaName like #{filterMap.lgcsAreaName}
+            </if>
+
+            <if test="filterMap.classesName!=null and filterMap.classesName!=''">
+                AND x.classesName like #{filterMap.classesName}
+            </if>
+            <if test="filterMap.machiningName!=null and filterMap.machiningName!=''">
+                AND x.machiningName like #{filterMap.machiningName}
+            </if>
+            <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+                AND x.breedName like #{filterMap.breedName}
+            </if>
+            <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+                AND x.featureName like #{filterMap.featureName}
+            </if>
+            <if test="filterMap.weightName!=null and filterMap.weightName!=''">
+                AND x.weightName like #{filterMap.weightName}
+            </if>
+            <if test="filterMap.gradeName!=null and filterMap.gradeName!=''">
+                AND x.gradeName like #{filterMap.gradeName}
+            </if>
+
+
+        </where>
+    </sql>
+
+
+    <sql id="whereCondition2">
+        <where>
+            <if test="filterMap.lgcsAreaCode!=null and filterMap.lgcsAreaCode!=''">
+                AND LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+            </if>
+
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND DEL_FLG  = #{filterMap.delFlg}
+            </if>
+        </where>
+    </sql>
+
+
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND a.CLASSES_CODE like #{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND b.MACHINING_CODE like #{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND c.BREED_CODE like #{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND d.FEATURE_CODE like #{filterMap.featureCode}
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                AND e.WEIGHT_CODE like #{filterMap.weightCode}
+            </if>
+
+            <if test="filterMap.gradeCode!=null and filterMap.gradeCode!=''">
+                AND f.GRADE_CODE like #{filterMap.gradeCode}
+            </if>
+            <if test="filterMap.gradeName!=null and filterMap.gradeName!=''">
+                AND f.GRADE_NAME like #{filterMap.gradeName}
+            </if>
+
+            <if test="filterMap.classesName!=null and filterMap.classesName!=''">
+                AND a.CLASSES_NAME like #{filterMap.classesName}
+            </if>
+            <if test="filterMap.machiningName!=null and filterMap.machiningName!=''">
+                AND b.MACHINING_NAME like #{filterMap.machiningName}
+            </if>
+            <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+                AND c.BREED_NAME like #{filterMap.breedName}
+            </if>
+            <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+                AND d.FEATURE_NAME like #{filterMap.featureName}
+            </if>
+            <if test="filterMap.weightName!=null and filterMap.weightName!=''">
+                AND e.WEIGHT_NAME like #{filterMap.weightName}
+            </if>
+
+
+        </where>
+    </sql>
+    <select id="getPageCount" parameterType="BaseParam" resultType="int">
+        SELECT count(1)
+        FROM
+        (SELECT
+        a.*, h.GRADE_CODE AS gradeCode,
+        h.GRADE_NAME AS gradeName
+        FROM
+        (
+        SELECT
+        a.CLASSES_CODE AS classesCode,
+        a.CLASSES_NAME AS classesName,
+        b.MACHINING_CODE AS machiningCode,
+        b.MACHINING_NAME AS machiningName,
+        c.BREED_CODE AS breedCode,
+        c.BREED_NAME AS breedName,
+        d.FEATURE_CODE AS featureCode,
+        d.FEATURE_NAME AS featureName,
+        e.WEIGHT_CODE AS weightCode,
+        e.WEIGHT_NAME AS weightName,
+        #{filterMap.lgcsAreaCode} AS lgcsAreaCode
+        FROM
+        pd_classes a
+        INNER JOIN pd_machining b ON b.CLASSES_CODE = a.CLASSES_CODE
+        INNER JOIN pd_breed c ON c.CLASSES_CODE = a.CLASSES_CODE
+        AND c.MACHINING_CODE = b.MACHINING_CODE
+        INNER JOIN pd_feature d ON d.CLASSES_CODE = a.CLASSES_CODE
+        AND d.MACHINING_CODE = b.MACHINING_CODE
+        AND d.BREED_CODE = c.BREED_CODE
+        INNER JOIN pd_weight e ON e.CLASSES_CODE = a.CLASSES_CODE
+        AND e.MACHINING_CODE = b.MACHINING_CODE
+        AND e.BREED_CODE = c.BREED_CODE
+        AND e.FEATURE_CODE = d.FEATURE_CODE
+        ORDER BY
+        a.CLASSES_CODE,
+        b.MACHINING_CODE,
+        c.BREED_CODE,
+        d.FEATURE_CODE,
+        e.WEIGHT_CODE
+
+        ) a,
+        pd_grade h) x LEFT JOIN pd_logiarea y ON y.CLASSES_CODE = x.classesCode
+        AND y.MACHINING_CODE = x.machiningCode
+        AND y.BREED_CODE = x.breedCode
+        AND y.FEATURE_CODE = x.featureCode
+        AND y.WEIGHT_CODE = x.weightCode
+        AND y.GRADE_CODE = x.gradeCode
+        AND y.LGCS_CODE = #{filterMap.lgcsAreaCode}
+
+        <include refid="whereCondition4"/>
+
+        ORDER BY
+        x.classesCode, x.machiningCode,x.breedCode,
+        x.featureCode,x.weightCode,x.gradeCode
+
+    </select>
+
+    <insert id="save" parameterType="BaseEntity">
+        INSERT INTO pd_logiarea(
+        LGCS_ID,
+        LGCS_CODE,
+        LGCS_NAME,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        BREED_CODE,
+        FEATURE_CODE,
+        WEIGHT_CODE,
+        GRADE_CODE,
+        PD_MARKET_CODE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        SELECT ifnull(max(LGCS_ID), 0) + 1
+        , #{lgcsAreaCode}
+        , #{classesCode}
+        , #{lgcsAreaName}
+        , #{machiningCode}
+        , #{breedCode}
+        , #{featureCode}
+        , #{weightCode}
+        , #{gradeCode}
+        , #{pdMarketCode}
+        , #{delFlg}
+        , #{crtId}
+        , #{crtTime}
+        , #{updId}
+        , #{updTime}
+        , #{actId}
+        , #{actTime}
+        , #{ver}
+        FROM pd_logiarea
+    </insert>
+    <delete id="remove" parameterType="BaseEntity" >
+        DELETE FROM pd_logiarea
+        WHERE LGCS_ID = #{lgcsId}
+    </delete>
+</mapper>

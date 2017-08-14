@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121209Logic">
+    <select id="findReceiveTime" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerRecTime">
+        SELECT
+           ID AS id,
+           BUYER_ID AS buyerId,
+           REC_PER_TYPE AS recPerType,
+           TIME_DESCRIBE AS timeDescribe
+        FROM
+           by_buyer_rec_time
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+           <if test="filterMap.recPerType != null">
+               AND REC_PER_TYPE = #{filterMap.recPerType}
+           </if>
+           <if test="filterMap.timeDescribe != null">
+               AND TIME_DESCRIBE = #{filterMap.timeDescribe}
+           </if>
+           AND DEL_FLG = #{filterMap.delFlg}
+    </select>
+    <update id="buyerReceiveTimeModify" parameterType="BaseEntity">
+        UPDATE
+           by_buyer_rec_time
+        SET
+           BUYER_ID = #{buyerId},
+           REC_PER_TYPE = #{recPerType},
+           TIME_DESCRIBE = #{timeDescribe},
+           DEL_FLG = 0
+          ,UPD_ID = #{updId}
+          ,UPD_TIME = #{updTime}
+        WHERE
+           ID = #{id}
+    </update>
+    <insert id="buyerReceiveTimeInsert" parameterType="BaseEntity">
+        INSERT INTO
+           by_buyer_rec_time(
+               ID,
+               BUYER_ID,
+               REC_PER_TYPE,
+               TIME_DESCRIBE,
+               DEL_FLG,
+               CRT_ID,
+               CRT_TIME,
+               UPD_ID,
+               UPD_TIME,
+               ACT_ID,
+               ACT_TIME,
+               VER
+           )VALUES (
+               #{id},
+               #{buyerId},
+               #{recPerType},
+               #{timeDescribe},
+               0,
+               #{crtId},
+               #{crtTime},
+               #{updId},
+               #{updTime},
+               #{actId},
+               #{actTime},
+               1
+           )
+    </insert>
+    <update id="buyerReceiveTimeDelete" parameterType="BaseEntity">
+        UPDATE by_buyer_rec_time
+        SET DEL_FLG = 1
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE BUYER_ID = #{buyerId}
+    </update>
+
+
+    <select id="findReceiveTimeList" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerRecTime">
+        SELECT
+        ID AS id,
+        BUYER_ID AS buyerId,
+        REC_PER_TYPE AS recPerType,
+        TIME_DESCRIBE AS timeDescribe
+        FROM
+        by_buyer_rec_time
+        WHERE
+        DEL_FLG =0
+        <if test="buyerIdList !=null and buyerIdList.size()>0">
+            AND BUYER_ID in
+            <foreach item="buyerId" index="index" collection="buyerIdList"
+                     open="(" separator="," close=")">
+                #{buyerId}
+            </foreach>
+        </if>
+        <if test="filterMap.recPerType != null">
+            AND REC_PER_TYPE = #{filterMap.recPerType}
+        </if>
+        <if test="filterMap.timeDescribe != null">
+            AND TIME_DESCRIBE = #{filterMap.timeDescribe}
+        </if>
+    </select>
+</mapper>

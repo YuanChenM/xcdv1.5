@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121222Logic">
+    <select id="getByResearchBrand" resultType="com.msk.buyers.bean.IBY121222RsParam" parameterType="BaseParam">
+        SELECT
+        a.PRODUCT_ID AS productId
+        ,b.CATEGORY_ID AS categoryId
+        ,b.BUYER_ID AS buyerId
+        , a.PRODUCT_SUF AS productSuf
+        , a.BRAND_NAME AS brandName
+        FROM by_research_brand a, By_Research_Category b
+        WHERE a.CATEGORY_ID = b.CATEGORY_ID
+        AND b.BUYER_ID = #{filterMap.buyerId}
+        AND b.CLASSES_CODE =#{filterMap.classesCode}
+        AND b.MACHINING_CODE = #{filterMap.machiningCode}
+        <if test="filterMap.breedCode != null and filterMap.breedCode != ''">
+            AND b.BREED_CODE = #{filterMap.breedCode}
+        </if>
+        <if test="filterMap.saleName != null and filterMap.saleName != ''">
+            AND b.SALE_NAME = #{filterMap.saleName}
+        </if>
+        AND a.DEL_FLG = 0
+    </select>
+
+    <select id="countByResearchCategory" parameterType="BaseParam" resultType="com.msk.core.entity.ByResearchCategory">
+        SELECT CATEGORY_ID AS categoryId
+        FROM by_research_category
+        WHERE BUYER_ID = #{filterMap.buyerId}
+        AND CLASSES_CODE = #{filterMap.classesCode}
+        AND MACHINING_CODE = #{filterMap.machiningCode}
+        <if test="filterMap.breedCode != null and filterMap.breedCode != ''">
+            AND BREED_CODE = #{filterMap.breedCode}
+        </if>
+        <if test="filterMap.saleName != null and filterMap.saleName != ''">
+            AND SALE_NAME = #{filterMap.saleName}
+        </if>
+    </select>
+
+    <insert id="save" parameterType="com.msk.buyers.bean.IBY121222RsParam">
+        INSERT INTO by_research_brand(
+        PRODUCT_ID,
+        CATEGORY_ID,
+        PRODUCT_SUF,
+        BRAND_NAME,
+        DEL_FLG,
+
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+
+        VER
+        )
+    VALUES (
+       #{productId},
+       #{categoryId},
+       #{productSuf},
+       #{brandName},
+       0,
+       , #{updId}
+        , #{updTime}
+        , #{updId}
+        , #{updTime}
+        , #{updId}
+        , #{updTime}
+
+       1
+         )
+    </insert>
+
+    <select id="getPdClassesMat" resultType="com.msk.core.entity.PdClassestreeMat" parameterType="BaseParam">
+        SELECT
+        MAT_ID AS matId
+        , SCIENTIFIC_NAME AS scientificName
+        , LOCAL_NAME AS localName
+        , SALES_NAME AS salesName
+        FROM pd_classestree_mat
+        WHERE  CLASSESTREE_CODE = #{filterMap.classesTreeCode}
+    </select>
+
+    <select id="getPdBreed" resultType="com.msk.core.entity.PdBreed" parameterType="BaseParam">
+        SELECT
+          BREED_CODE AS breedCode
+        , BREED_NAME AS breedName
+        FROM pd_breed
+        WHERE  CLASSES_CODE = #{filterMap.classesCode}
+        AND MACHINING_CODE = #{filterMap.machiningCode}
+        <if test="filterMap.breedCode != null and filterMap.breedCode != ''">
+            AND BREED_CODE = #{filterMap.breedCode}
+        </if>
+    </select>
+
+    <insert id="insertByResearchCategory" parameterType="com.msk.buyers.bean.IBY121222RsParam">
+        INSERT INTO By_Research_Category(
+        CATEGORY_ID,
+        BUYER_ID,
+        INPUT_NUM,
+        INPUT_NAME,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        BREED_CODE,
+        IS_STANDARD,
+        SALE_NAME,
+        SCIENTIFIC_NAME,
+        POPULAR_NAME,
+        DEL_FLG,
+
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+
+        VER
+        )VALUE (
+         #{categoryId}
+        , #{buyerId}
+        , 0
+        , ''
+        , #{classesCode}
+        , #{machiningCode}
+        , #{breedCode}
+        , #{isStandard}
+        , #{saleName}
+        , #{scientificName}
+        , #{popularName}
+        , #{delFlg}
+
+        , #{updId}
+        , #{updTime}
+        , #{updId}
+        , #{updTime}
+        , #{updId}
+        , #{updTime}
+
+        , #{ver}
+        )
+    </insert>
+
+    <update id="modify" parameterType="com.msk.buyers.bean.IBY121222RsParam">
+        UPDATE by_research_brand
+        SET DEL_FLG = #{delFlg}
+          ,UPD_ID = #{updId}
+          ,UPD_TIME = #{updTime}
+        WHERE PRODUCT_ID = #{productId}
+    </update>
+</mapper>

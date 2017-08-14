@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11322Logic">
+    <!-- ssc_verification_for_contract_detail表字段 -->
+    <sql id="verificationDetailFields">
+        A.VERIFICATION_DETAIL_ID AS verificationDetailId,
+        A.VERIFICATION_ID AS verificationId,
+        A.DELIVERY_ID AS deliveryId,
+        ifnull(A.DELIVERY_CODE, '') AS deliveryCode,
+        A.DIFFER_ID AS differId,
+        ifnull(A.DIFFER_CODE, '') AS differCode,
+        A.PAYMENT_REQUEST_ID AS paymentRequestId,
+        ifnull(A.PAYMENT_REQUEST_CODE, '') AS paymentRequestCode,
+        A.REF_ID AS refId,
+        ifnull(A.REF_CODE, '') AS refCode,
+        ifnull(A.SUBJECT_CODE, '') AS subjectCode,
+        ifnull(A.SUBJECT, '') AS subject,
+        A.DIFF_AMOUNT AS diffAmount,
+        A.FREIGHT_ACTUAL_PAID AS freightActualPaid
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="condition">
+        <if test="verificationId != null and verificationId != ''">
+            AND A.VERIFICATION_ID = #{verificationId}
+        </if>
+    </sql>
+
+    <select id="findPageList" parameterType="com.msk.ssc.bean.SSC11322Param" resultType="com.msk.ssc.bean.SSC11322Bean">
+        SELECT
+            <include refid="verificationDetailFields" />
+        FROM
+            ssc_verification_for_contract_detail AS A
+        WHERE
+            A.DEL_FLG = 0
+        <include refid="condition" />
+        <if test="paging == true">
+            LIMIT #{startPos}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" parameterType="com.msk.ssc.bean.SSC11322Param" resultType="int">
+        SELECT
+            count(1)
+        FROM
+            ssc_verification_for_contract_detail AS A
+        WHERE
+            A.DEL_FLG = 0
+        <include refid="condition" />
+    </select>
+
+    <!-- 根据合同ID，查询运费不按到岸价结算的发货订单 -->
+    <select id="findDeliveriesByContractId" parameterType="com.msk.ssc.bean.SSC11305RsParam" resultType="com.msk.ssc.bean.SSC11305RsBean">
+        SELECT
+            dob.DELIVERY_ID AS deliveryId,
+            dob.DELIVERY_CODE AS deliveryCode,
+            dob.TRANSPORT_COST AS transportCost,
+            sum(dod.PRODUCT_QUA) AS weights
+        FROM
+            ssc_delivery_order_basic AS dob
+        LEFT JOIN ssc_delivery_order_pd AS dod ON dob.DELIVERY_ID = dod.DELIVERY_ID
+        WHERE
+            dob.DEL_FLG = 0
+        AND dod.DEL_FLG = 0
+        AND dob.FREIGHT_SETTLE_METHOD IN ('2', '3', '4')
+        AND dob.DELIVERY_ID IN (
+            SELECT
+                db.DELIVERY_ID
+            FROM
+                ssc_differ_basic AS db
+            WHERE
+                db.DEL_FLG = 0
+            AND db.CONTRACT_ID = #{contractId}
+        )
+        GROUP BY dob.DELIVERY_ID
+        ORDER BY dob.DELIVERY_ID DESC
+    </select>
+
+    <!-- 根据发货订单ID，批量查询入库单 -->
+    <select id="findIntoStoresByDeliveryIds" parameterType="com.msk.ssc.bean.SSC11316Param" resultType="com.msk.ssc.bean.SSC11316Bean">
+        SELECT
+            pib.DELIVERY_PRE_INTO_ID AS deliveryPreIntoId,
+            pib.DELIVERY_PRE_INTO_CODE AS deliveryPreIntoCode,
+            pib.DELIVERY_ID AS deliveryId,
+            sum(pid.PRODUCT_RECV_WEIGHT) AS weights
+        FROM
+            ssc_delivery_pre_into AS pib
+        LEFT JOIN ssc_delivery_pre_pd AS pid ON pib.DELIVERY_PRE_INTO_ID = pid.DELIVERY_PRE_INTO_ID
+        WHERE
+            (pib.DEL_FLG = 0 OR pib.DEL_FLG IS NULL)
+        AND (pid.DEL_FLG = 0 OR pid.DEL_FLG IS NULL)
+        AND pib.DELIVERY_ID IN <foreach collection="deliveryIds" item="deliveryId" index="index" open="(" separator="," close=")">#{deliveryId}</foreach>
+        AND pib.PRODUCT_RECV_STATUS in (5, 6)
+        GROUP BY pib.DELIVERY_PRE_INTO_ID
+    </select>
+
+    <!-- 根据发货订单ID，批量查询产品的重量和干线运费 -->
+    <select id="findTrunkFreightByDeliveryIds" parameterType="com.msk.ssc.bean.SSC11306RsParam" resultType="com.msk.ssc.bean.SSC11306RsBean">
+        SELECT
+            pid.PRODUCT_RECV_WEIGHT AS weight,
+            pib.DELIVERY_ID AS deliveryId,
+            dob.TRANSPORT_UNIT AS transportUnit
+        FROM
+            ssc_delivery_pre_pd AS pid
+        LEFT JOIN ssc_delivery_pre_into AS pib ON pid.DELIVERY_PRE_INTO_ID = pib.DELIVERY_PRE_INTO_ID
+        LEFT JOIN ssc_delivery_order_basic AS dob ON pib.DELIVERY_ID = dob.DELIVERY_ID
+        WHERE
+            (pid.DEL_FLG = 0 OR pid.DEL_FLG IS NULL)
+        AND (pib.DEL_FLG = 0 OR pib.DEL_FLG IS NULL)
+        AND (dob.DEL_FLG = 0 OR dob.DEL_FLG IS NULL)
+        AND pib.DELIVERY_ID IN <foreach collection="deliveryIds" item="deliveryId" index="index" open="(" separator="," close=")">#{deliveryId}</foreach>
+        GROUP BY pid.DETAIL_ID
+    </select>
+
+    <!-- 根据发货订单ID，批量查询实际需要支付的运费 -->
+    <select id="findActualPaidByDeliveryIds" parameterType="com.msk.ssc.bean.SSC11322Param" resultType="com.msk.ssc.bean.SSC11322Bean">
+        SELECT
+            cvd.DELIVERY_ID AS deliveryId,
+            cvd.DIFF_AMOUNT AS diffAmount
+        FROM
+            ssc_verification_for_contract_detail AS cvd
+        WHERE
+            (cvd.DEL_FLG = 0 OR cvd.DEL_FLG IS NULL)
+        AND cvd.DELIVERY_ID IN <foreach collection="deliveryIds" item="deliveryId" index="index" open="(" separator="," close=")">#{deliveryId}</foreach>
+    </select>
+
+    <select id="findFirstPaidByDeliveryIds" parameterType="com.msk.ssc.bean.SSC11322Param" resultType="com.msk.ssc.bean.SSC11322Bean">
+        SELECT
+            A.DELIVERY_ID AS deliveryId,
+            A.PD_CODE AS productCode,
+            A.PRODUCT_VALUE AS productValue,
+            C.DOWN_PAYMENT AS firstPercent
+        FROM
+            ssc_delivery_order_pd A
+        LEFT JOIN ssc_delivery_order_basic B ON B.DEL_FLG = 0 AND B.DELIVERY_ID = A.DELIVERY_ID
+        LEFT JOIN ssc_contract_pr_detail C ON C.DEL_FLG = 0 AND C.CONTRACT_ID = B.CONTRACT_ID AND C.PD_CODE = A.PD_CODE
+        WHERE
+            A.DEL_FLG = 0
+        AND B.CONTRACT_RELATION_TYPE = 0
+        AND A.DELIVERY_ID IN <foreach collection="deliveryIds" item="deliveryId" index="index" open="(" separator="," close=")">#{deliveryId}</foreach>
+    </select>
+
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO ssc_verification_for_contract_detail
+            (VERIFICATION_DETAIL_ID, VERIFICATION_ID, DELIVERY_ID, DELIVERY_CODE, FREIGHT_ACTUAL_PAID, DEL_FLG, CRT_ID, CRT_TIME, ACT_ID, ACT_TIME, VER)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.verificationDetailId}, #{item.verificationId}, #{item.deliveryId}, #{item.deliveryCode}, #{item.freightActualPaid}, '0', #{item.crtId}, #{item.crtTime}, #{item.crtId}, #{item.crtTime}, 1)
+        </foreach>
+    </insert>
+
+    <update id="updateVerificationDetails" parameterType="com.msk.ssc.bean.SSC11322Bean">
+        <foreach collection="verificationDetails" item="item" index="index" separator=";">
+            UPDATE ssc_verification_for_contract_detail
+            SET FREIGHT_ACTUAL_PAID = #{item.freightActualPaid},
+                UPD_ID = #{item.updId},
+                UPD_TIME = #{item.updTime},
+                ver = ver + 1
+            WHERE
+                DEL_FLG = 0
+            AND VERIFICATION_DETAIL_ID = #{item.verificationDetailId}
+        </foreach>
+    </update>
+
+    <update id="deleteVerificationDetails" parameterType="com.msk.ssc.bean.SSC11322Bean">
+        <foreach collection="verificationDetails" item="item" index="index" separator=";">
+            UPDATE ssc_verification_for_contract_detail
+            SET DEL_FLG = 1,
+                UPD_ID = #{item.updId},
+                UPD_TIME = #{item.updTime},
+                VER = VER + 1
+            WHERE
+                DEL_FLG = 0
+            AND VERIFICATION_DETAIL_ID = #{item.verificationDetailId}
+        </foreach>
+    </update>
+
+    <select id="findVerificationIdByContractId" parameterType="BaseParam" resultType="long">
+        SELECT
+            VERIFICATION_ID
+        FROM
+            ssc_verification_for_contract
+        WHERE
+            DEL_FLG = 0
+        AND CONTRACT_ID = #{filterMap.contractId}
+    </select>
+</mapper>

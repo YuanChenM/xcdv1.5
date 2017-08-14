@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.br.logic.BBR121406Logic">
+    <select id="findOByHkRelationShip" parameterType="BaseParam" resultType="com.msk.batch.br.bean.BBR121406Bean">
+        SELECT
+            BUYER_ID AS buyerId,
+            '0' AS relationType,
+            byPool.JOIN_TIME AS joinTime,
+            NULL AS leaveTime
+        FROM
+            br_buyer_pool_relationship byPool
+        WHERE
+            NOT EXISTS (
+                SELECT
+                    byPool.BUYER_ID
+                FROM
+                    br_o_hk_buyer_relationship oByHkRs
+                WHERE
+                    byPool.BUYER_ID = oByHkRs.BUYER_ID
+                    AND oByHkRs.DEL_FLG = '0'
+                    AND byPool.DEL_FLG = '0'
+                )
+        GROUP BY
+          buyerId
+
+        UNION ALL
+
+        SELECT
+            BUYER_ID AS buyerId,
+            BIND_STATUS AS relationType,
+            START_TIME AS joinTime,
+            END_TIME AS leaveTime
+        FROM
+            br_o_hk_buyer_relationship
+        WHERE
+            DEL_FLG = '0'
+    </select>
+    <update id="modifyBuyerPoolType" parameterType="com.msk.batch.br.bean.BBR121406Bean">
+        UPDATE
+            br_buyer_pool_relationship
+        SET
+            BUYER_POOL_TYPE = #{relationType},
+            JOIN_TIME = #{joinTime},
+            LEAVE_TIME = #{leaveTime},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime}
+        WHERE
+            BUYER_ID = #{buyerId}
+        AND DEL_FLG = '0'
+    </update>
+    <select id="findByHkRelationShip" parameterType="BaseParam" resultType="com.msk.batch.br.bean.BBR121406Bean">
+        SELECT
+          ID AS byHkRsId,
+          HOUSE_CODE AS houseCode,
+          SL_CODE AS slCode,
+          BUYER_ID AS buyerId,
+          '0' AS relationType,
+          NULL AS rsStartTime,
+          NULL AS rsEndTime
+        FROM
+            br_buyer_hk_relationship byHkRs
+        WHERE
+            NOT EXISTS (
+                SELECT
+                    byHkRs.ID
+                FROM
+                    br_o_hk_buyer_relationship oByHkRs
+                WHERE
+                    byHkRs.BUYER_ID = oByHkRs.BUYER_ID
+                AND byHkRs.SL_CODE = oByHkRs.SL_CODE
+                AND byHkRs.HOUSE_CODE = oByHkRs.HOUSE_CODE
+                AND oByHkRs.DEL_FLG = '0'
+                AND byHkRs.DEL_FLG = '0'
+            )
+
+        UNION ALL
+
+        SELECT
+          NULL AS byHkRsId,
+          HOUSE_CODE AS houseCode,
+          SL_CODE AS slCode,
+          BUYER_ID AS buyerId,
+          BIND_STATUS AS relationType,
+          START_TIME AS rsStartTime,
+          END_TIME AS rsEndTime
+        FROM
+          br_o_hk_buyer_relationship
+        WHERE
+          DEL_FLG = '0'
+    </select>
+    <select id="countByHkRelationShip" parameterType="com.msk.batch.br.bean.BBR121406Bean" resultType="int">
+        SELECT
+          COUNT(1)
+        FROM
+          br_buyer_hk_relationship
+        WHERE
+          HOUSE_CODE = #{houseCode}
+        <if test="byHkRsId != null and byHkRsId != ''">
+            AND ID = #{byHkRsId}
+        </if>
+          AND SL_CODE = #{slCode}
+          AND BUYER_ID = #{buyerId}
+          AND DEL_FLG = '0'
+    </select>
+    <update id="modifyByHkRelationShip" parameterType="com.msk.batch.br.bean.BBR121406Bean">
+        UPDATE
+          br_buyer_hk_relationship
+        SET
+          RELATION_TYPE = #{relationType},
+          START_TIME = #{rsStartTime},
+          END_TIME = #{rsEndTime},
+          UPD_ID = #{updId},
+          UPD_TIME = #{updTime}
+        WHERE
+        HOUSE_CODE = #{houseCode}
+        <if test="byHkRsId != null and byHkRsId != ''">
+            AND ID = #{byHkRsId}
+        </if>
+        AND SL_CODE = #{slCode}
+        AND BUYER_ID = #{buyerId}
+        AND DEL_FLG = '0'
+    </update>
+    <insert id="saveByHkRelationShip" parameterType="com.msk.batch.br.bean.BBR121406Bean">
+        INSERT INTO
+          br_buyer_hk_relationship(
+            ID,
+            HOUSE_CODE,
+            SL_CODE,
+            BUYER_ID,
+            RELATION_TYPE,
+            START_TIME,
+            END_TIME,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+          )VALUES (
+            #{byHkRsId},
+            #{houseCode},
+            #{slCode},
+            #{buyerId},
+            #{relationType},
+            #{rsStartTime},
+            #{rsEndTime},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+          )
+    </insert>
+</mapper>

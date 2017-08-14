@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24110107Logic">
+    <update id="updateAgentPdBrand" parameterType="com.msk.seller.bean.SL2411030073Bean">
+        UPDATE SL_PD_BRAND
+        SET
+        BRAND_CLASS =#{brandClass},
+        TERM_BEGIN=#{termBegin},
+        TERM_END=#{termEnd},
+        UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+        WHERE SL_CODE=#{slCode} AND BRAND_EP_ID=#{brandEpId} AND BRAND_ID=#{brandId}
+    </update>
+    <select id="findSlPdBrandList" parameterType="BaseParam" resultType="com.msk.core.entity.SlPdBrand">
+        SELECT
+        SL_CODE AS slCode,
+        BRAND_EP_ID AS brandEpId,
+        BRAND_ID AS brandId
+        FROM SL_PD_BRAND
+        WHERE BRAND_EP_ID=#{filterMap.epId}
+             AND  BRAND_ID=#{filterMap.brandId}
+             AND  DEL_FLG = 0
+    </select>
+   <update id="modifyBrand" parameterType="com.msk.seller.bean.SL2411030033Bean">
+        UPDATE sl_ep_brand SET
+        BRAND_CLASS =#{brandClass},
+        BRAND_NAME=#{brandName},
+        BRAND_TERM_BEGIN=#{brandTermBegin},
+        BRAND_TERM_END=#{brandTermEnd},
+        UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+        WHERE
+        EP_ID=#{epId} AND BRAND_ID=#{brandId}
+    </update>
+
+    <update id="modifyHonor" parameterType="com.msk.seller.bean.SL2411030033Bean">
+        UPDATE sl_ep_brand_honor SET
+        HONOR_NO=#{honorNo},
+        CERT_DATE=#{certDate},
+        CERT_ISSUER=#{certIssuer},
+        HONOR_DES=#{honorDes},
+        UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+        WHERE
+        EP_ID=#{epId} AND BRAND_ID=#{brandId} AND HONOR_ID=#{honorId}
+    </update>
+    <update id="updatePdBrand" parameterType="com.msk.seller.bean.SL2411030033Bean">
+        UPDATE SL_PD_BRAND SET
+        BRAND_NAME =#{brandName},
+        BRAND_CLASS=#{brandClass},
+        TERM_BEGIN=#{brandTermBegin},
+        TERM_END =#{brandTermEnd},
+        UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+        WHERE SL_CODE=#{slCode} AND BRAND_EP_ID=#{epId} AND BRAND_ID=#{brandId}
+    </update>
+    <delete id="deleteAgentPdBrand" parameterType="com.msk.seller.bean.SL2411030073Bean">
+        DELETE FROM sl_pd_brand WHERE
+        BRAND_EP_ID=#{brandEpId} AND BRAND_ID=#{brandId} AND  SL_CODE=#{slCode}
+    </delete>
+    <delete id="deletePdBrand" parameterType="com.msk.seller.bean.SL2411030033Bean">
+        DELETE FROM sl_pd_brand WHERE
+        BRAND_EP_ID=#{epId} AND BRAND_ID=#{brandId}
+    </delete>
+    <delete id="deleteBrand" parameterType="com.msk.seller.bean.SL2411030033Bean">
+        DELETE FROM sl_ep_brand WHERE
+        EP_ID=#{epId} AND BRAND_ID=#{brandId}
+    </delete>
+    <delete id="deleteHonor" parameterType="com.msk.seller.bean.SL2411030033Bean">
+        DELETE FROM sl_ep_brand_honor WHERE EP_ID=#{epId} AND BRAND_ID=#{brandId}
+    </delete>
+</mapper>

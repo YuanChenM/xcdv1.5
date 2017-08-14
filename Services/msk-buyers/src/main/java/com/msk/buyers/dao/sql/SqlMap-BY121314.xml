@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121314Logic">
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.buyers.bean.IBY121314RsBean">
+        SELECT
+           BUYER_ID AS buyerId,
+           HABIT_REC_TIME AS habitRecTime,
+           EARLIEST_REC_TIME AS earliestRecTime,
+           LATEST_REC_TIME AS latestRecTime,
+           PAYMENT_TYPE AS paymentType
+        FROM
+           by_buyer_basic_info
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+           AND DEL_FLG = 0
+    </select>
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.buyers.bean.IBY121314RsBean">
+        SELECT
+        BUYER_ID AS buyerId,
+        REC_PER_TYPE AS recPerType,
+        TIME_DESCRIBE AS timeDescribe
+        FROM
+        by_buyer_rec_time
+        WHERE
+        BUYER_ID = #{filterMap.buyerId}
+        AND DEL_FLG = 0
+    </select>
+    <select id="findPageList" resultType="com.msk.core.entity.ByBuyerDelivery" parameterType="BasePageParam">
+        SELECT
+        ID AS id,
+        IFNULL(BUYER_ID,'') AS buyerId,
+        IFNULL(PROVINCE_CODE,'') AS provinceCode,
+        IFNULL(PROVINCE_NAME,'') AS provinceName,
+        IFNULL(CITY_CODE,'') AS cityCode,
+        IFNULL(CITY_NAME,'') AS cityName,
+        IFNULL(DISTRICT_CODE,'') AS districtCode,
+        IFNULL(DISTRICT_NAME,'') AS districtName,
+        IFNULL(DELIVERY_ADDR,'') AS deliveryAddr,
+        IFNULL(REFERENCE_ADDR,'') AS referenceAddr,
+        IFNULL(MANAGE_ADDR,'') AS manageAddr,
+        IFNULL(REC_PER_NAME,'') AS recPerName,
+        IFNULL(REC_PER_TEL,'') AS recPerTel,
+        IFNULL(REC_PER_WECHAT,'') AS recPerWechat,
+        IFNULL(REC_PER_QQ,'') AS recPerQq,
+        IFNULL(IS_DEFAULT,'') AS isDefault,
+        IFNULL(SH_OD_DELIVERY_AREA,'') AS shOdDeliveryArea
+        FROM
+        by_buyer_delivery
+        WHERE
+        BUYER_ID = #{filterMap.buyerId}
+        <if test="filterMap.id != null and filterMap.id !=''">
+            AND ID = #{filterMap.id}
+        </if>
+        <if test="filterMap.deliveryAddr != null and filterMap.deliveryAddr != ''">
+            AND DELIVERY_ADDR LIKE #{filterMap.deliveryAddr}
+        </if>
+        <if test="filterMap.referenceAddr != null and filterMap.referenceAddr != ''">
+            AND REFERENCE_ADDR LIKE #{filterMap.referenceAddr}
+        </if>
+        <if test="filterMap.manageAddr != null and filterMap.manageAddr != ''">
+            AND MANAGE_ADDR LIKE #{filterMap.manageAddr}
+        </if>
+        <if test="filterMap.recPerName != null and filterMap.recPerName != ''">
+            AND REC_PER_NAME LIKE #{filterMap.recPerName}
+        </if>
+        <if test="filterMap.recPerTel != null and filterMap.recPerTel != ''">
+            AND REC_PER_TEL LIKE #{filterMap.recPerTel}
+        </if>
+        <if test="filterMap.recPerWechat != null and filterMap.recPerWechat != ''">
+            AND REC_PER_WECHAT LIKE #{filterMap.recPerWechat}
+        </if>
+        <if test="filterMap.recPerQq != null and filterMap.recPerQq != ''">
+            AND REC_PER_QQ LIKE #{filterMap.recPerQq}
+        </if>
+        AND DEL_FLG = 0
+        ORDER BY IS_DEFAULT DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        select count(1)
+        FROM
+        by_buyer_delivery
+        WHERE
+        BUYER_ID = #{filterMap.buyerId}
+        <if test="filterMap.id!=null and filterMap.id!=''">
+            AND ID = #{filterMap.id}
+        </if>
+        <if test="filterMap.deliveryAddr != null and filterMap.deliveryAddr != ''">
+            AND DELIVERY_ADDR LIKE #{filterMap.deliveryAddr}
+        </if>
+        <if test="filterMap.referenceAddr != null and filterMap.referenceAddr != ''">
+            AND REFERENCE_ADDR LIKE #{filterMap.referenceAddr}
+        </if>
+        <if test="filterMap.manageAddr != null and filterMap.manageAddr != ''">
+            AND MANAGE_ADDR LIKE #{filterMap.manageAddr}
+        </if>
+        <if test="filterMap.recPerName != null and filterMap.recPerName != ''">
+            AND REC_PER_NAME LIKE #{filterMap.recPerName}
+        </if>
+        <if test="filterMap.recPerTel != null and filterMap.recPerTel != ''">
+            AND REC_PER_TEL LIKE #{filterMap.recPerTel}
+        </if>
+        <if test="filterMap.recPerWechat != null and filterMap.recPerWechat != ''">
+            AND REC_PER_WECHAT LIKE #{filterMap.recPerWechat}
+        </if>
+        <if test="filterMap.recPerQq != null and filterMap.recPerQq != ''">
+            AND REC_PER_QQ LIKE #{filterMap.recPerQq}
+        </if>
+        AND DEL_FLG = 0
+        ORDER BY IS_DEFAULT DESC
+    </select>
+    <update id="modify" parameterType="com.msk.buyers.bean.IBY121314RsBean">
+        UPDATE
+           by_buyer_basic_info
+        SET
+           HABIT_REC_TIME = #{habitRecTime},
+           EARLIEST_REC_TIME = #{earliestRecTime},
+           LATEST_REC_TIME = #{latestRecTime},
+           PAYMENT_TYPE = #{paymentType}
+           ,UPD_ID = #{updId}
+           ,UPD_TIME = #{updTime}
+        WHERE
+           BUYER_ID = #{buyerId}
+           AND DEL_FLG = 0
+    </update>
+</mapper>

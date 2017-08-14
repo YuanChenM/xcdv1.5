@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11324Logic">
+    <!--根据发发票申请编号查询详细信息-->
+    <select id="InvoiceRequestDetail" resultType="com.msk.ssc.bean.SSC11324Bean"
+            parameterType="com.msk.ssc.bean.SSC11324Param">
+        SELECT
+          CONTRACT_CODE AS contractCode,
+          CONTRACT_ID AS contractId,
+          CONTRACT_NAME AS contractName,
+          DATE_FORMAT(CONTRACT_ACT_DATE,'%Y-%m-%d') AS contractActDateStr,
+          CONTRACT_AMOUNT AS contractAmount,
+          PURCHASER_NAME AS purchaserName,
+          SUPPLIER_NAME AS supplierName,
+          INVOICE_REQUEST_CODE AS invoiceRequestCode,
+          RECEIVING AS receiving,
+          PAYER AS payer,
+          INVOICE_AMOUNT AS invoiceAmount,
+          INVOICE_TYPE AS invoiceType,
+          REMARK AS remark,
+          DATE_FORMAT(REQUEST_TIME,'%Y-%m-%d') AS requestTimeStr,
+          CONTRACT_ID AS contractId,
+          SUPPLIER_ID AS supplierId,
+          SUPPLIER_CODE AS supplierCode,
+          PURCHASER_ID AS purchaserId,
+          PURCHASER_CODE AS purchaserCode,
+          REQUESTER AS requester,
+          INVOICE_REQUEST_ID AS invoiceRequestId,
+          DATE_FORMAT(INVOICE_DATE,'%Y-%m-%d') AS invoiceDateStr,
+          INVOICE_REQUEST_DESC AS invoiceRequestDesc,
+          DATE_FORMAT(RECEIVE_DATE,'%Y-%m-%d') AS receiveDateStr,
+          RECEIVER AS receiver,
+          STATUS AS status,
+          UPLOAD_FILE_NAME AS uploadFileName,
+          REPLACE(UPLOAD_FILE_ID,',','/') AS uploadFileId,
+          BUYER_TAXPAYER_CODE AS buyerTaxpayerCode,
+          RECEIVER_TAXPAYER_CODE AS receiverTaxpayerCode,
+          BUYER_ADDR AS buyerAddr,
+          SELLER_ADDR AS sellerAddr,
+          BUYER_TEL AS buyerTel,
+          SELLER_TEL AS sellerTel,
+          BUYER_BANK AS buyerBank,
+          SELLER_BANK AS sellerBank,
+          BUYER_ACCOUNT AS buyerAccount,
+          SELLER_ACCOUNT AS sellerAccount,
+          APPROVAL_PERSON AS approvalPerson,
+          APPROVAL_DATE AS approvalDate,
+          AUDITING_PERSON AS auditingPerson,
+          AUDITING_DATE AS auditingDate,
+          APPROVAL_REMARK AS approvalRemark,
+          AUDITING_REMARK AS auditingRemark,
+          VER AS ver
+        FROM SSC_INVOICE_REQUEST
+        WHERE 1=1
+        <if test="invoiceRequestId!=null and invoiceRequestId!=''">
+            AND INVOICE_REQUEST_ID = #{invoiceRequestId}
+        </if>
+        <if test="invoiceRequestCode!=null and invoiceRequestCode!=''">
+            AND INVOICE_REQUEST_CODE = #{invoiceRequestCode}
+        </if>
+        <if test="contractName!=null and contractName!=''">
+            AND CONTRACT_NAME = #{contractName}
+        </if>
+        <if test="invoiceAmount!=null and invoiceAmount!=''">
+            AND INVOICE_AMOUNT = #{invoiceAmount}
+        </if>
+        <if test="contractCode!=null and contractCode!=''">
+            AND CONTRACT_CODE = #{contractCode}
+        </if>
+        <if test="contractId!=null and contractId!=''">
+            AND CONTRACT_ID = #{contractId}
+        </if>
+    </select>
+
+    <select id="ContractFindInvoiceRequestDetail" resultType="com.msk.ssc.bean.SSC11324Bean"
+            parameterType="com.msk.ssc.bean.SSC11324Param">
+        SELECT
+        CONTRACT_CODE AS contractCode,
+        CONTRACT_NAME AS contractName,
+        DATE_FORMAT(CONTRACT_ACT_DATE,'%Y-%m-%d') AS contractActDateStr,
+        CONTRACT_AMOUNT AS contractAmount,
+        PURCHASER_NAME AS purchaserName,
+        SUPPLIER_NAME AS supplierName,
+        CONTRACT_ID AS contractId,
+        SUPPLIER_ID AS supplierId,
+        SUPPLIER_CODE AS supplierCode,
+        PURCHASER_ID AS purchaserId,
+        PURCHASER_CODE AS purchaserCode
+        FROM SSC_CONTRACT_BASIC
+        WHERE 1=1
+        <if test="contractCode!=null and contractCode!=''">
+            AND CONTRACT_CODE = #{contractCode}
+        </if>
+        <if test="contractName!=null and contractName!=''">
+            AND CONTRACT_NAME = #{contractName}
+        </if>
+        <if test="contractStatusArr !=null and contractStatusArr.length > 0">
+            AND CONTRACT_STATUS NOT IN
+            <foreach item="contractStatus" index="index" collection="contractStatusArr"
+                     open="(" separator="," close=")">
+                #{contractStatus}
+            </foreach>
+        </if>
+        AND DEL_FLG = 0
+    </select>
+
+    <select id="getMaxInvoiceRequestCode" resultType="com.msk.ssc.bean.SSC11324Bean"
+            parameterType="com.msk.ssc.bean.SSC11324Param">
+        select
+        MAX(SUBSTRING(INVOICE_REQUEST_CODE,3)) AS invoiceRequestCode
+        from SSC_INVOICE_REQUEST
+        where INVOICE_REQUEST_CODE like '%${invoiceRequestCode}%'
+    </select>
+
+    <select id="checkInvoiceRequest" resultType="int" parameterType="com.msk.ssc.bean.SSC11324Param">
+        select count(1)
+        FROM  SSC_INVOICE_REQUEST AS A
+        WHERE  A.CONTRACT_CODE = #{contractCode}
+        AND    A.DEL_FLG = 0
+    </select>
+
+    <insert id="insertInvoiceRequestDetail" parameterType="com.msk.ssc.bean.SSC11324Param">
+        INSERT INTO SSC_INVOICE_REQUEST (
+        INVOICE_REQUEST_ID,
+          CONTRACT_CODE,
+          CONTRACT_NAME,
+          CONTRACT_ACT_DATE,
+          CONTRACT_AMOUNT,
+          PURCHASER_NAME,
+          SUPPLIER_NAME,
+          INVOICE_REQUEST_CODE,
+          RECEIVING,
+          PAYER,
+          INVOICE_AMOUNT,
+          INVOICE_TYPE,
+          REMARK,
+          REQUEST_TIME,
+          CONTRACT_ID,
+          SUPPLIER_ID,
+          SUPPLIER_CODE,
+          PURCHASER_ID,
+          PURCHASER_CODE,
+          REQUESTER,
+          INVOICE_DATE,
+          INVOICE_REQUEST_DESC,
+          STATUS,
+          BUYER_TAXPAYER_CODE,
+          RECEIVER_TAXPAYER_CODE,
+          BUYER_ADDR,
+          SELLER_ADDR,
+          BUYER_TEL,
+          SELLER_TEL,
+          BUYER_BANK,
+          SELLER_BANK,
+          BUYER_ACCOUNT,
+          SELLER_ACCOUNT,
+          DEL_FLG,
+          CRT_ID,
+          CRT_TIME,
+          ACT_ID,
+          ACT_TIME,
+          UPD_ID,
+          UPD_TIME,
+          VER
+        )
+        VALUES
+        (
+        #{invoiceRequestId},
+        #{contractCode},
+        #{contractName},
+        #{contractActDate},
+        #{contractAmount},
+        #{purchaserName},
+        #{supplierName},
+        #{invoiceRequestCode},
+        #{receiving},
+        #{payer},
+        #{invoiceAmount},
+        #{invoiceType},
+        #{remark},
+        #{requestTime},
+        #{contractId},
+        #{supplierId},
+        #{supplierCode},
+        #{purchaserId},
+        #{purchaserCode},
+        #{requester},
+        #{invoiceDate},
+        #{invoiceRequestDesc},
+        #{status},
+        #{buyerTaxpayerCode},
+        #{receiverTaxpayerCode},
+        #{buyerAddr},
+        #{sellerAddr},
+        #{buyerTel},
+        #{sellerTel},
+        #{buyerBank},
+        #{sellerBank},
+        #{buyerAccount},
+        #{sellerAccount},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{actId},
+        #{actTime},
+        #{updId},
+        #{updTime},
+        1
+        )
+    </insert>
+
+    <select id="findInvoiceRequestCode" parameterType="BaseEntity" resultType="String">
+        select  b.INVOICE_REQUEST_CODE  from SSC_INVOICE_REQUEST  b   where b.INVOICE_REQUEST_ID=(select MAX(c.INVOICE_REQUEST_ID) from SSC_INVOICE_REQUEST)
+    </select>
+
+    <update id="modifyInvoiceRequestUp" parameterType="com.msk.ssc.bean.SSC11324Param">
+        UPDATE
+        SSC_INVOICE_REQUEST
+        SET
+        <if test="receiving != null and receiving !=''">
+            RECEIVING = #{receiving},
+        </if>
+
+        <if test="payer != null and payer !=''">
+            PAYER = #{payer},
+        </if>
+        <if test="invoiceAmount !=null and invoiceAmount!=''">
+            INVOICE_AMOUNT = #{invoiceAmount},
+        </if>
+        <if test="invoiceType != null and invoiceType !=''">
+            INVOICE_TYPE = #{invoiceType},
+        </if>
+        <if test="invoiceRequestDesc != null and invoiceRequestDesc !=''">
+            INVOICE_REQUEST_DESC = #{invoiceRequestDesc},
+        </if>
+        <if test="requester != null and requester !=''">
+            REQUESTER = #{requester},
+        </if>
+        <if test="remark != null and remark !=''">
+            REMARK = #{remark},
+        </if>
+        <if test="requestTime != null and requestTime !=''">
+            REQUEST_TIME = #{requestTime},
+        </if>
+        <if test="status != null and status !=''">
+           STATUS= #{status},
+        </if>
+        <if test="receiver != null and receiver !=''">
+            RECEIVER = #{receiver},
+        </if>
+        <if test="receiveDate != null and receiveDate !=''">
+            RECEIVE_DATE= #{receiveDate},
+        </if>
+        <if test="buyerTaxpayerCode != null and buyerTaxpayerCode !=''">
+            BUYER_TAXPAYER_CODE= #{buyerTaxpayerCode},
+        </if>
+        <if test="receiverTaxpayerCode != null and receiverTaxpayerCode !=''">
+            RECEIVER_TAXPAYER_CODE= #{receiverTaxpayerCode},
+        </if>
+        <if test="buyerAddr != null and buyerAddr !=''">
+            BUYER_ADDR= #{buyerAddr},
+        </if>
+        <if test="sellerAddr != null and sellerAddr !=''">
+            SELLER_ADDR= #{sellerAddr},
+        </if>
+        <if test="buyerTel != null and buyerTel !=''">
+            BUYER_TEL= #{buyerTel},
+        </if>
+        <if test="sellerTel != null and sellerTel !=''">
+            SELLER_TEL= #{sellerTel},
+        </if>
+        <if test="buyerBank != null and buyerBank !=''">
+            BUYER_BANK= #{buyerBank},
+        </if>
+        <if test="sellerBank != null and sellerBank !=''">
+            SELLER_BANK= #{sellerBank},
+        </if>
+        <if test="buyerAccount != null and buyerAccount !=''">
+            BUYER_ACCOUNT= #{buyerAccount},
+        </if>
+        <if test="sellerAccount != null and sellerAccount !=''">
+            SELLER_ACCOUNT= #{sellerAccount},
+        </if>
+        <if test="approvalPerson != null and approvalPerson !=''">
+            APPROVAL_PERSON= #{approvalPerson},
+        </if>
+        <if test="approvalDate != null and approvalDate !=''">
+            APPROVAL_DATE= #{approvalDate},
+        </if>
+        <if test="auditingPerson != null and auditingPerson !=''">
+            AUDITING_PERSON= #{auditingPerson},
+        </if>
+        <if test="auditingDate != null and auditingDate !=''">
+            AUDITING_DATE= #{auditingDate},
+        </if>
+        <if test="approvalRemark != null and approvalRemark !=''">
+            APPROVAL_REMARK = #{approvalRemark},
+        </if>
+        <if test="auditingRemark != null and auditingRemark !=''">
+            AUDITING_REMARK = #{auditingRemark},
+        </if>
+        <if test="approvalId != null and approvalId !=''" >
+            APPROVAL_ID = #{approvalId},
+        </if>
+        <if test="auditingId != null and auditingId !=''">
+            AUDITING_ID = #{auditingId},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME =#{updTime},
+        VER = VER + 1
+        WHERE
+        INVOICE_REQUEST_CODE=#{invoiceRequestCode}
+        <if test="contractId != null and contractId !=''">
+        AND CONTRACT_ID=#{contractId}
+        </if>
+        AND   CONTRACT_CODE=#{contractCode}
+        AND DEL_FLG = 0
+    </update>
+
+    <update id="saveInvoiceRequestFile" parameterType="com.msk.ssc.bean.SSC11324Param">
+        UPDATE SSC_INVOICE_REQUEST A
+        SET
+        <if test="uploadFileId!=null and uploadFileId!=''">
+            A.UPLOAD_FILE_ID=#{uploadFileId},
+        </if>
+        <if test="uploadFileName!=null and uploadFileName!=''">
+            A.UPLOAD_FILE_NAME=#{uploadFileName},
+        </if>
+        <if test="status!=null and status!=''">
+            A.STATUS=#{status},
+        </if>
+        <if test="receiver!=null and receiver!=''">
+            A.RECEIVER=#{receiver},
+        </if>
+        <if test="receiveDate!=null and receiveDate!=''">
+            A.RECEIVE_DATE=#{receiveDate},
+        </if>
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime},
+        VER=VER+1
+        WHERE A.DEL_FLG = 0
+        AND A.INVOICE_REQUEST_CODE = #{invoiceRequestCode}
+    </update>
+
+    <select id="findContractList" resultType="com.msk.ssc.bean.SSC11324Bean" parameterType="com.msk.ssc.bean.SSC11324Param">
+        SELECT
+        A.CONTRACT_AMOUNT AS contractAmount,
+        A.INVOICE_AMOUNT AS invoiceAmount,
+        A.INVOICE_REQUEST_Id AS invoiceRequestId
+        FROM
+        ssc_invoice_request A
+        WHERE
+        A.DEL_FLG = 0
+        AND A.CONTRACT_CODE = #{contractCode}
+    </select>
+
+    <select id="findInvoiceList" resultType="com.msk.ssc.bean.SSC11324Bean" parameterType="com.msk.ssc.bean.SSC11324Param">
+        SELECT
+        A.CONTRACT_CODE AS contractCode,
+        A.INVOICE_REQUEST_CODE AS invoiceRequestCode,
+        A.CONTRACT_AMOUNT AS contractAmount,
+        A.INVOICE_AMOUNT AS invoiceAmount
+        FROM
+        ssc_invoice_request A
+        WHERE
+        A.DEL_FLG = 0
+        AND A.CONTRACT_CODE = #{contractCode}
+        AND A.STATUS=#{status}
+    </select>
+
+    <select id="findNoInvoiceList" resultType="com.msk.ssc.bean.SSC11324Bean" parameterType="com.msk.ssc.bean.SSC11324Param">
+        SELECT
+        A.CONTRACT_CODE AS contractCode,
+        A.INVOICE_REQUEST_CODE AS invoiceRequestCode,
+        A.CONTRACT_AMOUNT AS contractAmount,
+        A.INVOICE_AMOUNT AS invoiceAmount
+        FROM
+        ssc_invoice_request A
+        WHERE
+        A.DEL_FLG = 0
+        AND A.CONTRACT_CODE = #{contractCode}
+        <if test="contractId!=null and contractId!=''">
+            AND  A.CONTRACT_ID=#{contractId}
+        </if>
+        AND A.STATUS!=#{status}
+    </select>
+
+    <select id="InvoiceFindChooseContract" resultType="com.msk.ssc.bean.SSC11324Bean" parameterType="com.msk.ssc.bean.SSC11324Param">
+        SELECT
+        A.CONTRACT_CODE AS contractCode,
+        A.CONTRACT_NAME AS contractName
+        FROM
+        ssc_contract_basic A
+        WHERE
+        A.DEL_FLG = 0
+        AND A.CONTRACT_CODE is NOT null AND A.CONTRACT_CODE != ''
+        <if test="contractId!=null and contractId!=''">
+            AND  A.CONTRACT_ID = #{contractId}
+        </if>
+        <if test="contractStatusArr !=null and contractStatusArr.length > 0">
+            AND A.CONTRACT_STATUS NOT IN
+            <foreach item="contractStatus" index="index" collection="contractStatusArr"
+                     open="(" separator="," close=")">
+                #{contractStatus}
+            </foreach>
+        </if>
+        ORDER BY CRT_TIME DESC
+    </select>
+
+    <select id="findPayAmountList" resultType="com.msk.ssc.bean.SSC11324Bean" parameterType="com.msk.ssc.bean.SSC11324Param">
+        SELECT
+        A.PAID_AMOUNT AS amount,
+        A.PAYMENT_TYPE AS paymentType,
+        A.VERIFICATION_AMOUNT AS verificationAmount
+        FROM
+        SSC_PAYMENT_REQUEST A
+        WHERE
+        A.CONTRACT_ID=#{contractId}
+        AND
+        A.DEL_FLG = 0
+    </select>
+
+</mapper>

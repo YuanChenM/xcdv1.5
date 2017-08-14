@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ds.logic.ISC182207RsLogic">
+    <insert id="saveStock" parameterType="com.msk.core.entity.DsDeliveryStock">
+        INSERT INTO ds_delivery_stock
+        (
+        <if test="deliveryStockId!=null">
+            DELIVERY_STOCK_ID,
+        </if>
+        <if test="distMonth!=null">
+            DIST_MONTH,
+        </if>
+        <if test="lgcsCode!=null">
+            LGCS_CODE,
+        </if>
+        <if test="suppCode!=null">
+            SUPP_CODE,
+        </if>
+        <if test="halfCode!=null">
+            HALF_CODE,
+        </if>
+        <if test="deliveryStockStatus!=null">
+            DELIVERY_STOCK_STATUS,
+        </if>
+        <if test="deliveryReceiveStockTime!=null">
+            DELIVERY_RECEIVE_STOCK_TIME,
+        </if>
+        <if test="deliveryWarehouseAddr!=null">
+            DELIVERY_WAREHOUSE_ADDR,
+        </if>
+        <if test="deliveryResponName!=null">
+            DELIVERY_RESPON_NAME,
+        </if>
+        <if test="deliveryResponTel!=null">
+            DELIVERY_RESPON_TEL,
+        </if>
+        <if test="deliveryExecuteName!=null">
+            DELIVERY_EXECUTE_NAME,
+        </if>
+        <if test="deliveryExecuteTel!=null">
+            DELIVERY_EXECUTE_TEL,
+        </if>
+        <if test="transportUnitName!=null">
+            TRANSPORT_UNIT_NAME,
+        </if>
+        <if test="transportUnitResponName!=null">
+            TRANSPORT_UNIT_RESPON_NAME,
+        </if>
+        <if test="transportUnitResponTel!=null">
+            TRANSPORT_UNIT_RESPON_TEL,
+        </if>
+        <if test="transportUnitExecuteName!=null">
+            TRANSPORT_UNIT_EXECUTE_NAME,
+        </if>
+        <if test="transportUnitExecuteTel!=null">
+            TRANSPORT_UNIT_EXECUTE_TEL,
+        </if>
+        <if test="deliveryMemo!=null">
+            DELIVERY_MEMO,
+        </if>
+        <if test="stockMemo!=null">
+            STOCK_MEMO,
+        </if>
+        <if test="deliveryStockTimeReq!=null">
+            DELIVERY_STOCK_TIME_REQ,
+        </if>
+        <if test="stockAddr!=null">
+            STOCK_ADDR,
+        </if>
+        <if test="stockResponName!=null">
+            STOCK_RESPON_NAME,
+        </if>
+        <if test="stockResponTel!=null">
+            STOCK_RESPON_TEL,
+        </if>
+        <if test="stockExecuteName!=null">
+            STOCK_EXECUTE_NAME,
+        </if>
+        <if test="stockExecuteTel!=null">
+            STOCK_EXECUTE_TEL,
+        </if>
+        <if test="sourceFlg!=null">
+            SOURCE_FLG,
+        </if>
+        <if test="sscDeliveryStockId!=null">
+            SSC_DELIVERY_STOCK_ID,
+        </if>
+        <if test="pdProduceerId!=null">
+            PD_PRODUCEER_ID,
+        </if>
+        <if test="pdProduceerName!=null">
+            PD_PRODUCEER_NAME,
+        </if>
+        <if test="crtId!=null">
+            CRT_ID,
+        </if>
+        <if test="updId!=null">
+            UPD_ID,
+        </if>
+        DEL_FLG,
+        CRT_TIME,
+        UPD_TIME,
+        VER
+        )
+        VALUES
+        (
+        <if test="deliveryStockId!=null">
+            #{deliveryStockId},
+        </if>
+        <if test="distMonth!=null">
+            #{distMonth},
+        </if>
+        <if test="lgcsCode!=null">
+            #{lgcsCode},
+        </if>
+        <if test="suppCode!=null">
+            #{suppCode},
+        </if>
+        <if test="halfCode!=null">
+            #{halfCode},
+        </if>
+        <if test="deliveryStockStatus!=null">
+            #{deliveryStockStatus},
+        </if>
+        <if test="deliveryReceiveStockTime!=null">
+            #{deliveryReceiveStockTime},
+        </if>
+        <if test="deliveryWarehouseAddr!=null">
+            #{deliveryWarehouseAddr},
+        </if>
+        <if test="deliveryResponName!=null">
+            #{deliveryResponName},
+        </if>
+        <if test="deliveryResponTel!=null">
+            #{deliveryResponTel},
+        </if>
+        <if test="deliveryExecuteName!=null">
+            #{deliveryExecuteName},
+        </if>
+        <if test="deliveryExecuteTel!=null">
+            #{deliveryExecuteTel},
+        </if>
+        <if test="transportUnitName!=null">
+            #{transportUnitName},
+        </if>
+        <if test="transportUnitResponName!=null">
+            #{transportUnitResponName},
+        </if>
+        <if test="transportUnitResponTel!=null">
+            #{transportUnitResponTel},
+        </if>
+        <if test="transportUnitExecuteName!=null">
+            #{transportUnitExecuteName},
+        </if>
+        <if test="transportUnitExecuteTel!=null">
+            #{transportUnitExecuteTel},
+        </if>
+        <if test="deliveryMemo!=null">
+            #{deliveryMemo},
+        </if>
+        <if test="stockMemo!=null">
+            #{stockMemo},
+        </if>
+        <if test="deliveryStockTimeReq!=null">
+            #{deliveryStockTimeReq},
+        </if>
+        <if test="stockAddr!=null">
+            #{stockAddr},
+        </if>
+        <if test="stockResponName!=null">
+            #{stockResponName},
+        </if>
+        <if test="stockResponTel!=null">
+            #{stockResponTel},
+        </if>
+        <if test="stockExecuteName!=null">
+            #{stockExecuteName},
+        </if>
+        <if test="stockExecuteTel!=null">
+            #{stockExecuteTel},
+        </if>
+        <if test="sourceFlg!=null">
+            #{sourceFlg},
+        </if>
+        <if test="sscDeliveryStockId!=null">
+            #{sscDeliveryStockId},
+        </if>
+        <if test="pdProduceerId!=null">
+            #{pdProduceerId},
+        </if>
+        <if test="pdProduceerName!=null">
+            #{pdProduceerName},
+        </if>
+        <if test="crtId!=null">
+            #{crtId},
+        </if>
+        <if test="updId!=null">
+            #{updId},
+        </if>
+        0,
+        #{crtTime},
+        #{updTime},
+        1
+        )
+    </insert>
+
+    <insert id="saveStockDetail" parameterType="com.msk.core.entity.DsDeliveryStockDetail">
+        INSERT INTO ds_delivery_stock_detail
+        (
+        <if test="deliveryStockId!=null">
+            DELIVERY_STOCK_ID,
+        </if>
+        <if test="pdCode!=null">
+            PD_CODE,
+        </if>
+        <if test="normsCode!=null">
+            NORMS_CODE,
+        </if>
+        <if test="applyDeliveryNum!=null">
+            APPLY_DELIVERY_NUM,
+        </if>
+        <if test="confirmDeliveryNum!=null">
+            CONFIRM_DELIVERY_NUM,
+        </if>
+        <if test="planDeliveryNum!=null">
+            PLAN_DELIVERY_NUM,
+        </if>
+        <if test="actualDeliveryNum!=null">
+            ACTUAL_DELIVERY_NUM,
+        </if>
+        <if test="sourceFlg!=null">
+            SOURCE_FLG,
+        </if>
+        <if test="sscDeliveryStockId!=null">
+            SSC_DELIVERY_STOCK_ID,
+        </if>
+        <if test="sku!=null">
+            SKU,
+        </if>
+        <if test="pdOutNw != null">
+            PD_OUT_NW,
+        </if>
+        <if test="crtId!=null">
+            CRT_ID,
+        </if>
+        <if test="updId!=null">
+            UPD_ID,
+        </if>
+        ACTUAL_RECEIVE_NUM,
+        DEL_FLG,
+        CRT_TIME,
+        UPD_TIME,
+        VER
+        )
+        VALUES
+        (
+        <if test="deliveryStockId!=null">
+            #{deliveryStockId},
+        </if>
+        <if test="pdCode!=null">
+            #{pdCode},
+        </if>
+        <if test="normsCode!=null">
+            #{normsCode},
+        </if>
+        <if test="applyDeliveryNum!=null">
+            #{applyDeliveryNum},
+        </if>
+        <if test="confirmDeliveryNum!=null">
+            #{confirmDeliveryNum},
+        </if>
+        <if test="planDeliveryNum!=null">
+            #{planDeliveryNum},
+        </if>
+        <if test="actualDeliveryNum!=null">
+            #{actualDeliveryNum},
+        </if>
+        <if test="sourceFlg!=null">
+            #{sourceFlg},
+        </if>
+        <if test="sscDeliveryStockId!=null">
+            #{sscDeliveryStockId},
+        </if>
+        <if test="sku!=null">
+            #{sku},
+        </if>
+        <if test="pdOutNw != null">
+            #{pdOutNw},
+        </if>
+        <if test="crtId!=null">
+            #{crtId},
+        </if>
+        <if test="updId!=null">
+            #{updId},
+        </if>
+        0,
+        0,
+        #{crtTime},
+        #{updTime},
+        1
+        )
+    </insert>
+</mapper>

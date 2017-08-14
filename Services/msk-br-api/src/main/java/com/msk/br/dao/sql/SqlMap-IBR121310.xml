@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121310Logic">
+
+
+
+    <select id="findExistenceCount" resultType="int" parameterType="com.msk.br.bean.IBR121310RsParam">
+    SELECT count(1)
+    FROM br_buyer_pool_relationship
+    WHERE
+      BUYER_ID = #{buyerId}
+      AND BUYER_POOL_ID = #{buyerPoolId}
+      AND POOL_BUYER_CODE = #{poolBuyerCode}
+      AND DEL_FLG = '1'
+    </select>
+
+
+    <select id="modifyDelFlgFlase" parameterType="com.msk.br.bean.IBR121310RsParam">
+        UPDATE br_buyer_pool_relationship
+
+        SET DEL_FLG = '1',
+            LEAVE_TIME = #{leaveTime},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime}
+        WHERE
+            BUYER_ID = #{buyerId}
+    </select>
+
+    <select id="modifyDelFlgTrue" parameterType="com.msk.br.bean.IBR121310RsParam">
+        UPDATE br_buyer_pool_relationship
+        SET DEL_FLG = '0'
+
+           ,UPD_ID = #{updId}
+           ,UPD_TIME = #{updTime}
+        WHERE
+        BUYER_ID = #{buyerId}
+        AND BUYER_POOL_ID = #{buyerPoolId}
+        AND POOL_BUYER_CODE = #{poolBuyerCode}
+        AND DEL_FLG = '1'
+    </select>
+
+    <select id="findBuyerPoolId" resultType="com.msk.br.bean.IBR121310Bean"
+            parameterType="com.msk.br.bean.IBR121310RsParam">
+        SELECT
+        	IFNULL(BUYER_POOL_ID,'') AS buyerPoolId
+        FROM
+        	br_buyer_pool
+        WHERE
+            LGCS_AREA_CODE = #{lgcsAreaCode}
+            AND CITY_CODE = #{cityCode}
+            AND CLASSES_CODE = #{classCode}
+            AND MACHINING_CODE_U = #{machiningCodeU}
+            AND BUYER_TYPE = #{superiorType}
+            AND DEL_FLG = '0'
+        </select>
+
+
+    <insert id="save" parameterType="com.msk.br.bean.IBR121310RsParam">
+        INSERT INTO br_buyer_pool_relationship(
+        ID,
+        BUYER_ID,
+        BUYER_POOL_ID,
+        POOL_BUYER_CODE,
+        BUYER_POOL_TYPE,
+        IS_DISTRIBUTION,
+        JOIN_TIME,
+        LEAVE_TIME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES(
+            #{id},
+            #{buyerId},
+            #{buyerPoolId},
+            #{poolBuyerCode},
+            0,
+            0,
+            #{joinTime},
+            #{leaveTime},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+        )
+    </insert>
+
+</mapper>

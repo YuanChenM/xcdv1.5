@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231205RsLogic">
+    <select id="getSlOneClass" parameterType="BaseParam" resultType="com.msk.seller.bean.SlProductBean">
+        SELECT DISTINCT A.SL_CODE AS slCode,
+        A.PD_CLASSES_CODE AS pdClassesCode,
+        A.MACHINING_CODE AS machiningCode,
+        A.PD_BREED_CODE AS pdBreedCode,
+        A.PD_FEATURE_CODE AS pdFeatureCode,
+        A.WEIGHT_CODE as weightCode
+        FROM sl_product AS A
+        <where>
+            A.DEL_FLG = 0
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND A.SL_CODE=#{filterMap.slCode}
+            </if>
+            <if test="filterMap.pdClassesCode!=null and filterMap.pdClassesCode!=''">
+                AND A.PD_CLASSES_CODE=#{filterMap.pdClassesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.pdBreedCode!=null and filterMap.pdBreedCode!=''">
+                AND A.PD_BREED_CODE=#{filterMap.pdBreedCode}
+            </if>
+            <if test="filterMap.pdFeatureCode!=null and filterMap.pdFeatureCode!=''">
+               AND A.PD_FEATURE_CODE=#{filterMap.pdFeatureCode}
+            </if>
+        </where>
+    </select>
+
+</mapper>

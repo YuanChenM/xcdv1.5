@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241117Logic">
+
+    <select id="getTncStdInfo" resultType="com.msk.seller.bean.SL241117Bean" parameterType="BaseParam">
+		SELECT
+		IFNULL(STD_VAL, '') AS stdVal,
+		IFNULL(AGREE_FLG, '') AS agreeFlg,
+		SL_CODE AS slCode,
+		SL_PD_ID AS slPdId
+		FROM sl_pd_mct_std_new
+		WHERE
+		SL_CODE=#{filterMap.slCode}
+		AND SL_PD_ID=#{filterMap.slPdId}
+		AND DEL_FLG = 0
+	</select>
+
+
+    <insert id="save" parameterType="com.msk.core.entity.SlPdTncStdNew">
+		INSERT INTO sl_pd_tnc_std_new (
+			SL_CODE,
+			SL_PD_ID,
+			STANDARD_ID,
+			STD_ITEM_ID,
+			AGREE_FLG,
+			STD_VAL,
+			DEL_FLG,
+			CRT_ID,
+			CRT_TIME,
+		    UPD_ID,
+			UPD_TIME,
+			ACT_ID,
+			ACT_TIME,
+			VER
+		)
+		VALUES
+		(
+			#{slCode},
+			#{slPdId},
+			#{standardId},
+			#{stdItemId},
+			#{agreeFlg},
+			#{stdVal},
+			0,
+			#{crtId},
+			#{crtTime},
+			#{crtId},
+			#{crtTime},
+			#{crtId},
+			#{crtTime},
+			1
+		)
+	</insert>
+    <delete id="remove" parameterType="com.msk.core.entity.SlPdTncStdNew">
+		delete from sl_pd_tnc_std_new
+		WHERE
+		SL_PD_ID = #{slPdId}
+	</delete>
+    <update id="modify" parameterType="com.msk.core.entity.SlPdTncStdNew">
+		UPDATE sl_pd_tnc_std_new SET
+			AGREE_FLG=#{agreeFlg},
+			STD_VAL=#{stdVal},
+			UPD_ID=#{updId},
+			UPD_TIME=#{updTime},
+			VER=VER+1
+		WHERE
+			 SL_CODE = #{slCode} AND
+			 SL_PD_ID = #{slPdId} AND
+			 STANDARD_ID = #{standardId} AND
+			 STD_ITEM_ID = #{stdItemId}
+	</update>
+
+    <select id="getMctCount" resultType="com.msk.seller.bean.SlPdStdAgreeFlgBean" parameterType="BaseParam">
+		SELECT
+			A.AGREE_FLG AS agreeFlg,COUNT(1) AS flgCount
+		FROM
+			sl_pd_mct_std_new AS A
+		WHERE
+			A.SL_PD_ID = #{filterMap.slPdId}
+		AND A.SL_CODE = #{filterMap.slCode}
+		AND  A.DEL_FLG = 0
+		GROUP BY A.AGREE_FLG
+	</select>
+    <select id="getTncCount" resultType="com.msk.seller.bean.SlPdStdAgreeFlgBean" parameterType="BaseParam">
+		SELECT
+		A.AGREE_FLG AS agreeFlg,COUNT(1) AS flgCount
+		FROM
+		sl_pd_tnc_std_new AS A
+		WHERE
+		A.SL_PD_ID = #{filterMap.slPdId}
+		AND A.SL_CODE = #{filterMap.slCode}
+		AND A.DEL_FLG = 0
+		GROUP BY A.AGREE_FLG
+	</select>
+    <select id="getStdCount" resultType="Integer" parameterType="BaseParam">
+		SELECT
+			Count(1)
+		FROM
+			sl_pd_tnc_std_other AS A
+		WHERE
+			A.SL_PD_ID = #{filterMap.slPdId}
+		AND A.SL_CODE = #{filterMap.slCode}
+		AND A.STD_FLAG = #{filterMap.stdFlg}
+		AND  A.DEL_FLG = 0
+	</select>
+
+
+    <update id="modifySlProduct" parameterType="com.msk.core.entity.SlProduct">
+		UPDATE sl_product SET
+		SL_TNC_GRADE_CODE=#{slTncGradeCode},
+		UPD_TIME=#{updTime},
+		UPD_ID=#{updId},
+		VER = VER + 1
+		WHERE
+		SL_CODE = #{slCode} AND
+		SL_PD_ID=#{slPdId}
+	</update>
+
+    <!-- 根据主键查找判断数据库数据是否存在 -->
+    <select id="findTncStdCount" resultType="int" parameterType="com.msk.core.entity.SlPdTncStdNew">
+        SELECT
+        COUNT(1)
+        FROM
+        sl_pd_tnc_std_new AS A
+        WHERE
+        A.SL_PD_ID = #{slPdId}
+        AND A.SL_CODE = #{slCode}
+        <if test="standardId!=null and standardId!=''">
+            AND A.STANDARD_ID = #{standardId}
+        </if>
+        <if test="stdItemId!=null and stdItemId!=''">
+            AND A.STD_ITEM_ID = #{stdItemId}
+        </if>
+        <if test="agreeFlg!=null and agreeFlg!=''">
+            AND A.AGREE_FLG = #{agreeFlg}
+        </if>
+		AND  A.DEL_FLG = 0
+    </select>
+
+    <!-- 校验是否存在 -->
+    <select id="findMctStdCount" resultType="int" parameterType="com.msk.core.entity.SlProduct">
+		<![CDATA[
+
+         SELECT
+			count(1)
+		FROM
+			sl_pd_mct_std_new AS A
+		WHERE
+			A.SL_PD_ID = #{slPdId}
+		AND A.SL_CODE = #{slCode}
+		AND A.AGREE_FLG <> '0'
+        AND  A.DEL_FLG = 0
+        ]]>
+	</select>
+
+    <!-- 校验其他标准是否存在 -->
+    <select id="otherStdCount" resultType="Integer" parameterType="BaseParam">
+        SELECT
+        Count(1)
+        FROM
+        sl_pd_tnc_std_other AS A
+        WHERE
+        A.SL_PD_ID = #{filterMap.slPdId}
+        AND A.SL_CODE = #{filterMap.slCode}
+		AND  A.DEL_FLG = 0
+		<if test="filterMap.setFlgs!=null">
+			AND A.STD_FLAG IN
+			<foreach collection="filterMap.setFlgs" item="setFlgs" open="(" separator="," close=")">
+				#{setFlgs}
+			</foreach>
+		</if>
+    </select>
+
+	<!-- 数据信息补全 -->
+	<select id="completeTncDate" resultType="com.msk.seller.bean.SL241117Bean" parameterType="BaseParam">
+		SELECT
+			STANDARD_ID AS standardId,
+			STD_ITEM_ID AS stdItemId,
+			AGREE_FLG AS agreeFlg,
+			STD_VAL AS stdVal
+		FROM
+		sl_pd_tnc_std_new
+		WHERE
+		SL_PD_ID = #{slPdId}
+		AND SL_CODE = #{slCode}
+		AND DEL_FLG = 0
+		<if test="tncList != null and tncList.size() > 0">
+			AND
+			<foreach collection="tncList" index="index" item="item" open="(" separator="OR" close=")">
+				STANDARD_ID = #{item.standardId} AND STD_ITEM_ID = #{item.tncStdItemId}
+			</foreach>
+		</if>
+	</select>
+</mapper>

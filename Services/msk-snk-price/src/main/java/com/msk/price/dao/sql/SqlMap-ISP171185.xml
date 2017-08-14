@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.ISP171185Logic">
+    <select id="findList" resultType="com.msk.price.bean.ISP171185Bean"
+            parameterType="com.msk.price.bean.ISP171185Param">
+        SELECT
+        swp.LGCS_CODE AS logiAreaCode,
+        swp.PD_CODE AS pdCode,
+        swd.WAYGRADE_CODE AS orderLevel,
+
+        <!--Add for 产品价盘信息添加4级订单 at 2016/09/07 by ni_shaotang Start -->
+        swd.SELL_WAY_CODE AS sellWayCode,
+        <!--Add for 产品价盘信息添加4级订单 at 2016/09/07 by ni_shaotang End -->
+        swd.WAYGRADE_START AS startQty,
+        swd.WAYGRADE_END AS endQty,
+        spp.PRICE_PERIOD AS priceCycle,
+        spp.WAYGRADE_PRICE AS pdKgPrice,
+        spp.WAYGRADE_PRICE_BOX AS pdBoxPrice
+        FROM
+        sp_waygrade_pd swp
+        LEFT JOIN sp_wayg_detail swd ON swd.WAY_CODE = swp.WAY_CODE
+        <!--Modif 产品价盘过滤删除的数据 at 2016/09/23 by ni_shaotang Start-->
+        LEFT JOIN sp_seller_pd_priceplate spp ON spp.PD_CODE = swp.PD_CODE AND spp.DEL_FLG  = 0
+        <!--Modif 产品价盘过滤删除的数据 at 2016/09/23 by ni_shaotang End-->
+        AND spp.WAYGRADE_CODE = swd.WAYGRADE_CODE
+        WHERE
+        swp.DEL_FLG = 0
+        AND spp.PRICE_PERIOD = (
+        SELECT MAX(a.pricePeriod)
+        FROM (
+        SELECT PRICE_PERIOD AS pricePeriod
+        FROM sp_seller_pd_priceplate
+        WHERE DEL_FLG = 0
+        <if test="pricePeriod != null and pricePeriod !=''">
+            AND PRICE_PERIOD = #{pricePeriod}
+        </if>
+        GROUP BY PD_CODE,LGCS_CODE,PRICE_PERIOD
+        ) a)
+        <if test="productList!=null and productList.size()!=0">
+            AND
+            <foreach collection="productList" index="index" item="item" open="(" separator="OR" close=")">
+                (
+                <if test="item.logiAreaCode!=null and item.logiAreaCode!=''">
+                    swp.LGCS_CODE = #{item.logiAreaCode} AND
+                </if>
+                swp.PD_CODE = #{item.pdCode})
+            </foreach>
+        </if>
+    </select>
+</mapper>

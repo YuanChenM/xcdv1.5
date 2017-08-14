@@ -1,0 +1,425 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11308Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        PAYMENT_REQUEST_ID AS paymentRequestId,
+        PAYMENT_REQUEST_CODE AS paymentRequestCode,
+        PAYMENT_REQUEST_NAME AS paymentRequestName,
+        DELIVERY_ID      AS deliveryId,
+        DELIVERY_CODE    AS deliveryCode,
+        CONTRACT_ID      AS contractId,
+        CONTRACT_CODE    AS contractCode,
+        DELIVERY_BATCH   AS deliveryBatch,
+        SUPPLIER_ID      AS supplierId,
+        SUPPLIER_NAME    AS supplierName,
+        SUPPLIER_CODE    AS supplierCode,
+        SUPPLIER_BANK    AS supplierBank,
+        SUPPLIER_ACCOUNT AS supplierAccount,
+        PURCHASER_ID     AS purchaserId,
+        PURCHASER_NAME   AS purchaserName,
+        PURCHASER_CODE   AS purchaserCode,
+        PAYMENT_TYPE     AS paymentType,
+        PAYMENT_TERM     AS paymentTerm,
+        PAYMENT_METHOD  AS paymentMethod,
+        ACCOUNTING_DATE  AS accountingDate,
+        IFNULL(DATE_FORMAT(ACCOUNTING_DATE, '%Y-%m-%d'),'') AS accountingDateStr,
+        PAYMENT_DEADLINE AS paymentDeadline,
+        AMOUNT           AS amount,
+        REMARK            AS remark,
+        PAYED_STATUS     AS payedStatus,
+        APPROVAL_FLAG    AS approvalFlag,
+        APPROVAL_REMARK  AS approvalRemark,
+        APPROVAL_PERSON  AS approvalPerson,
+        APPROVAL_DATE    AS approvalDate,
+        AUDITING_FLAG    AS auditingFlag,
+        AUDITING_REMARK  AS auditingRemark,
+        AUDITING_PERSON  AS auditingPerson,
+        AUDITING_DATE   AS  auditingDate,
+        AUDITING_STATUS  AS auditingStatus,
+        APPLICANT        AS applicant,
+        VERIFICATION_ID AS verificationId,
+        VERIFICATION_CODE AS verificationCode,
+        CONTRACT_TOTAL_AMOUNT AS contractTotalAmount,
+        CONTRACT_FIRST_AMOUNT AS contractFirstAmount,
+        DELIVER_TOTAL_AMOUNT AS deliverTotalAmount,
+        TRANSPORT_AMOUNT AS transportAmount,
+        PACKAGE_AMOUNT   AS packageAmount,
+        IFNULL(PAID_AMOUNT,0) AS paidAmount,
+        VERIFICATION_AMOUNT AS verificationAmount,
+        PAID_DOWN_PAYMENT_PERCENTAGE AS  paidDownPaymentPercentage,
+        DEL_FLG          AS delFlg,
+        CRT_ID           AS crtId,
+        CRT_TIME         AS crtTime,
+        UPD_ID           AS updId,
+        UPD_TIME         AS updTime,
+        ACT_ID           AS actId,
+        ACT_TIME         AS actTime,
+        VER              AS ver
+  </sql>
+
+    <!--根据主键查询-->
+    <select id="findPaymentByPaymentRequestId" resultType="com.msk.ssc.bean.SSC11308RsBean"
+            parameterType="com.msk.ssc.bean.SSC11308RsParam">
+        SELECT
+        <include refid="selectSql"/>
+        FROM SSC_PAYMENT_REQUEST WHERE PAYMENT_REQUEST_ID = #{paymentRequestId} AND DEL_FLG=0
+    </select>
+
+
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11308RsBean"
+            parameterType="com.msk.ssc.bean.SSC11308RsParam">
+        SELECT
+        <include refid="selectSql"/>
+        FROM SSC_PAYMENT_REQUEST
+        <include refid="whereCondition"/>
+        ORDER BY CRT_TIME DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        FROM SSC_PAYMENT_REQUEST
+        <include refid="whereCondition"/>
+    </select>
+
+    <sql id="whereCondition">
+        <where>
+            1=1
+            <if test="paymentRequestId!=null and paymentRequestId!=''">
+                AND PAYMENT_REQUEST_ID = #{paymentRequestId}
+            </if>
+            <if test="deliveryId!=null and deliveryId!=''">
+                AND DELIVERY_ID = #{deliveryId}
+            </if>
+            <if test="contractId!=null and contractId!=''">
+                AND CONTRACT_ID = #{contractId}
+            </if>
+            <if test="verificationId != null and verificationId != ''">
+                AND VERIFICATION_ID = #{verificationId}
+            </if>
+            <if test="paymentType != null">
+                AND PAYMENT_TYPE = #{paymentType}
+            </if>
+            <if test="deliveryIds != null and deliveryIds.size() > 0">
+                AND DELIVERY_ID IN
+                <foreach collection="deliveryIds" item="deliveryId" index="index" open="(" separator="," close=")">
+                    #{deliveryId}
+                </foreach>
+            </if>
+            <if test="contractIds != null and contractIds.size() >0">
+                AND CONTRACT_ID IN
+                <foreach collection="contractIds" item="contractId" index="index" open="(" separator="," close=")">
+                    #{contractId}
+                </foreach>
+            </if>
+
+            <if test="verificationIds != null and verificationIds.size() >0">
+                AND VERIFICATION_ID IN
+                <foreach collection="verificationIds" item="verificationId" index="index" open="(" separator="," close=")">
+                    #{verificationId}
+                </foreach>
+            </if>
+
+            <choose>
+                <when test="delFlg != null">
+                    AND DEL_FLG = #{delFlg}
+                </when>
+                <otherwise>
+                    AND DEL_FLG = 0
+                </otherwise>
+            </choose>
+        </where>
+    </sql>
+
+    <!--新增-->
+    <insert id="save" parameterType="com.msk.ssc.bean.SSC11308RsBean">
+        INSERT  INTO  SSC_PAYMENT_REQUEST(
+        PAYMENT_REQUEST_ID,
+        PAYMENT_REQUEST_CODE,
+        DELIVERY_ID,
+        DELIVERY_CODE,
+        CONTRACT_ID,
+        CONTRACT_CODE,
+        DELIVERY_BATCH,
+        SUPPLIER_ID,
+        SUPPLIER_NAME,
+        SUPPLIER_CODE,
+        SUPPLIER_BANK,
+        SUPPLIER_ACCOUNT,
+        PURCHASER_ID,
+        PURCHASER_NAME,
+        PURCHASER_CODE,
+        PAYMENT_TYPE,
+        PAYMENT_TERM,
+        PAYMENT_METHOD,
+        ACCOUNTING_DATE,
+        PAYMENT_DEADLINE,
+        AMOUNT,
+        REMARK,
+        PAYMENT_REQUEST_NAME,
+        PAYED_STATUS,
+        APPROVAL_FLAG,
+        APPROVAL_REMARK,
+        APPROVAL_PERSON,
+        APPROVAL_DATE,
+        AUDITING_FLAG,
+        AUDITING_REMARK,
+        AUDITING_PERSON,
+        AUDITING_DATE,
+        AUDITING_STATUS,
+        APPLICANT,
+        VERIFICATION_ID,
+        VERIFICATION_CODE,
+        CONTRACT_ToTAL_AMOUNT,
+        CONTRACT_FIRST_AMOUNT,
+        DELIVER_TOTAL_AMOUNT,
+        TRANSPORT_AMOUNT,
+        PACKAGE_AMOUNT,
+        PAID_AMOUNT,
+        VERIFICATION_AMOUNT,
+        PAID_DOWN_PAYMENT_PERCENTAGE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES (
+        #{paymentRequestId},
+        #{paymentRequestCode},
+        #{deliveryId},
+        #{deliveryCode},
+        #{contractId},
+        #{contractCode},
+        #{deliveryBatch},
+        #{supplierId},
+        #{supplierName},
+        #{supplierCode},
+        #{supplierBank},
+        #{supplierAccount},
+        #{purchaserId},
+        #{purchaserName},
+        #{purchaserCode},
+        #{paymentType},
+        #{paymentTerm},
+        #{paymentMethod},
+        #{accountingDate},
+        #{paymentDeadline},
+        #{amount},
+        #{remark},
+        #{paymentRequestName},
+        #{payedStatus},
+        #{approvalFlag},
+        #{approvalRemark},
+        #{approvalPerson},
+        #{approvalDate},
+        #{auditingFlag},
+        #{auditingRemark},
+        #{auditingPerson},
+        #{auditingDate},
+        #{auditingStatus},
+        #{applicant},
+        #{verificationId},
+        #{verificationCode},
+        #{contractTotalAmount},
+        #{contractFirstAmount},
+        #{deliverTotalAmount},
+        #{transportAmount},
+        #{packageAmount},
+        #{paidAmount},
+        #{verificationAmount},
+        #{paidDownPaymentPercentage},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+
+    <!--修改-->
+    <update id="modify"  parameterType="com.msk.ssc.bean.SSC11308RsBean">
+        UPDATE
+        SSC_PAYMENT_REQUEST
+        SET
+        <if test="paymentRequestCode != null and  paymentRequestCode!=''">
+            PAYMENT_REQUEST_CODE =#{paymentRequestCode},
+        </if>
+        <if test="deliveryId != null and  deliveryId!=''">
+            DELIVERY_ID=#{deliveryId},
+        </if>
+        <if test="deliveryCode != null and  deliveryCode!=''">
+            DELIVERY_CODE =#{deliveryCode},
+        </if>
+        <if test="contractId != null and  contractId!=''">
+            CONTRACT_ID =#{contractId},
+        </if>
+        <if test="contractCode != null and  contractCode!=''">
+            CONTRACT_CODE =#{contractCode},
+        </if>
+        <if test="deliveryBatch != null and deliveryBatch !=''">
+            DELIVERY_BATCH =#{deliveryBatch},
+        </if>
+        <if test="supplierId != null and  supplierId!=''">
+            SUPPLIER_ID =#{supplierId},
+        </if>
+        <if test="supplierName != null and supplierName !=''">
+            SUPPLIER_NAME=#{supplierName},
+        </if>
+        <if test="supplierCode != null and supplierCode !=''">
+            SUPPLIER_CODE=#{supplierCode},
+        </if>
+        <if test="supplierBank != null and supplierBank !=''">
+            SUPPLIER_BANK=#{supplierBank},
+        </if>
+        <if test="supplierAccount != null and supplierAccount !=''">
+            SUPPLIER_ACCOUNT=#{supplierAccount},
+        </if>
+        <if test="purchaserId != null and purchaserId !=''">
+            PURCHASER_ID=#{purchaserId},
+        </if>
+        <if test="purchaserName != null and  purchaserName !=''">
+            PURCHASER_NAME=#{purchaserName},
+        </if>
+        <if test="purchaserCode != null and  purchaserCode!=''">
+            PURCHASER_CODE=#{purchaserCode},
+        </if>
+        <if test="paymentType != null and paymentType !=''">
+            PAYMENT_TYPE=#{paymentType},
+        </if>
+        <if test="paymentTerm != null and paymentTerm !=''">
+            PAYMENT_TERM =#{paymentTerm},
+        </if>
+        <if test="paymentMethod != null">
+            PAYMENT_METHOD=#{paymentMethod},
+        </if>
+        <if test="accountingDate != null and accountingDate !=''">
+            ACCOUNTING_DATE=#{accountingDate},
+        </if>
+        <if test="paymentDeadline != null and  paymentDeadline!=''">
+            PAYMENT_DEADLINE =#{paymentDeadline},
+        </if>
+        <if test="amount != null and  amount!=''">
+            AMOUNT=#{amount},
+        </if>
+        <if test="remark != null">
+            REMARK=#{remark},
+        </if>
+        <if test="delFlg != null and delFlg !=''">
+            DEL_FLG=#{delFlg},
+        </if>
+        <if test="paymentRequestName!= null and  paymentRequestName!=''">
+            PAYMENT_REQUEST_NAME =#{paymentRequestName},
+        </if>
+        <if test="payedStatus != null and  payedStatus!=''">
+            PAYED_STATUS=#{payedStatus},
+        </if>
+        <if test="approvalFlag != null">
+            APPROVAL_FLAG=#{approvalFlag},
+        </if>
+        <if test="approvalRemark != null">
+            APPROVAL_REMARK=#{approvalRemark},
+        </if>
+        <if test="auditingFlag != null">
+            AUDITING_FLAG =#{auditingFlag},
+        </if>
+        <if test="auditingRemark != null">
+            AUDITING_REMARK =#{auditingRemark},
+        </if>
+        <if test="auditingStatus != null">
+            AUDITING_STATUS=#{auditingStatus},
+        </if>
+        <if test="applicant != null and applicant !=''">
+            APPLICANT=#{applicant},
+        </if>
+        <if test="verificationId != null and  verificationId!=''">
+            VERIFICATION_ID =#{verificationId},
+        </if>
+        <if test="verificationCode != null and verificationCode !=''">
+            VERIFICATION_CODE =#{verificationCode},
+        </if>
+        <if test="contractTotalAmount != null and  contractTotalAmount!=''">
+            CONTRACT_TOTAL_AMOUNT =#{contractTotalAmount},
+        </if>
+        <if test="contractFirstAmount != null and  contractFirstAmount!=''">
+            CONTRACT_FIRST_AMOUNT =#{contractFirstAmount},
+        </if>
+        <if test="deliverTotalAmount != null and deliverTotalAmount !=''">
+            DELIVER_TOTAL_AMOUNT =#{deliverTotalAmount},
+        </if>
+        <if test="transportAmount != null and transportAmount !=''">
+            TRANSPORT_AMOUNT =#{transportAmount},
+        </if>
+        <if test="packageAmount != null and packageAmount !=''">
+            PACKAGE_AMOUNT  =#{packageAmount},
+        </if>
+
+        <if test="approvalPerson != null and approvalPerson !=''">
+            APPROVAL_PERSON=#{approvalPerson},
+        </if>
+        <if test="approvalDate != null and  approvalDate !=''">
+            APPROVAL_DATE=#{approvalDate},
+        </if>
+        <if test="auditingPerson != null and auditingPerson !=''">
+            AUDITING_PERSON=#{auditingPerson},
+        </if>
+        <if test="auditingDate != null and auditingDate !=''">
+            AUDITING_DATE=#{auditingDate},
+        </if>
+        <if test="paidAmount != null and paidAmount !=''">
+            PAID_AMOUNT =#{paidAmount},
+        </if>
+        <if test="verificationAmount != null and verificationAmount !=''">
+            VERIFICATION_AMOUNT =#{verificationAmount},
+        </if>
+        <if test="paidDownPaymentPercentage != null and paidDownPaymentPercentage !=''">
+            PAID_DOWN_PAYMENT_PERCENTAGE = #{paidDownPaymentPercentage},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        1=1
+        <if test="paymentRequestId != null and paymentRequestId !='' and isRelate == null">
+            AND PAYMENT_REQUEST_ID = #{paymentRequestId}
+        </if>
+        <if test="deliveryId != null and deliveryId !='' and isRelate != null">
+            AND DELIVERY_ID = #{deliveryId}
+        </if>
+    </update>
+
+    <!--查询最大番号-->
+    <select id="findMaxPaymentRequestCode" resultType="String" parameterType="BaseParam">
+      SELECT s.PAYMENT_REQUEST_CODE from ssc_payment_request s WHERE s.PAYMENT_REQUEST_id=(SELECT MAX(p.PAYMENT_REQUEST_id) from ssc_payment_request p)
+    </select>
+
+    <!--查询发货产品对应合同的总箱数-->
+    <select id="findDeliveryPDList" parameterType="com.msk.ssc.bean.SSC1130802RsParam" resultType="com.msk.ssc.bean.SSC1130802RsBean">
+        SELECT
+                a.DELIVERY_CODE AS deliveryCode,
+                a.DELIVERY_ID  AS  deliveryId,
+                a.PRODUCT_BOX AS deliveryBox ,
+                d.CONTRACT_ID AS contractId,
+                d.CONTRACT_CODE AS  contractCode,
+                a.PD_CODE AS pdCode,
+                cpd.PRODUCT_BOX AS contractBox,
+                cpd.down_payment AS downPayment,
+                cpd.product_value AS contractProductValue,
+                a.product_value AS deliveryProductValue
+            FROM ssc_delivery_order_pd  a
+            LEFT JOIN ssc_delivery_order_basic d  ON a.DELIVERY_ID=d.DELIVERY_ID AND d.DEL_FLG = 0
+            LEFT JOIN ssc_contract_pr_detail cpd ON  d.CONTRACT_ID=cpd.CONTRACT_ID AND a.PD_CODE= cpd.pd_code AND cpd.DEL_FLG = 0
+            WHERE a.DELIVERY_ID=#{deliveryId} AND a.DEL_FLG = 0
+                  AND  d.CONTRACT_RELATION_TYPE = #{contractRelationType}
+    </select>
+
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231194RsLogic">
+    <select id="getSlBank" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231194RsResult">
+		SELECT
+		IFNULL(B.SL_CODE,'') AS slCode,
+		IFNULL(B.SL_ACCOUNT,'') AS slAccount,
+        ( CASE WHEN B.SL_MAIN_CLASS IN (1,2,3)  THEN  3
+           ELSE 4  END  ) AS  slMainClass,
+		IFNULL(B.SL_CODE_DIS,'') AS slCodeDis,
+		IFNULL(A.SL_SHOW_NAME,'') AS slName,
+		IFNULL(C.BAL_LEGAL_PERSON,'') AS accountName,
+		IFNULL(C.BAL_BANK,'') AS bankName,
+		IFNULL(C.BAL_ACCOUNT,'') AS cardNo
+		FROM
+		sl_seller B
+		LEFT JOIN  sl_account A ON  A.SL_ACCOUNT = B.SL_ACCOUNT
+		LEFT JOIN  sl_enterprise C ON  B.EP_ID = C.EP_ID  AND  C.DEL_FLG = 0
+		WHERE
+		    B.SL_MAIN_CLASS  IN  (1,2,3,4)
+		    AND  B.DEL_FLG = 0
+		ORDER BY B.SL_CODE
+     </select>
+</mapper>

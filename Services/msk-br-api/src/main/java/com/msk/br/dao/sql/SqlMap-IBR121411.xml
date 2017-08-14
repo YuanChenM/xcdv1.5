@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121411Logic">
+    <select id="findPageList" resultType="com.msk.core.entity.BrBuyerPool"
+            parameterType="com.msk.br.bean.IBR121411RsParam">
+        SELECT
+        byPool.BUYER_POOL_ID AS buyerPoolId,
+        byPool.BUYER_POOL_NAME AS buyerPoolName,
+        byPool.CLASSES_CODE AS classesCode,
+        byPool.CLASSES_NAME AS classesName,
+        byPool.MACHINING_CODE_U AS machiningCodeU,
+        byPool.MACHINING_NAME_U AS machiningNameU,
+        byPool.BUYER_TYPE AS buyerType,
+        byPool.BUYER_TYPE_NAME AS buyerTypeName,
+        byPool.LGCS_AREA_CODE AS lgcsAreaCode,
+        byPool.LGCS_AREA_NAME AS lgcsAreaName,
+        byPool.CITY_CODE AS cityCode,
+        byPool.CITY_NAME AS cityName
+        FROM
+        br_buyer_pool byPool
+        LEFT JOIN br_buyer_pool_relationship byPoolRelation ON byPool.BUYER_POOL_ID = byPoolRelation.BUYER_POOL_ID
+        AND byPool.DEL_FLG = '0'
+        AND byPoolRelation.DEL_FLG = '0'
+        WHERE
+        byPoolRelation.BUYER_ID = #{buyerId}
+        ORDER BY buyerPoolId
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageCount}
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer" parameterType="com.msk.br.bean.IBR121411RsParam">
+        SELECT
+        COUNT(1)
+        FROM
+        br_buyer_pool byPool
+        LEFT JOIN br_buyer_pool_relationship byPoolRelation ON byPool.BUYER_POOL_ID = byPoolRelation.BUYER_POOL_ID
+        AND byPool.DEL_FLG = '0'
+        AND byPoolRelation.DEL_FLG = '0'
+        WHERE
+        byPoolRelation.BUYER_ID = #{buyerId}
+    </select>
+
+    <!--批量查询所属买家池-->
+    <select id="getBrBuyerPoolList" resultType="com.msk.br.bean.IBR12141101RsBean" parameterType="BaseParam">
+        SELECT
+        byPoolRelation.BUYER_ID AS buyerId,
+        byPool.BUYER_POOL_ID AS buyerPoolId,
+        byPool.BUYER_POOL_NAME AS buyerPoolName
+        FROM
+        br_buyer_pool byPool
+        LEFT JOIN br_buyer_pool_relationship byPoolRelation ON byPool.BUYER_POOL_ID = byPoolRelation.BUYER_POOL_ID
+        AND byPool.DEL_FLG = '0'
+        AND byPoolRelation.DEL_FLG = '0'
+        WHERE
+        <!--byPoolRelation.BUYER_ID = #{buyerId}-->
+        byPoolRelation.BUYER_ID IN
+        <foreach collection="filterMap.buyerIdList" item="buyerId" open="(" separator="," close=")">
+            #{buyerId}
+        </foreach>
+        ORDER BY buyerPoolId
+    </select>
+
+
+
+
+</mapper>

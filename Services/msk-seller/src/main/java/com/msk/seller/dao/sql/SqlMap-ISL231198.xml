@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231198RsLogic">
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231198RsResult">
+		SELECT
+		IFNULL(B.LGCS_AREA_CODE,'') AS lgcsCode,
+		IFNULL(B.LGCS_AREA_NAME,'') AS lgcsName,
+		IFNULL(B.SL_CODE,'') AS slCode,
+		IFNULL(A.SL_SHOW_NAME,'') AS slName
+		FROM
+		sl_seller B
+		LEFT JOIN  sl_account A ON  A.SL_ACCOUNT = B.SL_ACCOUNT AND  A.DEL_FLG = 0
+		LEFT JOIN  sl_enterprise C ON  B.EP_ID = C.EP_ID AND  C.DEL_FLG = 0
+		WHERE
+		B.DEL_FLG = 0
+		AND B.SL_MAIN_CLASS  IN  (1,2,3)
+		AND B.BUYER_FLG != 1
+		<if test="lgcsCode != null and lgcsCode != ''">
+			AND B.LGCS_AREA_CODE IN
+			<foreach collection="lgcsCode" item ="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="slName != null and slName != ''">
+			AND A.SL_SHOW_NAME = #{slName}
+		</if>
+		ORDER BY B.SL_CODE
+		<if test="paging==true">
+			LIMIT #{startSize},#{pageCount};
+		</if>
+     </select>
+
+
+	<select id="getPageCount" parameterType="BaseParam" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM
+		sl_seller B
+		LEFT JOIN  sl_account A ON  A.SL_ACCOUNT = B.SL_ACCOUNT AND  A.DEL_FLG = 0
+		LEFT JOIN  sl_enterprise C ON  B.EP_ID = C.EP_ID AND  C.DEL_FLG = 0
+		WHERE
+		B.DEL_FLG = 0
+		AND B.SL_MAIN_CLASS  IN  (1,2,3)
+		AND B.BUYER_FLG != 1
+		<if test="lgcsCode != null and lgcsCode != ''">
+			AND B.LGCS_AREA_CODE IN
+			<foreach collection="lgcsCode" item ="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="slName != null and slName != ''">
+			AND A.SL_SHOW_NAME = #{slName}
+		</if>
+	</select>
+</mapper>

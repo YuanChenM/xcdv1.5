@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24110108Logic">
+
+    <update id="modifyOne" parameterType="com.msk.seller.bean.SL24110306Bean">
+        UPDATE sl_ep_manager SET
+        MEMBER_DUTIES=#{memberDuties},
+        MEMBER_NAME=#{memberName},
+        MEMBER_AGE=#{memberAge},
+        MEMBER_EDUC=#{memberEduc},
+        MEMBER_TEL=#{memberTel},
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime},
+        VER = VER + 1
+        WHERE
+        EP_ID=#{epId} AND MEMBER_ID=#{memberId}
+    </update>
+
+    <update id="updateSlEpManager" parameterType="com.msk.core.entity.SlEpManager">
+       UPDATE sl_ep_manager
+            SET
+            MEMBER_DUTIES=#{memberDuties},
+            MEMBER_NAME = #{memberName},
+            MEMBER_AGE = #{memberAge},
+            MEMBER_EDUC = #{memberEduc},
+            MEMBER_TEL = #{memberTel},
+            UPD_ID = #{updId},
+            UPD_TIME=#{updTime},
+            VER = VER + 1
+            WHERE
+	   EP_ID = #{epId} AND MEMBER_ID=#{memberId}
+    </update>
+    <delete id="deleteMa" parameterType="com.msk.seller.bean.SL24110306Bean">
+        DELETE FROM sl_ep_manager WHERE
+        EP_ID=#{epId} AND MEMBER_ID=#{memberId}
+    </delete>
+
+    <delete id="deleteSlEpManager" parameterType="com.msk.seller.bean.SL24110306Bean">
+        DELETE FROM sl_ep_manager WHERE
+        EP_ID = #{epId}
+        <if test="memberId != null and memberId != ''">
+        AND MEMBER_ID = #{memberId}
+        </if>
+    </delete>
+    <select id="findEntity" parameterType="BaseParam" resultType="com.msk.seller.bean.SL24110306Bean">
+        SELECT MEMBER_DUTIES AS memberDuties FROM SL_EP_MANAGER
+        WHERE EP_ID=#{filterMap.epId}
+         AND MEMBER_ID=#{filterMap.memberId}
+         AND DEL_FLG = 0
+    </select>
+</mapper>

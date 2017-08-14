@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231193RsLogic">
+    <select id="getSlProduct" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231193RsResult">
+	  SELECT
+        DISTINCT
+	    B.LGCS_AREA_CODE AS lgcsAreaCode,
+	    A.SL_CODE AS slCode,
+		IFNULL(A.SL_TNC_GRADE_CODE,'') AS   slQltGradeCode,
+		B.SL_MAIN_CLASS AS slmainClass,
+		CONCAT(IFNULL(A.PD_CLASSES_CODE,''),IFNULL(A.MACHINING_CODE,''),IFNULL(A.PD_BREED_CODE,''),IFNULL(A.PD_FEATURE_CODE,''),IFNULL(A.WEIGHT_CODE,'')) AS pdCode
+	  FROM
+		sl_product AS A
+		INNER JOIN  sl_seller  B ON  A.SL_CODE =  B.SL_CODE
+	  WHERE
+		 A.STATUS in  (4,5)
+		 AND A.DEL_FLG = 0
+		 AND B.DEL_FLG = 0
+		<if test="filterMap.slCode!=null and filterMap.slCode!=''">
+			AND	 A.SL_CODE=#{filterMap.slCode}
+	    </if>
+		<if test="filterMap.lgcsAreaCode!=null and filterMap.lgcsAreaCode!=''">
+			AND  B.LGCS_AREA_CODE=#{filterMap.lgcsAreaCode}
+		</if>
+		ORDER BY  B.LGCS_AREA_CODE,
+		           A.SL_CODE
+	</select>
+
+	<select id="getSlSellerProduct" parameterType="BaseParam" resultType="com.msk.core.entity.SoSalesRanking">
+		 SELECT
+          a.SL_CODE as suppCode
+         ,a.LGCS_AREA_CODE as lgcsCode
+         ,a.DIST_QUA as distQua
+         ,b.CRT_TIME as crtTime
+         ,concat(b.PD_CLASSES_CODE
+                  ,b.MACHINING_CODE
+                  , b.PD_BREED_CODE
+                  , b.PD_FEATURE_CODE
+                  , b.WEIGHT_CODE
+            ,'1') AS pdCode
+        FROM sl_seller a
+        LEFT JOIN sl_product b  ON b.SL_CODE = a.SL_CODE
+		                        AND b.DEL_FLG = 0
+        WHERE
+        b.CRT_TIME BETWEEN #{filterMap.cycleStart} AND #{filterMap.cycleEnd}
+        AND a.del_flg = 0
+	</select>
+
+    <select id="getSlEnterprise" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231193RsResult">
+		SELECT
+		  IFNULL(C.EP_NAME,'') AS epName,
+		  IFNULL(B.SL_CODE,'')  AS slCode,
+		  IFNULL(B.SL_CODE_DIS,'')  AS slCodeDis
+        FROM
+		 sl_seller B
+		 LEFT JOIN sl_enterprise C ON B.EP_ID = C.EP_ID AND  C.DEL_FLG = 0
+        WHERE
+		  B.DEL_FLG = 0
+		<if test="filterMap.epName!=null and filterMap.epName!=''">
+			AND C.EP_NAME like  #{filterMap.epName}
+		</if>
+		<if test="filterMap.slCodeList!=null and filterMap.slCodeList.size()> 0">
+            AND B.SL_CODE IN
+          <foreach item="item" index="index" collection="filterMap.slCodeList" open="(" separator="," close=")">
+            #{item}
+          </foreach>
+         </if>
+    </select>
+
+	<select id="getSlEnterpriseByAccount" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231193RsResult">
+		SELECT
+		A.SL_ACCOUNT AS slAccount,
+		IFNULL(B.EP_ID,'') AS epId,
+		IFNULL(C.EP_NAME,'') AS epName,
+		IFNULL(B.SL_CODE,'')  AS slCode,
+		IFNULL(B.SL_CODE_DIS,'')  AS slCodeDis
+		FROM
+		sl_account A
+		LEFT JOIN  sl_seller B ON A.SL_ACCOUNT = B.SL_ACCOUNT  AND  B.DEL_FLG = 0
+		LEFT JOIN sl_enterprise C ON B.EP_ID = C.EP_ID AND  C.DEL_FLG = 0
+		WHERE
+		A.DEL_FLG = 0
+		<if test="filterMap.slAccount!=null and filterMap.slAccount!=''">
+			AND A.SL_ACCOUNT = #{filterMap.slAccount}
+		</if>
+	</select>
+
+    <select id="findSlSellerCode" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231193RsResult">
+	  SELECT
+		<if test="filterMap.slCodeList!=null and filterMap.slCodeList.size()> 0">
+			A.SL_CODE  AS   slCode,
+			A.SL_CODE_DIS AS  slCodeDis
+		</if>
+		<if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+			DISTINCT
+			A.SL_CODE  AS   slCode
+		</if>
+		FROM
+		 SL_SELLER A
+		WHERE
+		 A.DEL_FLG = 0
+		<if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+			AND A.SL_CODE_DIS  LIkE  #{filterMap.slCodeDis}
+		</if>
+		<if test="filterMap.slCodeList!=null and filterMap.slCodeList.size()> 0">
+			AND A.SL_CODE IN
+			<foreach item="item" index="index" collection="filterMap.slCodeList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="getSlEpDataList" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231193RsResult">
+		SELECT
+			IFNULL(A.EP_ID,'')  AS epId,
+			IFNULL(A.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+			IFNULL(A.LGCS_AREA_NAME,'') AS lgcsAreaName,
+			IFNULL(A.SL_ACCOUNT,'')	 AS slAccount,
+			IFNULL(A.SL_CODE,'') AS slCode,
+			IFNULL(A.SL_CODE_DIS,'')  AS slCodeDis,
+			IFNULL(B.EP_NAME,'') AS epName
+        FROM
+		      sl_seller  A
+		      INNER JOIN  sl_enterprise B  ON   A.EP_ID = B.EP_ID
+		WHERE
+		      A.DEL_FLG = 0
+		      AND  B.DEL_FLG = 0
+		<if test="filterMap.isl231193RsBean!=null and filterMap.isl231193RsBean.size()> 0">
+			AND (
+			<foreach item="item" index="index" collection="filterMap.isl231193RsBean" open="(" separator="OR" close=")">
+				1=1
+				<if test="item.epId!=null and item.epId!=''">
+					AND A.EP_ID = #{item.epId}
+				</if>
+				<if test="item.lgcsAreaCode!=null and item.lgcsAreaCode!=''">
+					AND A.LGCS_AREA_CODE = #{item.lgcsAreaCode}
+				</if>
+				<if test="item.slAccount!=null and item.slAccount!=''">
+					AND A.SL_ACCOUNT = #{item.slAccount}
+				</if>
+				<if test="item.slCode!=null and item.slCode!=''">
+					AND A.SL_CODE = #{item.slCode}
+				</if>
+			</foreach>
+			)
+		</if>
+	</select>
+
+	<select id="findSlProduct" parameterType="BaseParam" resultType="com.msk.seller.bean.SlProductBean">
+		SELECT
+			A.SL_CODE AS slCode,
+			A.SL_PD_ID AS slPdId,
+			A.PROD_EP_ID AS prodEpId,
+			A.BRAND_EP_ID AS brandEpId,
+			A.BRAND_ID AS brandId,
+			A.PD_CLASSES_CODE AS pdClassesCode,
+			A.PD_BREED_CODE AS pdBreedCode,
+			A.WEIGHT_CODE AS weightCode,
+			A.PD_FEATURE_CODE AS pdFeatureCode,
+			A.DIST_FLG AS distFlg,
+			A.SL_TNC_STD AS slTncStd,
+			(CASE WHEN A.SL_TNC_GRADE_CODE IS NULL THEN ''
+			ELSE A.SL_TNC_GRADE_CODE END)AS slTncGradeCode,
+			'' AS slTncGradeName,
+			(CASE WHEN A.TNC_NG_REASON IS NULL THEN ''
+			ELSE A.TNC_NG_REASON END)AS tncNgReason,
+			A.TNC_AUDIT_STATUS AS tncAuditStatus,
+			A.TNC_AUDITOR AS tncAuditor,
+			A.TNC_AUDIT_DATE AS tncAuditDate,
+			(CASE
+			WHEN A.TNC_MONITOR_RESULT IS NULL THEN ''
+			ELSE A.TNC_MONITOR_RESULT END)AS tncMonitorResult,
+			A.TNC_MONITOR_AUDITOR AS tncMonitorAuditor,
+			A.TNC_MONITOR_DATE AS tncMonitorDate,
+			A.SL_QLT_STD AS slQltStd,
+			(CASE WHEN A.SL_QLT_GRADE_CODE IS NULL THEN ''
+			ELSE A.SL_QLT_GRADE_CODE END)AS slQltGradeCode,
+			'' AS slQltGradeName,
+			(CASE WHEN A.QLT_NG_REASON IS NULL THEN ''
+			ELSE A.QLT_NG_REASON END)AS qltNgReason,
+			A.QLT_AUDIT_STATUS AS qltAuditStatus,
+			A.QLT_AUDITOR AS qltAuditor,
+			A.QLT_AUDIT_DATE AS qltAuditDate,
+			(CASE
+			WHEN A.QLT_MONITOR_RESULT IS NULL THEN ''
+			ELSE A.QLT_MONITOR_RESULT END )AS qltMonitorResult,
+			A.QLT_MONITOR_AUDITOR AS qltMonitorAuditor,
+			A.QLT_MONITOR_DATE AS qltMonitorDate,
+			B.EP_NAME AS prodEpName,
+			IFNULL(C.BRAND_NAME,A.BRAND_ID) AS brandName,
+			CONCAT(A.PD_CLASSES_CODE,A.PD_BREED_CODE) AS productCode,
+			A.STATUS AS status,
+			IFNULL(A.MACHINING_CODE,'')AS machiningCode
+		FROM SL_PRODUCT AS A
+		LEFT JOIN sl_enterprise B ON A.PROD_EP_ID=B.EP_ID  AND  B.DEL_FLG = 0
+		LEFT JOIN sl_ep_brand C ON C.BRAND_ID=A.BRAND_ID AND A.BRAND_EP_ID=C.EP_ID AND  C.DEL_FLG = 0
+		<where>
+			A.DEL_FLG = 0
+			<if test="filterMap.slCode!=null and filterMap.slCode!=''">
+				AND A.SL_CODE = #{filterMap.slCode}
+			</if>
+			<if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+				AND A.PD_CLASSES_CODE = #{filterMap.classesCode}
+			</if>
+			<if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+				AND A.MACHINING_CODE = #{filterMap.machiningCode}
+			</if>
+			<if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+				AND A.PD_BREED_CODE=#{filterMap.breedCode}
+			</if>
+			<if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+				AND A.PD_FEATURE_CODE=#{filterMap.featureCode}
+			</if>
+			<if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+				AND A.WEIGHT_CODE=#{filterMap.weightCode}
+			</if>
+		</where>
+		ORDER BY (A.SL_PD_ID+0)
+	</select>
+</mapper>
+
+

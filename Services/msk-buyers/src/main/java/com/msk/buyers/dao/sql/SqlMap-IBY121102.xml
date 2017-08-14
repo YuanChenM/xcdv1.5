@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121102Logic">
+
+    <select id="findSuperiorType" resultType="com.msk.core.entity.ByBuyerBasicInfo" parameterType="BaseParam">
+        SELECT
+          SUPERIOR_TYPE AS superiorType
+        FROM
+          BY_BUYER_BASIC_INFO
+        WHERE
+          BUYER_ID = #{filterMap.buyerId}
+          AND DEL_FLG =0
+    </select>
+
+    <select id="findmMrketingsStatus" resultType="com.msk.core.entity.ByBuyerBasicInfo" parameterType="BaseParam">
+        SELECT
+        MARKETINGS_STATUS AS marketingsStatus
+        FROM
+        BY_BUYER_BASIC_INFO
+        WHERE
+        BUYER_ID = #{filterMap.buyerId}
+        AND DEL_FLG =0
+    </select>
+
+</mapper>

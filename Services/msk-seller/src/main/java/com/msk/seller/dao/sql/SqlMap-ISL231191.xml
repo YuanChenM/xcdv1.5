@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231191RsLogic">
+	<select id="findOne" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231191Result">
+		SELECT
+		A.SL_PD_ARTNO AS slPdArtNo
+		FROM
+		sl_pd_artno AS A
+		WHERE
+		A.SL_CODE=#{filterMap.slCode}
+		AND A.CLASSES_CODE=#{filterMap.classesCode}
+		AND A.MACHINING_CODE=#{filterMap.machiningCode}
+		AND A.BREED_CODE=#{filterMap.breedCode}
+		AND A.FEATURE_CODE=#{filterMap.featureCode}
+		AND A.WEIGHT_CODE=#{filterMap.weightCode}
+		AND A.GRADE_CODE=#{filterMap.gradeCode}
+		AND A.SALE_PLATFORM=#{filterMap.salesPlatform}
+		AND A.DEL_FLG = '0'
+	</select>
+
+	<select id="getSlPdArtno" parameterType="BaseParam" resultType="com.msk.seller.bean.SlPdArtnoBean">
+		SELECT
+		<if test="filterMap.slCode!=null and filterMap.slCode!=''">
+			A.SL_PD_ARTNO AS slPdArtno,
+			A.SL_CODE AS slCode,
+			A.SL_CODE_DIS AS slCodeDis,
+			A.SALE_STATUS AS saleStatus,
+			A.PD_COUNTRY AS pdCountry,
+			A.PD_PLACE AS pdPlace,
+			A.SHELF_LIFE AS shelfLife,
+			A.STORAGE_CONDITION AS storageCondition
+		</if>
+		<if test="filterMap.slPdArtno!=null and filterMap.slPdArtno!=''">
+			DISTINCT
+			A.CLASSES_CODE AS classesCode,
+			A.MACHINING_CODE AS machiningCode,
+			A.BREED_CODE AS breedCode,
+			A.FEATURE_CODE AS featureCode,
+			A.WEIGHT_CODE AS weightCode,
+			A.GRADE_CODE AS gradeCode
+		</if>
+		FROM
+		sl_pd_artno  A
+		WHERE
+		A.DEL_FLG = 0
+		<if test="filterMap.slCode!=null and filterMap.slCode!=''">
+			AND A.SL_CODE = #{filterMap.slCode}
+			AND A.CLASSES_CODE = #{filterMap.classesCode}
+			AND A.MACHINING_CODE = #{filterMap.machiningCode}
+			AND A.BREED_CODE = #{filterMap.breedCode}
+			AND A.FEATURE_CODE = #{filterMap.featureCode}
+			AND A.WEIGHT_CODE = #{filterMap.weightCode}
+			AND A.SALE_PLATFORM = #{filterMap.salesPlatform}
+			AND A.GRADE_CODE = #{filterMap.gradeCode}
+		</if>
+		<if test="filterMap.slPdArtno!=null and filterMap.slPdArtno!=''">
+			AND A.SL_PD_ARTNO = #{filterMap.slPdArtno}
+			AND A.SL_CODE_DIS = #{filterMap.slCodeDis}
+		</if>
+	</select>
+
+	<select id="findList" parameterType="BaseParam" resultType="com.msk.seller.bean.SlPdArtnoBean">
+         SELECT
+            DISTINCT
+          	A.SL_PD_ARTNO AS slPdArtno,
+			A.SL_CODE AS slCode,
+			A.SL_CODE_DIS AS slCodeDis,
+			A.CLASSES_CODE AS classesCode,
+			A.MACHINING_CODE AS machiningCode,
+			A.BREED_CODE AS breedCode,
+			A.FEATURE_CODE AS featureCode,
+			A.WEIGHT_CODE AS weightCode,
+			A.GRADE_CODE AS gradeCode,
+		    A.SALE_PLATFORM AS  salesPlatform
+		FROM
+		    sl_pd_artno  A
+		WHERE
+		    A.DEL_FLG = 0
+		    AND
+		<foreach item="item" index="index" collection="filterMap.slPdArtnoBeanList" open="(" separator="OR" close=")">
+			A.SL_CODE = #{item.slCode}
+			AND A.CLASSES_CODE = #{item.classesCode}
+			AND A.MACHINING_CODE = #{item.machiningCode}
+			AND A.BREED_CODE = #{item.breedCode}
+			AND A.FEATURE_CODE = #{item.featureCode}
+			AND A.WEIGHT_CODE = #{item.weightCode}
+			AND A.SALE_PLATFORM = #{item.salesPlatform}
+			AND A.GRADE_CODE = #{item.gradeCode}
+		</foreach>
+	</select>
+
+
+	<select id="getSkuCode" resultType="com.msk.seller.bean.SlPdArtnoBean" parameterType="BaseParam">
+		SELECT
+		CONCAT(IFNULL(A.SL_CODE_DIS,''),IFNULL(A.SL_PD_ARTNO,'')) AS skuCode,
+		A.SL_PD_ARTNO AS slPdArtno,
+		A.SL_CODE AS slCode,
+		A.SL_CODE_DIS AS slCodeDis,
+		A.CLASSES_CODE AS classesCode,
+		A.MACHINING_CODE AS machiningCode,
+		A.BREED_CODE AS breedCode,
+		A.FEATURE_CODE AS featureCode,
+		A.WEIGHT_CODE AS weightCode,
+		A.GRADE_CODE AS gradeCode
+		FROM
+		sl_pd_artno AS A
+		WHERE
+		A.DEL_FLG = 0
+		AND A.SALE_PLATFORM=#{filterMap.salesPlatform}
+		AND A.SALE_REGION_CODE=#{filterMap.saleRegionCode}
+		AND
+		<foreach item="item" index="index" collection="filterMap.products" open="((" separator=")OR(" close="))">
+			A.SL_CODE=#{item.slCode}
+			<if test="item.classesCode!=null and item.classesCode!=''">
+				AND A.CLASSES_CODE=#{item.classesCode}
+			</if>
+			<if test="item.machiningCode!=null and item.machiningCode!=''">
+				AND A.MACHINING_CODE=#{item.machiningCode}
+			</if>
+			<if test="item.breedCode!=null and item.breedCode!=''">
+				AND A.BREED_CODE=#{item.breedCode}
+			</if>
+			<if test="item.featureCode!=null and item.featureCode!=''">
+				AND A.FEATURE_CODE=#{item.featureCode}
+			</if>
+			<if test="item.weightCode!=null and item.weightCode!=''">
+				AND A.WEIGHT_CODE=#{item.weightCode}
+			</if>
+		 <if test="item.gradeCode!=null and item.gradeCode!=''">
+			 AND A.GRADE_CODE=#{item.gradeCode}
+			</if>
+		</foreach>
+	</select>
+</mapper>

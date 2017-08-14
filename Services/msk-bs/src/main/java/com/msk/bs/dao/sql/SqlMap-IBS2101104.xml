@@ -1,0 +1,1030 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101104RsLogic">
+
+    <sql id="selectHouseAccount">
+        IFNULL(SL_CODE,'') AS slCode,
+        IFNULL(HOUSE_ACCOUNT,'') AS houseAccount,
+        IFNULL(HOUSE_CODE,'') AS houseCode,
+        IFNULL(HOUSE_CODE_DIS,'') AS houseCodeDis,
+        IFNULL(HOUSE_TEL,'') AS houseTel,
+        IFNULL(HOUSE_SHOW_NAME,'') AS houseShowName,
+        IFNULL(HOUSE_CONTACT,'') AS houseContact,
+        IFNULL(ACCOUNT_PSD,'') AS accountPsd,
+        IFNULL(AUTH_STATUS,'') AS authStatus,
+        IFNULL(SL_IDCARD,'') AS slIdcard,
+        IFNULL(SL_CON_FLG,'') AS slConFlg,
+        IFNULL(R_AREA_CODE,'') AS rareaCode,
+        IFNULL(R_LGCS_AREA_CODE,'') AS rlgcsAreaCode,
+        IFNULL(R_PROVINCE_CODE,'') AS rprovinceCode,
+        IFNULL(R_CITY_CODE,'') AS rcityCode,
+        IFNULL(R_DISTRICT_CODE,'') AS rdistrictCode,
+        IFNULL(R_HOUSE_ADDRESS,'') AS  rhouseAddress,
+        IFNULL(AREA_CODE,'') AS areaCode,
+        IFNULL(LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(PROVINCE_CODE,'') AS provinceCode,
+        IFNULL(CITY_CODE,'') AS cityCode,
+        IFNULL(DISTRICT_CODE,'') AS districtCode,
+        IFNULL(HOUSE_ADDRESS,'') AS houseAddress,
+        IFNULL(V_AREA_CODE,'') AS   vareaCode,
+        IFNULL(V_LGCS_AREA_CODE,'') AS vlgcsAreaCode,
+        IFNULL(V_PROVINCE_CODE,'') AS vprovinceCode,
+        IFNULL(V_CITY_CODE,'') AS vcityCode,
+        IFNULL(V_DISTRICT_CODE,'') AS vdistrictCode,
+        IFNULL(V_HOUSE_ADDRESS,'') AS vhouseAddress,
+        IFNULL(LAT,'') AS lat,
+        IFNULL(LON,'') AS lon ,
+        IFNULL(V_LAT,'') AS vlat,
+        IFNULL(V_LON,'') AS vlon,
+        IFNULL(LICENSES,'') AS licenses,
+        IFNULL(BUYER_ASIGN,'') AS buyerAsign,
+        IFNULL(WECHAT,'') AS wechat,
+        IFNULL(QQ,'') AS qq,
+        IFNULL(EMAIL,'') AS email,
+        IFNULL(FIXED_TEL,'') AS fixedTel,
+        IFNULL(FAX,'') AS fax,
+        IFNULL(FLAG20,'') AS flag20,
+        IFNULL(FLAG19,'') AS flag19,
+        IFNULL(FLAG18,'') AS flag18,
+        IFNULL(FLAG17,'') AS flag17,
+        IFNULL(FLAG16,'') AS flag16,
+        IFNULL(FLAG15,'') AS flag15,
+        IFNULL(FLAG14,'') AS flag14,
+        IFNULL(FLAG13,'') AS flag13,
+        IFNULL(FLAG12,'')AS flag12,
+        IFNULL(FLAG11,'') AS flag11,
+        IFNULL(FLAG10,'') AS flag10,
+        IFNULL(FLAG9,'') AS flag9 ,
+        IFNULL(FLAG8,'') AS flag8 ,
+        IFNULL(FLAG7,'') AS flag7 ,
+        IFNULL(FLAG6,'') AS flag6 ,
+        IFNULL(FLAG5,'') AS flag5 ,
+        IFNULL(FLAG4,'') AS flag4 ,
+        IFNULL(FLAG3,'') AS flag3 ,
+        IFNULL(FLAG2,'') AS flag2 ,
+        IFNULL(FLAG1,'') AS flag1 ,
+        IFNULL(HOUSE_INTRODUCE,'') AS houseIntroduce,
+        IFNULL(HOUSE_CLASS,'') AS   houseClass,
+        IFNULL(HOUSE_CATEGORY,'') AS houseCategory,
+        IFNULL(HOUSE_CATEGORY_SUB,'') AS houseCategorySub,
+        IFNULL(HOUSE_CATEGORY0,'') AS houseCategory0,
+        IFNULL(HOUSE_CATEGORY1,'') AS houseCategory1,
+        IFNULL(HOUSE_CATEGORY2,'') AS houseCategory2,
+        IFNULL(HOUSE_CATEGORY3,'') AS houseCategory3,
+        IFNULL(HOUSE_CATEGORY4,'') AS houseCategory4,
+        IFNULL(HOUSE_CATEGORY5,'') AS houseCategory5,
+        IFNULL(HOUSE_CATEGORY6,'') AS houseCategory6,
+        IFNULL(HOUSE_CATEGORY7,'') AS houseCategory7,
+        IFNULL(HOUSE_CATEGORY8,'') AS houseCategory8,
+        IFNULL(HOUSE_GREADE,'') AS houseGreade ,
+        IFNULL(HOUSE_STAR,'') AS houseStar
+    </sql>
+
+
+    <select id="findHouseAccountExist" resultType="int" parameterType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        COUNT(1)
+        FROM sl_house_account
+        WHERE
+        HOUSE_ACCOUNT = #{houseAccount} OR HOUSE_SHOW_NAME = #{houseAccount} OR HOUSE_TEL = #{houseAccount}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <select id="findHouseAccountBasicInfo" resultType="com.msk.core.entity.SlHouseAccount"
+            parameterType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        <include refid="selectHouseAccount"/>
+        FROM sl_house_account
+        WHERE
+        HOUSE_ACCOUNT = #{houseAccount}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <select id="findHouseShowNameExist" resultType="int" parameterType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        COUNT(1)
+        FROM sl_house_account
+        WHERE
+        HOUSE_ACCOUNT = #{houseShowName} OR HOUSE_SHOW_NAME = #{houseShowName} OR HOUSE_TEL = #{houseShowName}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <select id="findModifyHouseShowNameExist" resultType="int" parameterType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        COUNT(1)
+        FROM sl_house_account
+        WHERE
+        HOUSE_ACCOUNT != #{houseAccount}
+        AND (HOUSE_ACCOUNT = #{houseShowName} OR HOUSE_SHOW_NAME = #{houseShowName} OR HOUSE_TEL = #{houseShowName})
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <!--<select id="findSlContactExist" resultType="int" parameterType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+            COUNT(1)
+        FROM
+            sl_bs_account
+        WHERE
+            SL_TEL != #{houseTel}
+        AND SL_CONTACT = #{houseShowName}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>-->
+
+    <select id="findHouseAccountExistByTel" resultType="int" parameterType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        COUNT(1)
+        FROM sl_house_account
+        WHERE
+        HOUSE_ACCOUNT = #{houseTel} OR HOUSE_SHOW_NAME = #{houseTel} OR HOUSE_TEL = #{houseTel}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <select id="findModifyHouseAccountExistByTel" resultType="int" parameterType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        COUNT(1)
+        FROM sl_house_account
+        WHERE
+        HOUSE_ACCOUNT != #{houseAccount}
+        AND (HOUSE_ACCOUNT = #{houseTel} OR HOUSE_SHOW_NAME = #{houseTel} OR HOUSE_TEL = #{houseTel})
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <select id="findSlByTel" resultType="int" parameterType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+            COUNT(1)
+        FROM
+            sl_bs_account
+        WHERE
+            SL_CONTACT != #{houseShowName}
+        AND SL_TEL = #{houseTel}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <select id="findHouseAccountByTelIsExist" resultType="int" parameterType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        <include refid="selectHouseAccount"/>
+        FROM sl_house_account
+        WHERE
+        HOUSE_TEL = #{houseTel}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <select id="findHABySlCodeAndAccount" resultType="com.msk.core.entity.SlHouseAccount"
+            parameterType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        <include refid="selectHouseAccount"/>
+        FROM sl_house_account
+        WHERE
+        HOUSE_CODE=#{houseCode}
+        AND
+        HOUSE_ACCOUNT = #{houseAccount}
+        AND (DEL_FLG IS NULL OR DEL_FLG = 0)
+    </select>
+
+    <select id="findHouseAccunt" resultType="com.msk.core.entity.SlHouseAccount"
+            parameterType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        <include refid="selectHouseAccount"/>
+        FROM
+        sl_house_account
+        WHERE
+        HOUSE_CODE=#{houseCode}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <select id="findSlAccount" resultType="com.msk.core.entity.SlSeller" parameterType="BaseParam">
+      SELECT
+        A.SL_CODE AS slCode,
+        A.SL_ACCOUNT AS slAccount,
+        A.SL_CODE_DIS AS slCodeDis
+        FROM
+        sl_bs_basic_info AS A
+        where A.SL_CODE=#{filterMap.slCode}
+        AND (A.DEL_FLG IS NULL OR A.DEL_FLG =0)
+    </select>
+
+
+    <insert id="saveHouseAccunt" parameterType="com.msk.core.entity.SlHouseAccount">
+        INSERT INTO sl_house_account (
+            SL_CODE,
+            HOUSE_ACCOUNT,
+            HOUSE_CODE,
+            HOUSE_CODE_DIS,
+            HOUSE_TEL,
+            HOUSE_SHOW_NAME,
+            HOUSE_CONTACT,
+            ACCOUNT_PSD,
+            AUTH_STATUS,
+            SL_IDCARD,
+            SL_CON_FLG,
+            R_AREA_CODE,
+            R_LGCS_AREA_CODE,
+            R_PROVINCE_CODE,
+            R_CITY_CODE,
+            R_DISTRICT_CODE,
+            R_HOUSE_ADDRESS,
+            AREA_CODE,
+            LGCS_AREA_CODE,
+            PROVINCE_CODE,
+            CITY_CODE,
+            DISTRICT_CODE,
+            HOUSE_ADDRESS,
+            V_AREA_CODE,
+            V_LGCS_AREA_CODE,
+            V_PROVINCE_CODE,
+            V_CITY_CODE,
+            V_DISTRICT_CODE,
+            V_HOUSE_ADDRESS,
+            LAT,
+            LON,
+            V_LAT,
+            V_LON,
+            LICENSES,
+            BUYER_ASIGN,
+            WECHAT,
+            QQ,
+            EMAIL,
+            FIXED_TEL,
+            FAX,
+            FLAG20,
+            FLAG19,
+            FLAG18,
+            FLAG17,
+            FLAG16,
+            FLAG15,
+            FLAG14,
+            FLAG13,
+            FLAG12,
+            FLAG11,
+            FLAG10,
+            FLAG9,
+            FLAG8,
+            FLAG7,
+            FLAG6,
+            FLAG5,
+            FLAG4,
+            FLAG3,
+            FLAG2,
+            FLAG1,
+            HOUSE_INTRODUCE,
+            HOUSE_CLASS,
+            HOUSE_CATEGORY,
+            HOUSE_CATEGORY_SUB,
+            HOUSE_CATEGORY0,
+            HOUSE_CATEGORY1,
+            HOUSE_CATEGORY2,
+            HOUSE_CATEGORY3,
+            HOUSE_CATEGORY4,
+            HOUSE_CATEGORY5,
+            HOUSE_CATEGORY6,
+            HOUSE_CATEGORY7,
+            HOUSE_CATEGORY8,
+            HOUSE_GREADE,
+            HOUSE_STAR,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+          VALUE (
+            #{slCode},
+            #{houseAccount},
+            #{houseCode},
+            #{houseCodeDis},
+            #{houseTel},
+            #{houseShowName},
+            #{houseContact},
+            #{accountPsd},
+            #{authStatus},
+            #{slIdcard},
+            #{slConFlg},
+            #{rareaCode},
+            #{rlgcsAreaCode},
+            #{rprovinceCode},
+            #{rcityCode},
+            #{rdistrictCode},
+            #{rhouseAddress},
+            #{areaCode},
+            #{lgcsAreaCode},
+            #{provinceCode},
+            #{cityCode},
+            #{districtCode},
+            #{houseAddress},
+            #{vareaCode},
+            #{vlgcsAreaCode},
+            #{vprovinceCode},
+            #{vcityCode},
+            #{vdistrictCode},
+            #{vhouseAddress},
+            #{lat},
+            #{lon},
+            #{vlat},
+            #{vlon},
+            #{licenses},
+            #{buyerAsign},
+            #{wechat},
+            #{qq},
+            #{email},
+            #{fixedTel},
+            #{fax},
+            #{flag20},
+            #{flag19},
+            #{flag18},
+            #{flag17},
+            #{flag16},
+            #{flag15},
+            #{flag14},
+            #{flag13},
+            #{flag12},
+            #{flag11},
+            #{flag10},
+            #{flag9},
+            #{flag8},
+            #{flag7},
+            #{flag6},
+            #{flag5},
+            #{flag4},
+            #{flag3},
+            #{flag2},
+            #{flag1},
+            #{houseIntroduce},
+            #{houseClass},
+            #{houseCategory},
+            #{houseCategorySub},
+            #{houseCategory0},
+            #{houseCategory1},
+            #{houseCategory2},
+            #{houseCategory3},
+            #{houseCategory4},
+            #{houseCategory5},
+            #{houseCategory6},
+            #{houseCategory7},
+            #{houseCategory8},
+            #{houseGreade},
+            #{houseStar},
+            #{delFlg},
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            #{ver}
+            )
+    </insert>
+
+
+    <!-- 插入管家分类 -->
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO sl_house_manage (
+        MID,
+        SL_CODE,
+        HOUSE_CODE,
+        CREATETIME,
+        LGCS_AREA_CODE,
+        LGCS_AREA_NAME,
+        CITY_CODE,
+        CITY_NAME,
+        HOUSE_CATEGORY_CODE,
+        HOUSE_RECLASSIFY_CODE,
+        PUBLIC_BUYERS,
+        VIP_BUYERS,
+        MARKETING_DAYS,
+        IS_CHANGE_BUYERS,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+        <foreach collection="list" item="slHouseManage" index="index" separator=",">
+            (
+            #{slHouseManage.mid},
+            #{slHouseManage.slCode},
+            #{slHouseManage.houseCode},
+            #{slHouseManage.createtime},
+            #{slHouseManage.lgcsAreaCode},
+            #{slHouseManage.lgcsAreaName},
+            #{slHouseManage.cityCode},
+            #{slHouseManage.cityName},
+            #{slHouseManage.houseCategoryCode},
+            #{slHouseManage.houseReclassifyCode},
+            #{slHouseManage.publicBuyers},
+            #{slHouseManage.vipBuyers},
+            #{slHouseManage.marketingDays},
+            #{slHouseManage.isChangeBuyers},
+            #{slHouseManage.remark},
+            #{slHouseManage.delFlg},
+            #{slHouseManage.crtId},
+            #{slHouseManage.crtTime},
+            #{slHouseManage.updId},
+            #{slHouseManage.updTime},
+            #{slHouseManage.actId},
+            #{slHouseManage.actTime},
+            #{slHouseManage.ver}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="saveHouseGradeList" parameterType="BaseParam">
+        INSERT INTO sl_house_grade (
+        GRADE_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        LGCS_AREA_CODE,
+        LGCS_AREA_NAME,
+        HOUSE_CATEGORY_CODE,
+        HOUSE_RECLASSIFY_CODE,
+        GRADE_CODE,
+        VALID_YEAR_MONTH,
+        END_TIME,
+        EXTEND_TIME,
+        STATUS,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+        <foreach collection="filterMap.houseGradeList" item="item" index="index" separator=",">
+            (
+            #{item.gradeId},
+            #{item.slCode},
+            #{item.houseCode},
+            #{item.lgcsAreaCode},
+            #{item.lgcsAreaName},
+            #{item.houseCategoryCode},
+            #{item.houseReclassifyCode},
+            #{item.gradeCode},
+            #{item.validYearMonth},
+            #{item.endTime},
+            #{item.extendTime},
+            #{item.status},
+            #{item.remark},
+            #{item.delFlg},
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            #{item.actId},
+            #{item.actTime},
+            #{item.ver}
+            )
+        </foreach>
+    </insert>
+
+
+    <select id="findHouseAccountInfo" resultType="com.msk.core.entity.SlHouseAccount"
+            parameterType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        <include refid="selectHouseAccount"/>
+        FROM sl_house_account
+        WHERE SL_CODE = #{slCode}
+        AND HOUSE_CODE = #{houseCode}
+        AND (DEL_FLG IS NULL OR DEL_FLG = 0)
+    </select>
+
+
+    <select id="findHouseAccount" parameterType="BaseParam" resultType="Integer">
+        SELECT
+                    MAX(CONVERT(RIGHT(HOUSE_ACCOUNT, 2),SIGNED))
+                FROM
+                    sl_house_account
+                WHERE
+                    HOUSE_ACCOUNT LIKE #{filterMap.houseAccount}
+                    AND (DEL_FLG IS NULL OR DEL_FLG = 0)
+    </select>
+
+    <select id="findhouseCodeDis" parameterType="BaseParam" resultType="Integer">
+         SELECT
+                    MAX(CONVERT(SUBSTR(HOUSE_CODE_DIS, 10, 2),SIGNED))
+                FROM
+                    sl_house_account
+                WHERE
+                    HOUSE_CODE_DIS LIKE #{filterMap.houseCodeDis}
+                    AND (DEL_FLG IS NULL OR DEL_FLG = 0)
+    </select>
+
+    <insert id="saveHouseGrade" parameterType="com.msk.bs.bean.IBS2101104SlHouseAccount">
+        INSERT INTO sl_bs_house_grade (
+            SL_CODE,
+            HOUSE_ACCOUNT,
+            GREADE,
+            VER
+            )
+        VALUES
+            (
+                #{slCode},
+                #{houseAccount},
+                #{greade},
+                #{ver}
+            )
+    </insert>
+
+    <insert id="saveSlHouseArea" parameterType="com.msk.core.entity.SlHouseArea">
+        INSERT INTO sl_house_area (
+            SL_AREA_ID,
+            SL_CODE,
+            HOUSE_CODE,
+            LGCS_AREA_CODE,
+            PROVINCE_CODE,
+            CITY_CODE,
+            DISTRICT_CODE,
+            ADDRESS,
+            CRT_ID,
+            CRT_TIME,
+            VER
+            )
+        VALUES
+            (
+                #{slAreaId},
+                #{slCode},
+                #{houseCode},
+                #{lgcsAreaCode},
+                #{provinceCode},
+                #{cityCode},
+                #{districtCode},
+                #{address},
+                #{crtId},
+                #{crtTime},
+                #{ver}
+            )
+    </insert>
+
+    <insert id="saveSlBsHouseGrade" parameterType="com.msk.bs.bean.IBS2101104SlHouseAccount">
+        INSERT INTO sl_bs_house_grade (
+            SL_CODE,
+            HOUSE_ACCOUNT,
+            GREADE,
+            VER
+            )
+        VALUES
+            (
+             #{slCode},
+             #{houseAccount},
+             #{greade},
+             #{ver}
+            )
+    </insert>
+
+    <insert id="saveSlHouseProduct" parameterType="com.msk.core.entity.SlHouseProduct">
+        INSERT INTO sl_house_product (
+            SL_CODE,
+            HOUSE_CODE,
+            PD_ID,
+            PD_CLASSES_CODE,
+            MACHINING_CODE,
+            PD_BREED_CODE,
+            PD_FEATURE_CODE,
+            CRT_ID,
+            CRT_TIME,
+            VER
+            )
+        VALUES
+            (
+            #{slCode},
+            #{houseCode},
+            #{pdId},
+            #{pdClassesCode},
+            #{machiningCode},
+            #{pdBreedCode},
+            #{pdFeatureCode},
+            #{crtId},
+            #{crtTime},
+            #{ver}
+            )
+    </insert>
+
+
+    <update id="deleteHouseAccunt" parameterType="com.msk.core.entity.SlHouseAccount">
+        UPDATE sl_house_account
+        SET
+        DEL_FLG = 1,
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId},
+        VER = #{ver}+1
+        WHERE
+        HOUSE_CODE=#{houseCode}
+    </update>
+
+    <update id="deleteHouseGrade" parameterType="com.msk.bs.bean.IBS2101104SlHouseAccount">
+        UPDATE sl_bs_house_grade
+        SET
+        DEL_FLG = 1,
+        UPD_TIME = #{updTime}),
+        UPD_ID = #{loginId},
+        VER = #{ver}+1
+        WHERE
+        SL_CODE = #{slCode}
+        AND HOUSE_ACCOUNT = #{houseAccount}
+    </update>
+
+    <select id="findSlHouseArea" resultType="int" parameterType="BaseParam">
+        SELECT
+        COUNT(1)
+        FROM
+        sl_house_area
+        WHERE
+        SL_AREA_ID=#{filterMap.slAreaId}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <select id="findSlHouseProduct" resultType="int" parameterType="BaseParam">
+        SELECT
+        COUNT(1)
+        FROM
+        sl_house_product
+        WHERE
+        PD_ID=#{filterMap.pdId}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <select id="findHouseBuyerProduct" resultType="com.msk.core.entity.SlHouseBuyerProduct" parameterType="BaseParam">
+        SELECT
+        RELATION_ID AS relationId,
+        HOUSE_CATEGORY_CODE AS houseCategoryCode,
+        HOUSE_RECLASSIFY_CODE AS houseReclassifyCode,
+        BY_PD_CLASSES_CODE AS byPdClassesCode,
+        BY_PD_MACHINING_CODE AS byPdMachiningCode
+        FROM
+        sl_house_buyer_product
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        AND
+        <foreach collection="filterMap.houseManageList" item="item" index="index" open="(" separator="or" close=")">
+            (
+            HOUSE_CATEGORY_CODE = #{item.houseCategoryCode}
+            AND HOUSE_RECLASSIFY_CODE = #{item.houseReclassifyCode}
+            )
+        </foreach>
+    </select>
+
+    <select id="findHouseGrade" resultType="com.msk.core.entity.SlHouseGrade" parameterType="Map">
+        SELECT
+        GRADE_ID AS gradeId,
+        SL_CODE AS slCode,
+        HOUSE_CODE AS houseCode,
+        LGCS_AREA_CODE AS lgcsAreaCode,
+        LGCS_AREA_NAME AS lgcsAreaName,
+        HOUSE_CATEGORY_CODE AS houseCategoryCode,
+        HOUSE_RECLASSIFY_CODE AS houseReclassifyCode,
+        GRADE_CODE AS gradeCode,
+        VALID_YEAR_MONTH AS validYearMonth,
+        END_TIME AS endTime,
+        EXTEND_TIME AS extendTime,
+        STATUS AS status,
+        REMARK AS remark
+        FROM sl_house_grade
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        AND
+        <foreach collection="houseManage" item="item" index="index" open="(" separator="or" close=")">
+            (
+            SL_CODE = #{item.slCode}
+            AND HOUSE_CODE = #{item.houseCode}
+            AND LGCS_AREA_CODE = #{item.lgcsAreaCode}
+            AND LGCS_AREA_NAME = #{item.lgcsAreaName}
+            AND HOUSE_CATEGORY_CODE = #{item.houseCategoryCode}
+            AND HOUSE_RECLASSIFY_CODE = #{item.houseReclassifyCode}
+            )
+        </foreach>
+
+    </select>
+
+    <update id="deleteSlHouseArea" parameterType="com.msk.core.entity.SlHouseArea">
+        UPDATE sl_house_area
+        SET
+        DEL_FLG = 1,
+        UPD_TIME = #{updTime},
+        UPD_ID=#{updId},
+        VER = #{ver}+1
+        WHERE
+        SL_AREA_ID=#{slAreaId}
+    </update>
+
+    <update id="deleteSlHouseProduct" parameterType="com.msk.core.entity.SlHouseProduct">
+        UPDATE sl_house_product
+        SET
+        DEL_FLG = 1,
+        UPD_TIME = #{updTime},
+        VER = VER+1,
+        UPD_ID=#{updId}
+        WHERE
+        PD_ID=#{pdId}
+    </update>
+
+    <update id="updateHouseAccunt" parameterType="com.msk.core.entity.SlHouseAccount">
+        UPDATE sl_house_account
+        SET
+        UPD_TIME = #{updTime},
+        <if test="houseTel!=null and houseTel!=''">
+            HOUSE_TEL = #{houseTel},
+        </if>
+        <if test="houseCodeDis!=null and houseCodeDis!=''">
+            HOUSE_CODE_DIS = #{houseCodeDis},
+        </if>
+        <if test="houseShowName!=null and houseShowName!=''">
+            HOUSE_SHOW_NAME = #{houseShowName},
+        </if>
+        <if test="houseContact!=null and houseContact!=''">
+            HOUSE_CONTACT = #{houseContact},
+        </if>
+        <if test="accountPsd!=null and accountPsd!=''">
+            ACCOUNT_PSD = #{accountPsd},
+        </if>
+        <if test="authStatus!=null and authStatus!=''">
+            AUTH_STATUS = #{authStatus},
+        </if>
+        <if test="slIdcard!=null and slIdcard!=''">
+            SL_IDCARD = #{slIdcard},
+        </if>
+        <if test="slConFlg!=null and slConFlg!=''">
+            SL_CON_FLG = #{slConFlg},
+        </if>
+        <if test="rareaCode!=null">
+            R_AREA_CODE = #{rareaCode},
+        </if>
+        <if test="rlgcsAreaCode!=null">
+            R_LGCS_AREA_CODE = #{rlgcsAreaCode},
+        </if>
+        <if test="rprovinceCode!=null">
+            R_PROVINCE_CODE = #{rprovinceCode},
+        </if>
+        <if test="rcityCode!=null">
+            R_CITY_CODE = #{rcityCode},
+        </if>
+        <if test="rdistrictCode!=null">
+            R_DISTRICT_CODE = #{rdistrictCode},
+        </if>
+        <if test="rhouseAddress!=null">
+            R_HOUSE_ADDRESS = #{rhouseAddress},
+        </if>
+        <if test="areaCode!=null">
+            AREA_CODE = #{areaCode},
+        </if>
+        <if test="lgcsAreaCode!=null">
+            LGCS_AREA_CODE = #{lgcsAreaCode},
+        </if>
+        <if test="provinceCode!=null">
+            PROVINCE_CODE = #{provinceCode},
+        </if>
+        <if test="cityCode!=null">
+            CITY_CODE = #{cityCode},
+        </if>
+        <if test="districtCode!=null">
+            DISTRICT_CODE = #{districtCode},
+        </if>
+        <if test="houseAddress!=null">
+            HOUSE_ADDRESS = #{houseAddress},
+        </if>
+        <if test="vareaCode!=null and vareaCode!=''">
+            V_AREA_CODE = #{vareaCode},
+        </if>
+        <if test="vlgcsAreaCode!=null and vlgcsAreaCode!=''">
+            V_LGCS_AREA_CODE = #{vlgcsAreaCode},
+        </if>
+        <if test="vprovinceCode!=null and vprovinceCode!=''">
+            V_PROVINCE_CODE = #{vprovinceCode},
+        </if>
+        <if test="vcityCode!=null and vcityCode!=''">
+            V_CITY_CODE = #{vcityCode},
+        </if>
+        <if test="vdistrictCode!=null and vdistrictCode!=''">
+            V_DISTRICT_CODE = #{vdistrictCode},
+        </if>
+        <if test="vhouseAddress!=null and vhouseAddress!=''">
+            V_HOUSE_ADDRESS = #{vhouseAddress},
+        </if>
+        <if test="lat!=null and lat!=''">
+            LAT = #{lat},
+        </if>
+        <if test="lon!=null and lon!=''">
+            LON = #{lon},
+        </if>
+        <if test="vlat!=null and vlat!=''">
+            V_LAT = #{vlat},
+        </if>
+        <if test="vlon!=null and vlon!=''">
+            V_LON = #{vlon},
+        </if>
+        <if test="licenses!=null and licenses!=''">
+            LICENSES = #{licenses},
+        </if>
+        <if test="buyerAsign!=null and buyerAsign!=''">
+            BUYER_ASIGN = #{buyerAsign},
+        </if>
+        <if test="wechat!=null">
+            WECHAT = #{wechat},
+        </if>
+        <if test="qq!=null">
+            QQ = #{qq},
+        </if>
+        <if test="email!=null and email!=''">
+            EMAIL = #{email},
+        </if>
+        <if test="fixedTel!=null and fixedTel!=''">
+            FIXED_TEL = #{fixedTel},
+        </if>
+        <if test="fax!=null and fax!=''">
+            FAX = #{fax},
+        </if>
+        <if test="flag20!=null and flag20!=''">
+            FLAG20 = #{flag20},
+        </if>
+        <if test="flag19!=null and flag19!=''">
+            FLAG19 = #{flag19},
+        </if>
+        <if test="flag18!=null and flag18!=''">
+            FLAG18 = #{flag18},
+        </if>
+        <if test="flag17!=null and flag17!=''">
+            FLAG17 = #{flag17},
+        </if>
+        <if test="flag16!=null and flag16!=''">
+            FLAG16 = #{flag16},
+        </if>
+        <if test="flag15!=null and flag15!=''">
+            FLAG15 = #{flag15},
+        </if>
+        <if test="flag14!=null and flag14!=''">
+            FLAG14 = #{flag14},
+        </if>
+        <if test="flag13!=null and flag13!=''">
+            FLAG13 = #{flag13},
+        </if>
+        <if test="flag12!=null and flag12!=''">
+            FLAG12 = #{flag12},
+        </if>
+        <if test="flag11!=null and flag11!=''">
+            FLAG11 = #{flag11},
+        </if>
+        <if test="flag10!=null and flag10!=''">
+            FLAG10 = #{flag10},
+        </if>
+        <if test="flag9!=null and flag9!=''">
+            FLAG9 = #{flag9},
+        </if>
+        <if test="flag8!=null and flag8!=''">
+            FLAG8 = #{flag8},
+        </if>
+        <if test="flag7!=null">
+            FLAG7 = #{flag7},
+        </if>
+        <if test="flag6!=null and flag6!=''">
+            FLAG6 = #{flag6},
+        </if>
+        <if test="flag5!=null and flag5!=''">
+            FLAG5 = #{flag5},
+        </if>
+        <if test="flag4!=null and flag4!=''">
+            FLAG4 = #{flag4},
+        </if>
+        <if test="flag3!=null and flag3!=''">
+            FLAG3 = #{flag3},
+        </if>
+        <if test="flag2!=null and flag2!=''">
+            FLAG2 = #{flag2},
+        </if>
+        <if test="flag1!=null and flag1!=''">
+            FLAG1 = #{flag1},
+        </if>
+        <if test="houseIntroduce!=null and houseIntroduce!=''">
+            HOUSE_INTRODUCE = #{houseIntroduce},
+        </if>
+        <if test="houseClass!=null and houseClass!=''">
+            HOUSE_CLASS = #{houseClass},
+        </if>
+        <if test="houseCategory!=null and houseCategory!=''">
+            HOUSE_CATEGORY = #{houseCategory},
+        </if>
+        <if test="houseCategorySub!=null and houseCategorySub!=''">
+            HOUSE_CATEGORY_SUB = #{houseCategorySub},
+        </if>
+        <if test="houseGreade!=null and houseGreade!=''">
+            HOUSE_GREADE = #{houseGreade},
+        </if>
+        <if test="houseStar!=null and houseStar!=''">
+            HOUSE_STAR = #{houseStar},
+        </if>
+        <if test="houseCategory0!=null and houseCategory0!=''">
+            HOUSE_CATEGORY0 = #{houseCategory0},
+        </if>
+
+        <if test="houseCategory1!=null and houseCategory1!=''">
+            HOUSE_CATEGORY1 = #{houseCategory1},
+        </if>
+        <if test="houseCategory2!=null and houseCategory2!=''">
+            HOUSE_CATEGORY2 = #{houseCategory2},
+        </if>
+        <if test="houseCategory3!=null and houseCategory3!=''">
+            HOUSE_CATEGORY3 = #{houseCategory3},
+        </if>
+        <if test="houseCategory4!=null and houseCategory4!=''">
+            HOUSE_CATEGORY4 = #{houseCategory4},
+        </if>
+        <if test="houseCategory5!=null and houseCategory5!=''">
+            HOUSE_CATEGORY5 = #{houseCategory5},
+        </if>
+        <if test="houseCategory6!=null and houseCategory6!=''">
+            HOUSE_CATEGORY6 = #{houseCategory6},
+        </if>
+        <if test="houseCategory7!=null and houseCategory7!=''">
+            HOUSE_CATEGORY7 = #{houseCategory7},
+        </if>
+        <if test="houseCategory8!=null and houseCategory8!=''">
+            HOUSE_CATEGORY8 = #{houseCategory8},
+        </if>
+        <if test="updId!=null and updId!=''">
+            UPD_ID = #{updId},
+        </if>
+        <if test="delFlg!=null and delFlg!=''">
+            DEL_FLG = #{delFlg},
+        </if>
+        VER = VER +1
+        WHERE
+        HOUSE_CODE=#{houseCode} AND SL_CODE = #{slCode}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </update>
+
+    <update id="updateHouseGrade" parameterType="com.msk.bs.bean.IBS2101104SlHouseAccount">
+        UPDATE sl_bs_house_grade
+        SET
+        SL_CODE = #{slCode},
+        HOUSE_ACCOUNT = #{houseAccount},
+        GREADE = #{greade},
+        UPD_TIME = #{updTime},
+        UPD_ID = #{loginId},
+        VER = #{ver}+1
+        WHERE
+        SL_CODE = #{slCode}
+        AND HOUSE_ACCOUNT = #{houseAccount}
+    </update>
+
+    <update id="updateSlHouseArea" parameterType="com.msk.core.entity.SlHouseArea">
+        UPDATE sl_house_area
+        SET
+        LGCS_AREA_CODE=#{lgcsAreaCode},
+        PROVINCE_CODE=#{provinceCode},
+        CITY_CODE=#{cityCode},
+        DISTRICT_CODE=#{districtCode},
+        ADDRESS=#{address},
+        UPD_ID=#{updId},
+        UPD_TIME = #{updTime},
+        VER = #{ver}+1
+        WHERE
+        SL_AREA_ID=#{slAreaId}
+    </update>
+
+    <update id="updateSlHouseProduct" parameterType="com.msk.core.entity.SlHouseProduct">
+        UPDATE sl_house_product
+        SET
+        PD_CLASSES_CODE=#{pdClassesCode},
+        MACHINING_CODE=#{machiningCode},
+        PD_BREED_CODE=#{pdBreedCode},
+        PD_FEATURE_CODE=#{pdFeatureCode},
+        UPD_TIME = #{updTime},
+        UPD_ID=#{updId},
+        VER = #{ver}+1
+        WHERE
+        PD_ID=#{pdId}
+    </update>
+
+    <update id="updateBaseInfo" parameterType="com.msk.core.entity.BsBasicInfo">
+        UPDATE sl_bs_basic_info
+        SET HK_SEQ = #{hkSeq}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        ,VER=VER+1
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+        where SL_CODE=#{slCode}
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </update>
+
+    <update id="delHouseGrade" parameterType="BaseParam">
+        UPDATE sl_house_grade
+        SET DEL_FLG = 1,
+        UPD_ID = #{filterMap.updId},
+        UPD_TIME = #{filterMap.updTime},
+        VER = VER + 1
+        WHERE GRADE_ID IN
+        <foreach collection="filterMap.houseGradeList" item="item" index="index" open="(" separator="," close=")">
+            #{item.gradeId}
+        </foreach>
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+
+    </update>
+
+</mapper>

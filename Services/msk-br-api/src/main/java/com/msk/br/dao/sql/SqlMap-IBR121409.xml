@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121409Logic">
+    <select id="findList" resultType="com.msk.br.bean.IBR121409RsBean" parameterType="com.msk.br.bean.IBR121409RsParam">
+        SELECT
+        IFNULL(info.LGCS_AREA_NAME,'') AS lgcsAreaName,
+        IFNULL(info.BUYER_NAME, '') AS buyerName,
+        IFNULL(info.CITY_CODE, '') AS cityCode,
+        IFNULL(info.LGCS_AREA_CODE, '') AS lgcsAreaCode,
+        IFNULL(info.MARKETINGS_STATUS, '') AS marketingsStatus,
+        IFNULL(pool.CLASSES_CODE,'') AS classesCode,
+        IFNULL(pool.MACHINING_CODE_U,'') AS machiningCode,
+        IFNULL(pool.CLASSES_NAME, '') AS classesName,
+        IFNULL(
+        CONCAT(
+        info.LGCS_AREA_NAME,
+        '物流区',
+        info.CITY_NAME,
+        '地区',
+        pool.CLASSES_NAME,
+        pool.MACHINING_NAME_U,
+        '分销买家池销售期公众买家分池买家注册管控表'
+        ),''
+        ) AS fileName
+        FROM
+        br_buyer_pool pool INNER JOIN br_buyer_pool_relationship rel ON pool.BUYER_POOL_ID = rel.BUYER_POOL_ID AND pool.DEL_FLG = '0' AND rel.DEL_FLG = '0'
+        INNER JOIN br_o_buyer_info info ON info.BUYER_ID = rel.BUYER_ID AND info.DEL_FLG = '0'
+        <include refid="whereCondition"/>
+        GROUP BY info.BUYER_ID
+
+    </select>
+
+    <!-- 查询条件-->
+    <sql id="whereCondition">
+        <where>
+            info.DEL_FLG = '0'
+            <if test="lgcsAreaCode != null and lgcsAreaCode !=''">
+                AND pool.LGCS_AREA_CODE = #{lgcsAreaCode}
+            </if>
+
+            <if test="cityCode != null and cityCode !=''">
+                AND pool.CITY_CODE = #{cityCode}
+            </if>
+
+            <if test="classesCode != null and classesCode !=''">
+                AND pool.CLASSES_CODE = #{classesCode}
+            </if>
+            <if test="machiningCode != null and machiningCode !=''">
+                AND pool.MACHINING_CODE_U = #{machiningCode}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findDownBrBuyerInfo" resultType="com.msk.br.bean.IBR121409RsBean"
+            parameterType="com.msk.br.bean.IBR121409RsParam">
+        SELECT
+        IFNULL(a.MARKETINGS_STATUS_NAME,'') AS marketingsStatusName,
+        IFNULL(a.BUYER_ID,'') AS buyerId,
+        IFNULL(a.LGCS_AREA_NAME,'') AS lgcsAreaName,
+        IFNULL(a.CITY_NAME,'') AS cityName,
+        IFNULL(a.MARKET_NAME,'') AS marketName,
+        IFNULL(a.MANAGE_ADDR,'') AS manageAddr,
+        IFNULL(CONCAT(a.BUYER_NAME,'(',a.BUYER_CODE,')'),'') AS buyerNameCode,
+        IFNULL(CONCAT(a.BOSS_NAME,'(',a.BOSS_TEL,')'),'') AS bossNameTel,
+        IFNULL(a.BOSS_WECHAT,'') AS bossWechat,
+        IFNULL(a.BOSS_QQ,'') AS bossQq
+
+        FROM
+            br_o_buyer_info a
+            LEFT JOIN BR_BUYER_POOL_RELATIONSHIP b ON a.BUYER_ID = b.BUYER_ID AND a.DEL_FLG = b.DEL_FLG
+            LEFT JOIN BR_BUYER_POOL c ON b.BUYER_POOL_ID = c.BUYER_POOL_ID AND  b.DEL_FLG = c.DEL_FLG
+        WHERE
+            	c.DEL_FLG = '0'
+        <if test="lgcsAreaCode != null and lgcsAreaCode != ''">
+            AND c.LGCS_AREA_CODE = #{lgcsAreaCode}
+        </if>
+        <if test="cityCode != null and cityCode != ''">
+            AND c.CITY_CODE =  #{cityCode}
+        </if>
+        <if test="classesCode != null and classesCode != ''">
+            AND c.CLASSES_CODE =  #{classesCode}
+        </if>
+        <if test="machiningCode != null and machiningCode != ''">
+            AND c.MACHINING_CODE_U = #{machiningCode}
+        </if>
+        AND (a.MARKETINGS_STATUS = '11' OR a.MARKETINGS_STATUS = '21' OR a.MARKETINGS_STATUS = '22' OR a.MARKETINGS_STATUS = '13' OR a.MARKETINGS_STATUS = '14' )
+        ORDER BY a.MARKETINGS_STATUS_NAME
+    </select>
+
+    <select id="findUpBrBuyerInfo" resultType="com.msk.br.bean.IBR121409RsBean"
+            parameterType="com.msk.br.bean.IBR121409RsParam">
+        SELECT
+        SL_CODE AS slCode,
+        HOUSE_CODE AS houseCode
+        FROM
+        BR_HK_INFO
+        WHERE
+        DEL_FLG = 0
+    </select>
+    <select id="count" resultType="Integer" parameterType="BaseParam">
+        SELECT
+        COUNT(1)
+        FROM
+        br_file_buyer_pool
+        WHERE DEL_FLG = '0'
+        AND FILE_ID = #{filterMap.fileId}
+    </select>
+
+    <update id="modify" parameterType="com.msk.br.bean.IBR121409RsParam">
+        UPDATE br_file_buyer_pool
+        SET FILE_SERVER_ID = #{fileServerId},
+        FILE_STATUS = '1',
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE FILE_ID = #{fileId}
+    </update>
+
+    <!-- 插入EXCEL文件信息表信息 -->
+    <insert id="save" parameterType="com.msk.br.bean.IBR121409RsParam">
+        INSERT INTO br_file_buyer_pool
+        (
+        FILE_ID,
+        FILE_SERVER_ID,
+        FILE_NAME,
+        FILE_SUF,
+        FILE_START_TIME,
+        FILE_END_TIME,
+        FILE_CREATE_TIME,
+        FILE_STATUS,
+        POOL_TYPE,
+        LGCS_AREA_CODE,
+        CITY_CODE,
+        BUYER_TYPE,
+        BUYER_SUB_TYPE,
+        CLASSES_CODE,
+        MACHINING_CODE_U,
+        MARKETINGS_STATUS,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{fileId},
+        #{fileServerId},
+        #{fileName},
+        #{fileSuf},
+        #{fileStartTime},
+        #{fileEndTime},
+        #{fileCreateTime},
+        '2',
+        '5',
+        #{lgcsAreaCode},
+        #{cityCode},
+        #{buyerType},
+        #{buyerSubType},
+        #{classesCode},
+        #{machiningCodeU},
+        #{marketingsStatus},
+        '0',
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+
+
+    <select id="findOne" resultType="com.msk.core.entity.BrFileBuyerPool"
+            parameterType="com.msk.br.bean.IBR121409RsParam">
+        SELECT
+        FILE_ID AS fileId
+        FROM
+        br_file_buyer_pool
+        WHERE
+        FILE_NAME = #{fileName}
+
+    </select>
+
+    <update id="deleteFlag" parameterType="com.msk.br.bean.IBR121409RsParam" >
+        UPDATE br_file_buyer_pool
+        SET DEL_FLG = '1'
+        ,UPD_ID = #{updId}
+		,UPD_TIME = #{updTime}
+        WHERE FILE_ID = #{fileId}
+    </update>
+
+    <update id="modifyFileStatus" parameterType="com.msk.br.bean.IBR121409RsParam">
+        UPDATE br_file_buyer_pool
+        SET FILE_STATUS = '3'
+        ,UPD_ID = #{updId}
+		,UPD_TIME = #{updTime}
+        WHERE FILE_ID = #{fileId}
+    </update>
+</mapper>

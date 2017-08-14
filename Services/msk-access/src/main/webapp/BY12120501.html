@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="./resources/js/BY12120501.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>选择买家类型</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div style="width: 80%;margin-left:20px;" class="divCommon1">当前所选地区</div>
+            <div id="currentDistrict" style="width: 80%;margin-left:20px;text-align: center" class="divCommon1"></div>
+            <div style="width:100%;">
+                <div style="width: 70%;margin-left:50px;" class="divCommon2">选择买家类型</div>
+                <div style="width: 70%;margin-left:50px;">
+                    <select id="buyerType" onchange="buyerTypeChange()"></select>
+                </div>
+                <div id="superiorSubName" style="width: 70%;margin-left:50px;" class="divCommon2"></div>
+                <div id="superiorSubTypeDiv" style="width: 70%;margin-left:50px;">
+                    <select id="superiorSubType" onchange="SubTypeChange()"></select>
+                </div>
+                <div id="isFoodMarketDiv" style="width: 70%;margin-left:50px;display: none" class="divCommon2">
+                    <input type="checkbox" id="isFoodMarket" onclick="isFoodMarketChange()" value="1"/>
+                    <label for="isFoodMarket">菜场</label>
+                </div>
+                <div id="marketName" style="width: 70%;margin-left:50px;" class="divCommon2"></div>
+                <div id="marketTypeDiv" style="width: 70%;margin-left:50px;">
+                    <select id="marketType" onchange="marketTypeChange()"></select>
+                </div>
+                <div id="marketLevel" style="width: 70%;margin-left:50px;" class="divCommon2"></div>
+                <div id="marketLevelNameDiv" style="width: 70%;margin-left:50px;">
+                    <input type="text" id="marketLevelName" value="" readonly/>
+                </div>
+            </div>
+            <div id="message" class="errorMessageDiv" style="width: 70%;margin-left:50px;display: none;"></div>
+            <div class="ui-grid-a" style="width: 90%;margin-left:20px;margin-top: 20px;">
+                <div class="ui-block-a" style="width: 50%;">
+                    <div class="buttonDiv" style="width: 100%;" onclick="reSelectDistrict()" onmouseover="javascript:this.style.backgroundColor='#4169E1'">重新选择物流区</div>
+                </div>
+                <div class="ui-block-b" style="width: 50%;">
+                    <div style="width: 100%;margin-left:10px;" class="buttonDiv" onclick="buyerMarket()" onmouseover="javascript:this.style.backgroundColor='#4169E1'">下一步</div>
+                </div>
+            </div>
+		</div>
+	</body>
+</html>

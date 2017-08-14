@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101130RsLogic">
+    <select id="count" parameterType="com.msk.bs.bean.IBS2101130RsParam" resultType="int">
+        SELECT
+          count(1)
+          FROM
+            sl_house_bycomplaint_rec
+          WHERE
+             HOUSE_CODE = #{houseCode} AND BY_ID = #{byId} AND COMPLAIN_DATE = #{complainDate} AND DEL_FLG='0'
+    </select>
+
+    <select id="findOne" parameterType="com.msk.bs.bean.IBS2101130RsParam" resultType="com.msk.bs.bean.IBS2101130RsBean">
+        SELECT SL_CODE AS slCode FROM  sl_house_account WHERE HOUSE_CODE = #{houseCode}
+    </select>
+
+    <insert id="save" parameterType="com.msk.bs.bean.IBS2101130RsParam">
+        INSERT INTO sl_house_bycomplaint_rec
+        (
+          COMPLAIN_ID,
+          SL_CODE,
+          HOUSE_CODE,
+          BY_ID,
+          COMPLAIN_DATE,
+          TEL_COST_TIME,
+          COMPLAIN_CONTENT,
+          PD_FEATURE_CODE,
+          PROBLEM_CONTENT,
+          BASIC_INFO_CORRECT,
+          DEL_FLG,
+          CRT_ID,
+          CRT_TIME,
+          UPD_ID,
+          UPD_TIME,
+          ACT_ID,
+          ACT_TIME,
+          VER
+
+        )
+        VALUES
+        (
+          #{complainId},
+          #{slCode},
+          #{houseCode},
+          #{byId},
+          #{complainDate},
+          #{telCostTime},
+          #{complainContent},
+          #{pdFeatureCode},
+          #{problemContent},
+          #{basicInfoCorrect},
+          0,
+          #{crtId},
+          #{crtTime},
+          #{updId},
+          #{updTime},
+          #{actId},
+          #{actTime},
+          0
+        )
+    </insert>
+
+    <update id="modify" parameterType="com.msk.bs.bean.IBS2101130RsParam">
+        UPDATE
+          sl_house_bycomplaint_rec
+          SET
+        <if test="telCostTime != null and telCostTime != ''">
+            TEL_COST_TIME = #{telCostTime},
+        </if>
+        <if test="complainContent != null and complainContent != ''">
+            COMPLAIN_CONTENT = #{complainContent},
+        </if>
+        <if test="pdFeatureCode != null and pdFeatureCode != ''">
+            PD_FEATURE_CODE = #{pdFeatureCode},
+        </if>
+        <if test="problemContent != null and problemContent != ''">
+            PROBLEM_CONTENT = #{problemContent},
+        </if>
+        <if test="basicInfoCorrect != null and basicInfoCorrect != ''">
+            BASIC_INFO_CORRECT = #{basicInfoCorrect},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER+1
+        WHERE
+        DEL_FLG = '0'
+        AND HOUSE_CODE = #{houseCode}
+        AND BY_ID = #{byId}
+        AND COMPLAIN_DATE = #{complainDate}
+    </update>
+
+
+</mapper>
+

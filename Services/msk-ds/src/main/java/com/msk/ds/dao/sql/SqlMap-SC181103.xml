@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ds.logic.SC181103Logic">
+    <!--数据插入——供应商分销数量表-->
+    <insert id="saveDistNum" parameterType="com.msk.ds.bean.SC181103Param">
+        INSERT INTO DS_SUPP_DIST_NUM(
+        SUPP_DS_ID,
+        DIST_MONTH,
+        LGCS_CODE,
+        SUPP_CODE,
+        PD_CODE,
+        BRAND_TYPE,
+        DIST_TYPE,
+        DIST_NUM,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES(
+        #{suppDsId},
+        #{distMonth},
+        #{lgcsCode},
+        #{suppCode},
+        #{pdCode},
+        #{brandType},
+        #{distType},
+        #{distNum},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+    <!--数据插入——产品虚拟库存实际表-->
+    <insert id="saveStockActualNotInit" parameterType="com.msk.ds.bean.SC181103Param">
+        INSERT INTO ds_pd_virtual_stock_actual (
+        SUPP_DS_ID,
+        VIRTUAL_STOCK_ACTUAL_ID,
+        DIST_MONTH,
+        LGCS_CODE,
+        SUPP_CODE,
+        PD_STOCK_TYPE,
+        HALF_CODE,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        BREED_CODE,
+        FEATURE_CODE,
+        GRADE_CODE,
+        OUT_SPEC,
+        OUT_NW,
+        PD_CODE,
+        NORMS_CODE,
+        INPUT_DATE,
+        OLD_ACTUAL_NUM,
+        NEW_ACTUAL_NUM,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES
+        (
+        #{suppDsId},
+        #{stockActualId},
+        #{distMonth},
+        #{lgcsCode},
+        #{suppCode},
+        #{pdStockType},
+        #{halfCode},
+        #{classesCode},
+        #{machiningCode},
+        #{breedCode},
+        #{featureCode},
+        #{gradeCode},
+        #{outSpec},
+        #{outNetWeight},
+        #{pdCode},
+        #{normsCode},
+        #{crtTime},
+        #{oldActualNum},
+        #{newActualNum},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+    <!--数据插入——产品虚拟库存计划表-->
+    <insert id="saveStockPlanNotInit" parameterType="com.msk.ds.bean.SC181103Param">
+        INSERT INTO ds_pd_virtual_stock_plan (
+        SUPP_DS_ID,
+        VIRTUAL_STOCK_PLAN_ID,
+        DIST_MONTH,
+        LGCS_CODE,
+        <if test="lgcsName!=null">
+        LGCS_NAME,
+        </if>
+        SUPP_CODE,
+        <if test="suppName!=null">
+          SUPP_NAME,
+        </if>
+        PD_STOCK_TYPE,
+        HALF_CODE,
+        CLASSES_CODE,
+        <if test="classesName!=null">
+          CLASSES_NAME,
+        </if>
+        <if test="machiningCode!=null">
+          MACHINING_CODE,
+        </if>
+        <if test="machiningName!=null">
+          MACHINING_NAME,
+        </if>
+          BREED_CODE,
+        <if test="breedName!=null">
+          BREED_NAME,
+        </if>
+          FEATURE_CODE,
+        <if test="featureName!=null">
+          FEATURE_NAME,
+        </if>
+        <if test="weightCode!=null">
+          WEIGHT_CODE,
+        </if>
+        <if test="weightName!=null">
+          WEIGHT_NAME,
+        </if>
+        GRADE_CODE,
+        <if test="gradeName!=null">
+          GRADE_NAME,
+        </if>
+        OUT_SPEC,
+        OUT_NW,
+        PD_CODE,
+        NORMS_CODE,
+        <if test="normsName!=null">
+          NORMS_NAME,
+        </if>
+        ADJUST_DATE,
+        ORIG_PLAN_NUM,
+        OLD_PLAN_NUM,
+        NEW_PLAN_NUM,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES
+        (
+        #{suppDsId},
+        #{stockPlanId},
+        #{distMonth},
+        #{lgcsCode},
+        <if test="lgcsName!=null">
+            #{lgcsName},
+        </if>
+        #{suppCode},
+        <if test="suppName!=null">
+            #{suppName},
+        </if>
+        #{pdStockType},
+        #{halfCode},
+        #{classesCode},
+        <if test="classesName!=null">
+            #{classesName},
+        </if>
+        <if test="machiningCode!=null">
+            #{machiningCode},
+        </if>
+        <if test="machiningName!=null">
+            #{machiningName},
+        </if>
+        #{breedCode},
+        <if test="breedName!=null">
+            #{breedName},
+        </if>
+        #{featureCode},
+        <if test="featureName!=null">
+            #{featureName},
+        </if>
+        <if test="weightCode!=null">
+            #{weightCode},
+        </if>
+        <if test="weightName!=null">
+            #{weightName},
+        </if>
+        #{gradeCode},
+        <if test="gradeName!=null">
+            #{gradeName},
+        </if>
+        #{outSpec},
+        #{outNetWeight},
+        #{pdCode},
+        #{normsCode},
+        <if test="normsName!=null">
+            #{normsName},
+        </if>
+        #{crtTime},
+        #{origPlanNum},
+        #{oldPlanNum},
+        #{newPlanNum},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+
+    <select id="checkPlanNum" parameterType="BaseParam" resultType="int">
+        SELECT count(*) FROM ds_pd_virtual_stock_plan plan
+        WHERE
+        plan.DIST_MONTH=#{distMonth}
+        AND plan.LGCS_CODE = #{lgcsCode}
+        AND plan.SUPP_CODE = #{suppCode}
+        AND plan.DEL_FLG = 0
+        AND plan.PD_CODE = #{pdCode}
+        AND plan.NORMS_CODE = #{normsCode}
+        AND plan.PD_STOCK_TYPE = #{pdStockType}
+        AND plan.HALF_CODE = #{halfCode}
+    </select>
+
+    <select id="checkActualNum" parameterType="BaseParam" resultType="int">
+        SELECT count(*) FROM ds_pd_virtual_stock_actual actual
+        WHERE
+        actual.DIST_MONTH=#{distMonth}
+        AND actual.LGCS_CODE = #{lgcsCode}
+        AND actual.SUPP_CODE = #{suppCode}
+        AND actual.DEL_FLG = 0
+        AND actual.PD_CODE = #{pdCode}
+        AND actual.NORMS_CODE = #{normsCode}
+        AND actual.PD_STOCK_TYPE = #{pdStockType}
+        AND actual.HALF_CODE = #{halfCode}
+    </select>
+
+    <insert id="batchSaveActual" parameterType="List">
+        INSERT INTO ds_pd_virtual_stock_actual (
+        SUPP_DS_ID,
+        VIRTUAL_STOCK_ACTUAL_ID,
+        DIST_MONTH,
+        LGCS_CODE,
+        SUPP_CODE,
+        PD_STOCK_TYPE,
+        HALF_CODE,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        BREED_CODE,
+        FEATURE_CODE,
+        GRADE_CODE,
+        OUT_SPEC,
+        OUT_NW,
+        PD_CODE,
+        NORMS_CODE,
+        INPUT_DATE,
+        OLD_ACTUAL_NUM,
+        NEW_ACTUAL_NUM,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES
+        <foreach collection="list" item="actual" index="index" separator=",">
+            (
+            #{actual.suppDsId},
+            #{actual.stockActualId},
+            #{actual.distMonth},
+            #{actual.lgcsCode},
+            #{actual.suppCode},
+            #{actual.pdStockType},
+            #{actual.halfCode},
+            #{actual.classesCode},
+            #{actual.machiningCode},
+            #{actual.breedCode},
+            #{actual.featureCode},
+            #{actual.gradeCode},
+            #{actual.outSpec},
+            #{actual.outNetWeight},
+            #{actual.pdCode},
+            #{actual.normsCode},
+            #{actual.inputDate},
+            #{actual.oldActualNum},
+            #{actual.newActualNum},
+            0,
+            #{actual.crtId},
+            #{actual.crtTime},
+            #{actual.updId},
+            #{actual.updTime},
+            #{actual.actId},
+            #{actual.actTime},
+            1
+            )
+        </foreach>
+    </insert>
+
+    <insert id="batchSavePlan" parameterType="List">
+        INSERT INTO ds_pd_virtual_stock_plan (
+        SUPP_DS_ID,
+        VIRTUAL_STOCK_PLAN_ID,
+        DIST_MONTH,
+        LGCS_CODE,
+        LGCS_NAME,
+        SUPP_CODE,
+        SUPP_NAME,
+        PD_STOCK_TYPE,
+        HALF_CODE,
+        CLASSES_CODE,
+        CLASSES_NAME,
+        MACHINING_CODE,
+        MACHINING_NAME,
+        BREED_CODE,
+        BREED_NAME,
+        FEATURE_CODE,
+        FEATURE_NAME,
+        WEIGHT_CODE,
+        WEIGHT_NAME,
+        GRADE_CODE,
+        GRADE_NAME,
+        OUT_SPEC,
+        OUT_NW,
+        PD_CODE,
+        NORMS_CODE,
+        NORMS_NAME,
+        ADJUST_DATE,
+        ORIG_PLAN_NUM,
+        OLD_PLAN_NUM,
+        NEW_PLAN_NUM,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES
+        <foreach collection="list" item="plan" index="index" separator=",">
+            (
+            #{plan.suppDsId},
+            #{plan.stockPlanId},
+            #{plan.distMonth},
+            #{plan.lgcsCode},
+            #{plan.lgcsName},
+            #{plan.suppCode},
+            #{plan.suppName},
+            #{plan.pdStockType},
+            #{plan.halfCode},
+            #{plan.classesCode},
+            #{plan.classesName},
+            #{plan.machiningCode},
+            #{plan.machiningName},
+            #{plan.breedCode},
+            #{plan.breedName},
+            #{plan.featureCode},
+            #{plan.featureName},
+            #{plan.weightCode},
+            #{plan.weightName},
+            #{plan.gradeCode},
+            #{plan.gradeName},
+            #{plan.outSpec},
+            #{plan.outNetWeight},
+            #{plan.pdCode},
+            #{plan.normsCode},
+            #{plan.normsName},
+            #{plan.adJustDate},
+            #{plan.origPlanNum},
+            #{plan.oldPlanNum},
+            #{plan.newPlanNum},
+            0,
+            #{plan.crtId},
+            #{plan.crtTime},
+            #{plan.updId},
+            #{plan.updTime},
+            #{plan.actId},
+            #{plan.actTime},
+            1
+            )
+        </foreach>
+    </insert>
+    <!--Add for #2704 at 2016/09/18 by li_kai1 Start-->
+    <!--<insert id="saveStockActual" parameterType="BaseParam">
+        INSERT INTO  ds_pd_virtual_stock_actual(
+        ds_pd_virtual_stock_actual.SUPP_DS_ID,
+        ds_pd_virtual_stock_actual.VIRTUAL_STOCK_ACTUAL_ID,
+        ds_pd_virtual_stock_actual.DIST_MONTH,
+        ds_pd_virtual_stock_actual.LGCS_CODE,
+        ds_pd_virtual_stock_actual.SUPP_CODE,
+        ds_pd_virtual_stock_actual.PD_STOCK_TYPE,
+        ds_pd_virtual_stock_actual.HALF_CODE,
+        ds_pd_virtual_stock_actual.CLASSES_CODE,
+        ds_pd_virtual_stock_actual.MACHINING_CODE,
+        ds_pd_virtual_stock_actual.MACHINING_NAME,
+        ds_pd_virtual_stock_actual.BREED_CODE,
+        ds_pd_virtual_stock_actual.FEATURE_CODE,
+        ds_pd_virtual_stock_actual.GRADE_CODE,
+        ds_pd_virtual_stock_actual.OUT_SPEC,
+        ds_pd_virtual_stock_actual.OUT_NW,
+        ds_pd_virtual_stock_actual.PD_CODE,
+        ds_pd_virtual_stock_actual.NORMS_CODE,
+        ds_pd_virtual_stock_actual.INPUT_DATE,
+        ds_pd_virtual_stock_actual.OLD_ACTUAL_NUM,
+        ds_pd_virtual_stock_actual.NEW_ACTUAL_NUM,
+        ds_pd_virtual_stock_actual.DEL_FLG,
+        ds_pd_virtual_stock_actual.CRT_ID,
+        ds_pd_virtual_stock_actual.CRT_TIME,
+        ds_pd_virtual_stock_actual.UPD_ID,
+        ds_pd_virtual_stock_actual.UPD_TIME,
+        ds_pd_virtual_stock_actual.ACT_ID,
+        ds_pd_virtual_stock_actual.ACT_TIME,
+        ds_pd_virtual_stock_actual.VER)
+        SELECT  #{suppDsId},
+        #{stockActualId},
+        ds_pd_virtual_stock_actual.DIST_MONTH,
+        ds_pd_virtual_stock_actual.LGCS_CODE,
+        ds_pd_virtual_stock_actual.SUPP_CODE,
+        ds_pd_virtual_stock_actual.PD_STOCK_TYPE,
+        ds_pd_virtual_stock_actual.HALF_CODE,
+        ds_pd_virtual_stock_actual.CLASSES_CODE,
+        ds_pd_virtual_stock_actual.MACHINING_CODE,
+        ds_pd_virtual_stock_actual.MACHINING_NAME,
+        ds_pd_virtual_stock_actual.BREED_CODE,
+        ds_pd_virtual_stock_actual.FEATURE_CODE,
+        ds_pd_virtual_stock_actual.GRADE_CODE,
+        ds_pd_virtual_stock_actual.OUT_SPEC,
+        ds_pd_virtual_stock_actual.OUT_NW,
+        ds_pd_virtual_stock_actual.PD_CODE,
+        ds_pd_virtual_stock_actual.NORMS_CODE,
+        #{crtTime},
+        ds_pd_virtual_stock_actual.OLD_ACTUAL_NUM + #{oldActualNum},
+        ds_pd_virtual_stock_actual.NEW_ACTUAL_NUM + #{newActualNum},
+        ds_pd_virtual_stock_actual.DEL_FLG,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        ds_pd_virtual_stock_actual.VER
+        FROM ds_pd_virtual_stock_actual
+        WHERE ds_pd_virtual_stock_actual.DIST_MONTH = #{distMonth}
+        AND ds_pd_virtual_stock_actual.LGCS_CODE = #{lgcsCode}
+        AND ds_pd_virtual_stock_actual.SUPP_CODE = #{suppCode}
+        AND ds_pd_virtual_stock_actual.PD_STOCK_TYPE = #{pdStockType}
+        AND ds_pd_virtual_stock_actual.HALF_CODE =  #{halfCode}
+        AND ds_pd_virtual_stock_actual.PD_CODE =  #{pdCode}
+        AND ds_pd_virtual_stock_actual.NORMS_CODE = #{normsCode}
+        AND ds_pd_virtual_stock_actual.INPUT_DATE = #{inputDate}
+        AND ds_pd_virtual_stock_actual.DEL_FLG = 0
+    </insert>
+
+    <insert id="saveStockPlan" parameterType="BaseParam">
+        INSERT INTO ds_pd_virtual_stock_plan(
+        ds_pd_virtual_stock_plan.SUPP_DS_ID,
+        ds_pd_virtual_stock_plan.VIRTUAL_STOCK_PLAN_ID,
+        ds_pd_virtual_stock_plan.DIST_MONTH,
+        ds_pd_virtual_stock_plan.LGCS_CODE,
+        ds_pd_virtual_stock_plan.LGCS_NAME,
+        ds_pd_virtual_stock_plan.SUPP_CODE,
+        ds_pd_virtual_stock_plan.SUPP_NAME,
+        ds_pd_virtual_stock_plan.PD_STOCK_TYPE,
+        ds_pd_virtual_stock_plan.HALF_CODE,
+        ds_pd_virtual_stock_plan.CLASSES_CODE,
+        ds_pd_virtual_stock_plan.CLASSES_NAME,
+        ds_pd_virtual_stock_plan.MACHINING_CODE,
+        ds_pd_virtual_stock_plan.MACHINING_NAME,
+        ds_pd_virtual_stock_plan.BREED_CODE,
+        ds_pd_virtual_stock_plan.BREED_NAME,
+        ds_pd_virtual_stock_plan.FEATURE_CODE,
+        ds_pd_virtual_stock_plan.FEATURE_NAME,
+        ds_pd_virtual_stock_plan.WEIGHT_CODE,
+        ds_pd_virtual_stock_plan.WEIGHT_NAME,
+        ds_pd_virtual_stock_plan.GRADE_CODE,
+        ds_pd_virtual_stock_plan.GRADE_NAME,
+        ds_pd_virtual_stock_plan.OUT_SPEC,
+        ds_pd_virtual_stock_plan.OUT_NW,
+        ds_pd_virtual_stock_plan.PD_CODE,
+        ds_pd_virtual_stock_plan.NORMS_CODE,
+        ds_pd_virtual_stock_plan.NORMS_NAME,
+        ds_pd_virtual_stock_plan.ADJUST_DATE,
+        ds_pd_virtual_stock_plan.ORIG_PLAN_NUM,
+        ds_pd_virtual_stock_plan.OLD_PLAN_NUM,
+        ds_pd_virtual_stock_plan.NEW_PLAN_NUM,
+        ds_pd_virtual_stock_plan.DEL_FLG,
+        ds_pd_virtual_stock_plan.CRT_ID,
+        ds_pd_virtual_stock_plan.CRT_TIME,
+        ds_pd_virtual_stock_plan.UPD_ID,
+        ds_pd_virtual_stock_plan.UPD_TIME,
+        ds_pd_virtual_stock_plan.ACT_ID,
+        ds_pd_virtual_stock_plan.ACT_TIME,
+        ds_pd_virtual_stock_plan.VER)
+        SELECT #{suppDsId},
+        #{stockPlanId},
+        ds_pd_virtual_stock_plan.DIST_MONTH,
+        ds_pd_virtual_stock_plan.LGCS_CODE,
+        ds_pd_virtual_stock_plan.LGCS_NAME,
+        ds_pd_virtual_stock_plan.SUPP_CODE,
+        ds_pd_virtual_stock_plan.SUPP_NAME,
+        ds_pd_virtual_stock_plan.PD_STOCK_TYPE,
+        ds_pd_virtual_stock_plan.HALF_CODE,
+        ds_pd_virtual_stock_plan.CLASSES_CODE,
+        ds_pd_virtual_stock_plan.CLASSES_NAME,
+        ds_pd_virtual_stock_plan.MACHINING_CODE,
+        ds_pd_virtual_stock_plan.MACHINING_NAME,
+        ds_pd_virtual_stock_plan.BREED_CODE,
+        ds_pd_virtual_stock_plan.BREED_NAME,
+        ds_pd_virtual_stock_plan.FEATURE_CODE,
+        ds_pd_virtual_stock_plan.FEATURE_NAME,
+        ds_pd_virtual_stock_plan.WEIGHT_CODE,
+        ds_pd_virtual_stock_plan.WEIGHT_NAME,
+        ds_pd_virtual_stock_plan.GRADE_CODE,
+        ds_pd_virtual_stock_plan.GRADE_NAME,
+        ds_pd_virtual_stock_plan.OUT_SPEC,
+        ds_pd_virtual_stock_plan.OUT_NW,
+        ds_pd_virtual_stock_plan.PD_CODE,
+        ds_pd_virtual_stock_plan.NORMS_CODE,
+        ds_pd_virtual_stock_plan.NORMS_NAME,
+        #{crtTime},
+        ds_pd_virtual_stock_plan.ORIG_PLAN_NUM,
+        ds_pd_virtual_stock_plan.OLD_PLAN_NUM + #{oldPlanNum},
+        ds_pd_virtual_stock_plan.NEW_PLAN_NUM + #{newPlanNum},
+        ds_pd_virtual_stock_plan.DEL_FLG,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        ds_pd_virtual_stock_plan.VER
+        FROM ds_pd_virtual_stock_plan
+        WHERE ds_pd_virtual_stock_plan.DIST_MONTH = #{distMonth}
+        AND ds_pd_virtual_stock_plan.LGCS_CODE = #{lgcsCode}
+        AND ds_pd_virtual_stock_plan.SUPP_CODE = #{suppCode}
+        AND ds_pd_virtual_stock_plan.PD_STOCK_TYPE = #{pdStockType}
+        AND ds_pd_virtual_stock_plan.HALF_CODE =  #{halfCode}
+        AND ds_pd_virtual_stock_plan.PD_CODE =  #{pdCode}
+        AND ds_pd_virtual_stock_plan.NORMS_CODE = #{normsCode}
+        AND ds_pd_virtual_stock_plan.ADJUST_DATE = #{adJustDate}
+        AND ds_pd_virtual_stock_plan.DEL_FLG = 0
+    </insert>-->
+
+    <select id="findSumPlanExisted" resultType="com.msk.ds.bean.SC181103Bean" parameterType="BaseParam">
+        SELECT
+        ds_pd_virtual_stock_plan.DIST_MONTH distMonth,
+        ds_pd_virtual_stock_plan.LGCS_CODE lgcsCode,
+        ds_pd_virtual_stock_plan.SUPP_CODE suppCode,
+        ds_pd_virtual_stock_plan.PD_STOCK_TYPE pdStockType,
+        ds_pd_virtual_stock_plan.HALF_CODE halfCode,
+        ds_pd_virtual_stock_plan.PD_CODE pdCode,
+        ds_pd_virtual_stock_plan.NORMS_CODE normsCode,
+        SUM(ds_pd_virtual_stock_plan.ORIG_PLAN_NUM) origPlanNum,
+        SUM(ds_pd_virtual_stock_plan.OLD_PLAN_NUM) oldPlanNum,
+        SUM(ds_pd_virtual_stock_plan.NEW_PLAN_NUM) newPlanNum
+        FROM ds_pd_virtual_stock_plan
+        WHERE
+        <foreach collection="filterMap.planList" item="plan" index="i" open="(" separator="or" close=")">
+            ds_pd_virtual_stock_plan.DEL_FLG = 0
+            AND ds_pd_virtual_stock_plan.DIST_MONTH = #{plan.distMonth}
+            AND ds_pd_virtual_stock_plan.LGCS_CODE = #{plan.lgcsCode}
+            AND ds_pd_virtual_stock_plan.SUPP_CODE = #{plan.suppCode}
+            AND ds_pd_virtual_stock_plan.PD_STOCK_TYPE = #{plan.pdStockType}
+            AND ds_pd_virtual_stock_plan.HALF_CODE =  #{plan.halfCode}
+            AND ds_pd_virtual_stock_plan.PD_CODE =  #{plan.pdCode}
+            AND ds_pd_virtual_stock_plan.NORMS_CODE = #{plan.normsCode}
+            <if test="plan.filterMap.adJustDate != null and plan.filterMap.adJustDate != ''">
+                AND ds_pd_virtual_stock_plan.ADJUST_DATE = #{plan.filterMap.adJustDate}
+            </if>
+        </foreach>
+        GROUP BY
+        ds_pd_virtual_stock_plan.DIST_MONTH,
+        ds_pd_virtual_stock_plan.LGCS_CODE,
+        ds_pd_virtual_stock_plan.SUPP_CODE,
+        ds_pd_virtual_stock_plan.PD_STOCK_TYPE,
+        ds_pd_virtual_stock_plan.HALF_CODE,
+        ds_pd_virtual_stock_plan.PD_CODE,
+        ds_pd_virtual_stock_plan.NORMS_CODE
+    </select>
+    <select id="findSumActualExisted" resultType="com.msk.ds.bean.SC181103Bean" parameterType="BaseParam">
+        SELECT
+        ds_pd_virtual_stock_actual.DIST_MONTH distMonth,
+        ds_pd_virtual_stock_actual.LGCS_CODE lgcsCode,
+        ds_pd_virtual_stock_actual.SUPP_CODE suppCode,
+        ds_pd_virtual_stock_actual.PD_STOCK_TYPE pdStockType,
+        ds_pd_virtual_stock_actual.HALF_CODE halfCode,
+        ds_pd_virtual_stock_actual.PD_CODE pdCode,
+        ds_pd_virtual_stock_actual.NORMS_CODE normsCode,
+        SUM(ds_pd_virtual_stock_actual.OLD_ACTUAL_NUM) oldActualNum,
+        SUM(ds_pd_virtual_stock_actual.NEW_ACTUAL_NUM) newActualNum
+        FROM ds_pd_virtual_stock_actual
+        WHERE
+        <foreach collection="filterMap.actualList" item="actual" index="i" open="(" separator="or" close=")">
+            ds_pd_virtual_stock_actual.DEL_FLG = 0
+            AND ds_pd_virtual_stock_actual.DIST_MONTH = #{actual.distMonth}
+            AND ds_pd_virtual_stock_actual.LGCS_CODE = #{actual.lgcsCode}
+            AND ds_pd_virtual_stock_actual.SUPP_CODE = #{actual.suppCode}
+            AND ds_pd_virtual_stock_actual.PD_STOCK_TYPE = #{actual.pdStockType}
+            AND ds_pd_virtual_stock_actual.HALF_CODE =  #{actual.halfCode}
+            AND ds_pd_virtual_stock_actual.PD_CODE =  #{actual.pdCode}
+            AND ds_pd_virtual_stock_actual.NORMS_CODE = #{actual.normsCode}
+            <if test="actual.filterMap.inputDate != null and actual.filterMap.inputDate != ''">
+                AND ds_pd_virtual_stock_actual.INPUT_DATE = #{actual.filterMap.inputDate}
+            </if>
+        </foreach>
+        GROUP BY
+        ds_pd_virtual_stock_actual.DIST_MONTH,
+        ds_pd_virtual_stock_actual.LGCS_CODE,
+        ds_pd_virtual_stock_actual.SUPP_CODE,
+        ds_pd_virtual_stock_actual.PD_STOCK_TYPE,
+        ds_pd_virtual_stock_actual.HALF_CODE,
+        ds_pd_virtual_stock_actual.PD_CODE,
+        ds_pd_virtual_stock_actual.NORMS_CODE
+    </select>
+
+    <update id="modifyPlanDeleteFlgExisted" parameterType="com.msk.ds.bean.SC181103Bean">
+        UPDATE ds_pd_virtual_stock_plan
+        SET
+        ds_pd_virtual_stock_plan.upd_id = #{updId},
+        ds_pd_virtual_stock_plan.upd_time = #{updTime},
+        ds_pd_virtual_stock_plan.DEL_FLG = 1,
+        ds_pd_virtual_stock_plan.VER = ds_pd_virtual_stock_plan.VER + 1
+        WHERE
+        ds_pd_virtual_stock_plan.DEL_FLG = 0
+        AND ds_pd_virtual_stock_plan.DIST_MONTH = #{distMonth}
+        AND ds_pd_virtual_stock_plan.LGCS_CODE = #{lgcsCode}
+        AND ds_pd_virtual_stock_plan.SUPP_CODE = #{suppCode}
+        AND ds_pd_virtual_stock_plan.PD_STOCK_TYPE = #{pdStockType}
+        AND ds_pd_virtual_stock_plan.HALF_CODE =  #{halfCode}
+        AND ds_pd_virtual_stock_plan.PD_CODE =  #{pdCode}
+        AND ds_pd_virtual_stock_plan.NORMS_CODE = #{normsCode}
+
+    </update>
+    <update id="modifyActualDeleteFlgExisted" parameterType="com.msk.ds.bean.SC181103Bean">
+        UPDATE ds_pd_virtual_stock_actual
+        SET
+        ds_pd_virtual_stock_actual.upd_id = #{updId},
+        ds_pd_virtual_stock_actual.upd_time = #{updTime},
+        ds_pd_virtual_stock_actual.DEL_FLG = 1,
+        ds_pd_virtual_stock_actual.VER = ds_pd_virtual_stock_actual.VER + 1
+        WHERE
+        ds_pd_virtual_stock_actual.DEL_FLG = 0
+        AND ds_pd_virtual_stock_actual.DIST_MONTH = #{distMonth}
+        AND ds_pd_virtual_stock_actual.LGCS_CODE = #{lgcsCode}
+        AND ds_pd_virtual_stock_actual.SUPP_CODE = #{suppCode}
+        AND ds_pd_virtual_stock_actual.PD_STOCK_TYPE = #{pdStockType}
+        AND ds_pd_virtual_stock_actual.HALF_CODE =  #{halfCode}
+        AND ds_pd_virtual_stock_actual.PD_CODE =  #{pdCode}
+        AND ds_pd_virtual_stock_actual.NORMS_CODE = #{normsCode}
+    </update>
+
+    <select id="ss" parameterType="BaseParam" resultType="com.msk.ds.bean.SC181103Bean">
+        SELECT * FROM ds_pd_virtual_stock_plan WHERE
+        ds_pd_virtual_stock_plan.DEL_FLG = 0
+            AND ds_pd_virtual_stock_plan.DIST_MONTH = #{distMonth}
+            AND ds_pd_virtual_stock_plan.LGCS_CODE = #{lgcsCode}
+            AND ds_pd_virtual_stock_plan.SUPP_CODE = #{suppCode}
+            AND ds_pd_virtual_stock_plan.PD_CODE =  #{pdCode}
+            AND ds_pd_virtual_stock_plan.NORMS_CODE = #{normsCode}
+            AND ds_pd_virtual_stock_plan.PD_STOCK_TYPE = #{pdStockType}
+            AND ds_pd_virtual_stock_plan.HALF_CODE =  #{halfCode}
+            AND ds_pd_virtual_stock_plan.ADJUST_DATE = #{adJustDate}
+    </select>
+    <!--Add for #2704 at 2016/09/18 by li_kai1 End-->
+</mapper>

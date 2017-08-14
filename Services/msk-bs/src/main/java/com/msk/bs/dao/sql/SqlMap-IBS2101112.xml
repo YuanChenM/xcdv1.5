@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2101112Logic">
+
+  <resultMap type="com.msk.bs.bean.IBS21011121Bean" id="houseType">
+      <id column="HOUSE_CATEGORY_CODE" property="hkTypeCode"/>
+      <result column="HOUSE_RECLASSIFY_CODE" property="hkSecdTypeCode"/>
+  </resultMap>
+    <!-- map返回 -->
+    <resultMap type="com.msk.bs.bean.IBS2101112Bean" id="aaMap">
+        <result property="hisId" column="HIS_ID"/>
+        <result property="buyerReason" column="BUYER_REASON"/>
+        <result property="buyershopReason" column="BUYERSHOP_REASON"/>
+        <result property="slCode" column="SL_CODE"/>
+        <result property="houseCode" column="HOUSE_CODE"/>
+        <result property="buyerId" column="BUYER_ID"/>
+        <result property="startTime" column="START_TIME"/>
+        <result property="endTime" column="END_TIME"/>
+        <result property="applyTime" column="APPLY_TIME"/>
+        <result property="applyStatus" column="APPLY_STATUS"/>
+        <result property="applySide" column="APPLY_SIDE"/>
+        <result property="ver" column="VER"/>
+
+        <association property="buyerInfo" javaType="com.msk.bs.bean.IBS210111201Bean">
+            <result property="buyerId" column="BUYER_ID"/>
+            <result property="buyerCode" column="BUYER_CODE"/>
+            <result property="buyerName" column="BUYER_NAME"/>
+            <result property="buyerAddr" column="BUYER_ADDR"/>
+            <result property="lgcsAreaCode" column="LGCS_AREA_CODE"/>
+            <result property="provinceCode" column="PROVINCE_CODE"/>
+            <result property="cityCode" column="CITY_CODE"/>
+            <result property="districtCode" column="DISTRICT_CODE"/>
+            <result property="provinceName" column="PROVINCE_NAME"/>
+            <result property="cityName" column="CITY_NAME"/>
+            <result property="districtName" column="DISTRICT_NAME"/>
+            <result property="buyerAddr" column="BUYER_ADDR"/>
+            <result property="busiTel" column="BUSI_TEL"/>
+
+        </association>
+        <association property="houseInfo" javaType="com.msk.core.entity.SlHouseAccount">
+            <result property="slCode" column="SL_CODE"/>
+            <result property="houseAccount" column="HOUSE_ACCOUNT"/>
+            <result property="houseCode" column="HOUSE_CODE"/>
+            <result property="houseCodeDis" column="HOUSE_CODE_DIS"/>
+            <result property="houseTel" column="HOUSE_TEL"/>
+            <result property="houseShowName" column="HOUSE_SHOW_NAME"/>
+            <result property="houseContact" column="HOUSE_CONTACT"/>
+            <result property="accountPsd" column="ACCOUNT_PSD"/>
+            <result property="authStatus" column="AUTH_STATUS"/>
+            <result property="slIdcard" column="SL_IDCARD"/>
+            <result property="slConFlg" column="SL_CON_FLG"/>
+            <result property="rareaCode" column="R_AREA_CODE"/>
+            <result property="rlgcsAreaCode" column="R_LGCS_AREA_CODE"/>
+            <result property="rprovinceCode" column="R_PROVINCE_CODE"/>
+            <result property="rcityCode" column="R_CITY_CODE"/>
+            <result property="rdistrictCode" column="R_DISTRICT_CODE"/>
+            <result property="rhouseAddress" column="R_AREA_CODE"/>
+            <result property="areaCode" column="AREA_CODE"/>
+            <result property="lgcsAreaCode" column="LGCS_AREA_CODE"/>
+            <result property="provinceCode" column="PROVINCE_CODE"/>
+            <result property="cityCode" column="CITY_CODE"/>
+            <result property="districtCode" column="DISTRICT_CODE"/>
+            <result property="houseAddress" column="HOUSE_ADDRESS"/>
+            <result property="vareaCode" column="V_AREA_CODE"/>
+            <result property="vlgcsAreaCode" column="V_LGCS_AREA_CODE"/>
+            <result property="vprovinceCode" column="V_PROVINCE_CODE"/>
+            <result property="vcityCode" column="V_CITY_CODE"/>
+            <result property="vdistrictCode" column="V_DISTRICT_CODE"/>
+            <result property="vhouseAddress" column="V_HOUSE_ADDRESS"/>
+            <result property="lat" column="LAT"/>
+            <result property="lon" column="LON"/>
+            <result property="vlat" column="V_LAT"/>
+            <result property="vlon" column="V_LON"/>
+            <result property="licenses" column="LICENSES"/>
+            <result property="buyerAsign" column="BUYER_ASIGN"/>
+            <result property="wechat" column="WECHAT"/>
+            <result property="qq" column="QQ"/>
+            <result property="email" column="EMAIL"/>
+            <result property="fixedTel" column="FIXED_TEL"/>
+            <result property="fax" column="FAX"/>
+            <result property="flag20" column="FLAG20"/>
+            <result property="flag19" column="FLAG19"/>
+            <result property="flag18" column="FLAG18"/>
+            <result property="flag17" column="FLAG17"/>
+            <result property="flag16" column="FLAG16"/>
+            <result property="flag15" column="FLAG15"/>
+            <result property="flag14" column="FLAG14"/>
+            <result property="flag13" column="FLAG13"/>
+            <result property="flag12" column="FLAG12"/>
+            <result property="flag11" column="FLAG11"/>
+            <result property="flag10" column="FLAG10"/>
+            <result property="flag9" column="FLAG9"/>
+            <result property="flag8" column="FLAG8"/>
+            <result property="flag7" column="FLAG7"/>
+            <result property="flag6" column="FLAG6"/>
+            <result property="flag5" column="FLAG5"/>
+            <result property="flag4" column="FLAG4"/>
+            <result property="flag3" column="FLAG3"/>
+            <result property="flag2" column="FLAG2"/>
+            <result property="flag1" column="FLAG1"/>
+            <result property="houseIntroduce" column="HOUSE_INTRODUCE"/>
+            <result property="houseClass" column="HOUSE_CLASS"/>
+            <result property="houseCategory" column="HOUSE_CATEGORY"/>
+            <result property="houseCategorySub" column="HOUSE_CATEGORY_SUB"/>
+            <result property="houseCategory0" column="HOUSE_CATEGORY0"/>
+            <result property="houseCategory1" column="HOUSE_CATEGORY1"/>
+            <result property="houseCategory2" column="HOUSE_CATEGORY2"/>
+            <result property="houseCategory3" column="HOUSE_CATEGORY3"/>
+            <result property="houseCategory4" column="HOUSE_CATEGORY4"/>
+            <result property="houseCategory5" column="HOUSE_CATEGORY5"/>
+            <result property="houseCategory6" column="HOUSE_CATEGORY6"/>
+            <result property="houseCategory7" column="HOUSE_CATEGORY7"/>
+            <result property="houseCategory8" column="HOUSE_CATEGORY8"/>
+            <result property="ver" column="VER"/>
+        </association>
+        <collection property="houseTYPEList" ofType="com.msk.bs.bean.IBS21011121Bean" resultMap="houseType">
+        </collection>
+    </resultMap>
+
+
+    <sql id="selectFiled">
+        A.HIS_ID,
+        A.SL_CODE AS SL_CODE1,
+        A.HOUSE_CODE,
+        A.BUYER_ID,
+        IFNULL(A.START_TIME,now()) START_TIME,
+        IFNULL(A.END_TIME,now()) END_TIME,
+        A.APPLY_TIME,
+        A.APPLY_STATUS,
+        A.APPLY_SIDE,
+        IFNULL(reason.Msq_Reason,'') BUYER_REASON,
+        IFNULL(shopReason.Msq_Reason,'') BUYERSHOP_REASON,
+        A.VER AS VER1,
+        L.SL_CODE AS SL_CODE2,
+        L.HOUSE_ACCOUNT,
+        L.HOUSE_CODE AS HOUSE_CODE2,
+        IFNULL(L.HOUSE_CODE_DIS,'') HOUSE_CODE_DIS,
+        L.HOUSE_TEL,
+        L.HOUSE_SHOW_NAME,
+        IFNULL(L.HOUSE_CONTACT,'') HOUSE_CONTACT,
+        L.ACCOUNT_PSD,
+        L.AUTH_STATUS,
+        L.SL_IDCARD,
+        L.SL_CON_FLG,
+        IFNULL(L.R_AREA_CODE,'') R_AREA_CODE,
+        IFNULL(L.R_LGCS_AREA_CODE,'') R_LGCS_AREA_CODE,
+        IFNULL(L.R_PROVINCE_CODE,'') R_PROVINCE_CODE,
+        IFNULL(L.R_CITY_CODE,'') R_CITY_CODE,
+        IFNULL(L.R_DISTRICT_CODE,'') R_DISTRICT_CODE,
+        IFNULL(L.R_HOUSE_ADDRESS,'') R_HOUSE_ADDRESS,
+        IFNULL(L.AREA_CODE,'') AREA_CODE,
+        L.LGCS_AREA_CODE AS LGCS_AREA_CODE2,
+        L.PROVINCE_CODE AS PROVINCE_CODE2,
+        L.CITY_CODE AS CITY_CODE2,
+        L.DISTRICT_CODE AS DISTRICT_CODE2,
+        L.HOUSE_ADDRESS,
+        L.V_AREA_CODE,
+        L.V_LGCS_AREA_CODE,
+        IFNULL(L.V_PROVINCE_CODE,'') V_PROVINCE_CODE,
+        IFNULL(L.V_CITY_CODE,'') V_CITY_CODE,
+        IFNULL(L.V_DISTRICT_CODE,'') V_DISTRICT_CODE,
+        IFNULL(L.V_HOUSE_ADDRESS,'') V_HOUSE_ADDRESS,
+        L.LAT,
+        L.LON,
+        L.V_LAT,
+        L.V_LON,
+        L.LICENSES,
+        L.BUYER_ASIGN,
+        L.WECHAT,
+        L.QQ,
+        L.EMAIL,
+        L.FIXED_TEL,
+        L.FAX,
+        L.FLAG20,
+        L.FLAG19,
+        L.FLAG18,
+        L.FLAG17,
+        L.FLAG16,
+        L.FLAG15,
+        L.FLAG14,
+        L.FLAG13,
+        L.FLAG12,
+        L.FLAG11,
+        L.FLAG10,
+        L.FLAG9,
+        L.FLAG8,
+        L.FLAG7,
+        L.FLAG6,
+        L.FLAG5,
+        L.FLAG4,
+        L.FLAG3,
+        L.FLAG2,
+        L.FLAG1,
+        L.HOUSE_INTRODUCE,
+        L.HOUSE_CLASS,
+        L.HOUSE_CATEGORY,
+        L.HOUSE_CATEGORY0,
+        L.HOUSE_CATEGORY1,
+        L.HOUSE_CATEGORY2,
+        L.HOUSE_CATEGORY3,
+        L.HOUSE_CATEGORY4,
+        L.HOUSE_CATEGORY5,
+        L.HOUSE_CATEGORY6,
+        L.HOUSE_CATEGORY7,
+        L.HOUSE_CATEGORY8,
+        L.VER AS VER2,
+        m.HOUSE_CATEGORY_CODE,
+        m.HOUSE_RECLASSIFY_CODE
+        <!--I.GREADE,-->
+    </sql>
+    <sql id="selectFrom">
+        FROM sl_bs_buyer_his AS A
+        LEFT JOIN sl_house_account L ON L.SL_CODE = A.SL_CODE AND L.HOUSE_CODE = A.HOUSE_CODE
+        LEFT JOIN sl_bs_reason reason ON  A.BUYER_REASON = reason.Msg_ID
+        LEFT JOIN sl_bs_reason shopReason ON  A.BUYERSHOP_REASON = shopReason.Msg_ID
+        LEFT JOIN sl_house_manage m ON  m.SL_CODE = A.SL_CODE AND m.HOUSE_CODE = A.HOUSE_CODE
+    </sql>
+
+
+    <sql id="selectFiled1">
+        "",
+        A.SL_CODE,
+        A.HOUSE_CODE,
+        A.BUYER_ID,
+        IFNULL(A.START_TIME,now()) START_TIME,
+        IFNULL(A.END_TIME,now()) END_TIME,
+        A.APPLY_TIME,
+        A.APPLY_STATUS,
+        A.APPLY_SIDE,
+        "",
+        "",
+        A.VER,
+        L.SL_CODE AS SL_CODE2,
+        L.HOUSE_ACCOUNT,
+        L.HOUSE_CODE,
+        IFNULL(L.HOUSE_CODE_DIS,'') HOUSE_CODE_DIS,
+        L.HOUSE_TEL,
+        L.HOUSE_SHOW_NAME,
+        IFNULL(L.HOUSE_CONTACT,'') HOUSE_CONTACT,
+        L.ACCOUNT_PSD,
+        L.AUTH_STATUS,
+        L.SL_IDCARD,
+        L.SL_CON_FLG,
+        IFNULL(L.R_AREA_CODE,'') R_AREA_CODE,
+        IFNULL(L.R_LGCS_AREA_CODE,'') R_LGCS_AREA_CODE,
+        IFNULL(L.R_PROVINCE_CODE,'') R_PROVINCE_CODE,
+        IFNULL(L.R_CITY_CODE,'') R_CITY_CODE,
+        IFNULL(L.R_DISTRICT_CODE,'') R_DISTRICT_CODE,
+        IFNULL(L.R_HOUSE_ADDRESS,'') R_HOUSE_ADDRESS,
+        IFNULL(L.AREA_CODE,'') AREA_CODE,
+        L.LGCS_AREA_CODE AS LGCS_AREA_CODE2,
+        L.PROVINCE_CODE AS PROVINCE_CODE2,
+        L.CITY_CODE AS CITY_CODE2,
+        L.DISTRICT_CODE AS DISTRICT_CODE2,
+        L.HOUSE_ADDRESS,
+        L.V_AREA_CODE,
+        L.V_LGCS_AREA_CODE,
+        IFNULL(L.V_PROVINCE_CODE,'') V_PROVINCE_CODE,
+        IFNULL(L.V_CITY_CODE,'') V_CITY_CODE,
+        IFNULL(L.V_DISTRICT_CODE,'') V_DISTRICT_CODE,
+        IFNULL(L.V_HOUSE_ADDRESS,'') V_HOUSE_ADDRESS,
+        L.LAT,
+        L.LON,
+        L.V_LAT,
+        L.V_LON,
+        L.LICENSES,
+        L.BUYER_ASIGN,
+        L.WECHAT,
+        L.QQ,
+        L.EMAIL,
+        L.FIXED_TEL,
+        L.FAX,
+        L.FLAG20,
+        L.FLAG19,
+        L.FLAG18,
+        L.FLAG17,
+        L.FLAG16,
+        L.FLAG15,
+        L.FLAG14,
+        L.FLAG13,
+        L.FLAG12,
+        L.FLAG11,
+        L.FLAG10,
+        L.FLAG9,
+        L.FLAG8,
+        L.FLAG7,
+        L.FLAG6,
+        L.FLAG5,
+        L.FLAG4,
+        L.FLAG3,
+        L.FLAG2,
+        L.FLAG1,
+        L.HOUSE_INTRODUCE,
+        L.HOUSE_CLASS,
+        L.HOUSE_CATEGORY,
+        L.HOUSE_CATEGORY0,
+        L.HOUSE_CATEGORY1,
+        L.HOUSE_CATEGORY2,
+        L.HOUSE_CATEGORY3,
+        L.HOUSE_CATEGORY4,
+        L.HOUSE_CATEGORY5,
+        L.HOUSE_CATEGORY6,
+        L.HOUSE_CATEGORY7,
+        L.HOUSE_CATEGORY8,
+        L.VER,
+        m.HOUSE_CATEGORY_CODE,
+        m.HOUSE_RECLASSIFY_CODE
+    </sql>
+    <sql id="selectFrom1">
+        FROM sl_bs_buyer AS A
+        LEFT JOIN sl_house_account L ON L.SL_CODE = A.SL_CODE AND L.HOUSE_CODE = A.HOUSE_CODE
+        LEFT JOIN sl_house_manage m ON  m.SL_CODE = A.SL_CODE AND m.HOUSE_CODE = A.HOUSE_CODE
+    </sql>
+    <sql id="whereCondition">
+        <where>
+            (A.DEL_FLG IS NULL OR A.DEL_FLG =0)
+
+            <if test="filterMap.houseCodeDis1!=null and filterMap.houseCodeDis1!=''">
+                <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  Start-->
+                AND L.HOUSE_CODE_DIS like #{filterMap.houseCodeDis1}
+                <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  End-->
+            </if>
+            <if test="filterMap.houseContact1!=null and filterMap.houseContact1!=''">
+                <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  Start-->
+                AND L.HOUSE_CONTACT like #{filterMap.houseContact1}
+                <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  End-->
+            </if>
+
+            <if test="filterMap.provinceCode1!=null and filterMap.provinceCode1!=''">
+                AND L.V_PROVINCE_CODE like #{filterMap.provinceCode1}
+            </if>
+            <if test="filterMap.cityCode1!=null and filterMap.cityCode1!=''">
+                AND L.V_CITY_CODE like #{filterMap.cityCode1}
+            </if>
+            <if test="filterMap.districtCode1!=null and filterMap.districtCode1!=''">
+                AND L.V_DISTRICT_CODE like #{filterMap.districtCode1}
+            </if>
+
+
+            <if test="filterMap.sartDate!=null and filterMap.startDate!=''">
+                AND A.START_TIME <![CDATA[ >= DATE_FORMAT(#{startDate},'%Y-%c-%d 00:00:00')]]>
+            </if>
+            <if test="filterMap.endDate!=null and filterMap.endDate!=''">
+                AND A.END_TIME <![CDATA[ <= DATE_FORMAT(#{endDate},'%Y-%c-%d 23:59:59')]]>
+            </if>
+            <if test="filterMap.buyerReason!=null and filterMap.buyerReason!=''">
+                AND A.BUYER_REASON like #{filterMap.buyerReason}
+            </if>
+            <if test="filterMap.buyershopReason!=null and filterMap.buyershopReason!=''">
+                AND A.BUYERSHOP_REASON like #{filterMap.buyershopReason}
+            </if>
+
+
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND A.SL_CODE = #{filterMap.slCode}
+            </if>
+            <if test="filterMap.buyerId!=null and filterMap.buyerId!=''">
+                AND A.BUYER_ID = #{filterMap.buyerId}
+            </if>
+            <if test="filterMap.houseCode!=null and filterMap.houseCode!=''">
+                AND L.HOUSE_CODE = #{filterMap.houseCode}
+            </if>
+            <if test="filterMap.salesTargetType!=null and filterMap.salesTargetType!=''">
+                AND H.SALES_TARGET_TYPE=#{filterMap.salesTargetType}
+            </if>
+            <if test="filterMap.classCode!=null and filterMap.classCode!=''">
+                AND I.CLASS_CODE=#{filterMap.classCode}
+            </if>
+
+            <if test="filterMap.startDate!=null and filterMap.startDate!=''">
+                AND A.START_TIME <![CDATA[ >= DATE_FORMAT(#{startDate},'%Y-%c-%d 00:00:00')]]>
+            </if>
+            <if test="filterMap.endDate!=null and filterMap.endDate!=''">
+                AND A.END_TIME <![CDATA[ <= DATE_FORMAT(#{endDate},'%Y-%c-%d 23:59:59')]]>
+            </if>
+        </where>
+    </sql>
+
+    <sql id="whereCondition1">
+        <where>
+            (A.DEL_FLG IS NULL OR A.DEL_FLG =0)
+
+            <if test="filterMap.houseCodeDis1!=null and filterMap.houseCodeDis1!=''">
+                <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  Start-->
+                AND L.HOUSE_CODE_DIS like #{filterMap.houseCodeDis1}
+                <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  End-->
+            </if>
+            <if test="filterMap.houseContact1!=null and filterMap.houseContact1!=''">
+                <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  Start-->
+                AND L.HOUSE_CONTACT like #{filterMap.houseContact1}
+                <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  End-->
+            </if>
+
+            <if test="filterMap.provinceCode1!=null and filterMap.provinceCode1!=''">
+                AND L.V_PROVINCE_CODE like #{filterMap.provinceCode1}
+            </if>
+            <if test="filterMap.cityCode1!=null and filterMap.cityCode1!=''">
+                AND L.V_CITY_CODE like #{filterMap.cityCode1}
+            </if>
+            <if test="filterMap.districtCode1!=null and filterMap.districtCode1!=''">
+                AND L.V_DISTRICT_CODE like #{filterMap.districtCode1}
+            </if>
+            <if test="filterMap.buyerReason!=null and filterMap.buyerReason!=''">
+                AND A.BUYER_REASON like #{filterMap.buyerReason}
+            </if>
+            <if test="filterMap.buyershopReason!=null and filterMap.buyershopReason!=''">
+                AND A.BUYERSHOP_REASON like #{filterMap.buyershopReason}
+            </if>
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND A.SL_CODE = #{filterMap.slCode}
+            </if>
+            <if test="filterMap.buyerId!=null and filterMap.buyerId!=''">
+                AND A.BUYER_ID = #{filterMap.buyerId}
+            </if>
+            <if test="filterMap.houseCode!=null and filterMap.houseCode!=''">
+                AND L.HOUSE_CODE = #{filterMap.houseCode}
+            </if>
+
+            <if test="filterMap.startDate!=null and filterMap.startDate!=''">
+                AND A.START_TIME <![CDATA[ >= DATE_FORMAT(#{startDate},'%Y-%c-%d 00:00:00')]]>
+            </if>
+            <if test="filterMap.endDate!=null and filterMap.endDate!=''">
+                AND A.END_TIME <![CDATA[ <= DATE_FORMAT(#{endDate},'%Y-%c-%d 23:59:59')]]>
+            </if>
+        </where>
+    </sql>
+    <select id="getPageCount" resultType="int" parameterType="BasePageParam">
+        SELECT COUNT(1) FROM
+        (SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        <if test="filterMap.searchDataFlag==2">
+            UNION ALL
+            SELECT
+            <include refid="selectFiled1"/>
+            <include refid="selectFrom1"/>
+            <include refid="whereCondition1"/>
+        </if>
+        ) A
+    </select>
+    <select id="findPageList" resultMap="aaMap"
+            parameterType="BasePageParam">
+        SELECT CONCAT(basic.SL_CODE_DIS,b.HOUSE_CODE_DIS) AS HOUSE_CODE_DIS,b.* FROM(
+        SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        <if test="filterMap.searchDataFlag==2">
+            UNION ALL
+            SELECT
+            <include refid="selectFiled1"/>
+            <include refid="selectFrom1"/>
+            <include refid="whereCondition1"/>
+        </if>
+        ) b
+        LEFT JOIN sl_bs_basic_info basic
+        ON basic.SL_CODE = b.SL_CODE1
+        <!--order by slCode-->
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+</mapper>
+

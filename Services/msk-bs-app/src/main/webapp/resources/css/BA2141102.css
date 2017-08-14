@@ -1,0 +1,121 @@
+﻿.Container{
+  width:100%;
+  margin:0 auto;/*设置整个容器在浏览器中水平居中*/
+  background:url("../images/bg.png") repeat;
+}
+.logo{
+  padding-left:50px;
+  padding-top:20px;
+  padding-bottom:50px;
+}
+
+
+.Content{
+  height:1624px;
+  margin-top:5px;
+}
+.loginName{
+  border:0;
+  height:180px;
+  width:800px;
+  vertical-align:middle;
+  margin-left:70px;
+  margin-top: 117px;
+  color: #898989;
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 170px;
+  BACKGROUND-IMAGE: url("../images/input.png");
+  BACKGROUND-REPEAT: no-repeat
+}
+.passWord{
+  border:0;
+  height:180px;
+  width:800px;
+  vertical-align:middle;
+  margin-left:70px;
+  margin-top:28px;
+  color: #898989;
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 170px;
+  BACKGROUND-IMAGE: url("../images/input.png");
+  BACKGROUND-REPEAT: no-repeat
+}
+.sure{
+  height:180px;
+  width:800px;
+  text-align: center;
+  vertical-align:middle;
+  margin-left:70px;
+  margin-top: 117px;
+  background:url("../images/Button1.png") repeat;
+}
+
+.register{
+  height: 180px;
+  width:680px;
+  padding:5px;
+  text-align: center;
+  margin:-45px auto;
+  border:1px solid #000;
+  border-image-source:url("../images/Button3.png");
+  border-image-slice:10;
+  border-image-repeat:stretch;
+}
+
+.sure_span{
+  font-family: "Microsoft Yahei", "Microsoft Yahei";
+  color: white;
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 170px;
+}
+
+.info{
+  height:180px;
+  width:100%;
+  text-align: center;
+  vertical-align:middle;
+  margin-top: 23px;
+}
+.info .gjLogin{
+  float: left;
+  margin-left: -36px;
+  height: 100px;
+  width: 446px;
+}
+
+.info .forgetPw{
+  float: right;
+  height: 100px;
+  width: 369px;
+}
+
+.register_span{
+  font-family: "Microsoft Yahei", "Microsoft Yahei";
+  color: #22BD9B;
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 170px;
+}
+.border-1{border-image-width:20px;}
+.im-com{
+  height:50px;
+  margin:50px;
+  padding:5px;
+  font-size:13px;
+  border:1px solid #000;
+  border-image-source:url(http://img.xiaoho.com/2014/09/border-1.png);
+  border-image-slice:10;
+  border-image-repeat:stretch;
+}
+
+.message{
+  height: 180px;
+  width:680px;
+  padding:5px;
+  text-align: center;
+  margin:5px auto;
+  border: 0;
+}

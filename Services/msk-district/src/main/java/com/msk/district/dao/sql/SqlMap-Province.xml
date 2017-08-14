@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.district.logic.ProvinceLogic">
+
+    <select id="findList" resultType="com.msk.district.bean.ProvinceBean" parameterType="com.msk.district.bean.DistrictParam">
+        SELECT
+        P.PROVINCE_ID AS provinceId,
+        P.AREA_ID AS areaId,
+        P.PROVINCE_CODE AS provinceCode,
+        P.PROVINCE_NAME AS provinceName,
+        P.DIVISION_LEVEL AS divisionLevel,
+        P.SPELL AS spell,
+        P.SHORT_SPELL AS shortSpell,
+        P.FULL_CODE AS fullCode,
+        P.FULL_NAME AS fullName,
+        A.AREA_CODE AS areaCode,
+        A.AREA_NAME AS areaName
+        FROM MD_PROVINCE AS P LEFT JOIN MD_AREA AS A ON P.AREA_ID = A.AREA_ID
+        WHERE P.DEL_FLG = 0
+        <if test="areaCode != null and areaCode !=''">
+            and A.AREA_CODE =#{areaCode}
+        </if>
+        <if test="provinceCode != null and provinceCode !=''">
+            and P.PROVINCE_CODE =#{provinceCode}
+        </if>
+        <if test="provinceCodes !=null and provinceCodes.length>0">
+            and P.PROVINCE_CODE in
+            <foreach item="provinceCode" index="index" collection="provinceCodes"
+                     open="(" separator="," close=")">
+                #{provinceCode}
+            </foreach>
+        </if>
+    </select>
+
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        PROVINCE_ID AS provinceId,
+        AREA_ID AS areaId,
+        PROVINCE_CODE AS provinceCode,
+        PROVINCE_NAME AS provinceName,
+        DIVISION_LEVEL AS divisionLevel,
+        SPELL AS spell,
+        SHORT_SPELL AS shortSpell,
+        ifnull(FULL_CODE, '') AS fullCode,
+        ifnull(FULL_NAME, '') AS fullName,
+        (CASE DEL_FLG
+        WHEN '1' THEN '是'
+        ELSE '否' END) AS delFlg,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.areaId!=null and filterMap.areaId!=''">
+                AND AREA_ID LIKE #{filterMap.areaId}
+            </if>
+            <if test="filterMap.provinceCode!=null and filterMap.provinceCode!=''">
+                AND PROVINCE_CODE LIKE #{filterMap.provinceCode}
+            </if>
+            <if test="filterMap.provinceName!=null and filterMap.provinceName!=''">
+                AND PROVINCE_NAME LIKE #{filterMap.provinceName}
+            </if>
+            <if test="filterMap.spell!=null and filterMap.spell!=''">
+                AND SPELL LIKE #{filterMap.spell}
+            </if>
+            <if test="filterMap.shortSpell!=null and filterMap.shortSpell!=''">
+                AND SHORT_SPELL LIKE #{filterMap.shortSpell}
+            </if>
+            <if test="filterMap.fullCode!=null and filterMap.fullCode!=''">
+                AND FULL_CODE LIKE #{filterMap.fullCode}
+            </if>
+            <if test="filterMap.fullName!=null and filterMap.fullName!=''">
+                AND FULL_NAME LIKE #{filterMap.fullName}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND DEL_FLG = #{filterMap.delFlg}
+            </if>
+        </where>
+    </sql>
+    <!--数据插入 -->
+    <insert id="save" parameterType="com.msk.district.bean.ProvinceBean">
+        INSERT INTO md_province
+        (
+        PROVINCE_ID,
+        AREA_ID,
+        PROVINCE_CODE,
+        PROVINCE_NAME,
+        DIVISION_LEVEL,
+        SPELL,
+        SHORT_SPELL,
+        FULL_CODE,
+        FULL_NAME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        SELECT
+        ifnull(MAX(PROVINCE_ID),0) + 1,
+        #{areaId},
+        #{provinceCode},
+        #{provinceName},
+        #{divisionLevel},
+        #{spell},
+        #{shortSpell},
+        #{fullCode},
+        #{fullName},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        #{ver}
+        FROM md_province
+    </insert>
+    <update id="modify" parameterType="com.msk.district.bean.ProvinceBean">
+        update md_province
+        set
+        AREA_ID=#{areaId},
+        PROVINCE_CODE=#{provinceCode},
+        PROVINCE_NAME=#{provinceName},
+        SPELL=#{spell},
+        SHORT_SPELL=#{shortSpell},
+        FULL_CODE=#{fullCode},
+        FULL_NAME=#{fullName},
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime}
+        WHERE
+        PROVINCE_ID=#{provinceId}
+    </update>
+    <select id="findPageList" resultType="com.msk.district.bean.ProvinceBean" parameterType="BaseParam">
+        select
+        <include refid="selectSql"/>
+        from md_province
+        <include refid="whereCondition"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        from md_province
+        <include refid="whereCondition"/>
+    </select>
+
+    <update id="abolish" parameterType="com.msk.district.bean.ProvinceBean">
+        update md_province
+        SET DEL_FLG = 1,
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime}
+        WHERE PROVINCE_ID=#{provinceId}
+    </update>
+    <update id="restore" parameterType="com.msk.district.bean.ProvinceBean">
+        update md_province
+        SET DEL_FLG = 0,
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime}
+        WHERE PROVINCE_ID=#{provinceId}
+    </update>
+</mapper>

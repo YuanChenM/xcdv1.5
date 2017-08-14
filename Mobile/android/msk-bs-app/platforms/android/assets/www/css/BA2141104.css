@@ -1,0 +1,158 @@
+﻿.Container {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto; /*设置整个容器在浏览器中水平居中*/
+    background: url("../img/bg.png") repeat;
+    position: fixed;
+}
+
+.Content {
+    margin-top: 44px;
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+}
+
+.Content ul {
+    width: 100%;
+    float: left;
+    margin: 0px;
+    padding: 0px
+}
+
+/*.Content ul li{ width:100%; height:70px; float:left; border-bottom:2px solid #d8d8d8;line-height: 78px;BACKGROUND-IMAGE: url("../img/input.png");*/
+/*BACKGROUND-REPEAT: no-repeat}*/
+/*.Content ul li .account{width:100%; height:70px; float:left; pading-top: 1px;}*/
+.loginName, .passWord, .confirmPassWord {
+    border: 0;
+    height: 35px;
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 15px;
+    font-size: 1.3rem;
+    text-indent: 10px;
+    font-weight: 200;
+    color: #898989;
+    BACKGROUND-IMAGE: url("../img/input.png");
+    BACKGROUND-REPEAT: no-repeat
+}
+
+/*.passWord{*/
+/*border:0;*/
+/*height:55px;*/
+/*width: 78%;*/
+/*margin-left: 38px;*/
+/*color: #898989;*/
+/*font-size: 16px;*/
+/*font-weight: 200;*/
+/*BACKGROUND-IMAGE: url("../img/input.png");*/
+/*BACKGROUND-REPEAT: no-repeat*/
+/*}*/
+
+/*.confirmPassWord{*/
+/*border:0;*/
+/*height:55px;*/
+/*width: 75%;*/
+/*margin-left: 5px;*/
+/*color: #898989;*/
+/*font-size: 16px;*/
+/*font-weight: 200;*/
+/*BACKGROUND-IMAGE: url("../img/input.png");*/
+/*BACKGROUND-REPEAT: no-repeat*/
+/*}*/
+.font-account {
+    text-align: center;
+    color: #898989;
+    font-size: 17px;
+    font-weight: 200;
+}
+
+.next {
+    border: 0;
+    height: 50px;
+    width: 100%;
+    text-align: center;
+    background-color: #002e62;
+}
+
+.register {
+    height: 100px;
+    width: 80%;
+    text-align: center;
+    margin-left: 35px;
+    margin-top: 30px;
+    border: 1px solid #000;
+    border-image-source: url("../img/Button3.png") border-image-repeat : stretch;;
+    border-image-slice: 10;
+}
+
+.span-next {
+    font-family: "Microsoft Yahei", "Microsoft Yahei";
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 400;
+    line-height: 50px;
+}
+
+.info {
+    height: auto;
+    text-align: center;
+    vertical-align: middle;
+    margin-top: 10px;
+    display: flex;
+    flex-flow: row;
+}
+
+.info .accept {
+    width: 90%;
+    height: 44px;
+    margin: 0 auto;
+}
+
+.info  a {
+    float: left;
+    margin-left: -29px;
+
+    width: 90%;
+    line-height: 41px;
+    background-color: #002e62;
+    margin: 0 auto;
+    background: url('../img/pay-icon01.png') no-repeat left center;
+    background-size: 15px;
+    font-size: 1.3rem;
+    color: #000;
+    text-align: left;
+    text-indent: 19px;
+    background-position-y: 46%;
+}
+
+.info  a.on {
+    width: 90%;
+    line-height: 41px;
+    background-color: #002e62;
+    margin: 0 auto;
+    background: url('../img/pay-icon02.png') no-repeat left center;
+    background-size: 15px;
+    font-size: 1.3rem;
+    color: #000;
+    text-align: left;
+    text-indent: 19px;
+    background-position-y: 46%;
+}
+.read {
+    font-family: 'Microsoft Yahei', 'Microsoft Yahei';
+    color: #000000;
+    font-size: 19px;
+    font-weight: 300;
+    line-height: 39px;
+}
+
+.message {
+    height: 30px;
+    text-align: center;
+    /* margin-top: 400px; */
+    /* border: 0; */
+    width: 200px;
+    margin: auto auto;
+    font-size: 1.5rem;
+}

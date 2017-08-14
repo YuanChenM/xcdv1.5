@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141124Logic">
+
+
+    <!--下拉框列表显示-->
+    <select id="findList" parameterType="com.hoperun.core.bean.BaseParam" resultType="com.msk.product.bean.PD141124Bean">
+    SELECT
+    CLASSESTREE_CODE AS levelCode
+   ,A.LEVEL_NAME AS levelName
+   ,A.LEVEL_CODE AS classestreeCode
+    FROM PD_CLASSESTREE A
+    WHERE A.TREE_LEVEL = #{filterMap.level} and A.DEL_FLG = 0
+    <if test="filterMap.parentCode != '' and filterMap.parentCode != null">
+        AND A.PARENT_CODE = #{filterMap.parentCode}
+    </if>
+    ORDER BY A.CLASSESTREE_ID
+    </select>
+    <!--获取最大的产品分类目录ID-->
+    <!--Add: Bug #2429 : 新产品系统无法新增产品二级分类三级分类等数据   20160905   BY  杨春艳  Start-->
+    <select id="findMaxClassesTreeId" parameterType="com.hoperun.core.bean.BaseParam" resultType="com.msk.product.bean.PD141124Bean">
+        SELECT MAX(CLASSESTREE_ID) + 1 AS maxClassesTreeId FROM PD_CLASSESTREE
+    </select>
+    <!--Add: Bug #2429 : 新产品系统无法新增产品二级分类三级分类等数据   20160905   BY  杨春艳  End-->
+</mapper>

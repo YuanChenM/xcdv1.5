@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141147Logic">
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141147RsResult">
+	SELECT
+	IFNULL(A.PROD_EP_ID,'') AS epId,
+		IFNULL(B.EP_NAME,'') AS manufactureName,
+		IFNULL(B.LIC_ADDR,'') AS addressName,
+		IFNULL(C.SL_TEL,'') AS telephone,
+		IFNULL(D.CERT_ITEM_VALUE,'') AS qltCertificate,
+		IFNULL(F.PROVINCE_NAME,'') AS provinceName,
+		IFNULL(G.CITY_NAME,'') AS cityName,
+		IFNULL(E.SL_CODE,'') AS sellerID
+	FROM
+	sl_product AS A
+		LEFT JOIN sl_enterprise AS B ON A.PROD_EP_ID = B.EP_ID
+		LEFT JOIN sl_seller AS E ON A.PROD_EP_ID = E.EP_ID
+		LEFT JOIN sl_account AS C ON C.SL_ACCOUNT = E.SL_ACCOUNT
+		LEFT JOIN sl_ep_cert_item AS D ON D.EP_ID = A.PROD_EP_ID AND D.CERT_ID = '5' AND D.CERT_ITEM_ID = '2'
+		LEFT JOIN md_province AS F ON E.PROVINCE_CODE = F.PROVINCE_CODE
+		LEFT JOIN md_city AS G ON G.CITY_CODE = E.CITY_CODE
+	<where>
+		<if test="filterMap.paramData.classesCode!=null and filterMap.paramData.classesCode!=''">
+			AND A.PD_CLASSES_CODE=#{filterMap.paramData.classesCode}
+		</if>
+		<if test="filterMap.paramData.machiningCode!=null and filterMap.paramData.machiningCode!=''">
+			AND A.MACHINING_CODE=#{filterMap.paramData.machiningCode}
+		</if>
+		<if test="filterMap.paramData.breedCode!=null and filterMap.paramData.breedCode!=''">
+			AND A.PD_BREED_CODE=#{filterMap.paramData.breedCode}
+		</if>
+		<if test="filterMap.paramData.featureCode!=null and filterMap.paramData.featureCode!=''">
+			AND A.PD_FEATURE_CODE=#{filterMap.paramData.featureCode}
+		</if>
+		<if test="filterMap.paramData.weightCode!=null and filterMap.paramData.weightCode!=''">
+			AND A.WEIGHT_CODE=#{filterMap.paramData.weightCode}
+		</if>
+		<!--<if test="filterMap.param.gradeCode!=null and filterMap.param.gradeCode!=''">
+
+		</if>-->
+		<if test="filterMap.paramData.platform!=null and filterMap.paramData.platform!='' and filterMap.paramData.platform!=0">
+			AND C.FROM_FLG=#{filterMap.paramData.platform}
+		</if>
+	</where>
+	GROUP BY A.PROD_EP_ID
+	</select>
+</mapper>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121207Logic">
+    <select id="findEmployee" parameterType="BaseParam" resultType="com.msk.buyers.bean.IBY121207RsParam">
+        SELECT
+        IFNULL(ID,'')  AS id,
+        IFNULL(BUYER_ID,'') AS buyerId,
+        IFNULL(EMPLOYEE_TYPE,'') AS employeeType,
+        IFNULL(EMPLOYEE_NAME,'') AS employeeName,
+        IFNULL(EMPLOYEE_TEL,'') AS employeeTel,
+        IFNULL(EMPLOYEE_QQ,'') AS employeeQq,
+        IFNULL(EMPLOYEE_WECHAT,'') AS employeeWechat,
+        IFNULL(BUS_CARD_ID,'') AS busCardId,
+        IFNULL(BUS_CARD_SUF,'') AS busCardSuf,
+        IFNULL(BUS_CARD_FLG,'') AS busCardFlg,
+        IFNULL(CONTACT_PERSON,'') AS contactPerson,
+        IFNULL(PURCHASE,'') AS purchase,
+        IFNULL(RECEIVE_PERSON,'') AS receivePerson
+        FROM
+           by_buyer_employee
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+           AND DEL_FLG = 0
+           <if test="filterMap.id != null and filterMap.id != ''">
+              AND ID = #{filterMap.id}
+           </if>
+           <if test="filterMap.employeeName != null and filterMap.employeeName != ''">
+               AND EMPLOYEE_NAME = #{filterMap.employeeName}
+           </if>
+           <if test="filterMap.employeeType != null and filterMap.employeeType != ''">
+               AND EMPLOYEE_TYPE = #{filterMap.employeeType}
+           </if>
+    </select>
+
+    <select id="findEmployees" parameterType="BaseParam" resultType="com.msk.buyers.bean.IBY121207RsParam">
+        SELECT
+        IFNULL(ID,'')  AS id,
+        IFNULL(BUYER_ID,'') AS buyerId,
+        IFNULL(EMPLOYEE_TYPE,'') AS employeeType,
+        IFNULL(EMPLOYEE_NAME,'') AS employeeName,
+        IFNULL(EMPLOYEE_TEL,'') AS employeeTel,
+        IFNULL(EMPLOYEE_QQ,'') AS employeeQq,
+        IFNULL(EMPLOYEE_WECHAT,'') AS employeeWechat,
+        IFNULL(BUS_CARD_ID,'') AS busCardId,
+        IFNULL(BUS_CARD_SUF,'') AS busCardSuf,
+        IFNULL(BUS_CARD_FLG,'') AS busCardFlg,
+        IFNULL(CONTACT_PERSON,'') AS contactPerson,
+        IFNULL(PURCHASE,'') AS purchase,
+        IFNULL(RECEIVE_PERSON,'') AS receivePerson
+        FROM
+        by_buyer_employee
+        WHERE
+        BUYER_ID = #{filterMap.buyerId}
+        AND DEL_FLG = 0
+        <if test="filterMap.id != null and filterMap.id != ''">
+            AND ID = #{filterMap.id}
+        </if>
+        <if test="filterMap.employeeName != null and filterMap.employeeName != ''">
+            AND EMPLOYEE_NAME = #{filterMap.employeeName}
+        </if>
+        <if test="filterMap.employeeType != null and filterMap.employeeType != ''">
+            AND EMPLOYEE_TYPE = #{filterMap.employeeType}
+        </if>
+    </select>
+
+    <update id="buyerEmployeeModify" parameterType="com.msk.buyers.bean.IBY121207RsParam">
+        UPDATE
+           by_buyer_employee
+        SET
+           EMPLOYEE_TYPE = #{employeeType},
+           EMPLOYEE_NAME = #{employeeName},
+           EMPLOYEE_TEL = #{employeeTel},
+           EMPLOYEE_QQ = #{employeeQq},
+           EMPLOYEE_WECHAT = #{employeeWechat},
+           BUS_CARD_FLG = #{busCardFlg},
+
+        <if test="busCardId != null and busCardId != ''">
+           BUS_CARD_ID = #{busCardId},
+        </if>
+        <if test="busCardSuf != null and busCardSuf != ''">
+           BUS_CARD_SUF = #{busCardSuf},
+        </if>
+           CONTACT_PERSON = #{contactPerson},
+           PURCHASE = #{purchase},
+           RECEIVE_PERSON = #{receivePerson},
+           UPD_ID = #{updId},
+           UPD_TIME = #{updTime},
+           DEL_FLG = 0
+        WHERE
+           ID = #{id}
+           AND BUYER_ID = #{buyerId}
+    </update>
+    <insert id="buyerEmployeeInsert" parameterType="com.msk.buyers.bean.IBY121207RsParam">
+        INSERT INTO
+           by_buyer_employee(
+               ID,
+               BUYER_ID,
+               EMPLOYEE_TYPE,
+               EMPLOYEE_NAME,
+               EMPLOYEE_TEL,
+               EMPLOYEE_QQ,
+               EMPLOYEE_WECHAT,
+               BUS_CARD_FLG,
+               BUS_CARD_ID,
+               BUS_CARD_SUF,
+               CONTACT_PERSON,
+               PURCHASE,
+               RECEIVE_PERSON,
+               DEL_FLG,
+
+               CRT_ID,
+               CRT_TIME,
+               UPD_ID,
+               UPD_TIME,
+               ACT_ID,
+               ACT_TIME,
+
+               VER
+           )VALUES (
+               #{id},
+               #{buyerId},
+               #{employeeType},
+               #{employeeName},
+               #{employeeTel},
+               #{employeeQq},
+               #{employeeWechat},
+               #{busCardFlg},
+               #{busCardId},
+               #{busCardSuf},
+               #{contactPerson},
+               #{purchase},
+               #{receivePerson},
+               0,
+
+               #{crtId},
+               #{crtTime},
+               #{updId},
+               #{updTime},
+               #{actId},
+               #{actTime},
+
+               1
+           )
+    </insert>
+
+
+    <select id="findEmployeeList" parameterType="BaseParam" resultType="com.msk.buyers.bean.IBY121207RsParam">
+        SELECT
+        IFNULL(ID,'')  AS id,
+        IFNULL(BUYER_ID,'') AS buyerId,
+        IFNULL(EMPLOYEE_TYPE,'') AS employeeType,
+        IFNULL(EMPLOYEE_NAME,'') AS employeeName,
+        IFNULL(EMPLOYEE_TEL,'') AS employeeTel,
+        IFNULL(EMPLOYEE_QQ,'') AS employeeQq,
+        IFNULL(EMPLOYEE_WECHAT,'') AS employeeWechat,
+        IFNULL(BUS_CARD_ID,'') AS busCardId,
+        IFNULL(BUS_CARD_SUF,'') AS busCardSuf,
+        IFNULL(BUS_CARD_FLG,'') AS busCardFlg,
+        IFNULL(CONTACT_PERSON,'') AS contactPerson,
+        IFNULL(PURCHASE,'') AS purchase,
+        IFNULL(RECEIVE_PERSON,'') AS receivePerson
+        FROM
+        by_buyer_employee
+        WHERE
+        DEL_FLG = 0
+        <if test="buyerIdList !=null and buyerIdList.size()>0">
+            AND BUYER_ID in
+            <foreach item="buyerId" index="index" collection="buyerIdList"
+                     open="(" separator="," close=")">
+                #{buyerId}
+            </foreach>
+        </if>
+        <if test="filterMap.id != null and filterMap.id != ''">
+            AND ID = #{filterMap.id}
+        </if>
+        <if test="filterMap.employeeName != null and filterMap.employeeName != ''">
+            AND EMPLOYEE_NAME = #{filterMap.employeeName}
+        </if>
+    </select>
+
+    <select id="count" resultType="int" parameterType="BaseParam">
+        SELECT
+           COUNT(1)
+        FROM
+           by_buyer_employee
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+           AND EMPLOYEE_TYPE = '1'
+           AND DEL_FLG = 0
+    </select>
+
+    <select id="testBuyerId" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        from BY_BUYER_BASIC_INFO
+        WHERE BUYER_ID = #{filterMap.buyerId}
+        AND DEL_FLG=0
+    </select>
+
+</mapper>

@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.ProductLogic">
+    <select id="findPdClasses" resultType="com.msk.core.entity.PdClasses"
+            parameterType="BaseParam">
+        SELECT
+        IFNULL(A.CLASSES_CODE,'') AS classesCode,
+        IFNULL(A.CLASSES_NAME,'') AS classesName,
+        IFNULL(A.DEL_FLG,'') AS delFlg,
+        IFNULL(A.CRT_ID,'') AS crtId,
+        A.CRT_TIME AS crtTime,
+        IFNULL(A.UPD_ID,'') AS updId,
+        A.UPD_TIME AS updTime,
+        IFNULL(A.ACT_ID,'') AS actId,
+        A.ACT_TIME AS actTime,
+        IFNULL(A.VER,'') AS ver
+        FROM PD_CLASSES AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+        </where>
+    </select>
+    <select id="findPdMachining" resultType="com.msk.core.entity.PdMachining"
+            parameterType="BaseParam">
+        SELECT
+        IFNULL(A.CLASSES_CODE,'') AS classesCode,
+        IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(A.MACHINING_NAME,'') AS machiningName,
+        IFNULL(A.DEL_FLG,'') AS delFlg,
+        IFNULL(A.CRT_ID,'') AS crtId,
+        A.CRT_TIME AS crtTime,
+        IFNULL(A.UPD_ID,'') AS updId,
+        A.UPD_TIME AS updTime,
+        IFNULL(A.ACT_ID,'') AS actId,
+        A.ACT_TIME AS actTime,
+        IFNULL(A.VER,'') AS ver
+        FROM PD_MACHINING AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+        </where>
+    </select>
+    <select id="findPdBreed" resultType="com.msk.core.entity.PdBreed"
+            parameterType="BaseParam">
+        SELECT
+        IFNULL(A.CLASSES_CODE,'') AS classesCode,
+        IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(A.COUNTRY_CODE,'') AS countryCode,
+        IFNULL(A.BREED_CODE,'') AS breedCode,
+        IFNULL(A.BREED_NAME,'') AS breedName,
+        IFNULL(A.DEL_FLG,'') AS delFlg,
+        IFNULL(A.CRT_ID,'') AS crtId,
+        A.CRT_TIME AS crtTime,
+        IFNULL(A.UPD_ID,'') AS updId,
+        A.UPD_TIME AS updTime,
+        IFNULL(A.ACT_ID,'') AS actId,
+        A.ACT_TIME AS actTime,
+        IFNULL(A.VER,'') AS ver
+        FROM PD_BREED AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+                AND A.BREED_NAME=#{filterMap.breedName}
+            </if>
+        </where>
+    </select>
+    <select id="findPdFeature" resultType="com.msk.core.entity.PdFeature"
+            parameterType="BaseParam">
+        SELECT
+        IFNULL(A.CLASSES_CODE,'') AS classesCode,
+        IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(A.BREED_CODE,'') AS breedCode,
+        IFNULL(A.FEATURE_CODE,'') AS featureCode,
+        IFNULL(A.FEATURE_NAME,'') AS featureName,
+        IFNULL(A.DEL_FLG,'') AS delFlg,
+        IFNULL(A.CRT_ID,'') AS crtId,
+        A.CRT_TIME AS crtTime,
+        IFNULL(A.UPD_ID,'') AS updId,
+        A.UPD_TIME AS updTime,
+        IFNULL(A.ACT_ID,'') AS actId,
+        A.ACT_TIME AS actTime,
+        IFNULL(A.VER,'') AS ver
+        FROM PD_FEATURE AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND A.FEATURE_CODE=#{filterMap.featureCode}
+            </if>
+            <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+                AND A.FEATURE_NAME=#{filterMap.featureName}
+            </if>
+        </where>
+    </select>
+    <select id="findPdWeight" resultType="com.msk.core.entity.PdWeight"
+            parameterType="BaseParam">
+        SELECT
+        IFNULL(A.CLASSES_CODE,'') AS classesCode,
+        IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(A.BREED_CODE,'') AS breedCode,
+        IFNULL(A.FEATURE_CODE,'') AS featureCode,
+        IFNULL(A.WEIGHT_CODE,'') AS weightCode,
+        IFNULL(A.WEIGHT_NAME,'') AS weightName,
+        IFNULL(A.WEIGHT_VAL,'') AS weightVal,
+        IFNULL(A.DEL_FLG,'') AS delFlg,
+        IFNULL(A.CRT_ID,'') AS crtId,
+        A.CRT_TIME AS crtTime,
+        IFNULL(A.UPD_ID,'') AS updId,
+        A.UPD_TIME AS updTime,
+        IFNULL(A.ACT_ID,'') AS actId,
+        A.ACT_TIME AS actTime,
+        IFNULL(A.VER,'') AS ver
+        FROM PD_WEIGHT AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND A.FEATURE_CODE=#{filterMap.featureCode}
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                AND A.WEIGHT_CODE=#{filterMap.weightCode}
+            </if>
+            <if test="filterMap.weightName!=null and filterMap.weightName!=''">
+                AND A.WEIGHT_NAME=#{filterMap.weightName}
+            </if>
+            <if test="filterMap.weightVal!=null and filterMap.weightVal!=''">
+                AND A.WEIGHT_VAL=#{filterMap.weightVal}
+            </if>
+        </where>
+    </select>
+    <select id="findPdNormsStd" resultType="com.msk.core.entity.PdNormsStd"
+            parameterType="BaseParam">
+        SELECT
+        IFNULL(A.STANDARD_ID,'') AS standardId,
+        IFNULL(A.NORMS_CODE,'') AS normsCode,
+        IFNULL(A.NORMS_SUTTLE,'') AS normsSuttle,
+        IFNULL(A.NORMS_ERROR,'') AS normsError,
+        IFNULL(A.NORMS_NUMBER,'') AS normsNumber,
+        IFNULL(A.NORMS_SIZE,'') AS normsSize,
+        IFNULL(A.NORMS_TEXTURE,'') AS normsTexture,
+        IFNULL(A.NORMS_OUT,'') AS normsOut,
+        IFNULL(A.NORMS_KG,'') AS normsKg,
+        IFNULL(A.NORMS_OUT_SIZE,'') AS normsOutSize,
+        IFNULL(A.NORMS_OUT_TEXTURE,'') AS normsOutTexture,
+        IFNULL(A.NORMS_TEN,'') AS normsTen,
+        IFNULL(A.NORMS_LENGTH,'') AS normsLength,
+        IFNULL(A.NORMS_WIDTH,'') AS normsWidth,
+        IFNULL(A.NORMS_HEIGHT,'') AS normsHeight,
+        IFNULL(A.NORMS_VOLUME,'') AS normsVolume,
+        IFNULL(A.NETWEIGHT_INNER,'') AS netweightInner,
+        IFNULL(A.NETWEIGHT_OUT,'') AS netweightOut,
+        IFNULL(A.GROSSWEIGHT_OUT,'') AS grossweightOut,
+        IFNULL(A.DEL_FLG,'') AS delFlg,
+        IFNULL(A.CRT_ID,'') AS crtId,
+        A.CRT_TIME AS crtTime,
+        IFNULL(A.UPD_ID,'') AS updld,
+        A.UPD_TIME AS updTime,
+        IFNULL(A.ACT_ID,'') AS actId,
+        A.ACT_TIME AS actTime,
+        IFNULL(A.VER,'') AS ver
+        FROM PD_NORMS_STD AS A
+        INNER JOIN (
+        SELECT STANDARD_ID FROM PD_STANDARD
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND FEATURE_CODE=#{filterMap.featureCode}
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                AND WEIGHT_CODE=#{filterMap.weightCode}
+            </if>
+            <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+                AND CONCAT(CLASSES_CODE,MACHINING_CODE,BREED_CODE,FEATURE_CODE,WEIGHT_CODE)=#{filterMap.pdCode}
+            </if>
+        </where>
+        )AS B ON A.STANDARD_ID=B.STANDARD_ID
+        <where>
+            <if test="filterMap.normsCode!=null and filterMap.normsCode!=''">
+                AND A.NORMS_CODE=#{filterMap.normsCode}
+            </if>
+            <if test="filterMap.normsSuttle!=null and filterMap.normsSuttle!=''">
+                AND A.NORMS_SUTTLE=#{filterMap.normsSuttle}
+            </if>
+            <if test="filterMap.normsError!=null and filterMap.normsError!=''">
+                AND A.NORMS_ERROR=#{filterMap.normsError}
+            </if>
+            <if test="filterMap.normsNumber!=null and filterMap.normsNumber!=''">
+                AND A.NORMS_NUMBER=#{filterMap.normsNumber}
+            </if>
+            <if test="filterMap.normsSize!=null and filterMap.normsSize!=''">
+                AND A.NORMS_SIZE=#{filterMap.normsSize}
+            </if>
+            <if test="filterMap.normsTexture!=null and filterMap.normsTexture!=''">
+                AND A.NORMS_TEXTURE=#{filterMap.normsTexture}
+            </if>
+            <if test="filterMap.normsOut!=null and filterMap.normsOut!=''">
+                AND A.NORMS_OUT=#{filterMap.normsOut}
+            </if>
+            <if test="filterMap.normsKg!=null and filterMap.normsKg!=''">
+                AND A.NORMS_KG=#{filterMap.normsKg}
+            </if>
+            <if test="filterMap.normsOutSize!=null and filterMap.normsOutSize!=''">
+                AND A.NORMS_OUT_SIZE=#{filterMap.normsOutSize}
+            </if>
+            <if test="filterMap.normsOutTexture!=null and filterMap.normsOutTexture!=''">
+                AND A.NORMS_OUT_TEXTURE=#{filterMap.normsOutTexture}
+            </if>
+            <if test="filterMap.normsTen!=null and filterMap.normsTen!=''">
+                AND A.NORMS_TEN=#{filterMap.normsTen}
+            </if>
+            <if test="filterMap.normsLength!=null and filterMap.normsLength!=''">
+                AND A.NORMS_LENGTH=#{filterMap.normsLength}
+            </if>
+            <if test="filterMap.normsWidth!=null and filterMap.normsWidth!=''">
+                AND A.NORMS_WIDTH=#{filterMap.normsWidth}
+            </if>
+            <if test="filterMap.normsHeight!=null and filterMap.normsHeight!=''">
+                AND A.NORMS_HEIGHT=#{filterMap.normsHeight}
+            </if>
+            <if test="filterMap.normsVolume!=null and filterMap.normsVolume!=''">
+                AND A.NORMS_VOLUME=#{filterMap.normsVolume}
+            </if>
+            <if test="filterMap.netweightInner!=null and filterMap.netweightInner!=''">
+                AND A.NETWEIGHT_INNER=#{filterMap.netweightInner}
+            </if>
+            <if test="filterMap.netweightOut!=null and filterMap.netweightOut!=''">
+                AND A.NETWEIGHT_OUT=#{filterMap.netweightOut}
+            </if>
+            <if test="filterMap.grossweightOut!=null and filterMap.grossweightOut!=''">
+                AND A.GROSSWEIGHT_OUT=#{filterMap.grossweightOut}
+            </if>
+        </where>
+    </select>
+    <select id="findGrade" resultType="com.msk.core.entity.PdGrade"
+            parameterType="BaseParam">
+        SELECT
+        A.GRADE_CODE AS gradeCode,
+        A.GRADE_NAME AS gradeName,
+        A.DEL_FLG AS delFlg,
+        A.CRT_ID AS crtId,
+        A.CRT_TIME AS crtTime,
+        A.UPD_ID AS updId,
+        A.UPD_TIME AS updTime,
+        A.ACT_ID AS actId,
+        A.ACT_TIME AS actTime,
+        A.VER AS ver
+        FROM PD_GRADE AS A
+        <where>
+            <if test="filterMap.gradeCode!=null and filterMap.gradeCode!=''">
+                AND A.GRADE_CODE=#{filterMap.gradeCode}
+            </if>
+        </where>
+    </select>
+    <select id="findPdCountry" resultType="com.msk.core.entity.PdCountry"
+            parameterType="BaseParam">
+        SELECT
+        A.COUNTRY_CODE AS countryCode,
+        A.COUNTRY_NAME AS countryName,
+        A.DEL_FLG AS delFlg,
+        A.CRT_ID AS crtId,
+        A.CRT_TIME AS crtTime,
+        A.UPD_ID AS updId,
+        A.UPD_TIME AS updTime,
+        A.ACT_ID AS actId,
+        A.ACT_TIME AS actTime,
+        A.VER AS ver
+        FROM PD_COUNTRY AS A
+        <where>
+            <if test="filterMap.countryCode!=null and filterMap.countryCode!=''">
+                AND A.COUNTRY_CODE=#{filterMap.countryCode}
+            </if>
+        </where>
+    </select>
+    <select id="findPdStandard" resultType="com.msk.core.entity.PdStandard" parameterType="BaseParam">
+        SELECT
+        IFNULL(A.STANDARD_ID,'') AS standardId,
+        IFNULL(A.CLASSES_CODE,'') AS classesCode,
+        IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(A.BREED_CODE,'') AS breedCode,
+        IFNULL(A.FEATURE_CODE,'') AS featureCode,
+        IFNULL(A.WEIGHT_CODE,'') AS weightCode,
+        IFNULL(A.GRADE_CODE,'') AS gradeCode,
+        IFNULL(A.CLASSESTREE_CODE,'') AS classestreeCode,
+        IFNULL(A.QLT_FLG,'') AS qltFlg,
+        IFNULL(A.TNC_FLG,'') AS tncFlg,
+        IFNULL(A.NOR_FLG,'') AS norFlg,
+        IFNULL(A.ORG_FLG,'') AS orgFlg,
+        IFNULL(A.FED_FLG,'') AS fedFlg,
+        IFNULL(A.MCQ_FLG,'') AS mcqFlg,
+        IFNULL(A.GNQ_FLG,'') AS gnqFlg,
+        IFNULL(A.TSP_FLG,'') AS tspFlg,
+        IFNULL(A.DEL_FLG,'') AS delFlg,
+        IFNULL(A.CRT_ID,'') AS crtId,
+        A.CRT_TIME AS crtTime,
+        IFNULL(A.UPD_ID,'') AS updId,
+        A.UPD_TIME AS updTime,
+        IFNULL(A.ACT_ID,'') AS actId,
+        A.ACT_TIME AS actTime,
+        IFNULL(A.VER,'') AS ver
+        FROM
+        pd_standard AS A
+        <where>
+            A.DEL_FLG = 0
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND A.FEATURE_CODE=#{filterMap.featureCode}
+            </if>
+            <if test="filterMap.featureCode==null or filterMap.featureCode==''">
+                AND (A.FEATURE_CODE IS NULL OR A.FEATURE_CODE='')
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                AND A.WEIGHT_CODE=#{filterMap.weightCode}
+            </if>
+            <if test="filterMap.weightCode==null or filterMap.weightCode==''">
+                AND (A.WEIGHT_CODE IS NULL OR A.WEIGHT_CODE='')
+            </if>
+            <if test="filterMap.treeCode!=null and filterMap.treeCode!=''">
+                AND A.CLASSESTREE_CODE = #{filterMap.treeCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="getProductInfo" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="BaseParam">
+         SELECT
+        A.CLASSES_CODE AS classesCode,
+				A.CLASSES_NAME AS classesName,
+        B.MACHINING_CODE AS machiningCode,
+        B.MACHINING_NAME AS machiningName,
+        C.BREED_CODE AS breedCode,
+				C.BREED_NAME AS breedName,
+        D.FEATURE_CODE AS featureCode,
+				D.FEATURE_NAME AS featureName,
+        E.WEIGHT_CODE AS weightCode,
+        E.WEIGHT_NAME AS weightName
+        FROM PD_CLASSES AS A
+        LEFT JOIN PD_MACHINING B ON B.CLASSES_CODE = A.CLASSES_CODE
+        LEFT JOIN PD_BREED C ON C.MACHINING_CODE = B.MACHINING_CODE AND C.CLASSES_CODE = B.CLASSES_CODE
+        LEFT JOIN PD_FEATURE D ON D.BREED_CODE = C.BREED_CODE  AND D.MACHINING_CODE = C.MACHINING_CODE AND D.CLASSES_CODE = C.CLASSES_CODE
+        LEFT JOIN PD_WEIGHT E ON E.FEATURE_CODE = D.FEATURE_CODE AND E.BREED_CODE = D.BREED_CODE AND E.MACHINING_CODE = D.MACHINING_CODE AND E.CLASSES_CODE = D.CLASSES_CODE
+        GROUP BY A.CLASSES_CODE,
+        B.MACHINING_CODE,
+        C.BREED_CODE,
+        D.FEATURE_CODE,
+        E.WEIGHT_CODE
+
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND B.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND C.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND D.FEATURE_CODE=#{filterMap.featureCode}
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                AND E.WEIGHT_CODE=#{filterMap.weightCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.product.bean.PDInfoResult">
+        SELECT
+        IFNULL(A.STANDARD_ID,'') AS standardId
+        ,IFNULL(A.NORMS_CODE,'') AS normsCode
+        ,IFNULL(A.NORMS_OUT,'') AS normsName
+        ,IFNULL(A.NORMS_SUTTLE,'') AS normsSuttle
+        ,IFNULL(A.NORMS_ERROR,'') AS normsError
+        ,IFNULL(A.NORMS_NUMBER,'') AS normsNumber
+        ,IFNULL(A.NORMS_SIZE,'')  AS normsSize
+        ,IFNULL(A.NORMS_TEXTURE,'') AS normsTexture
+        ,IFNULL(A.NORMS_OUT,'') AS normsOut
+        ,IFNULL(A.NORMS_KG,'') AS normsKg
+        ,IFNULL(A.NORMS_TEN,'') AS normsTen
+        ,IFNULL(A.NORMS_OUT_SIZE,'') AS normsOutSize
+        ,IFNULL(A.NORMS_OUT_TEXTURE,'') AS normsOutTexture
+        ,IFNULL(A.NORMS_LENGTH,'') AS normsLength
+        ,IFNULL(A.NORMS_WIDTH,'') AS normsWidth
+        ,IFNULL(A.NORMS_HEIGHT,'') AS normsHeight
+        ,IFNULL(A.NORMS_VOLUME,'') AS normsVolume
+        ,IFNULL(A.NETWEIGHT_OUT,'') AS netweightOut
+        ,IFNULL(A.GROSSWEIGHT_OUT,'') AS grossweightOut,
+        <if test="null == stdParams or stdParams.size() == 0">
+            IFNULL(B.CLASSES_CODE,'') AS classesCode,
+            IFNULL(B.MACHINING_CODE,'') AS machiningCode,
+            IFNULL(B.BREED_CODE,'') AS breedCode,
+            IFNULL(B.FEATURE_CODE,'') AS featureCode,
+            IFNULL(B.WEIGHT_CODE,'') AS weightCode,
+        </if>
+        IFNULL(A.DEL_FLG,'') AS delFlg,
+        IFNULL(A.CRT_ID,'') AS crtId,
+        A.CRT_TIME AS crtTime,
+        IFNULL(A.UPD_ID,'') AS updld,
+        A.UPD_TIME AS updTime,
+        IFNULL(A.ACT_ID,'') AS actId,
+        A.ACT_TIME AS actTime,
+        IFNULL(A.VER,'') AS ver
+        FROM PD_NORMS_STD AS A
+
+        <if test="null == stdParams or stdParams.size() == 0">
+           ,PD_STANDARD B
+        </if>
+        <where>
+            A.DEL_FLG = 0
+            <if test="null == stdParams or stdParams.size() == 0">
+                AND B.DEL_FLG = 0 AND A.STANDARD_ID = B.STANDARD_ID
+            </if>
+            <if test="classesCode!=null and classesCode!=''">
+                AND B.CLASSES_CODE = #{classesCode}
+            </if>
+            <if test="machiningCode!=null and machiningCode!=''">
+                AND B.MACHINING_CODE=#{machiningCode}
+            </if>
+            <if test="breedCode!=null and breedCode!=''">
+                AND B.BREED_CODE=#{breedCode}
+            </if>
+            <if test="featureCode!=null and featureCode!=''">
+                AND B.FEATURE_CODE=#{featureCode}
+            </if>
+            <if test="weightCode!=null and weightCode!=''">
+                AND B.WEIGHT_CODE = #{weightCode}
+            </if>
+            <if test="normsParamses != null and normsParamses.size() > 0">
+                AND
+                <foreach collection="normsParamses" item="item" open="(" separator="OR" close=")">
+                    B.CLASSES_CODE = #{item.classesCode} AND B.MACHINING_CODE=#{item.machiningCode}
+                    AND B.BREED_CODE=#{item.breedCode} AND B.FEATURE_CODE=#{item.featureCode}  AND B.WEIGHT_CODE = #{item.weightCode}
+                    <if test="item.normsCode != null and item.normsCode != 'null' and item.normsCode != ''">
+                        AND A.NORMS_CODE = #{item.normsCode}
+                    </if>
+                </foreach>
+            </if>
+            <if test="stdParams != null and stdParams.size() > 0">
+                AND
+                <foreach collection="stdParams" item="item" open="(" separator="OR" close=")">
+                    A.STANDARD_ID = #{item.standardId} AND A.NORMS_CODE = #{item.normsCode}
+                </foreach>
+            </if>
+            <if test="null != normCodes and normCodes.size()">
+                AND A.NORMS_CODE IN
+                <foreach collection="normCodes" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="null != standardIds and standardIds.size()">
+                AND A.STANDARD_ID IN
+                <foreach collection="standardIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        <if test="paging==true">
+            LIMIT #{startSize},#{endSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" parameterType="BaseParam" resultType="int">
+        SELECT
+        count(1)
+        FROM PD_NORMS_STD AS A
+        <if test="null == stdParams or stdParams.size() == 0">
+            ,PD_STANDARD B
+        </if>
+
+        <where>
+            A.DEL_FLG = 0
+            <if test="null == stdParams or stdParams.size() == 0">
+                AND B.DEL_FLG = 0 AND A.STANDARD_ID = B.STANDARD_ID
+            </if>
+            <if test="classesCode!=null and classesCode!=''">
+                AND B.CLASSES_CODE = #{classesCode}
+            </if>
+            <if test="machiningCode!=null and machiningCode!=''">
+                AND B.MACHINING_CODE=#{machiningCode}
+            </if>
+            <if test="breedCode!=null and breedCode!=''">
+                AND B.BREED_CODE=#{breedCode}
+            </if>
+            <if test="featureCode!=null and featureCode!=''">
+                AND B.FEATURE_CODE=#{featureCode}
+            </if>
+            <if test="weightCode!=null and weightCode!=''">
+                AND B.WEIGHT_CODE = #{weightCode}
+            </if>
+            <if test="normsParamses != null and normsParamses.size() > 0">
+                AND
+                <foreach collection="normsParamses" item="item" open="(" separator="OR" close=")">
+                    B.CLASSES_CODE = #{item.classesCode} AND B.MACHINING_CODE=#{item.machiningCode}
+                    AND B.BREED_CODE=#{item.breedCode} AND B.FEATURE_CODE=#{item.featureCode}  AND B.WEIGHT_CODE = #{item.weightCode}
+                    <if test="item.normsCode != null and item.normsCode != 'null' and item.normsCode != ''">
+                        AND A.NORMS_CODE = #{item.normsCode}
+                    </if>
+                </foreach>
+            </if>
+            <if test="stdParams != null and stdParams.size() > 0">
+                AND
+                <foreach collection="stdParams" item="item" open="(" separator="OR" close=")">
+                    A.STANDARD_ID = #{item.standardId} AND A.NORMS_CODE = #{item.normsCode}
+                </foreach>
+            </if>
+            <if test="null != normCodes and normCodes.size()">
+                AND A.NORMS_CODE IN
+                <foreach collection="normCodes" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="null != standardIds and standardIds.size()">
+                AND A.STANDARD_ID IN
+                <foreach collection="standardIds" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>

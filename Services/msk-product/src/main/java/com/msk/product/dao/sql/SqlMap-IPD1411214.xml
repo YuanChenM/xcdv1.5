@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD1411214Logic">
+    <!-- 举报一览查询 -->
+    <select id="searchReportList" parameterType="com.msk.product.bean.IPD1411214RsParam" resultType="com.msk.core.entity.PdReportInfo">
+    SELECT
+    A.REPORT_ID AS reportId,
+    A.PD_CODE AS pdCode,
+    A.LGCS_CODE AS lgcsCode,
+    A.REPORT_TYPE_CODE AS reportTypeCode,
+    A.REPORT_DESC AS reportDesc,
+    A.REPORT_IMG1 AS reportImg1,
+    A.REPORT_IMG2 AS reportImg2,
+    A.REPORT_IMG3 AS reportImg3,
+    A.REPORT_IMG4 AS reportImg4,
+    A.REPORT_IMG5 AS reportImg5,
+    A.REPORT_STATUS AS reportStatus
+    FROM
+    PD_REPORT_INFO
+    AS A
+    WHERE
+    A.USER_TYPE = #{userType}
+    AND
+    A.USER_ID = #{userId}
+        <if test="reportId !=null and reportId !=''">
+            AND A.REPORT_ID = #{reportId}
+        </if>
+        <if test="reportStatus !=null and reportStatus !=''">
+            AND A.REPORT_STATUS = #{reportStatus}
+        </if>
+</select>
+
+    <select id="queryReportTypeName" parameterType="com.msk.core.entity.PdReportInfo" resultType="com.msk.core.entity.PdReportType">
+        SELECT
+        A.REPORT_TITLE AS reportTitle
+        FROM
+        PD_REPORT_TYPE
+        AS A
+        WHERE
+        A.REPORT_TYPE_CODE = #{reportTypeCode}
+    </select>
+
+</mapper>

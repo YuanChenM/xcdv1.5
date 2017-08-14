@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121415Logic">
+    <insert id="saveBrBuyerHkRelationship" parameterType="com.msk.br.bean.IBR121415RsParam">
+      INSERT INTO BR_BUYER_HK_RELATIONSHIP (
+      ID,
+      HOUSE_CODE,
+      SL_CODE,
+      BUYER_ID,
+      RELATION_TYPE,
+      START_TIME,
+      END_TIME,
+      DEL_FLG,
+      CRT_ID,
+      CRT_TIME,
+      UPD_ID,
+      UPD_TIME,
+      ACT_ID,
+      ACT_TIME,
+      VER
+      )VALUES (
+      #{id},
+      #{houseCode},
+      #{slCode},
+      #{buyerId},
+      #{relationType},
+      #{startTime},
+      #{endTime},
+      0,
+      #{crtId},
+      #{crtTime},
+      #{updId},
+      #{updTime},
+      #{actId},
+      #{actTime},
+      1
+      )
+
+    </insert>
+
+    <select id="findBrBuyerBoolrelationship" parameterType="com.msk.br.bean.IBR121415RsParam" resultType="int">
+      SELECT count(1)
+      FROM BR_BUYER_POOL_RELATIONSHIP
+      WHERE BUYER_ID = #{buyerId}
+      AND DEL_FLG = 0
+    </select>
+
+    <select id="findBrBuyerHkRelationship" parameterType="com.msk.br.bean.IBR121415RsParam" resultType="int">
+        SELECT count(1)
+        FROM BR_BUYER_HK_RELATIONSHIP
+        WHERE BUYER_ID = #{buyerId}
+        AND HOUSE_CODE = #{houseCode}
+        AND DEL_FLG = 0
+    </select>
+    <select id="findOne" parameterType="com.msk.br.bean.IBR121415RsParam" resultType="com.msk.br.bean.IBR121415RsBean">
+        SELECT
+        SL_CODE AS slCode
+        FROM BR_BUYER_HK_RELATIONSHIP
+        WHERE BUYER_ID = #{buyerId}
+        AND HOUSE_CODE = #{houseCode}
+        AND DEL_FLG = 0
+    </select>
+
+    <update id="updateBrBuyerHkRelationship" parameterType="com.msk.br.bean.IBR121415RsParam">
+        UPDATE BR_BUYER_HK_RELATIONSHIP
+        SET  RELATION_TYPE = #{relationType},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        END_TIME = #{endTime}
+        WHERE
+        BUYER_ID = #{buyerId}
+        AND HOUSE_CODE = #{houseCode}
+        AND SL_CODE = #{slCode}
+        AND DEL_FLG = 0
+    </update>
+
+    <update id="updateBrBuyerPoolRelationship" parameterType="com.msk.br.bean.IBR121415RsParam">
+      UPDATE BR_BUYER_POOL_RELATIONSHIP
+      SET  BUYER_POOL_TYPE = #{relationType},
+      <if test="startTime = '' and startTime = null">
+          JOIN_TIME = #{startTime},
+      </if>
+      LEAVE_TIME = #{endTime},
+      UPD_ID = #{updId},
+      UPD_TIME = #{updTime}
+      WHERE
+      BUYER_ID = #{buyerId}
+      AND DEL_FLG = 0
+    </update>
+
+
+
+</mapper>

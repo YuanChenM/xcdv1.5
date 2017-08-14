@@ -1,0 +1,37 @@
+﻿.main{width: 100%;}
+.address_class .add_address{margin-left: auto;margin-right: auto;height:190px;text-align:center;}
+.address_class .buyerInfo{margin-left:30px;font-size:30px;}
+.address_class .buyerInfo .tum{float: right;margin-right: 30px;}
+.address_class .addressInfo{margin-top: 24px;margin-left:30px;}
+.main .list{height:60px;background: url("../images/list1.png") repeat;}
+.main .list span {margin-left:30px;line-height:60px;}
+.main .productDiv{margin-left:30px;width: 750px;}
+.main .imgDiv{float: left;}
+.main .img{width: 100px;height: 100px;}
+.main .product{margin-left:120px;}
+.main .product .breed{font-size:30px;}
+.main .product .attribute{color:#666666;margin-top: 14px;}
+.main .product .pdNum{float: right;}
+.main .product .num{margin-right:30px;}
+.main .product .unitPrice{color:#ff4251;margin-top:22px;}
+.main .money{line-height:100px;}
+.main .money ul li {list-style:none;}
+.main .money .payImg{background: url("../images/1.png") no-repeat;width:50px;height: 39px;}
+.main .money .pay{text-align: center;}
+.main .money .fuhao{float: right;margin-right: 30px;}
+.main .money .totalMoney{float: right;margin-right: 30px;}
+.main .money .chooseClass{float: right;margin-right: 30px;}
+.main .money .chooseImg{height: 50px;vertical-align:middle}
+.main .interval{height: 38px;background: url("../images/list1.png") repeat;}
+.main .account ul li{list-style:none;}
+.main .account .totalNum{float: left;}
+.main .account .accountButton{float: right;margin-right: 30px;background: url("../images/buy_2.png") no-repeat;}
+.end { float: right; width:250px;height:100px;}
+.end .title{text-align: center;line-height:70px;}
+.end .commitClass{
+    line-height: 20px;
+    font-style:normal;
+    color: white;
+    font-size:35px;
+}
+

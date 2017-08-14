@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121211Logic">
+    <select id="getByCatDetail" resultType="com.msk.core.entity.ByResearchCatDetail" parameterType="BaseParam">
+        SELECT
+        b.CATEGORY_ID AS categoryId
+        , a.DETAIL_ID AS detailId
+        , a.DEMAND_FEATURE AS demandFeature
+        , a.HAS_DEMAND AS hasDemand
+        , a.DEMAND_QTY AS demandQty
+        , a.IS_STANDARD AS isStandard
+        , a.ORDER_QTY AS orderQty
+        , a.HOPE_PRICE AS hopePrice
+        , a.DELIVERY AS delivery
+        , a.REMARK AS remark
+        FROM By_Research_Cat_Detail a, By_Research_Category b
+        WHERE a.CATEGORY_ID = b.CATEGORY_ID
+        AND b.BUYER_ID = #{filterMap.buyerId}
+        AND b.CLASSES_CODE =#{filterMap.classesCode}
+        AND b.MACHINING_CODE = #{filterMap.machiningCode}
+        <if test="filterMap.detailId != null and filterMap.detailId != ''">
+            AND a.DETAIL_ID = #{filterMap.detailId}
+        </if>
+        <if test="filterMap.breedCode != null and filterMap.breedCode != ''">
+            AND b.BREED_CODE = #{filterMap.breedCode}
+        </if>
+        <if test="filterMap.featureCode != null">
+            AND a.FEATURE_CODE = #{filterMap.featureCode}
+        </if>
+        <if test="filterMap.saleName != null and filterMap.saleName != ''">
+            AND b.SALE_NAME = #{filterMap.saleName}
+        </if>
+    </select>
+
+
+    <select id="countByCatDetail" parameterType="BaseParam" resultType="int">
+        SELECT count(1)
+        FROM By_Research_Cat_Detail
+        WHERE DETAIL_ID = #{filterMap.detailId}
+    </select>
+
+    <select id="countByResearchCategory" parameterType="BaseParam" resultType="com.msk.core.entity.ByResearchCategory">
+        SELECT CATEGORY_ID AS categoryId
+        FROM by_research_category
+        WHERE BUYER_ID = #{filterMap.buyerId}
+        AND CLASSES_CODE = #{filterMap.classesCode}
+        AND MACHINING_CODE = #{filterMap.machiningCode}
+        <if test="filterMap.breedCode != null and filterMap.breedCode != ''">
+            AND BREED_CODE = #{filterMap.breedCode}
+        </if>
+        <if test="filterMap.saleName != null and filterMap.saleName != ''">
+            AND SALE_NAME = #{filterMap.saleName}
+        </if>
+    </select>
+
+    <update id="modify" parameterType="com.msk.buyers.bean.IBY121211RsParam">
+        UPDATE By_Research_Cat_Detail
+        SET DEMAND_FEATURE  = #{demandFeature}
+         , HAS_DEMAND = #{hasDemand}
+         , IS_STANDARD =  #{isStandard}
+         , DEMAND_QTY =  #{demandQty}
+         , ORDER_QTY = #{orderQty}
+         , HOPE_PRICE = #{hopePrice}
+         , DELIVERY  = #{delivery}
+         , REMARK  = #{remark}
+         , UPD_ID = #{updId}
+         , UPD_TIME = #{updTime}
+        WHERE DETAIL_ID = #{detailId}
+        AND DEL_FLG = '0'
+    </update>
+
+    <insert id="save" parameterType="com.msk.buyers.bean.IBY121211RsParam">
+        INSERT INTO By_Research_Cat_Detail(
+        DETAIL_ID,
+        CATEGORY_ID,
+        FEATURE_CODE,
+        IS_STANDARD,
+        DEMAND_FEATURE,
+        HAS_DEMAND,
+        DEMAND_QTY,
+        ORDER_QTY,
+        HOPE_PRICE,
+        DELIVERY,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        VER
+        )
+    VALUES (
+       #{detailId},
+       #{categoryId},
+       #{featureCode},
+       #{isStandard},
+       #{demandFeature},
+       #{hasDemand},
+       #{demandQty},
+       #{orderQty},
+       #{hopePrice},
+       #{delivery},
+       #{remark},
+       0,
+       #{updId},
+       #{updTime},
+       1
+         )
+    </insert>
+
+    <select id="getPdClassesMat" resultType="com.msk.core.entity.PdClassestreeMat" parameterType="BaseParam">
+        SELECT
+        MAT_ID AS matId
+        , SCIENTIFIC_NAME AS scientificName
+        , LOCAL_NAME AS localName
+        , SALES_NAME AS salesName
+        FROM pd_classestree_mat
+        WHERE  CLASSESTREE_CODE = #{filterMap.classesTreeCode}
+    </select>
+
+    <select id="getPdBreed" resultType="com.msk.core.entity.PdBreed" parameterType="BaseParam">
+        SELECT
+        BREED_CODE AS breedCode
+        , BREED_NAME AS breedName
+        FROM pd_breed
+        WHERE  CLASSES_CODE = #{filterMap.classesCode}
+        AND MACHINING_CODE = #{filterMap.machiningCode}
+        <if test="filterMap.breedCode != null and filterMap.breedCode != ''">
+            AND BREED_CODE = #{filterMap.breedCode}
+        </if>
+    </select>
+
+    <insert id="insertByResearchCategory" parameterType="com.msk.buyers.bean.IBY121211RsParam">
+        INSERT INTO By_Research_Category(
+        CATEGORY_ID,
+        BUYER_ID,
+        INPUT_NUM,
+        INPUT_NAME,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        BREED_CODE,
+        IS_STANDARD,
+        SALE_NAME,
+        SCIENTIFIC_NAME,
+        POPULAR_NAME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        VER
+        )VALUE (
+         #{categoryId}
+        , #{buyerId}
+        , 0
+        , ''
+        , #{classesCode}
+        , #{machiningCode}
+        , #{breedCode}
+        , #{isStandard}
+        , #{saleName}
+        , #{scientificName}
+        , #{popularName}
+        , #{delFlg}
+        , #{updId}
+        , #{updTime}
+        , #{ver}
+        )
+    </insert>
+</mapper>

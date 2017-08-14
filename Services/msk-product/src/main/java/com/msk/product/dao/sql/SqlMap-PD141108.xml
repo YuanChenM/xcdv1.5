@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141108Logic">
+    <sql id="WHERECONDTION">
+        <if test="filterMap.pdRltMsrId != null">
+            AND PD_RLT_MSR_ID = #{filterMap.pdRltMsrId}
+        </if>
+    </sql>
+    <delete id="removeReality" parameterType="com.msk.product.bean.PD141108Param">
+        DELETE FROM PD_REALITY_TECHNICAL
+        WHERE PD_RLT_MSR_ID = #{pdRltMsrId}
+    </delete>
+    
+    <select id="findList" parameterType="BaseParam">
+        SELECT PD_TNC_STD_ID AS pdTncStdId
+             , PD_RLT_MSR_ID AS pdRltMsrId
+             , CONTENT AS content
+             , GRADE_CODE AS gradeCode
+             , STATUS AS status
+        FROM PD_REALITY_TECHNICAL
+        WHERE 1=1
+        <include refid="WHERECONDTION"/>
+    </select>
+    
+    <insert id="save">
+        INSERT INTO PD_REALITY_TECHNICAL(
+               PD_TNC_STD_ID
+             , PD_RLT_MSR_ID
+             , CONTENT
+             , GRADE_CODE
+             , STATUS)
+        VALUES (
+               #{pdTncStdId}
+             , #{pdRltMsrId}
+             , #{content}
+             , #{gradeCode}
+             , #{status})
+    </insert>
+</mapper>

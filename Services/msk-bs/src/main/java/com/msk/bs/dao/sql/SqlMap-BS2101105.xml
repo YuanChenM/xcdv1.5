@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2101105Logic">
+
+    <sql id="selectFiled">
+       	E.SL_ACCOUNT AS slAccount,
+	E.SL_TEL AS slTel,
+	E.SL_SHOW_NAME AS slShowName,
+	E.ACCOUNT_PSD AS accountPsd,
+	E.ACCOUNT_IMG AS accountImg,
+	E.AUTH_STATUS AS authStatus,
+	E.FROM_FLG AS fromFlg,
+	t.SL_CODE AS slCode,
+	t.SL_CODE_DIS AS slCodeDis,
+	t.SL_CON_FLG AS slConFlg,
+	t.AREA_CODE AS areaCode,
+	t.LGCS_AREA_CODE AS lgcsAreaCode,
+	t.PROVINCE_CODE AS provinceCode,
+	t.CITY_CODE AS cityCode,
+	t.DISTRICT_CODE AS districtCode,
+	t.EP_ID AS epId,
+	t.SL_MAIN_CLASS AS slMainClass,
+	t.SNK_FLG AS snkFlg,
+	t.SELF_FLG AS selfFlg,
+	t.AGENT_FLG AS agentFlg,
+	t.OEM_FLG AS oemFlg,
+	t.BUYER_FLG AS buyerFlg,
+	t.SQA_STATUS AS sqaStatus,
+	t.DIST_QUA AS distQua,
+	t.SHOP_QUA AS shopQua,
+	IFNULL(t.AGENT_TYPE,'') AS agentType,
+    IFNULL(t.DISTRIBUTION,'') AS distribution,
+    IFNULL(t.DEMESNE,'') AS demesne,
+    IFNULL(t.REGISTER_SOURCE,'') AS registerSource,
+	IFNULL(E.SL_CONTACT, '') AS slContact,
+	IFNULL(t.SL_IDCARD, '') AS slIdcard,
+	IFNULL(t.SL_ADDRESS, '') AS slAddress,
+	t.MEMO1 AS memo1,
+	t.MEMO2 AS memo2,
+	t.MEMO3 AS memo3,
+	t.MEMO4 AS memo4,
+	t.MEMO5 AS memo5,
+	t.MEMO6 AS memo6,
+	t.MEMO7 AS memo7,
+	t.MEMO8 AS memo8,
+	t.MEMO9 AS memo9,
+	t.MEMO10 AS memo10,
+	t.MEMO11 AS memo11,
+	t.MEMO12 AS memo12,
+	t.MEMO13 AS memo13,
+	t.MEMO14 AS memo14,
+	t.MEMO15 AS memo15,
+	t.MEMO16 AS memo16,
+	t.MEMO17 AS memo17,
+	t.MEMO18 AS memo18,
+	t.MEMO19 AS memo19,
+	t.MEMO20 AS memo20,
+	t.SL_IDCARD AS slIdcard,
+	t.SL_SORT AS slSort,
+	t.SL_ADDRESS AS slAddress,
+	t.LAT AS lat,
+	t.LON AS lon,
+	t.FLAG10 AS flag10,
+	t.FLAG9 AS flag9,
+	t.FLAG8 AS flag8,
+	t.FLAG7 AS flag7,
+	t.FLAG6 AS flag6,
+	t.FLAG5 AS flag5,
+	t.FLAG4 AS flag4,
+	t.FLAG3 AS flag3,
+	t.FLAG2 AS flag2,
+	IFNULL(t.FLAG1, '') AS flag1,
+	t.SHOP_ID AS shopId,
+	IFNULL(t.SHOP_NAME, '') AS shopName,
+	t.SHOP_LOGO AS shopLogo,
+	t.MANAGING_CHARACT10 AS managingCharact10,
+	t.MANAGING_CHARACT9 AS managingCharact9,
+	t.MANAGING_CHARACT8 AS managingCharact8,
+	t.MANAGING_CHARACT7 AS managingCharact7,
+	t.MANAGING_CHARACT6 AS managingCharact6,
+	t.MANAGING_CHARACT5 AS managingCharact5,
+	t.MANAGING_CHARACT4 AS managingCharact4,
+	t.MANAGING_CHARACT3 AS managingCharact3,
+	t.MANAGING_CHARACT2 AS managingCharact2,
+	t.MANAGING_CHARACT1 AS managingCharact1,
+	t.SHOP_FLAG30 AS shopFlag30,
+	t.SHOP_FLAG29 AS shopFlag29,
+	t.SHOP_FLAG28 AS shopFlag28,
+	t.SHOP_FLAG27 AS shopFlag27,
+	t.SHOP_FLAG26 AS shopFlag26,
+	t.SHOP_FLAG25 AS shopFlag25,
+	t.SHOP_FLAG24 AS shopFlag24,
+	t.SHOP_FLAG23 AS shopFlag23,
+	t.SHOP_FLAG22 AS shopFlag22,
+	t.SHOP_FLAG21 AS shopFlag21,
+	t.SHOP_FLAG20 AS shopFlag20,
+	t.SHOP_FLAG19 AS shopFlag19,
+	t.SHOP_FLAG18 AS shopFlag18,
+	t.SHOP_FLAG17 AS shopFlag17,
+	t.SHOP_FLAG16 AS shopFlag16,
+	t.SHOP_FLAG15 AS shopFlag15,
+	t.SHOP_FLAG14 AS shopFlag14,
+	t.SHOP_FLAG13 AS shopFlag13,
+	t.SHOP_FLAG12 AS shopFlag12,
+	t.SHOP_FLAG11 AS shopFlag11,
+	t.SHOP_FLAG10 AS shopFlag10,
+	t.SHOP_FLAG9 AS shopFlag9,
+	t.SHOP_FLAG8 AS shopFlag8,
+	t.SHOP_FLAG7 AS shopFlag7,
+	t.SHOP_FLAG6 AS shopFlag6,
+	t.SHOP_FLAG5 AS shopFlag5,
+	t.SHOP_FLAG4 AS shopFlag4,
+	t.SHOP_FLAG3 AS shopFlag3,
+	t.SHOP_FLAG2 AS shopFlag2,
+	t.SHOP_FLAG1 AS shopFlag1
+    </sql>
+
+    <sql id="selectFrom">
+        FROM sl_bs_account AS E
+        LEFT JOIN(
+        SELECT  <include refid="selectLeftJoin"/>
+        FROM sl_bs_basic_info A
+        LEFT JOIN sl_bs_buyershop F ON F.SL_CODE = A.SL_CODE
+        LEFT JOIN sl_bs_shop_info AS D ON D.SL_CODE = A.SL_CODE
+        )t ON  E.SL_ACCOUNT = t.SL_ACCOUNT
+    </sql>
+
+    <sql id="selectLeftJoin">
+    A.SL_CODE,
+	A.SL_ACCOUNT ,
+	A.AREA_CODE ,
+	A.LGCS_AREA_CODE,
+	A.CITY_CODE ,
+	A.DISTRICT_CODE ,
+	A.EP_ID ,
+	A.SL_MAIN_CLASS ,
+	A.SNK_FLG,
+	A.SELF_FLG ,
+	A.AGENT_FLG ,
+	A.OEM_FLG ,
+	A.BUYER_FLG ,
+	A.SQA_STATUS,
+	A.DIST_QUA ,
+	A.SHOP_QUA ,
+	A.AGENT_TYPE,
+    A.DISTRIBUTION,
+    A.DEMESNE,
+    A.REGISTER_SOURCE,
+	A.SL_CODE_DIS ,
+	A.SL_CON_FLG ,
+	A.PROVINCE_CODE,
+	A.MEMO1 ,
+	A.MEMO2 ,
+	A.MEMO3,
+	A.MEMO4 ,
+	A.MEMO5 ,
+	A.MEMO6,
+	A.MEMO7 ,
+	A.MEMO8 ,
+	A.MEMO9 ,
+	A.MEMO10 ,
+	A.MEMO11 ,
+	A.MEMO12 ,
+	A.MEMO13 ,
+	A.MEMO14 ,
+	A.MEMO15 ,
+	A.MEMO16 ,
+	A.MEMO17,
+	A.MEMO18 ,
+	A.MEMO19 ,
+	A.MEMO20,
+	F.SL_IDCARD ,
+	F.SL_SORT,
+	F.SL_ADDRESS ,
+	F.LAT ,
+	F.LON ,
+	F.FLAG10 ,
+	F.FLAG9,
+	F.FLAG8 ,
+	F.FLAG7 ,
+	F.FLAG6 ,
+	F.FLAG5 ,
+	F.FLAG4 ,
+	F.FLAG3 ,
+	F.FLAG2 ,
+	F.FLAG1,
+	D.SHOP_ID ,
+	D.SHOP_NAME,
+	D.SHOP_LOGO ,
+	D.MANAGING_CHARACT10 ,
+	D.MANAGING_CHARACT9,
+	D.MANAGING_CHARACT8 ,
+	D.MANAGING_CHARACT7 ,
+	D.MANAGING_CHARACT6 ,
+	D.MANAGING_CHARACT5 ,
+	D.MANAGING_CHARACT4 ,
+	D.MANAGING_CHARACT3 ,
+	D.MANAGING_CHARACT2 ,
+	D.MANAGING_CHARACT1 ,
+	D.SHOP_FLAG30 ,
+	D.SHOP_FLAG29 ,
+	D.SHOP_FLAG28 ,
+	D.SHOP_FLAG27,
+	D.SHOP_FLAG26,
+	D.SHOP_FLAG25,
+	D.SHOP_FLAG24,
+	D.SHOP_FLAG23 ,
+	D.SHOP_FLAG22 ,
+	D.SHOP_FLAG21 ,
+	D.SHOP_FLAG20 ,
+	D.SHOP_FLAG19 ,
+	D.SHOP_FLAG18 ,
+	D.SHOP_FLAG17 ,
+	D.SHOP_FLAG16 ,
+	D.SHOP_FLAG15 ,
+	D.SHOP_FLAG14 ,
+	D.SHOP_FLAG13 ,
+	D.SHOP_FLAG12 ,
+	D.SHOP_FLAG11 ,
+	D.SHOP_FLAG10 ,
+	D.SHOP_FLAG9 ,
+	D.SHOP_FLAG8,
+	D.SHOP_FLAG7 ,
+	D.SHOP_FLAG6 ,
+	D.SHOP_FLAG5 ,
+	D.SHOP_FLAG4 ,
+	D.SHOP_FLAG3 ,
+	D.SHOP_FLAG2,
+	D.SHOP_FLAG1
+    </sql>
+
+
+    <select id="findBasicInfoBySlCode" resultType="com.msk.bs.bean.BS2101105Bean" parameterType="BaseParam">
+        SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        WHERE
+		<!--Modif for Bug#2503 at 2016/09/07 by zhu_kai1 Start-->
+		(E.DEL_FLG IS NULL OR E.DEL_FLG =0)
+		<!--Modif for Bug#2503 at 2016/09/07 by zhu_kai1 end-->
+		AND  E.SL_ACCOUNT = #{filterMap.slAccount}
+    </select>
+
+	<!--校验买手账号唯一性-->
+	<select id="checkSlAccount" parameterType="BaseParam" resultType="int">
+		SELECT COUNT(1) from sl_bs_account
+		 where
+			DEL_FLG =0
+			<if test="filterMap.type == 1">
+				AND (SL_ACCOUNT = #{filterMap.slAccount} OR  SL_TEL =#{filterMap.slAccount} OR SL_CONTACT = #{filterMap.slAccount})
+			</if>
+			<if test="filterMap.type == 2">
+				AND SL_ACCOUNT &lt;&gt;  #{filterMap.slAccount}
+				AND (SL_ACCOUNT = #{filterMap.slAccount} OR SL_TEL =#{filterMap.slAccount} OR SL_CONTACT = #{filterMap.slAccount})
+			</if>
+	</select>
+
+	<!--校验买手名称唯一性-->
+	<select id="checkSlContact" parameterType="BaseParam" resultType="int">
+		SELECT COUNT(1) from sl_bs_account
+		where
+		DEL_FLG =0
+		<if test="filterMap.type == 1">
+			AND (SL_ACCOUNT = #{filterMap.slContact} OR  SL_TEL =#{filterMap.slContact} OR SL_CONTACT = #{filterMap.slContact})
+		</if>
+		<if test="filterMap.type == 2">
+			AND SL_ACCOUNT &lt;&gt;  #{filterMap.slAccount}
+			AND (SL_ACCOUNT = #{filterMap.slContact} OR SL_TEL =#{filterMap.slContact} OR SL_CONTACT =#{filterMap.slContact})
+		</if>
+	</select>
+
+	<!--<select id="findHouseShowName" resultType="int" parameterType="BaseParam">
+		SELECT
+		COUNT(1)
+		FROM
+		sl_house_account
+		WHERE
+		HOUSE_TEL != #{filterMap.slTel}
+		AND HOUSE_SHOW_NAME = #{filterMap.slContact}
+		AND DEL_FLG = '0'
+	</select>-->
+
+	<select id="findHouseTel" resultType="int" parameterType="BaseParam">
+		SELECT
+            COUNT(1)
+        FROM
+            sl_house_account
+        WHERE
+            HOUSE_SHOW_NAME != #{filterMap.slContact}
+        AND HOUSE_TEL = #{filterMap.slTel}
+		AND DEL_FLG = '0'
+	</select>
+
+	<!--校验买手手机号唯一性-->
+	<select id="checkSlTel" parameterType="BaseParam" resultType="int">
+		SELECT COUNT(1) from sl_bs_account
+		where
+		DEL_FLG =0
+		<if test="filterMap.type == 1">
+			AND (SL_ACCOUNT = #{filterMap.slTel} OR  SL_TEL =#{filterMap.slTel} OR SL_CONTACT = #{filterMap.slTel})
+		</if>
+		<if test="filterMap.type == 2">
+			AND SL_ACCOUNT &lt;&gt;  #{filterMap.slAccount}
+			AND (SL_ACCOUNT = #{filterMap.slTel} OR SL_TEL =#{filterMap.slTel} OR SL_CONTACT =#{filterMap.slTel})
+		</if>
+	</select>
+</mapper>

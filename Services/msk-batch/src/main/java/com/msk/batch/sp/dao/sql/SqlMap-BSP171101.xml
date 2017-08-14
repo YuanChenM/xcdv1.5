@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.sp.logic.BSP171101Logic">
+
+    <update id="updateSellerPdPriceplate" parameterType="com.msk.batch.sp.bean.BSP171101Param">
+        UPDATE SP_SELLER_PD_PRICEPLATE
+        SET DEL_FLG = 1
+        WHERE DEL_FLG = 0
+        AND PRICE_PERIOD = #{pricePeriod}
+    </update>
+
+    <insert id="batchSave"  parameterType="List">
+        INSERT INTO SP_SELLER_PD_PRICEPLATE
+        (PRICE_ID,
+        PRICE_PERIOD,
+        PRICE_STARTDATE,
+        PRICE_ENDDATE,
+        LGCS_CODE,
+        PD_CODE,
+        WAY_CODE,
+        WAYGRADE_CODE,
+        WAYGRADE_PRICE,
+        WAYGRADE_PRICE_BOX,
+        WAYGRADE_NAME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (
+            #{item.priceId},
+            #{item.pricePeriod},
+            #{item.priceStartdate},
+            #{item.priceEnddate},
+            #{item.lgcsCode},
+            #{item.pdCode},
+            #{item.wayCode},
+            #{item.waygradeCode},
+            #{item.waygradePrice},
+            #{item.waygradePriceBox},
+            #{item.waygradeName},
+            #{item.delFlg},
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            #{item.actId},
+            #{item.actTime},
+            1
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectWaygradePrice" parameterType="com.msk.batch.sp.bean.BSP171101Param"
+            resultType="com.msk.batch.sp.bean.BSP171101Bean">
+            SELECT
+            SSPP.PRICE_PERIOD AS pricePeriod,
+            SSPP.PRICE_STARTDATE AS priceStartdate,
+            SSPP.PRICE_ENDDATE AS priceEnddate,
+            SSPP.LGCS_CODE AS lgcsCode,
+            SPS.LGCS_NAME AS lgcsName,
+            SSPP.PD_CODE AS pdCode,
+            SPS.PD_NAME AS pdName,
+            SPS.CLASSES_CODE AS classesCode,
+            SPS.CLASSES AS classes,
+            SPS.MACHINING_CODE AS machiningCode,
+            SPS.MACHINING AS machining,
+            SPS.BREED_CODE AS breedCode,
+            SPS.BREED AS breed,
+            SPS.FEATURE_CODE AS featureCode,
+            SPS.FEATURE AS feature,
+            SPS.WEIGHT_CODE AS weightCode,
+            SPS.WEIGHT AS weight,
+            SPS.GRADE_CODE AS gradeCode,
+            SPS.GRADE AS grade,
+            SSPPD.WAY_CODE AS wayCode,
+            SSPPD.WAYGRADE_CODE AS waygradeCode,
+            SSPPD.WAYGRADE_NAME AS waygradeName,
+            SSPPD.IS_VALID AS isValid,
+            SUM(SSPPD.WAYGRADE_PRICE) / COUNT(DISTINCT SSPP.SL_CODE) AS waygradePrice,
+            ROUND((left(SPS.WEIGHT,length(SPS.WEIGHT)-2)) *
+            (SUM(SSPPD.WAYGRADE_PRICE) / COUNT(DISTINCT SSPP.SL_CODE)),2) AS waygradePriceBox
+            FROM SP_SELLER_PD_PRICE SSPP
+            LEFT JOIN sp_logs_product SPS ON SSPP.LGCS_CODE = SPS.LGCS_CODE AND SSPP.PD_CODE = SPS.PD_CODE
+            INNER JOIN SP_SELLER_PD_PRICE_DETAIL SSPPD
+            ON SSPP.PRICE_ID = SSPPD.PRICE_ID
+            /*AND SSPPD.IS_VALID = 1*/
+            AND SSPPD.DEL_FLG = 0 AND (SSPPD.WAYGRADE_PRICEMIN IS NULL OR SSPPD.WAYGRADE_PRICEMAX IS NULL
+        OR SSPPD.WAYGRADE_PRICEMIN=0 OR SSPPD.WAYGRADE_PRICEMAX = 0
+       <![CDATA[ OR(SSPPD.WAYGRADE_PRICEMIN<SSPPD.WAYGRADE_PRICE and SSPPD.WAYGRADE_PRICE<SSPPD.WAYGRADE_PRICEMAX)]]>)
+            WHERE SSPP.PRICE_PERIOD = #{pricePeriod}
+            AND SSPP.DEL_FLG = 0
+            GROUP BY SSPP.LGCS_CODE, SSPP.PD_CODE, SSPPD.WAYGRADE_CODE
+    </select>
+</mapper>

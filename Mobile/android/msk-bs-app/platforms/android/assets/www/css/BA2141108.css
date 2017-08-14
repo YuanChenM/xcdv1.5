@@ -1,0 +1,246 @@
+﻿.container {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+    background: url("../img/bg2.png");
+}
+
+.header .bianji {
+    height: 44px;
+    position: absolute;
+    right: 15px;
+    top: 0px;
+    background: url('../img/edit.png') no-repeat center;
+    font-size: 1rem;
+    color: #FFF;
+    text-align: left;
+    text-indent: 45px;
+    background-size: 44px;
+}
+
+.bianji_span {
+    font-family: 'Applied Font Regular', 'Applied Font';
+    font-weight: 400;
+    font-style: normal;
+    color: white;
+    font-size: 1rem;
+    line-height: 44px;
+}
+
+.message {
+    background: url("../img/head-message.png") no-repeat center;
+    display: inline-block;
+    float: right;
+    height: 44px;
+    width: 44px;
+    background-size: 15px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+
+.main {
+    margin-top: 47px;
+    bottom: 0;
+    float: left;
+    width: 100%;
+}
+
+.main .main_d1 {
+    margin: 0 auto;
+    border: 1px solid #e8e8e8;
+    width: 100%;
+    height: 100%;
+}
+
+.content {
+    width: 40%;
+    height: 100%;
+    float: left;
+}
+
+.product {
+    width: 60%;
+    height: 100%;
+    float: right;
+}
+
+.content .tupian {
+    width: 70%;
+    height: 100%;
+    float: left;
+    display: flex;
+    flex-flow: row;
+}
+
+.tupian img{
+    margin: auto auto;
+    margin-left: 0px;
+}
+.product .breed {
+    width: 100%;
+    height: 20px;
+    float: left;
+    margin-top: 18px;
+}
+
+.product .neirong {
+    margin: 0px 2% 0px 0px;
+    width: 100%;
+    height: 45px;
+    float: left;
+}
+
+.product .neirong p{
+    width: 100%;
+    float: left;
+    font-size: 1rem;
+    color: #737373;
+    margin: 8px 0px 0px 0px;
+}
+
+.product .num_price {
+    width: 90%;
+    float: left;
+}
+
+.product .price {
+    width: 60%;
+    height: 15px;
+    display: inline-block;
+}
+
+.product .shownum {
+    width: 30%;
+    height: 15px;
+   display: inline-block;
+}
+
+.main ul {
+    float: left;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+
+.main ul li {
+    height: 120px;
+    float: left;
+    background: url('../img/buy_1.png') repeat;
+    border-bottom: 7px solid #e6e6e6;
+    width: 100%;
+}
+
+ul li .checkbox {
+    width: 30%;
+    height: 100%;
+    float: left;
+    display: flex;
+    flex-flow: row;
+}
+
+ul li .checkbox a {
+    width: 100%;
+    height: 40px;
+    line-height: 25px;
+    font-size: 14px;
+    color: #595757;
+    background: url('../img/choose1.png') no-repeat  center;
+    background-size: 45px;
+    float: left;
+    margin:auto auto;
+}
+
+ul li .checkbox a.on {
+    width: 100%;
+    height: 40px;
+    line-height: 25px;
+    font-size: 14px;
+    color: #595757;
+    background: url('../img/choose2.png') no-repeat center;
+    background-size: 45px;
+    float: left;
+    margin:auto auto;
+}
+
+.block {
+    height: 20px;
+}
+
+.footer1 .checkAllDiv {
+    width: auto;
+    height: 50px;
+    position: absolute;
+}
+
+.footer1 .checkAllDiv .chkAll_span {
+    color: #3D3837;
+    height: 50px;
+    display: inline-block;
+    width: 24px;
+    font-size: 1.3rem;
+    line-height: 50px;
+}
+
+.footer1 .checkAllDiv a {
+    width: auto;
+    height: 50px;
+    line-height: 60px;
+    font-size: 10px;
+    color: #595757;
+    background: url('../img/choose1.png') no-repeat left center;
+    background-size: 45px;
+    text-align: left;
+    text-indent: 33px;
+    float: left;
+}
+
+.footer1 .checkAllDiv a.on {
+    width: auto;
+    height: 50px;
+    line-height: 60px;
+    font-size: 10px;
+    color: #595757;
+    background: url('../img/choose2.png') no-repeat left center;
+    background-size: 44px;
+    text-align: left;
+}
+
+.footer1 .heji {
+    width: auto;
+    height: 50px;
+    float: left;
+    padding-left: 70px
+}
+
+.footer1 .heji .sum {
+    width: 100%;
+    height: 25px;
+    display: flex;
+}
+
+.footer1 .heji .choosed {
+    width: 100%;
+    height: 25px;
+    display: flex
+}
+
+.footer1 .buy {
+    width: 25%;
+    height: 49px;
+    line-height: 49px;
+    float: right;
+    text-align: center;
+    background: url("../img/buy_2.png") no-repeat left center;
+    border-bottom: 1px solid white;
+}
+
+.footer1 .buy .buy_span {
+    font-weight: 400;
+    font-style: normal;
+    color: white;
+    font-size: 1.3rem;
+    line-height: 30px;
+}
+
+

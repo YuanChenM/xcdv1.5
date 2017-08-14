@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101131RsLogic">
+    <!-- 查询管家code和管家名称 -->
+    <select id="findHouseAccountInfo" parameterType="com.msk.bs.bean.IBS2101131RsParam"
+            resultType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        HOUSE_CODE AS houseCode,
+        HOUSE_SHOW_NAME AS houseShowName
+        FROM
+        sl_house_account
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="houseCode !=null and houseCode !=''">
+                AND HOUSE_CODE = #{houseCode}
+            </if>
+            <if test="houseKeeperName !=null and houseKeeperName !=''">
+                AND HOUSE_SHOW_NAME = #{houseKeeperName}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据管家code查询自我介绍详情 -->
+    <select id="findHouseIntroduceInfo" parameterType="com.msk.bs.bean.IBS2101131RsParam"
+            resultType="com.msk.core.entity.SlHouseIntroduce">
+        SELECT
+        A.HOUSE_CODE AS houseCode,
+        A.INTRODUCE AS introduce,
+        A.SERVICE_COMMIT AS serviceCommit,
+        A.UPLOAD_URL3_TYPE AS uploadUrl3Type,
+        A.UPLOAD_URL3 AS uploadUrl3
+        FROM
+        SL_HOUSE_INTRODUCE
+        AS A
+        WHERE
+         A.HOUSE_CODE = #{houseCode}
+    </select>
+
+    <!-- 根据管家code查询工作履历 -->
+    <select id="findHouseWorkInfo" parameterType="com.msk.bs.bean.IBS2101131RsParam"
+            resultType="com.msk.core.entity.SlHouseWorkHis">
+        SELECT
+        A.HOUSE_CODE AS houseCode,
+        A.WORK_COMP AS workComp,
+        A.WORK_START AS workStart,
+        A.WORK_END AS workEnd,
+        A.WORK_POSITION AS workPosition,
+        A.WORK_STATION AS workStation
+        FROM
+        sl_house_work_his
+        AS A
+        WHERE
+             A.HOUSE_CODE = #{houseCode}
+    </select>
+
+    <!-- 根据管家code查询教育履历 -->
+    <select id="findHouseEducationInfo" parameterType="com.msk.bs.bean.IBS2101131RsParam"
+            resultType="com.msk.core.entity.SlHouseEducationHis">
+        SELECT
+        A.HOUSE_CODE AS houseCode,
+        A.EDU_COMP AS eduComp,
+        A.EDU_START AS eduStart,
+        A.EDU_END AS eduEnd
+        FROM
+        sl_house_education_his
+        AS A
+        WHERE
+           A.HOUSE_CODE = #{houseCode}
+    </select>
+
+</mapper>

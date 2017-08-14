@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121316Logic">
+
+    <sql id="whereCondition">
+        <where>
+            a.DEL_FLG=0
+            AND b.DEL_FLG=0
+            <if test="filterMap.buyerId != null and filterMap.buyerId != '' ">
+                AND a.BUYER_ID = #{filterMap.buyerId}
+            </if>
+            <if test="filterMap.accountName != null and filterMap.accountName != '' ">
+                AND a.ACCOUNT_NAME like #{filterMap.accountName}
+            </if>
+            <if test="filterMap.accountPass != null and filterMap.accountPass != '' ">
+                AND a.ACCOUNT_PASS like #{filterMap.accountPass}
+            </if>
+            <if test="filterMap.telNo != null and filterMap.telNo != '' ">
+                AND a.TEL_NO like #{filterMap.telNo}
+            </if>
+            <if test="filterMap.buyerName != null and filterMap.buyerName != '' ">
+                AND b.BUYER_NAME like #{filterMap.buyerName}
+            </if>
+            <if test="filterMap.buyerQq != null and filterMap.buyerQq != '' ">
+                AND b.BUYER_QQ like #{filterMap.buyerQq}
+            </if>
+            <if test="filterMap.buyerSingleWechat != null and filterMap.buyerSingleWechat != '' ">
+                AND b.BUYER_SINGLE_WECHAT like #{filterMap.buyerSingleWechat}
+            </if>
+        </where>
+    </sql>
+    <select id="findPageList" resultType="com.msk.buyers.bean.BY121316Bean" parameterType="BasePageParam">
+        SELECT
+            a.ID AS id,
+            IFNULL(a.BUYER_ID,'') AS buyerId,
+            IFNULL(a.TEL_NO,'')AS telNo,
+            IFNULL(a.ACCOUNT_NAME,'') AS accountName,
+            IFNULL(a.ACCOUNT_PASS,'')AS accountPass,
+            IFNULL(b.BUYER_NAME,'')AS buyerName,
+            IFNULL(b.BUYER_QQ,'') AS buyerQq,
+            IFNULL(b.BUYER_SINGLE_WECHAT,'') AS buyerSingleWechat
+        FROM   BY_BUYER_ACCOUNT as a
+        LEFT JOIN  BY_BUYER_BASIC_INFO  as b ON a.BUYER_ID = b.BUYER_ID AND a.DEL_FLG = b.DEL_FLG
+        <include refid="whereCondition"/>
+        ORDER BY id,buyerId
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+
+    </select>
+
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        SELECT
+        COUNT(1)
+        FROM   BY_BUYER_ACCOUNT as a
+        LEFT JOIN  BY_BUYER_BASIC_INFO  as b ON a.BUYER_ID = b.BUYER_ID AND  a.DEL_FLG = b.DEL_FLG
+        <include refid="whereCondition"/>
+    </select>
+
+    <update id="deleteAccountInfo" parameterType="com.msk.buyers.bean.BY121316Bean">
+        UPDATE BY_BUYER_ACCOUNT
+        SET DEL_FLG = '1'
+         ,UPD_ID = #{updId}
+         ,UPD_TIME = #{updTime}
+        WHERE ID = #{id}
+    </update>
+
+    <update id="deleteBasicInfo" parameterType="com.msk.buyers.bean.BY121316Bean">
+        UPDATE BY_BUYER_BASIC_INFO
+        SET DEL_FLG = '1'
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        WHERE BUYER_ID = #{buyerId}
+    </update>
+
+</mapper>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.Sl241132Logic">
+    <sql id="selectSlPd">
+        IFNULL(A.ARTNO_ID,'') AS artnoId,
+        IFNULL(A.SL_CODE,'') AS slCode,
+        IFNULL(A.SL_PD_ARTNO,'') AS slPdArtNo,
+        IFNULL(A.SL_CODE_DIS,'') AS slCodeDis,
+        IFNULL(A.CLASSES_CODE,'') AS classesCode,
+        <!--IFNULL(H.PD_CLASSES_NAME,'') AS pdClassesName,-->
+        '' AS pdClassesName,
+        IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+        <!--IFNULL(H.MACHINING_NAME,'') AS machiningName,-->
+        '' AS  machiningName,
+        IFNULL(A.BREED_CODE,'') AS breedCode,
+        <!--IFNULL(H.PD_BREED_NAME,'') AS pdBreedName,-->
+        '' AS pdBreedName,
+        IFNULL(A.FEATURE_CODE,'') AS featureCode,
+        <!--IFNULL(H.PD_FEATURE_NAME,'') AS pdFeatureName,-->
+        '' AS pdFeatureName,
+        IFNULL(A.WEIGHT_CODE,'') AS weightCode,
+        <!--IFNULL(H.WEIGHT_NAME, '') AS weightName,-->
+        '' AS weightName,
+        IFNULL(A.NORMS_CODE, '') AS normsCode,
+        <!--IFNULL(V2.NORMS_OUT, '') AS normsName,-->
+        '' AS normsName,
+        IFNULL(A.SALE_PLATFORM, '') AS salePlatform,
+        '' AS salePlatformName,
+        IFNULL(A.BRAND_EP_ID, '') AS brandEpId,
+        IFNULL(B.EP_NAME, '') AS epName,
+        IFNULL(A.BRAND_ID, '') AS brandId,
+        IFNULL(C.BRAND_NAME, '') AS brandName,
+        IFNULL(A.MANUFACTURE_CODE, '') AS manufactureCode,
+        IFNULL(A.FACTORY_CODE, '') AS factoryCode,
+        IFNULL(A.SALE_REGION_CODE, '') AS saleRegionCode,
+        IFNULL(A.SALE_STATUS, '') AS saleStatus,
+        '' AS saleStatusName,
+        IFNULL(A.PD_COUNTRY, '') AS pdCountry,
+        '' AS pdCountryName,
+        IFNULL(A.PD_PLACE, '') AS pdPlace,
+        IFNULL(A.PD_STANDARD, '') AS pdStandard,
+        IFNULL(A.PD_INGREDIENT, '') AS pdIngredient,
+        IFNULL(A.FOOD_LICENSE, '') AS foodLicense,
+        IFNULL(A.SHELF_LIFE, '') AS shelfLife,
+        IFNULL(A.STORAGE_CONDITION, '') AS storageCondition,
+        IFNULL(A.NORMS_SPECIFICATION, '') AS normsSpecification
+    </sql>
+    <sql id="whereSql">
+        <where>
+            A.DEL_FLG=0
+            <if test="filterMap.slCode !=null and filterMap.slCode!=''">
+                AND A.SL_CODE = #{filterMap.slCode}
+            </if>
+            <if test="filterMap.slPdArtno !=null and filterMap.slPdArtno!=''">
+                AND A.SL_PD_ARTNO like #{filterMap.slPdArtno}
+            </if>
+        </where>
+    </sql>
+    <sql id="fromId">
+        FROM
+        sl_pd_artno AS A
+        LEFT JOIN sl_enterprise AS B ON A.BRAND_EP_ID = B.EP_ID AND  B.DEL_FLG = 0
+        <!--
+        INNER JOIN pd_classes AS D ON A.CLASSES_CODE = D.CLASSES_CODE
+        INNER JOIN pd_breed AS E ON E.CLASSES_CODE = A.CLASSES_CODE
+                                    AND E.BREED_CODE = A.BREED_CODE
+                                    AND E.MACHINING_CODE = A.MACHINING_CODE
+        INNER JOIN pd_feature AS F ON F.CLASSES_CODE = A.CLASSES_CODE
+                                   AND F.BREED_CODE = E.BREED_CODE
+                                   AND F.FEATURE_CODE = A.FEATURE_CODE
+                                   AND F.MACHINING_CODE = A.MACHINING_CODE
+        INNER JOIN PD_WEIGHT I ON I.WEIGHT_CODE = A.WEIGHT_CODE
+                                   AND I.CLASSES_CODE = A.CLASSES_CODE
+                                   AND I.MACHINING_CODE = A.MACHINING_CODE
+                                   AND I.BREED_CODE = A.BREED_CODE
+                                   AND I.FEATURE_CODE = A.FEATURE_CODE
+        INNER JOIN PD_MACHINING H ON A.MACHINING_CODE = H.MACHINING_CODE
+                                   AND H.CLASSES_CODE = A.CLASSES_CODE
+        -->
+        LEFT JOIN sl_pd_brand AS C ON C.BRAND_EP_ID = A.BRAND_EP_ID
+        AND C.BRAND_ID = A.BRAND_ID AND A.SL_CODE = C.SL_CODE AND  C.DEL_FLG = 0
+        <!--LEFT JOIN PD_STANDARD AS V1 ON V1.CLASSES_CODE=A.CLASSES_CODE
+        AND V1.MACHINING_CODE =A.MACHINING_CODE
+        AND V1.BREED_CODE = A.BREED_CODE
+        AND V1.FEATURE_CODE = A.FEATURE_CODE
+        AND V1.WEIGHT_CODE=A.WEIGHT_CODE
+        LEFT JOIN PD_NORMS_STD V2 ON V1.STANDARD_ID=V2.STANDARD_ID    AND V2.NORMS_CODE=A.NORMS_CODE
+        -->
+    </sql>
+    <select id="findPageList" parameterType="com.hoperun.core.bean.BasePageParam"
+            resultType="com.msk.seller.bean.SL241132Bean">
+        SELECT
+        <include refid="selectSlPd"/>
+        <include refid="fromId"></include>
+        <include refid="whereSql"></include>
+        <if test="filterMap.maxNo!=null and filterMap.maxNo!=''">
+            ORDER BY A.SL_PD_ARTNO DESC
+        </if>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer"
+            parameterType="com.hoperun.core.bean.BasePageParam">
+        SELECT
+        COUNT(1)
+        <include refid="fromId"></include>
+        <include refid="whereSql"></include>
+    </select>
+
+    <select id="findList" resultType="com.msk.seller.bean.SL241132Bean"
+            parameterType="BaseParam">
+      SELECT
+        A.PD_CLASSES_CODE AS classesCode,
+        IFNULL(A.PD_CLASSES_NAME,'') AS pdClassesName,
+        A.MACHINING_CODE AS machiningCode,
+        IFNULL(A.MACHINING_NAME,'') AS machiningName,
+        A.PD_BREED_CODE AS breedCode,
+        IFNULL(A.PD_BREED_NAME,'') AS pdBreedName,
+        A.PD_FEATURE_CODE AS featureCode,
+        IFNULL(A.PD_FEATURE_NAME,'') AS pdFeatureName,
+        A.WEIGHT_CODE AS weightCode,
+        IFNULL(A.WEIGHT_NAME, '') AS weightName
+      FROM
+         sl_product A
+      WHERE
+        <foreach item="item" index="index" collection="filterMap.normsParamses" open="(" separator="OR" close=")">
+            A.WEIGHT_CODE = #{item.weightCode}
+            AND A.PD_CLASSES_CODE = #{item.classesCode}
+            AND A.MACHINING_CODE = #{item.machiningCode}
+            AND A.PD_BREED_CODE = #{item.breedCode}
+            AND A.PD_FEATURE_CODE = #{item.featureCode}
+        </foreach>
+        AND  A.DEL_FLG = 0
+    </select>
+
+</mapper>

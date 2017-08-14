@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171101Logic">
+
+	<!--获取预计需求数量-->
+	<select id="getForecastNum" resultType="String"  parameterType="com.msk.price.bean.SP171101Param" >
+		SELECT
+		IFNULL(SUM(FORECAST_NUM),'-') as forecastNum
+		FROM  SP_PD_DEMAND_SELLER
+		WHERE 1=1
+		AND FORECAST_YM =#{filterMap.demandYearMonth}
+		AND LGCS_CODE = #{filterMap.lgcsCode}
+		AND left(PD_CODE,9) =#{filterMap.pdTypeCode}
+		AND DEL_FLG = 0
+	</select>
+	<!--获得本期需求-->
+	<select id="getPublishTotalNum" resultType="com.msk.price.bean.SP171101Bean"  parameterType="com.msk.price.bean.SP171101Bean" >
+		SELECT
+		IFNULL(PUBLISH_TOTAL_NUM,'') AS publishTotalNum
+		,A.PUBLISH_ID  AS publishId
+		FROM SP_PD_DEMAND_PUBLISH AS A
+		WHERE 1=1
+		AND LGCS_CODE =#{lgcsCode}
+		AND  PD_TYPE_CODE= #{pdTypeCode}
+		AND PUBLISH_YM =#{demandYearMonth}
+		AND  DEL_FLG = 0
+	</select>
+
+	<select id="findYearMonthList" parameterType="BaseParam" resultType="com.msk.price.bean.SP171101Bean">
+		SELECT DISTINCT
+		 A.PUBLISH_YM AS demandYearMonth
+		FROM SP_PD_DEMAND_PUBLISH A
+		WHERE
+		A.DEL_FLG = 0
+		ORDER BY A.PUBLISH_YM DESC
+	</select>
+
+	<sql id="selectSql" >
+		 left(PD_CODE,9) AS pdTypeCode,
+		 IFNULL(PD_NAME,'-') AS pdName,
+		 CLASSES AS classes,
+		 CLASSES_CODE AS classesCode,
+		 MACHINING AS machining,
+		 MACHINING_CODE AS machiningCode,
+		 FEATURE AS feature,
+		 FEATURE_CODE AS  featureCode,
+		 WEIGHT AS weight,
+		 WEIGHT_CODE AS weightCode,
+		 IFNULL(LGCS_NAME,'-')  AS lgcsName,
+		 LGCS_CODE AS lgcsCode,
+		 BREED AS breed,
+		 BREED_CODE AS breedCode,
+		 IFNULL(SCIENTIFIC_NAME,'-') AS  scientificName,
+		 IFNULL(LOCAL_NAME,'-') AS localName,
+		 IFNULL(SALES_NAME,'-') AS salesName
+	</sql>
+
+	<sql id="whereCondition">
+		<if test="filterMap.lgcsCodes != null and filterMap.lgcsCodes !=''">
+				AND LGCS_CODE IN
+				<foreach collection="filterMap.lgcsCodes" item="lgcsCode" open="(" separator="," close=")">
+					#{lgcsCode}
+				</foreach>
+		</if>
+		<if test="filterMap.pdTypeCode !=null and filterMap.pdTypeCode !=''">
+			AND PD_CODE LIKE #{filterMap.pdTypeCode}
+		</if>
+		<if test="filterMap.classes != null and filterMap.classes !=''">
+			AND CLASSES LIKE #{filterMap.classes}
+		</if>
+		<if test="filterMap.feature !=null and filterMap.feature !=''">
+			AND FEATURE LIKE #{filterMap.feature}
+		</if>
+		<if test="filterMap.pdName !=null and filterMap.pdName !=''">
+			AND PD_NAME LIKE #{filterMap.pdName}
+		</if>
+		<if test="filterMap.breed !=null and filterMap.breed !=''">
+			AND BREED  LIKE  #{filterMap.breed}
+		</if>
+		<if test="filterMap.machining !=null and filterMap.machining !=''">
+			AND MACHINING LIKE #{filterMap.machining}
+		</if>
+		<if test="filterMap.weight !=null and filterMap.weight !=''">
+			AND WEIGHT LIKE #{filterMap.weight}
+		</if>
+	</sql>
+	<select id="findPageList" parameterType="BaseParam"  resultType="com.msk.price.bean.SP171101Bean">
+		SELECT
+		<include refid="selectSql"/>
+		from SP_LOGS_PRODUCT
+		where 1=1
+		<include refid="whereCondition"/>
+		AND DEL_FLG = 0
+		GROUP BY LGCS_CODE,left(PD_CODE,9)
+		<if test="paging==true">
+			LIMIT #{startPos},#{pageSize}
+		</if>
+	</select>
+
+	<select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+		select count(SP.pdTypeCode) from
+		(SELECT
+		<include refid="selectSql"/>
+		from SP_LOGS_PRODUCT
+		where 1=1
+		<include refid="whereCondition"/>
+		AND DEL_FLG = 0
+		GROUP BY LGCS_CODE,left(PD_CODE,9)) AS SP
+	</select>
+
+</mapper>

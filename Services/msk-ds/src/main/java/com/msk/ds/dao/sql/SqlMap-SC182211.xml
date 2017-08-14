@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ds.logic.SC182211Logic">
+
+    <!--查询所有卖家名称-->
+    <select id="findEpNameList" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182211Bean">
+       /*SELECT
+       IFNULL(A.SL_CODE,'') AS slCode,
+       IFNULL(A.SL_CODE_DIS,'') AS slCodeDis,
+       IFNULL(B.EP_NAME,'') AS epName
+       FROM
+       sl_seller AS A
+       INNER JOIN  sl_enterprise AS B ON A.EP_ID = B.EP_ID*/
+    </select>
+    <!--根据卖家ID查询卖家一级分类-->
+    <select id="findSlOneClass" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestree">
+        <!--SELECT DISTINCT
+	    B.LEVEL_NAME AS levelName,
+	    B.LEVEL_CODE AS levelCode,
+        B.CLASSESTREE_CODE AS classestreeCode
+        FROM
+	    sl_product AS A
+        <if test="filterMap.treeLevel==1">
+            LEFT JOIN pd_classestree AS B ON A.PD_CLASSES_CODE = B.LEVEL_CODE
+        </if>
+        <if test="filterMap.treeLevel==2">
+            LEFT JOIN pd_classestree AS B ON A.MACHINING_CODE = B.LEVEL_CODE
+        </if>
+        <if test="filterMap.treeLevel==3">
+            LEFT JOIN pd_classestree AS B ON A.PD_BREED_CODE = B.LEVEL_CODE
+        </if>
+        <if test="filterMap.treeLevel==4">
+            LEFT JOIN pd_classestree AS B ON A.PD_FEATURE_CODE = B.LEVEL_CODE
+        </if>
+        <if test="filterMap.treeLevel==5">
+            LEFT JOIN pd_classestree AS B ON A.WEIGHT_CODE = B.LEVEL_CODE
+        </if>
+        <where>
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND A.SL_CODE=#{filterMap.slCode}
+            </if>
+            <if test="filterMap.treeLevel!=null and filterMap.treeLevel!=''">
+                AND B.TREE_LEVEL=#{filterMap.treeLevel}
+            </if>
+            <if test="filterMap.parentCode!=null and filterMap.parentCode!=''">
+                AND B.PARENT_CODE=#{filterMap.parentCode}
+            </if>
+            <if test="filterMap.pdClassesCode!=null and filterMap.pdClassesCode!=''">
+                AND A.PD_CLASSES_CODE=#{filterMap.pdClassesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.pdBreedCode!=null and filterMap.pdBreedCode!=''">
+                AND A.PD_BREED_CODE=#{filterMap.pdBreedCode}
+            </if>
+            <if test="filterMap.pdFeatureCode!=null and filterMap.pdFeatureCode!=''">
+                AND A.PD_FEATURE_CODE=#{filterMap.pdFeatureCode}
+            </if>
+        </where>-->
+    </select>
+    <!--根据卖家产品查询产品生产商-->
+    <select id="findSlPropEpList" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182211Bean">
+        <!--SELECT
+        A.PROD_EP_ID AS prodEpId,
+        B.SL_CODE AS slCode,
+        B.SL_CODE_DIS AS slCodeDis,
+        C.EP_NAME AS epName,
+        B.SL_CODE_MANUFACTURE AS slCodeManufacture
+        FROM
+        sl_product AS A
+        LEFT JOIN sl_seller AS B ON A.PROD_EP_ID = B.EP_ID
+        LEFT JOIN sl_enterprise AS C ON A.PROD_EP_ID = C.EP_ID
+        <where>
+            <if test="filterMap.sc182211Bean.slCode!=null and filterMap.sc182211Bean.slCode!=''">
+                AND A.SL_CODE=#{filterMap.sc182211Bean.slCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdClassesCode!=null and filterMap.sc182211Bean.pdClassesCode!=''">
+                AND A.PD_CLASSES_CODE=#{filterMap.sc182211Bean.pdClassesCode}
+            </if>
+            <if test="filterMap.sc182211Bean.machiningCode!=null and filterMap.sc182211Bean.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.sc182211Bean.machiningCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdBreedCode!=null and filterMap.sc182211Bean.pdBreedCode!=''">
+                AND A.PD_BREED_CODE=#{filterMap.sc182211Bean.pdBreedCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdFeatureCode!=null and filterMap.sc182211Bean.pdFeatureCode!=''">
+                AND A.PD_FEATURE_CODE=#{filterMap.sc182211Bean.pdFeatureCode}
+            </if>
+            <if test="filterMap.sc182211Bean.weightCode!=null and filterMap.sc182211Bean.weightCode!=''">
+                AND A.WEIGHT_CODE=#{filterMap.sc182211Bean.weightCode}
+            </if>
+        </where>-->
+    </select>
+
+    <!--根据卖家查询品牌-->
+    <select id="findSlBrand" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182211Bean">
+        <!--SELECT
+	    B.BRAND_ID AS brandId,
+	    B.BRAND_NAME AS brandName,
+	    B.BRAND_CLASS AS brandClass
+        FROM
+	    sl_product AS A
+        INNER JOIN sl_pd_brand AS B ON A.BRAND_ID = B.BRAND_ID AND A.BRAND_EP_ID=B.BRAND_EP_ID
+        AND A.SL_CODE=B.SL_CODE
+        <where>
+            <if test="filterMap.sc182211Bean.slCode!=null and filterMap.sc182211Bean.slCode!=''">
+                AND A.SL_CODE=#{filterMap.sc182211Bean.slCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdClassesCode!=null and filterMap.sc182211Bean.pdClassesCode!=''">
+                AND A.PD_CLASSES_CODE=#{filterMap.sc182211Bean.pdClassesCode}
+            </if>
+            <if test="filterMap.sc182211Bean.machiningCode!=null and filterMap.sc182211Bean.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.sc182211Bean.machiningCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdBreedCode!=null and filterMap.sc182211Bean.pdBreedCode!=''">
+                AND A.PD_BREED_CODE=#{filterMap.sc182211Bean.pdBreedCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdFeatureCode!=null and filterMap.sc182211Bean.pdFeatureCode!=''">
+                AND A.PD_FEATURE_CODE=#{filterMap.sc182211Bean.pdFeatureCode}
+            </if>
+            <if test="filterMap.sc182211Bean.weightCode!=null and filterMap.sc182211Bean.weightCode!=''">
+                AND A.WEIGHT_CODE=#{filterMap.sc182211Bean.weightCode}
+            </if>
+        </where>
+        GROUP BY B.BRAND_ID-->
+    </select>
+
+    <!--根据卖家查询包装规格-->
+    <select id="findNormsOut" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182211Bean">
+        <!--SELECT
+        C.NORMS_OUT AS normsOut,
+        C.NORMS_CODE AS normsCode
+        FROM pd_standard AS A
+        INNER JOIN pd_norms_std AS C ON C.STANDARD_ID = A.STANDARD_ID
+        <where>
+            <if test="filterMap.sc182211Bean.pdClassesCode!=null and filterMap.sc182211Bean.pdClassesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.sc182211Bean.pdClassesCode}
+            </if>
+            <if test="filterMap.sc182211Bean.machiningCode!=null and filterMap.sc182211Bean.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.sc182211Bean.machiningCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdBreedCode!=null and filterMap.sc182211Bean.pdBreedCode!=''">
+                AND A.BREED_CODE=#{filterMap.sc182211Bean.pdBreedCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdFeatureCode!=null and filterMap.sc182211Bean.pdFeatureCode!=''">
+                AND A.FEATURE_CODE=#{filterMap.sc182211Bean.pdFeatureCode}
+            </if>
+            <if test="filterMap.sc182211Bean.weightCode!=null and filterMap.sc182211Bean.weightCode!=''">
+                AND A.WEIGHT_CODE=#{filterMap.sc182211Bean.weightCode}
+            </if>
+        </where>-->
+    </select>
+    <!--保存数据-->
+    <insert id="saveData" parameterType="com.msk.core.entity.DsPrintTask">
+        <!-- 应上海需求，新加四个属性值-->
+        INSERT INTO ds_print_task (
+	    TABLE_ID,
+	    PRINT_TASK_ID,
+	    OPERATE_BAR,
+	    READ_BAR,
+        BRAND_NAME,
+        GRADE_NAME,
+        PRODUCT_NAME,
+        FEATURE_NAME,
+        SUPP_NAME,
+        NET_WEIGHT,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER
+        )values(
+          #{tableId},
+          #{printTaskId},
+          #{operateBar},
+          #{readBar},
+          #{brandName},
+          #{gradeName},
+          #{productName},
+          #{featureName},
+          #{suppName},
+          #{netWeight},
+          #{delFlg},
+          #{crtId},
+          #{crtTime},
+          #{updId},
+          #{updTime},
+          #{ver}
+        )
+    </insert>
+
+    <!--根据卖家和产品信息查询货号-->
+    <select id="findSlPdArtno" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182211Bean">
+        <!--SELECT
+        A.SL_PD_ARTNO AS slPdArtno
+        FROM
+        sl_pd_artno AS A
+        <where>
+            <if test="filterMap.sc182211Bean.slCode!=null and filterMap.sc182211Bean.slCode!=''">
+                AND A.SL_CODE=#{filterMap.sc182211Bean.slCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdClassesCode!=null and filterMap.sc182211Bean.pdClassesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.sc182211Bean.pdClassesCode}
+            </if>
+            <if test="filterMap.sc182211Bean.machiningCode!=null and filterMap.sc182211Bean.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.sc182211Bean.machiningCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdBreedCode!=null and filterMap.sc182211Bean.pdBreedCode!=''">
+                AND A.BREED_CODE=#{filterMap.sc182211Bean.pdBreedCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdFeatureCode!=null and filterMap.sc182211Bean.pdFeatureCode!=''">
+                AND A.FEATURE_CODE=#{filterMap.sc182211Bean.pdFeatureCode}
+            </if>
+            <if test="filterMap.sc182211Bean.weightCode!=null and filterMap.sc182211Bean.weightCode!=''">
+                AND A.WEIGHT_CODE=#{filterMap.sc182211Bean.weightCode}
+            </if>
+            <if test="filterMap.sc182211Bean.groupCode!=null and filterMap.sc182211Bean.groupCode!=''">
+                AND A.GRADE_CODE=#{filterMap.sc182211Bean.groupCode}
+            </if>
+            <if test="filterMap.sc182211Bean.salePlatform!=null and filterMap.sc182211Bean.salePlatform!=''">
+                AND A.SALE_PLATFORM=#{filterMap.sc182211Bean.salePlatform}
+            </if>
+        </where>-->
+    </select>
+
+    <!--根据标签打印-->
+    <select id="findDataExport" parameterType="BaseParam" resultType="com.msk.core.entity.DsPrintTask">
+        SELECT
+        A.TABLE_ID AS tableId,
+        A.PRINT_TASK_ID AS printTaskId,
+        A.OPERATE_BAR AS operateBar,
+        A.READ_BAR AS readBar,
+        A.BRAND_NAME AS brandName,
+        A.GRADE_NAME AS gradeName,
+        A.PRODUCT_NAME AS productName,
+        A.FEATURE_NAME AS featureName,
+        A.SUPP_NAME AS suppName,
+        A.NET_WEIGHT AS netWeight
+        FROM
+        ds_print_task AS A
+        WHERE DEL_FLG = 0
+        ORDER BY A.TABLE_ID
+
+    </select>
+
+    <!--根据标签打印-->
+    <delete id="findDeleteData" parameterType="BaseParam">
+        DELETE FROM ds_print_task
+    </delete>
+
+    <!--保存卖家产品的批次管理表数据-->
+    <insert id="saveDsSlPdLot" parameterType="com.msk.core.entity.DsSlPdLot">
+        INSERT INTO ds_sl_pd_lot (
+        LOT_ID,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        BREED_CODE,
+        FEATURE_CODE,
+        WEIGHT_CODE,
+        PKG_CODE,
+        GRADE_CODE,
+        SL_CODE,
+        SL_CODE_DIS,
+        SL_CODE_MANUFACTURE,
+        SALES_PLATFORM,
+        LGCS_CODE,
+        DATE_CODE,
+        PD_CODE,
+        CLASSES_NAME,
+        MACHINING_NAME,
+        BREED_NAME,
+        FEATURE_NAME,
+        WEIGHT_NAME,
+        GRADE_NAME,
+        SL_NAME,
+        LGCS_NAME,
+        PD_NAME,
+        PD_STATUS,
+        ORIGIN,
+        PRODCINGAREA,
+        MANUFACTURER,
+        BRAND,
+        NETWEIGHT,
+        PKG_SPEC,
+        PKG_WAY,
+        PD_TIME,
+        SHELF_LIFE,
+        PROCESSING_WAY,
+        STORAGE_WAY,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER
+        )values(
+        #{lotId},
+        #{classesCode},
+        #{machiningCode},
+        #{breedCode},
+        #{featureCode},
+        #{weightCode},
+        #{pkgCode},
+        #{gradeCode},
+        #{slCode},
+        #{slCodeDis},
+        #{slCodeManufacture},
+        #{salesPlatform},
+        #{lgcsCode},
+        #{dateCode},
+        #{pdCode},
+        #{classesName},
+        #{machiningName},
+        #{breedName},
+        #{featureName},
+        #{weightName},
+        #{gradeName},
+        #{slName},
+        #{lgcsName},
+        #{pdName},
+        #{pdStatus},
+        #{origin},
+        #{prodcingarea},
+        #{manufacturer},
+        #{brand},
+        #{netweight},
+        #{pkgSpec},
+        #{pkgWay},
+        #{pdTime},
+        #{shelfLife},
+        #{processingWay},
+        #{storageWay},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{ver}
+        )
+    </insert>
+
+    <!--保存保存根据批次号生成的流水号数据-->
+    <insert id="saveDsLotSerial" parameterType="com.msk.core.entity.DsLotSerial">
+        INSERT INTO ds_lot_serial (
+        LOT_ID,
+        SERIAL_ID,
+        LOT_CODE,
+        READ_CODE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER
+        )values(
+        #{lotId},
+        #{serialId},
+        #{lotCode},
+        #{readCode},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{ver}
+        )
+    </insert>
+
+    <!--查询上次批次数据-->
+    <select id="queryDataSearch" resultType="com.msk.ds.bean.SC182211Bean" parameterType="BaseParam">
+        SELECT
+	    MIN(A.SERIAL_ID) AS minNumber,
+	    MAX(A.SERIAL_ID) AS maxNumber
+        FROM
+	    ds_lot_serial AS A
+        <where>
+        <if test="filterMap.lotCode!=null and filterMap.lotCode!=''">
+            AND A.LOT_CODE like #{filterMap.lotCode}
+        </if>
+        AND A.DEL_FLG = 0
+        </where>
+    </select>
+
+    <!--查询批次数据是否存在-->
+    <select id="dataExisted" resultType="int" parameterType="BaseParam">
+        select count(1) from ds_lot_serial AS A
+        WHERE A.LOT_CODE=#{filterMap.lotCode}
+        AND A.DEL_FLG = 0
+    </select>
+
+    <!--查询批次数据是否存在-->
+    <select id="dataExistedTwo" resultType="com.msk.core.entity.DsSlPdLot" parameterType="BaseParam">
+        select
+        LOT_ID AS lotId
+        from ds_sl_pd_lot AS A
+        <where>
+            <if test="filterMap.sc182211Bean.slCode!=null and filterMap.sc182211Bean.slCode!=''">
+                AND A.SL_CODE=#{filterMap.sc182211Bean.slCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdClassesCode!=null and filterMap.sc182211Bean.pdClassesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.sc182211Bean.pdClassesCode}
+            </if>
+            <if test="filterMap.sc182211Bean.machiningCode!=null and filterMap.sc182211Bean.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.sc182211Bean.machiningCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdBreedCode!=null and filterMap.sc182211Bean.pdBreedCode!=''">
+                AND A.BREED_CODE=#{filterMap.sc182211Bean.pdBreedCode}
+            </if>
+            <if test="filterMap.sc182211Bean.pdFeatureCode!=null and filterMap.sc182211Bean.pdFeatureCode!=''">
+                AND A.FEATURE_CODE=#{filterMap.sc182211Bean.pdFeatureCode}
+            </if>
+            <if test="filterMap.sc182211Bean.weightCode!=null and filterMap.sc182211Bean.weightCode!=''">
+                AND A.WEIGHT_CODE=#{filterMap.sc182211Bean.weightCode}
+            </if>
+            <if test="filterMap.sc182211Bean.groupCode!=null and filterMap.sc182211Bean.groupCode!=''">
+                AND A.GRADE_CODE=#{filterMap.sc182211Bean.groupCode}
+            </if>
+            <if test="filterMap.sc182211Bean.salePlatform!=null and filterMap.sc182211Bean.salePlatform!=''">
+                AND A.SALES_PLATFORM=#{filterMap.sc182211Bean.salePlatform}
+            </if>
+            <if test="filterMap.sc182211Bean.slCodeManufacture!=null and filterMap.sc182211Bean.slCodeManufacture!=''">
+                AND A.SL_CODE_MANUFACTURE=#{filterMap.sc182211Bean.slCodeManufacture}
+            </if>
+            <if test="filterMap.sc182211Bean.dateCode!=null and filterMap.sc182211Bean.dateCode!=''">
+                AND A.DATE_CODE=#{filterMap.sc182211Bean.dateCode}
+            </if>
+            AND A.DEL_FLG = 0
+        </where>
+    </select>
+
+</mapper>

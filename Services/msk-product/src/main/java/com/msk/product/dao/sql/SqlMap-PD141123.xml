@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141123Logic">
+
+	<select id="findList" parameterType="BaseParam" resultType="com.msk.core.entity.PdClasses">
+	SELECT
+	A.CLASSES_CODE AS classesCode
+   ,A.CLASSES_NAME AS classesName
+	FROM PD_CLASSES A
+	 ORDER BY A.CLASSES_CODE
+	</select>
+
+	<select id="findPageList" parameterType="com.hoperun.core.bean.BasePageParam"
+			resultType="com.msk.product.bean.PD141123Bean">
+		SELECT
+		A.MACHINING_CODE AS machiningCode,
+		A.MACHINING_NAME AS machiningName,
+		A.CLASSES_CODE AS classesCode,
+		A.MACHININGREF_ID AS  machiningrefId,
+		B.CLASSES_NAME AS classesName
+		FROM
+		PD_MACHININGREF A
+		LEFT JOIN PD_CLASSES B ON A.CLASSES_CODE = B.CLASSES_CODE
+		WHERE A.CLASSES_CODE = #{filterMap.classesCode}
+		<if test="paging==true">
+			LIMIT #{startPos},#{pageSize};
+		</if>
+	</select>
+
+	<select id="getPageCount" resultType="Integer"
+			parameterType="com.hoperun.core.bean.BasePageParam">
+		SELECT
+		COUNT(1)
+		FROM PD_MACHININGREF AS A
+		WHERE A.CLASSES_CODE = #{filterMap.classesCode}
+	</select>
+</mapper>

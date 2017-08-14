@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141104Logic">
+	<!-- 产品产品加工程度分类一览查询-->
+	<select id="findListMaching" resultType="com.msk.product.bean.IPD141104RsResult">
+		SELECT
+		A.MACHINING_CODE AS
+		machiningCode
+		,A.MACHINING_NAME AS machiningName
+		FROM PD_MACHINING AS A
+		WHERE A.CLASSES_CODE = #{filterMap.classesCode}
+	</select>
+
+</mapper>

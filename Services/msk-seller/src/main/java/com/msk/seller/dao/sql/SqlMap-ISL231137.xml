@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231137Logic">
+    <select id="searchByFlg" resultType="com.msk.seller.bean.ISL231137RsBean"
+            parameterType="com.msk.seller.bean.ISL231137RsParam">
+        SELECT
+        A.SL_CODE AS slCode,
+        A.PRODUCER_EP_ID AS producerEpId,
+        B.EP_NAME AS producerEpName,
+        A.CONTRACT_NO AS contractNo,
+        A.AUTH_EP_NAME AS authEpName,
+        A.AUTH_TERM_BEGIN AS authTermBegin,
+        A.AUTH_TERM_END AS authTermEnd,
+        A.AUTH_TERM_UNLIIMITED AS authTermUnliimited,
+        A.VER AS ver
+        FROM
+        <if test="flag==1">
+            sl_ep_agent_auth AS A
+        </if>
+        <if test="flag==2">
+            sl_ep_oem_auth AS A
+        </if>
+        LEFT JOIN sl_enterprise B ON A.PRODUCER_EP_ID=B.EP_ID AND B.DEL_FLG = 0
+        WHERE
+            A.SL_CODE=#{slCode} AND A.DEL_FLG = 0
+            <if test="producerEpId!=null and producerEpId!=''">
+                AND A.PRODUCER_EP_ID=#{producerEpId}
+            </if>
+    </select>
+
+    <select id="findOne" resultType="com.msk.seller.bean.SlSellerBean"
+            parameterType="com.msk.seller.bean.ISL231137RsParam">
+        SELECT
+        A.SL_CODE AS slCode,
+        A.SL_ACCOUNT AS slAccount,
+        A.EP_ID AS epId,
+        B.EP_NAME AS epName,
+        A.SL_CODE_DIS AS slCodeDis,
+        A.SELF_FLG AS selfFlg
+        FROM
+        sl_seller AS A
+        LEFT JOIN sl_enterprise B ON A.EP_ID=B.EP_ID AND B.DEL_FLG = 0
+        WHERE
+        A.SL_CODE=#{slCode} AND A.DEL_FLG = 0
+        <if test="producerEpId!=null and producerEpId!=''">
+            AND A.EP_ID=#{producerEpId}
+        </if>
+    </select>
+</mapper>

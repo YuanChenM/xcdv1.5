@@ -1,0 +1,19 @@
+spring:
+  redis:
+    database: 12
+    host: 10.30.10.14
+    port: 6379
+    password: Admin123#
+    pool:
+      max-active: 1024
+      max-idle: 200
+      max-wait: 1000
+server:
+  port: 9390
+  context-path: /msk-print/
+
+config:
+  environment: development
+  server:
+    baseUrl: http://10.20.16.83/msk-config-server/api
+    constant: /load/config/constant

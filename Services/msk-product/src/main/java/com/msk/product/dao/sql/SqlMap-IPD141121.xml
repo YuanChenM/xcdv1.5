@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141121Logic">
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141121RsResult">
+		SELECT
+		A.STANDARD_ID AS standardId,
+		 A.MCT_STD_ITEM_ID AS mctStdItemId
+		,B.MCT_STD_ITEM_NAME AS mctStdItemName
+		,A.MCT_OK_VAL AS mctStdVal1
+		,A.MCT_NG_VAL AS mctStdVal2
+		,B.LEVEL_ID AS levelId,
+		B.PARENT_ID AS parentId,
+		B.IS_CATALOG AS isCatalog
+		FROM
+		PD_MCT_STD AS A
+		LEFT JOIN PD_MCT_STD_ITEM B ON A.MCT_STD_ITEM_ID = B.MCT_STD_ITEM_ID
+		WHERE
+		A.STANDARD_ID IN (SELECT mct.STANDARD_ID FROM PD_STANDARD AS mct
+		<if test="filterMap.classestreeCode != null and filterMap.classestreeCode != ''">
+			WHERE mct.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+		</if>
+		)
+		<if test="filterMap.levelId != null and filterMap.levelId != ''">
+			AND B.LEVEL_ID=#{filterMap.levelId}
+		</if>
+		<if test="filterMap.stdItemId != null and filterMap.stdItemId != ''">
+			AND A.MCT_STD_ITEM_ID = #{filterMap.stdItemId}
+		</if>
+		<if test="filterMap.standardId != null and filterMap.standardId != ''">
+			AND A.STANDARD_ID = #{filterMap.standardId}
+		</if>
+		ORDER BY A.MCT_STD_ITEM_ID
+	</select>
+</mapper>

@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11317Logic">
+    <!-- 查询预入库产品详细-->
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11317PrePdBean" parameterType="com.msk.ssc.bean.SSC11317RsParam">
+        SELECT
+        ssdpp.PD_DESC as pdName,
+        ssdpp.PRODUCT_PLAN_WEIGHT as productPlanWeight,
+        ssdpp.PRODUCT_RECV_WEIGHT as productRecvWeight,
+        ssdpp.PRODUCT_PLAN_BOX as productPlanBox,
+        ssdpp.PRODUCT_RECV_BOX as productRecvBox,
+        ssdpp.PD_CODE AS pdCode,
+        ssdpp.DELIVERY_PRE_INTO_ID AS deliveryPreIntoId,
+        ssdpp.DELIVERY_PRE_INTO_CODE AS deliveryPreIntoCode,
+        ssdpi.DELIVERY_CONFIRM_ID AS deliveryConfirmId,
+        ssdcpd.SETTKEMENT_STANDARD_PRICE AS settkementStandardPrice,
+        IFNULL(ssdpp.CLASSES_CODE,'') AS classCode,
+        IFNULL(ssdpp.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(ssdpp.BREED_CODE,'') AS breedCode,
+        IFNULL(ssdpp.FEATURE_CODE,'') AS featureCode,
+        IFNULL(ssdpp.WEIGHT_CODE,'') AS weightCode,
+        ssdpp.FEATURE_NAME AS featureName,
+        ssdpp.WEIGHT_NAME AS weightName,
+        ssdpp.NORMS_CODE AS normsCode,
+        ssdpp.NORMS_NAME AS normsName,
+        ssdpp.GRADE_CODE AS gradeCode,
+        ssdpp.GRADE_NAME AS gradeName,
+        IFNULL(ssdpp.WEIGHT_VAL,'') AS weightVal,
+        IFNULL(ssdpp.VER,'') AS ver
+        FROM
+        ssc_delivery_pre_pd ssdpp
+        LEFT JOIN ssc_delivery_pre_into ssdpi
+        ON ssdpi.DELIVERY_PRE_INTO_ID = ssdpp.DELIVERY_PRE_INTO_ID
+        LEFT JOIN ssc_delivery_confirm_pr_detail ssdcpd
+        ON ssdcpd.DELIVERY_CONFIRM_ID = ssdpi.DELIVERY_CONFIRM_ID AND ssdcpd.PD_CODE = ssdpp.PD_CODE
+        WHERE
+        ssdpp.DEL_FLG = 0
+        AND ssdcpd.DEL_FLG = 0
+        <if test="deliveryPreIntoId!=null and deliveryPreIntoId!=''">
+            AND ssdpp.DELIVERY_PRE_INTO_ID = #{deliveryPreIntoId}
+        </if>
+        <if test="deliveryPreIntoCode!=null and deliveryPreIntoCode!=''">
+            AND ssdpp.DELIVERY_PRE_INTO_CODE = #{deliveryPreIntoCode}
+        </if>
+        <if test="deliveryId != null and deliveryId != ''">
+            AND ssdpi.DELIVERY_ID = #{deliveryId}
+        </if>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        SELECT count(1)
+        FROM
+        ssc_delivery_pre_pd ssdpp
+        WHERE
+        ssdpp.DEL_FLG = 0
+        <if test="deliveryPreIntoId!=null and deliveryPreIntoId!=''">
+            AND ssdpp.DELIVERY_PRE_INTO_ID = #{deliveryPreIntoId}
+        </if>
+        <if test="deliveryPreIntoCode!=null and deliveryPreIntoCode!=''">
+            AND ssdpp.DELIVERY_PRE_INTO_CODE = #{deliveryPreIntoCode}
+        </if>
+        <if test="deliveryId != null and deliveryId != ''">
+            AND ssdpi.DELIVERY_ID = #{deliveryId}
+        </if>
+    </select>
+
+    <!-- 查询预入库单基本信息-->
+    <select id="findDeliveryIntoInfo" resultType="com.msk.ssc.bean.SSC11317PreIntoBean" parameterType="com.msk.ssc.bean.SSC11317RsParam">
+        SELECT
+        ssdpi.DELIVERY_PRE_INTO_ID AS deliveryPreIntoId,
+        ssdpi.DELIVERY_PRE_INTO_CODE AS deliveryPreIntoCode,
+        ssdpi.CONTRACT_CODE AS contractCode,
+        ssdpi.DELIVERY_CONFIRM_ID AS deliveryConfirmId,
+        ssdpi.DELIVERY_CONFIRM_CODE AS deliveryConfirmCode,
+        ifnull(ssdpi.DELIVERY_CODE, '') AS deliveryCode,
+        ssdpi.DELIVERY_BATCH AS  deliveryBatch,
+        ssdpi.VEHICLE_NUMBER AS  vehicleNumber,
+        ssdpi.PURCHASER_NAME AS purchaserName,
+        ssdpi.PURCHASER_CODE AS purchaserCode,
+        ssdpi.PURCHASER_ID AS purchaserId,
+        ssdpi.SUPPLIER_NAME AS supplierName,
+        ssdpi.SUPPLIER_CODE AS supplierCode,
+        ssdpi.SUPPLIER_ID AS supplierId,
+        ssdpi.DELIVERY_WAREHOUSE AS deliveryWarehouse,
+        ifnull(ssdpi.DELIVERY_WAREHOUSE_ADDR, '') AS deliveryWarehouseAddr,
+        ssdpi.ARRIVE_WAREHOUSE AS arriveWarehouse,
+        ifnull(ssdpi.ARRIVE_WAREHOUSE_ADDR, '') AS arriveWarehouseAddr,
+        ssdpi.ETA AS eta,
+        ssdpi.ETD AS etd,
+        ssdpi.ARRIVE_DATE AS arriveDate,
+        ssdpi.LIC_PLATE_NUMBER AS licPlateNumber,
+        ssdpi.VEHICLE_TYPE AS vehicleType,
+        ssdpi.DRIVER_NAME AS driverName,
+        ssdpi.DRIVER_TEL AS driverTel,
+        ssdpi.DELIVERY_RESPONSIBLE AS deliveryResponsible,
+        ssdpi.DELIVERY_RESPONSIBLE_TEL AS deliveryResponsibleTel,
+        ssdpi.DELIVERY_EXECUTOR AS deliveryExecutor,
+        ssdpi.DELIVERY_EXECUTOR_TEL AS deliveryExecutorTel,
+        ssdpi.TRAFFIC_COMPANY_NAME AS trafficCompanyName,
+        ssdpi.TRAFFIC_COMPANY_RESPONSIBLE AS trafficCompanyResponsible,
+        ssdpi.TRAFFIC_COMPANY_RESPONSIBLE_TEL AS trafficCompanyResponsibleTel,
+        ssdpi.TRAFFIC_COMPANY_EXECUTOR AS trafficCompanyExecutor,
+        ssdpi.TRAFFIC_COMPANY_EXECUTOR_TEL AS trafficCompanyExecutorTel,
+        ssdpi.WAREHOUSE_KEEPER AS warehouseKeeper,
+        ssdpi.WAREHOUSE_KEEPER_TEL AS warehouseKeeperTel,
+        ssdpi.ACCEPTER AS accepter,
+        ssdpi.ACCEPTER_TEL AS accepterTel,
+        ssdpi.REMARK as remark,
+        ssdpi.SEND_REMARK as sendRemark,
+        ssdpi.PRODUCT_RECV_STATUS as productRecvStatus,
+        REPLACE(ssdpi.BUSINESS_FILE_ID,',','/') AS businessFileId,
+        ssdpi.BUSINESS_FILE_NAME AS businessFileName,
+        REPLACE(ssdpi.QUARANTINE_FILE_ID,',','/') AS quarantineFileId,
+        ssdpi.QUARANTINE_FILE_NAME AS quarantineFileName,
+        REPLACE(ssdpi.INVENTORY_FILE_ID,',','/') AS inventoryFileId,
+        ssdpi.INVENTORY_FILE_NAME AS inventoryFileName,
+        REPLACE(ssdpi.REPORT_FILE_ID,',','/') AS reportFileId,
+        ssdpi.REPORT_FILE_NAME AS reportFileName,
+        IFNULL(DATE_FORMAT(ssdpi.ETA,'%Y-%m-%d'), '') as etaStr,
+        IFNULL(ssdob.LGCS_AREA_CODE, '') AS lgcsAreaCode,
+        IFNULL(ssdob.LGCS_AREA_NAME, '') AS lgcsAreaName,
+        ifnull(ssdpi.VER, '') AS ver
+        FROM
+        ssc_delivery_pre_into ssdpi
+        LEFT JOIN ssc_delivery_order_basic ssdob
+        ON ssdpi.DELIVERY_CODE = ssdob.DELIVERY_CODE
+        WHERE 1=1
+        <if test="deliveryPreIntoId!=null and deliveryPreIntoId!=''">
+            AND ssdpi.DELIVERY_PRE_INTO_ID = #{deliveryPreIntoId}
+        </if>
+        <if test="deliveryPreIntoCode!=null and deliveryPreIntoCode!=''">
+            AND ssdpi.DELIVERY_PRE_INTO_CODE = #{deliveryPreIntoCode}
+        </if>
+    </select>
+
+    <!-- 查询发货订单关联的预入库单基本信息-->
+    <select id="findListByDeliveryId" resultType="com.msk.ssc.bean.SSC11317PreIntoBean" parameterType="com.msk.ssc.bean.SSC11317RsParam">
+        SELECT
+            ssdpi.DELIVERY_PRE_INTO_ID AS deliveryPreIntoId,
+            ssdpi.DELIVERY_PRE_INTO_CODE AS deliveryPreIntoCode
+        FROM
+            ssc_delivery_pre_into ssdpi
+        WHERE
+        ssdpi.DEL_FLG = 0
+        <if test="deliveryId!=null and deliveryId!=''">
+            AND ssdpi.DELIVERY_ID = #{deliveryId}
+        </if>
+    </select>
+
+    <!--更新预入库单基本信息-->
+    <update id="modifyDeliveryIntoInfo" parameterType="com.msk.ssc.bean.SSC11317RsParam">
+        update ssc_delivery_pre_into ssdpi SET
+        <if test="contractId != null and contractId != ''">
+            CONTRACT_ID = #{contractId},
+        </if>
+        <if test="contractCode != null and contractCode != ''">
+            CONTRACT_CODE = #{contractCode},
+        </if>
+        <if test="arriveDate!=null and arriveDate!=''">
+            ssdpi.ARRIVE_DATE = #{arriveDate},
+        </if>
+        <if test="sendRemark!=null and sendRemark!=''">
+            ssdpi.SEND_REMARK = #{sendRemark},
+        </if>
+        <if test="licPlateNumber!=null and licPlateNumber!=''">
+            ssdpi.LIC_PLATE_NUMBER = #{licPlateNumber},
+        </if>
+        <if test="vehicleType!=null and vehicleType!=''">
+            ssdpi.VEHICLE_TYPE = #{vehicleType},
+        </if>
+        <if test="driverName!=null and driverName!=''">
+            ssdpi.DRIVER_NAME = #{driverName},
+        </if>
+        <if test="driverTel!=null and driverTel!=''">
+            ssdpi.DRIVER_TEL = #{driverTel},
+        </if>
+        <if test="deliveryResponsible!=null and deliveryResponsible!=''">
+            ssdpi.DELIVERY_RESPONSIBLE = #{deliveryResponsible},
+        </if>
+        <if test="deliveryResponsibleTel!=null and deliveryResponsibleTel!=''">
+            ssdpi.DELIVERY_RESPONSIBLE_TEL = #{deliveryResponsibleTel},
+        </if>
+        <if test="deliveryExecutor!=null and deliveryExecutor!=''">
+            ssdpi.DELIVERY_EXECUTOR = #{deliveryExecutor},
+        </if>
+        <if test="deliveryExecutorTel!=null and deliveryExecutorTel!=''">
+            ssdpi.DELIVERY_EXECUTOR_TEL = #{deliveryExecutorTel},
+        </if>
+        <if test="trafficCompanyName!=null and trafficCompanyName!=''">
+            ssdpi.TRAFFIC_COMPANY_NAME = #{trafficCompanyName},
+        </if>
+        <if test="trafficCompanyResponsible!=null and trafficCompanyResponsible!=''">
+            ssdpi.TRAFFIC_COMPANY_RESPONSIBLE = #{trafficCompanyResponsible},
+        </if>
+        <if test="trafficCompanyResponsibleTel!=null and trafficCompanyResponsibleTel!=''">
+            ssdpi.TRAFFIC_COMPANY_RESPONSIBLE_TEL = #{trafficCompanyResponsibleTel},
+        </if>
+        <if test="trafficCompanyExecutor!=null and trafficCompanyExecutor!=''">
+            ssdpi.TRAFFIC_COMPANY_EXECUTOR = #{trafficCompanyExecutor},
+        </if>
+        <if test="trafficCompanyExecutorTel!=null and trafficCompanyExecutorTel!=''">
+            ssdpi.TRAFFIC_COMPANY_EXECUTOR_TEL = #{trafficCompanyExecutorTel},
+        </if>
+        <if test="warehouseKeeper!=null and warehouseKeeper!=''">
+            ssdpi.WAREHOUSE_KEEPER = #{warehouseKeeper},
+        </if>
+        <if test="warehouseKeeperTel!=null and warehouseKeeperTel!=''">
+            ssdpi.WAREHOUSE_KEEPER_TEL = #{warehouseKeeperTel},
+        </if>
+        <if test="accepter!=null and accepter!=''">
+            ssdpi.ACCEPTER = #{accepter},
+        </if>
+        <if test="accepterTel!=null and accepterTel!=''">
+            ssdpi.ACCEPTER_TEL = #{accepterTel},
+        </if>
+        <if test="updId!=null and updId!=''">
+            ssdpi.UPD_ID = #{updId},
+        </if>
+        ssdpi.UPD_TIME = #{updTime},
+        ssdpi.VER = ssdpi.VER + 1
+        WHERE
+        ssdpi.DEL_FLG = 0
+        <if test="deliveryPreIntoId!=null and deliveryPreIntoId!=''">
+            AND ssdpi.DELIVERY_PRE_INTO_ID = #{deliveryPreIntoId}
+        </if>
+        <if test="deliveryPreIntoCode!=null and deliveryPreIntoCode!=''">
+            AND ssdpi.DELIVERY_PRE_INTO_CODE = #{deliveryPreIntoCode}
+        </if>
+    </update>
+
+    <!--批量更新预入库单中的实际信息-->
+    <update id="updatePreInto" parameterType="com.msk.ssc.bean.SSC11317PreIntoBean">
+        UPDATE SSC_DELIVERY_PRE_INTO A SET
+            A.ARRIVE_DATE=#{arriveDateStr},
+            <if test="remark!=null and remark!=''">
+                A.REMARK=#{remark},
+            </if>
+            UPD_ID=#{updId},
+            UPD_TIME=#{updTime},
+            VER=VER+1
+            WHERE A.DEL_FLG = 0
+            AND A.DELIVERY_PRE_INTO_CODE = #{deliveryPreIntoCode}
+    </update>
+
+    <!--插入预入库文件信息-->
+    <update id="savePreIntoFile" parameterType="com.msk.ssc.bean.SSC11317PreIntoBean">
+        UPDATE SSC_DELIVERY_PRE_INTO A
+        SET
+        <if test="businessFileId!=null and businessFileId!=''">
+            A.BUSINESS_FILE_ID=#{businessFileId},
+        </if>
+        <if test="businessFileName!=null and businessFileName!=''">
+            A.BUSINESS_FILE_NAME=#{businessFileName},
+        </if>
+        <if test="quarantineFileId!=null and quarantineFileId!=''">
+            A.QUARANTINE_FILE_ID=#{quarantineFileId},
+        </if>
+        <if test="quarantineFileName!=null and quarantineFileName!=''">
+            A.QUARANTINE_FILE_NAME=#{quarantineFileName},
+        </if>
+        <if test="inventoryFileId!=null and inventoryFileId!=''">
+            A.INVENTORY_FILE_ID=#{inventoryFileId},
+        </if>
+        <if test="inventoryFileName!=null and inventoryFileName!=''">
+            A.INVENTORY_FILE_NAME=#{inventoryFileName},
+        </if>
+        <if test="reportFileId!=null and reportFileId!=''">
+            A.REPORT_FILE_ID=#{reportFileId},
+        </if>
+        <if test="reportFileName!=null and reportFileName!=''">
+            A.REPORT_FILE_NAME=#{reportFileName},
+        </if>
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime},
+        VER=VER+1
+        WHERE A.DEL_FLG = 0
+        AND A.DELIVERY_PRE_INTO_ID = #{deliveryPreIntoId}
+    </update>
+
+    <!--批量更新预入库单产品中的实际信息-->
+    <update id="updatePrePd" parameterType="com.msk.core.entity.SscDeliveryPrePd">
+        UPDATE SSC_DELIVERY_PRE_PD SET
+        PRODUCT_RECV_BOX=#{productRecvBox},
+        PRODUCT_RECV_WEIGHT=#{productRecvBox} * IFNULL(WEIGHT_VAL, 0),
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime},
+        VER=VER+1
+        WHERE DEL_FLG = 0
+        AND DELIVERY_PRE_INTO_CODE = #{deliveryPreIntoCode}
+        AND PD_CODE = #{pdCode}
+    </update>
+
+    <!--更新预入库单中的收获状态 5全部到货 6部分到货 9异常-->
+    <update id="updatePreIntoRecvStatus" parameterType="com.msk.ssc.bean.SSC11317PreIntoBean">
+        UPDATE SSC_DELIVERY_PRE_INTO A SET
+        A.PRODUCT_RECV_STATUS = #{productRecvStatus},
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime},
+        VER=VER+1
+        WHERE A.DEL_FLG = 0
+        AND A.DELIVERY_PRE_INTO_CODE = #{deliveryPreIntoCode}
+    </update>
+
+    <!-- 查询应该插入的-->
+    <select id="findProductRecvStatus" resultType="Integer" parameterType="com.msk.ssc.bean.SSC11317PreIntoBean">
+        SELECT(CASE
+        WHEN SUM(ISOK)-COUNT(*)=0 THEN 5
+        WHEN SUM(ISOK)+COUNT(*)=0 THEN 9
+        ELSE 6
+        END) AS ISOK FROM(
+        SELECT
+        (CASE
+        WHEN PRODUCT_RECV_BOX=0 THEN -1
+        WHEN ISNULL(PRODUCT_RECV_BOX) THEN -1
+        WHEN PRODUCT_PLAN_BOX=PRODUCT_RECV_BOX THEN 1
+        WHEN PRODUCT_RECV_BOX>PRODUCT_PLAN_BOX THEN 1
+        WHEN PRODUCT_PLAN_BOX>PRODUCT_RECV_BOX THEN 0
+        END) AS ISOK
+        FROM
+            SSC_DELIVERY_PRE_PD
+        WHERE
+            DELIVERY_PRE_INTO_CODE = #{deliveryPreIntoCode}
+        GROUP BY
+            PD_CODE) A
+    </select>
+    <update id="modifyStatus" parameterType="com.msk.ssc.bean.SSC11317RsParam">
+        UPDATE ssc_delivery_pre_into ssdpi
+        SET ssdpi.PRODUCT_RECV_STATUS = 1,
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime},
+        VER=VER+1
+        WHERE
+        ssdpi.DEL_FLG = 0
+        AND ssdpi.DELIVERY_PRE_INTO_ID = #{deliveryPreIntoId}
+    </update>
+</mapper>

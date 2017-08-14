@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121324Logic">
+    <insert id="save"  parameterType="com.msk.buyers.bean.IBY121324RsParam">
+    INSERT INTO BY_BUYER_INVOICE (
+          BUYER_ID,
+          INVOICE_ID,
+          INVOICE_TYPE,
+          INVOICE_TITLE,
+          VAT_INV_COM,
+          VAT_TAXPAYER,
+          VAT_ADDR,
+          VAT_TEL,
+          VAT_BANK,
+          VAT_ACCOUNT,
+          INV_RECEIVER_NAME,
+          INV_RECEIVER_TEL,
+          INV_RECEIVER_EMAIL,
+          INV_RECEIVER_PROVINCE,
+          INV_RECEIVER_CITY,
+          INV_RECEIVER_DISTRICT,
+          INV_RECEIVER_ADDR,
+          REMARK1,
+          REMARK2,
+          REMARK3,
+          DEL_FLG,
+          CRT_ID,
+          CRT_TIME,
+          UPD_ID,
+          UPD_TIME,
+          ACT_ID,
+          ACT_TIME,
+          VER
+    )
+    VALUES
+	(
+	     #{buyerId},
+	     #{invoiceId},
+	     #{invoiceType},
+	     #{invoiceTitle},
+	     #{vatInvCom},
+	     #{vatTaxpayer},
+         #{vatAddr},
+         #{vatTel},
+         #{vatBank},
+         #{vatAccount},
+         #{invReceiverName},
+         #{invReceiverTel},
+         #{invReceiverEmail},
+         #{invReceiverProvince},
+         #{invReceiverCity},
+         #{invReceiverDistrict},
+         #{invReceiverAddr},
+         #{remark1},
+         #{remark2},
+         #{remark3},
+         0,
+         #{crtId},
+         #{crtTime},
+         #{updId},
+         #{updTime},
+         #{actId},
+         #{actTime},
+         1
+	)
+    </insert>
+
+
+    <select id="findList" resultType="com.msk.buyers.bean.IBY121324RsBean"  parameterType="com.msk.buyers.bean.IBY121324RsParam">
+        SELECT
+            BUYER_ID AS buyerId,
+            INVOICE_TYPE AS invoiceType,
+            INVOICE_TITLE AS invoiceTitle,
+            INVOICE_ID AS invoiceId,
+            VAT_INV_COM AS vatInvCom,
+            VAT_TAXPAYER AS vatTaxpayer,
+            VAT_ADDR AS vatAddr,
+            VAT_TEL AS vatTel,
+            VAT_BANK AS vatBank,
+            VAT_ACCOUNT AS vatAccount,
+            INV_RECEIVER_NAME AS invReceiverName,
+            INV_RECEIVER_TEL AS invReceiverTel,
+            INV_RECEIVER_PROVINCE AS invReceiverProvince,
+            INV_RECEIVER_CITY AS invReceiverCity,
+            INV_RECEIVER_DISTRICT AS invReceiverDistrict,
+            INV_RECEIVER_ADDR AS invReceiverAddr
+        FROM BY_BUYER_INVOICE
+        WHERE
+           BUYER_ID = #{buyerId}
+        <if test="invoiceId !=null and invoiceId !=''">
+            AND INVOICE_ID = #{invoiceId}
+        </if>
+           AND DEL_FLG = 0
+    </select>
+
+    <select id="count" resultType="int" parameterType="com.msk.buyers.bean.IBY121324RsParam">
+        SELECT count(1)
+        FROM BY_BUYER_INVOICE
+        WHERE
+           BUYER_ID = #{buyerId}
+        <if test="invoiceId !=null and invoiceId !=''">
+            AND INVOICE_ID = #{invoiceId}
+        </if>
+           AND DEL_FLG = 0
+    </select>
+
+
+    <update id="updateDelete"   parameterType="com.msk.buyers.bean.IBY121324RsParam">
+        UPDATE BY_BUYER_INVOICE
+        SET  DEL_FLG = 1,
+             UPD_ID = #{updId},
+             UPD_TIME = #{updTime}
+        WHERE
+           BUYER_ID = #{buyerId}
+           AND INVOICE_ID = #{invoiceId}
+    </update>
+
+    <update id="updateInvoice"   parameterType="com.msk.buyers.bean.IBY121324RsParam">
+        UPDATE BY_BUYER_INVOICE
+        SET
+           INVOICE_TYPE =  #{invoiceType},
+           INVOICE_TITLE =  #{invoiceTitle},
+           VAT_INV_COM = #{vatInvCom},
+           VAT_TAXPAYER =  #{vatTaxpayer},
+           VAT_ADDR =  #{vatAddr},
+           VAT_TEL = #{vatTel},
+           VAT_BANK = #{vatBank},
+           VAT_ACCOUNT = #{vatAccount},
+           INV_RECEIVER_NAME = #{invReceiverName},
+           INV_RECEIVER_TEL =  #{invReceiverTel},
+           INV_RECEIVER_EMAIL = #{invReceiverEmail},
+           INV_RECEIVER_PROVINCE =  #{invReceiverProvince},
+           INV_RECEIVER_CITY =  #{invReceiverCity},
+           INV_RECEIVER_DISTRICT =  #{invReceiverDistrict},
+           INV_RECEIVER_ADDR =  #{invReceiverAddr},
+           UPD_ID = #{updId},
+           UPD_TIME = #{updTime}
+        WHERE
+           BUYER_ID = #{buyerId}
+           AND INVOICE_ID = #{invoiceId}
+           AND DEL_FLG = 0
+
+    </update>
+
+
+</mapper>

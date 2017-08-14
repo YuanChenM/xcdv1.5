@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171110Logic">
+    <!-- 查询卖家供应商报价表是否有数据 -->
+    <select id="countSellerPdPrice" parameterType="BaseParam" resultType="Integer">
+        SELECT
+        COUNT(*)
+        FROM SP_SELLER_PD_PRICE
+        WHERE PRICE_PERIOD=#{filterMap.pricePeriod}
+        AND LGCS_CODE=#{filterMap.lgcsCode}
+        AND PD_CODE=#{filterMap.pdCode}
+        AND SL_CODE = #{filterMap.slCode}
+        AND DEL_FLG = '0'
+    </select>
+
+    <!-- 查询价盘详细和价盘等级对应关系表 -->
+    <select id="getWayDetailInfo" parameterType="BaseParam" resultType="com.msk.price.bean.SP171110Bean">
+        SELECT
+        swd.WAYGRADE_CODE AS wayGradeCode,
+        swd.WAY_CODE AS wayCode,
+        swd.WAYGRADE_NAME AS wayGradeName,
+        swd.WAYGRADE_PERCENT AS wayGradePercent,
+        swd.WAYGRADE_START AS wayGradeStart,
+        swd.WAYGRADE_END AS wayGradeEnd
+        FROM  SP_WAYGRADE_PD swp
+        INNER JOIN SP_WAYG_DETAIL swd
+        ON swp.WAY_CODE = swd.WAY_CODE
+        WHERE swp.LGCS_CODE=#{filterMap.lgcsCode}
+        AND swp.PD_CODE=#{filterMap.pdCode}
+        AND swp.SYSTEM_TYPE='1'
+        AND swp.DEL_FLG = '0'
+        AND swd.DEL_FLG = '0'
+        ORDER  BY swd.WAYGRADE_CODE
+    </select>
+
+    <!-- 查询卖家供应商投标价盘表获取上次价盘信息 -->
+    <select id="gerLastPriceInfo" parameterType="BaseParam" resultType="com.msk.price.bean.SP171110Bean">
+        SELECT
+        WAYGRADE_NAME AS wayGradeName,
+        WAYGRADE_PRICE AS wayGradePrice
+        FROM  sp_seller_pd_priceplate
+        WHERE PD_CODE=#{filterMap.pdCode}
+        AND LGCS_CODE=#{filterMap.lgcsCode}
+        AND PRICE_PERIOD = #{filterMap.lastPricePeriod}
+        AND DEL_FLG = '0'
+        ORDER  BY PRICE_PERIOD DESC, WAYGRADE_CODE ASC
+    </select>
+
+    <!-- 查询卖家供应商报价表和卖家供应商报价详细表获取价盘价格 -->
+    <select id="getSellerPrice" parameterType="BaseParam" resultType="com.msk.price.bean.SP171110Bean">
+        SELECT
+        ssppd.PRICE_ID AS priceId,
+        ssppd.WAYGRADE_PRICE AS wayGradePrice,
+        ssppd.WAYGRADE_CODE wayGradeCode,
+        ssppd.IS_VALID isValid
+        FROM
+        SP_SELLER_PD_PRICE sspp
+        LEFT JOIN SP_SELLER_PD_PRICE_DETAIL ssppd
+        ON ssppd.PRICE_ID = sspp.PRICE_ID
+        WHERE sspp.PRICE_PERIOD =#{filterMap.pricePeriod}
+        AND sspp.PD_CODE= #{filterMap.pdCode}
+        AND sspp.LGCS_CODE = #{filterMap.lgcsCode}
+        AND sspp.SL_CODE = #{filterMap.slCode}
+        AND sspp.DEL_FLG = '0'
+        AND ssppd.DEL_FLG = '0'
+        ORDER  BY ssppd.WAYGRADE_CODE
+    </select>
+
+    <!-- 插入卖家供应商报价表 -->
+    <insert id="save" parameterType="com.msk.price.bean.SP171110Param">
+        INSERT INTO SP_SELLER_PD_PRICE(
+        PRICE_ID,
+        PRICE_PERIOD,
+        PRICE_STARTDATE,
+        PRICE_ENDDATE,
+        LGCS_CODE,
+        PD_CODE,
+        SL_ID,
+        SL_CODE,
+        EP_NAME,
+        DEL_FLG,
+        Crt_Id,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES (
+        #{priceId},
+        #{pricePeriod},
+        <if test="pricePeriodStart!=null and pricePeriodStart!=''">
+        DATE_FORMAT(#{pricePeriodStart}, '%Y-%m-%d'),
+        </if>
+        <if test="pricePeriodStart ==null or pricePeriodStart ==''">
+            null,
+        </if>
+        <if test="pricePeriodEnd!=null and pricePeriodEnd!=''">
+        DATE_FORMAT(#{pricePeriodEnd}, '%Y-%m-%d'),
+        </if>
+        <if test="pricePeriodEnd ==null or pricePeriodEnd ==''">
+            null,
+        </if>
+        #{lgcsCode},
+        #{pdCode},
+        #{slId}, <!-- 对应：供应商编码显示用-->
+        #{sellerCode}, <!-- 对应：供应商编码-->
+        #{sellerName},
+        0,
+        #{crtId},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang Start-->
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang End-->
+        1
+        )
+    </insert>
+
+    <!-- 插入卖家供应商报价详细表 -->
+    <insert id="insertSellerDetailPrice" parameterType="com.msk.price.bean.SP171110Bean">
+        INSERT INTO SP_SELLER_PD_PRICE_DETAIL(
+        PRICE_DETAIL_ID,
+        PRICE_ID,
+        WAY_CODE,
+        WAYGRADE_CODE,
+        WAYGRADE_NAME,
+        WAYGRADE_PRICE,
+        WAYGRADE_PRICEMIN,
+        WAYGRADE_PRICEMAX,
+        WAYGRADE_PRICE_RATIO,
+        IS_VALID,
+        DEL_FLG,
+        Crt_Id,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES (
+        #{priceDetailId},
+        #{priceId},
+        #{wayCode},
+        #{wayGradeCode},
+        #{wayGradeName},
+        #{wayGradePrice},
+        #{downPrice},
+        #{upPrice},
+        #{wayGradePercent},
+        #{isValid},
+        0,
+        #{crtId},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang Start-->
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang End-->
+        1
+        )
+    </insert>
+
+    <!--更新 卖家供应商报价详细表 -->
+    <update id="updateSellerDetailPrice" parameterType="com.msk.price.bean.SP171110Bean">
+        UPDATE
+        SP_SELLER_PD_PRICE_DETAIL
+        SET
+        IS_VALID = #{isValid},
+        WAY_CODE = #{wayCode},
+        WAYGRADE_PRICE = #{wayGradePrice},
+        UPD_ID = #{updId},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang Start-->
+        UPD_TIME = #{updTime},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang End-->
+        VER =VER + 1
+        WHERE PRICE_ID = #{priceId}
+        AND WAYGRADE_CODE = #{wayGradeCode}
+        AND DEL_FLG = 0
+    </update>
+
+
+    <!-- 取得报价截止时间时分秒 -->
+    <select id="getPriceEndTime" resultType="BigDecimal">
+        SELECT
+         (cast(round(RATIO_TYPE_DETAIL_VAL,2) as decimal(18,0)))
+        FROM
+        SP_CONST_RATIO
+        WHERE
+        RATIO_TYPE='priceEndTime'
+        AND
+        DEL_FLG = 0
+    </select>
+    <select id="findOne" parameterType="com.msk.price.bean.SP171110Param" resultType="com.msk.price.bean.SP171110Bean">
+       SELECT
+        LGCS_CODE AS lgcsCode,
+        LGCS_NAME AS lgcsName,
+        PD_CODE AS pdCode,
+        PD_NAME AS pdName,
+        CLASSES_CODE AS classesCode,
+        CLASSES AS classesName,
+        MACHINING_CODE AS machiningCode,
+        MACHINING AS machining,
+        BREED_CODE AS breedCode,
+        BREED AS breed,
+        FEATURE_CODE AS featureCode,
+        FEATURE AS feature,
+        WEIGHT_CODE AS weightCode,
+        WEIGHT AS weight,
+        GRADE_CODE AS gradeCode,
+        GRADE AS grade
+    FROM
+        sp_logs_product
+    WHERE
+        PD_CODE = #{pdCode}
+    </select>
+</mapper>

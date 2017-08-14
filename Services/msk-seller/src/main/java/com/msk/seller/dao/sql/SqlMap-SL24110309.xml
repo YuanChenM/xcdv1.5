@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241103Logic">
+
+	<select id="findPageList" parameterType="com.hoperun.core.bean.BasePageParam"
+		resultType="com.msk.seller.bean.SlEpAgentAuth">
+		SELECT
+		IFNULL(C.SL_CODE, '') AS slCode,
+		IFNULL(A.PRODUCER_EP_ID, '') AS producerEpId,
+		IFNULL(C.SL_CODE_MANUFACTURE, '') AS slCodeManufacture,
+		IFNULL(B.LIC_ADDR,'') AS licAddr,
+		IFNULL(A.AUTH_TERM_BEGIN, '') AS  authTermBeginString,
+		IFNULL(A.AUTH_TERM_END, '') AS authTermEndString,
+		IFNULL(B.EP_NAME, '') AS epName,
+		IFNULL(
+		CONCAT(
+		C.PROVINCE_NAME,' ',
+		C.CITY_NAME,' ',
+		C.DISTRICT_NAME
+		),
+		''
+		) AS slAreaCode
+		FROM
+		sl_ep_agent_auth A
+		INNER JOIN SL_ENTERPRISE B ON (A.PRODUCER_EP_ID = B.EP_ID)
+		INNER JOIN SL_SELLER C ON (A.PRODUCER_EP_ID=C.EP_ID)
+		WHERE A.SL_CODE =
+		#{filterMap.slCode}
+		AND  A.DEL_FLG = 0
+		AND  B.DEL_FLG = 0
+		AND  C.DEL_FLG = 0
+		ORDER BY A.PRODUCER_EP_ID
+		<if test="paging==true">
+			LIMIT #{startPos},#{pageSize};
+		</if>
+	</select>
+	<select id="getPageCount" resultType="Integer"
+		parameterType="com.hoperun.core.bean.BasePageParam">
+		select COUNT(1)
+		FROM
+		sl_ep_agent_auth A
+		INNER JOIN SL_ENTERPRISE B ON (A.PRODUCER_EP_ID = B.EP_ID)
+		INNER JOIN SL_SELLER C ON (A.PRODUCER_EP_ID=C.EP_ID)
+		WHERE A.SL_CODE = #{filterMap.slCode}
+		AND  A.DEL_FLG = 0
+		AND  B.DEL_FLG = 0
+		AND  C.DEL_FLG = 0
+	</select>
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151802.check">
+        SELECT COUNT(1) AS count
+        FROM  so_order_ship_detail soda
+        INNER JOIN so_sub_order_detail sod
+        ON soda.ORDER_DETAIL_ID = sod.ORDER_DETAIL_ID
+        AND sod.DEL_FLG = 0
+        WHERE
+        soda.DEL_FLG = 0
+        AND sod.ORDER_QTY = sod.SEND_QTY
+        AND (sod.RECEIVE_QTY IS NULL OR sod.RECEIVE_QTY = 0)
+        AND (sod.CANCEL_QTY IS NULL OR sod.CANCEL_QTY = 0)
+        AND (sod.RETURN_QTY IS NULL OR sod.RETURN_QTY = 0)
+        AND (sod.REJECTION_QTY IS NULL OR sod.REJECTION_QTY = 0)
+        AND sod.RECEIVED_TIME IS NULL
+        AND soda.SUPP_QTY = soda.SEND_QTY
+        AND (soda.RECEIVE_QTY IS NULL OR soda.RECEIVE_QTY = 0)
+        AND (soda.CANCEL_QTY IS NULL OR soda.CANCEL_QTY = 0 )
+        AND (soda.RETURN_QTY IS NULL OR soda.RETURN_QTY = 0)
+        AND (soda.REJECTION_QTY IS NULL OR soda.REJECTION_QTY = 0)
+        AND soda.DEL_FLG = 0
+    </sql>
+
+    <sql id="ISO151802.getReturnAmount">
+        SELECT SUM(IFNULL(soda.SEND_QTY,0) * IFNULL(sod.pd_price,0)) as amount
+        FROM  SO_ORDER_SHIP_DETAIL soda
+        INNER JOIN so_sub_order_detail sod
+        ON sod.SUB_ORDER_DETAIL_ID = soda.SUB_ORDER_DETAIL_ID
+        AND sod.DEL_FLG = 0
+        WHERE soda.DEL_FLG = 0
+    </sql>
+
+    <sql id="ISO151802.findFundDetail">
+        select IFNULL(sod.RETURN_QTY,0) * IFNULL(ssod.PD_PRICE,0) as fundAmount,
+        case when (sso.ORDER_TYPE = 5 or sso.ORDER_TYPE = 6) THEN sso.SELLER_CODE else sosd.SUPPLIER_CODE end as payeeId,
+        case when (sso.ORDER_TYPE = 5 or sso.ORDER_TYPE = 6) THEN sso.SELLER_NAME else sosd.SUPPLIER_NAME end as payeeName,
+        case when (sso.ORDER_TYPE = 5 or sso.ORDER_TYPE = 6) THEN 4 else 3 end as payeeRole
+        from so_return_detail sod
+        inner join so_order_ship_detail sosd
+        on sod.SHIP_DETAIL_ID = sosd.SHIP_DETAIL_ID
+        and sosd.DEL_FLG = 0
+        inner join so_sub_order_detail ssod
+        on sosd.SUB_ORDER_DETAIL_ID = ssod.SUB_ORDER_DETAIL_ID
+        and ssod.DEL_FLG = 0
+        inner join so_sub_order sso
+        on ssod.SUB_ORDER_ID = sso.SUB_ORDER_ID
+        and sso.DEL_FLG = 0
+        where sod.DEL_FLG = 0
+    </sql>
+</sqlList>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141122Logic">
+    <select id="findOne" parameterType="BaseParam"
+            resultType="com.msk.product.bean.IPD141122RsResult">
+        SELECT
+        A.SCIENTIFIC_NAME AS scientificName,
+        A.LOCAL_NAME AS localName,
+        A.SALES_NAME AS salesName,
+        A.PLACE_ORIGIN AS placeOrigin,
+        A.PLACE_CURRENT AS placeCurrent,
+        A.SOURCE AS source,
+        A.CHILD_TYPE AS childType,
+        A.FEED_TYPE AS feedType,
+        A.FEED_PERIOD AS feedPeriod
+        FROM pd_classestree_mat AS A
+        WHERE A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+    </select>
+
+</mapper>

@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2102111Logic">
+
+    <sql id="selectFiled">
+        ifnull(grade.GRADE_ID,'') gradeId,
+        a.SL_CODE AS slCode,
+        a.HOUSE_CODE AS houseCode,
+        ifnull(account.V_LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        ifnull(a.LGCS_AREA_NAME,'') AS lgcsAreaName,
+        ifnull(concat(sb.SL_CODE_DIS,account.HOUSE_CODE_DIS),'') AS houseCodeDis,
+        ifnull(HOUSE_SHOW_NAME,'') AS houseShowName,
+        ifnull(a.HOUSE_CATEGORY_CODE,'') AS houseCategoryCode,
+        ifnull(a.HOUSE_RECLASSIFY_CODE,'') AS houseReclassifyCode,
+        ifnull(TYPE_NAME,'') AS houseReclassifyName,
+        ifnull(grade.GRADE_CODE,'') as gradeCode,
+        ifnull(grade.VALID_YEAR_MONTH,'') as validYearMonth
+    </sql>
+                    <select id="findPageList" resultType="com.msk.bs.bean.BS2102111Bean" parameterType="BaseParam">
+        SELECT
+        IFNULL(account.HOUSE_SHOW_NAME,'') AS houseShowName,
+        IFNULL(CONCAT(info.SL_CODE_DIS,account.HOUSE_CODE_DIS),'') AS houseCodeDis ,
+        IFNULL(type1.TYPE_NAME, '') AS houseCategoryName,
+        IFNULL(type2.TYPE_NAME, '') AS houseReclassifyName,
+        IFNULL(grade.GRADE_ID, '') AS gradeId,
+        IFNULL(grade.SL_CODE, '') AS slCode,
+        IFNULL(grade.HOUSE_CODE, '') AS houseCode,
+        IFNULL(grade.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(grade.LGCS_AREA_NAME, '') AS lgcsAreaName,
+        IFNULL(grade.HOUSE_CATEGORY_CODE, '') AS houseCategoryCode,
+        IFNULL(grade.HOUSE_RECLASSIFY_CODE, '') AS houseReclassifyCode,
+        IFNULL(grade.GRADE_CODE, '') AS gradeCode,
+        IFNULL(grade.VALID_YEAR_MONTH, '') AS validYearMonth
+        FROM sl_house_grade grade
+        LEFT JOIN sl_house_account account
+        ON account.SL_CODE = grade.SL_CODE
+        AND account.HOUSE_CODE = grade.HOUSE_CODE
+        LEFT JOIN sl_bs_basic_info info
+        ON info.SL_CODE = grade.SL_CODE
+        LEFT JOIN sl_bs_house_type type1 ON grade.HOUSE_CATEGORY_CODE = type1.TYPE_CODE
+        AND type1.TYPE_LEVER = 0
+        AND type1.ROLE_TYPE = 1
+        LEFT JOIN sl_bs_house_type type2 ON grade.HOUSE_RECLASSIFY_CODE = type2.TYPE_CODE
+        AND type2.TYPE_LEVER = 1
+        AND type2.ROLE_TYPE = 1
+        WHERE
+        (
+            grade.DEL_FLG = '0'
+            OR grade.DEL_FLG IS NULL
+        )
+        AND
+        grade.SL_CODE = #{slCode}
+        AND grade.STATUS != '9'
+        AND grade.HOUSE_CODE = #{houseCode}
+        AND grade.VALID_YEAR_MONTH = #{validYearMonth}
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+
+</select>
+
+
+    
+                <select id="getPageCount" resultType="int" parameterType="BaseParam">
+        select
+        count(1)
+        FROM
+        (
+        SELECT
+        IFNULL(account.HOUSE_SHOW_NAME,'') AS houseShowName,
+        IFNULL(CONCAT(info.SL_CODE_DIS,account.HOUSE_CODE_DIS),'') AS houseCodeDis ,
+        IFNULL(type1.TYPE_NAME, '') AS houseCategoryName,
+        IFNULL(type2.TYPE_NAME, '') AS houseReclassifyName,
+        IFNULL(grade.GRADE_ID, '') AS gradeId,
+        IFNULL(grade.SL_CODE, '') AS slCode,
+        IFNULL(grade.HOUSE_CODE, '') AS houseCode,
+        IFNULL(grade.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(grade.LGCS_AREA_NAME, '') AS lgcsAreaName,
+        IFNULL(grade.HOUSE_CATEGORY_CODE, '') AS houseCategoryCode,
+        IFNULL(grade.HOUSE_RECLASSIFY_CODE, '') AS houseReclassifyCode,
+        IFNULL(grade.GRADE_CODE, '') AS gradeCode,
+        IFNULL(grade.VALID_YEAR_MONTH, '') AS validYearMonth
+        FROM sl_house_grade grade
+        LEFT JOIN sl_house_account account
+        ON account.SL_CODE = grade.SL_CODE
+        AND account.HOUSE_CODE = grade.HOUSE_CODE
+        LEFT JOIN sl_bs_basic_info info
+        ON info.SL_CODE = grade.SL_CODE
+        LEFT JOIN sl_bs_house_type type1 ON grade.HOUSE_CATEGORY_CODE = type1.TYPE_CODE
+        AND type1.TYPE_LEVER = 0
+        AND type1.ROLE_TYPE = 1
+        LEFT JOIN sl_bs_house_type type2 ON grade.HOUSE_RECLASSIFY_CODE = type2.TYPE_CODE
+        AND type2.TYPE_LEVER = 1
+        AND type2.ROLE_TYPE = 1
+        WHERE
+        (
+            grade.DEL_FLG = '0'
+            OR grade.DEL_FLG IS NULL
+        )
+        AND
+        grade.SL_CODE = #{slCode}
+        AND grade.STATUS != '9'
+        AND grade.HOUSE_CODE = #{houseCode}
+        AND grade.VALID_YEAR_MONTH = #{validYearMonth}
+        )A
+
+    </select>
+
+
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO  sl_house_grade(GRADE_ID,SL_CODE,HOUSE_CODE,LGCS_AREA_CODE,LGCS_AREA_NAME,HOUSE_CATEGORY_CODE,HOUSE_RECLASSIFY_CODE,GRADE_CODE,VALID_YEAR_MONTH,END_TIME,
+           EXTEND_TIME,STATUS,REMARK,DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER)
+           VALUES
+           <foreach collection ="list" item ="item" index ="index" separator =",">
+           (
+               #{item.gradeId},
+               #{item.slCode},
+               #{item.houseCode},
+               #{item.lgcsAreaCode},
+               #{item.lgcsAreaName},
+               #{item.houseCategoryCode},
+               #{item.houseReclassifyCode},
+               #{item.gradeCode},
+               #{item.validYearMonth},
+               #{item.endTime},
+               #{item.extendTime},
+               #{item.status},
+               #{item.remark},
+               0,
+               #{item.crtId},
+               #{item.crtTime},
+               #{item.updId},
+               #{item.updTime},
+               #{item.actId},
+               #{item.actTime},
+               0
+               )
+           </foreach>
+    </insert>
+
+    <update id="modify" parameterType="BaseEntity">
+        update sl_house_grade
+         set
+             GRADE_CODE = #{gradeCode},
+             END_TIME = #{endTime},
+            <if test="status != null and status != ''">
+                STATUS = #{status},
+            </if>
+              UPD_ID =  #{updId},
+               UPD_TIME =#{updTime},
+               VER = VER+1
+        WHERE (DEL_FLG = '0' OR DEL_FLG IS NULL)
+        AND GRADE_ID = #{gradeId}
+    </update>
+
+    <select id="count" parameterType="BaseParam" resultType="int">
+        SELECT  count(1) from sl_house_grade WHERE sl_Code = #{slCode} and house_code = #{houseCode}
+                and HOUSE_RECLASSIFY_CODE=#{houseReclassifyCode} AND  VALID_YEAR_MONTH = #{validYearMonth}
+
+    </select>
+
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.bs.bean.BS2102111Bean">
+        SELECT  SL_CODE AS slCode, HOUSE_CODE AS houseCode,ifnull(LGCS_AREA_CODE,'') AS lgcsAreaCode, HOUSE_CATEGORY_CODE AS houseCategoryCode, HOUSE_RECLASSIFY_CODE AS houseReclassifyCode,
+                VALID_YEAR_MONTH as validYearMonth ,ifnull(GRADE_CODE,'') AS  gradeCode from sl_house_grade
+        WHERE
+        (DEL_FLG = '0'OR DEL_FLG IS NULL)
+        AND STATUS != '9'
+        AND GRADE_ID = #{gradeId}
+    </select>
+
+    <select id="findHouseAccount" parameterType="BaseParam" resultType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        IFNULL(SL_CODE,'') AS slCode,
+        IFNULL(HOUSE_ACCOUNT,'') AS houseAccount,
+        IFNULL(HOUSE_CODE,'') AS houseCode,
+        IFNULL(HOUSE_CODE_DIS,'') AS houseCodeDis,
+        IFNULL(HOUSE_TEL,'') AS houseTel,
+        IFNULL(HOUSE_SHOW_NAME,'') AS houseShowName,
+        IFNULL(HOUSE_CONTACT,'') AS houseContact,
+        IFNULL(ACCOUNT_PSD,'') AS accountPsd,
+        IFNULL(AUTH_STATUS,'') AS authStatus,
+        IFNULL(SL_IDCARD,'') AS slIdcard,
+        IFNULL(SL_CON_FLG,'') AS slConFlg,
+        IFNULL(R_AREA_CODE,'') AS rareaCode,
+        IFNULL(R_LGCS_AREA_CODE,'') AS rlgcsAreaCode,
+        IFNULL(R_PROVINCE_CODE,'') AS rprovinceCode,
+        IFNULL(R_CITY_CODE,'') AS rcityCode,
+        IFNULL(R_DISTRICT_CODE,'') AS rdistrictCode,
+        IFNULL(R_HOUSE_ADDRESS,'') AS  rhouseAddress,
+        IFNULL(AREA_CODE,'') AS areaCode,
+        IFNULL(LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(PROVINCE_CODE,'') AS provinceCode,
+        IFNULL(CITY_CODE,'') AS cityCode,
+        IFNULL(DISTRICT_CODE,'') AS districtCode,
+        IFNULL(HOUSE_ADDRESS,'') AS houseAddress,
+        IFNULL(V_AREA_CODE,'') AS   vareaCode,
+        IFNULL(V_LGCS_AREA_CODE,'') AS vlgcsAreaCode,
+        IFNULL(V_PROVINCE_CODE,'') AS vprovinceCode,
+        IFNULL(V_CITY_CODE,'') AS vcityCode,
+        IFNULL(V_DISTRICT_CODE,'') AS vdistrictCode,
+        IFNULL(V_HOUSE_ADDRESS,'') AS vhouseAddress,
+        IFNULL(LAT,'') AS lat,
+        IFNULL(LON,'') AS lon ,
+        IFNULL(V_LAT,'') AS vlat,
+        IFNULL(V_LON,'') AS vlon,
+        IFNULL(LICENSES,'') AS licenses,
+        IFNULL(BUYER_ASIGN,'') AS buyerAsign,
+        IFNULL(WECHAT,'') AS wechat,
+        IFNULL(QQ,'') AS qq,
+        IFNULL(EMAIL,'') AS email,
+        IFNULL(FIXED_TEL,'') AS fixedTel,
+        IFNULL(FAX,'') AS fax,
+        IFNULL(FLAG20,'') AS flag20,
+        IFNULL(FLAG19,'') AS flag19,
+        IFNULL(FLAG18,'') AS flag18,
+        IFNULL(FLAG17,'') AS flag17,
+        IFNULL(FLAG16,'') AS flag16,
+        IFNULL(FLAG15,'') AS flag15,
+        IFNULL(FLAG14,'') AS flag14,
+        IFNULL(FLAG13,'') AS flag13,
+        IFNULL(FLAG12,'')AS flag12,
+        IFNULL(FLAG11,'') AS flag11,
+        IFNULL(FLAG10,'') AS flag10,
+        IFNULL(FLAG9,'') AS flag9 ,
+        IFNULL(FLAG8,'') AS flag8 ,
+        IFNULL(FLAG7,'') AS flag7 ,
+        IFNULL(FLAG6,'') AS flag6 ,
+        IFNULL(FLAG5,'') AS flag5 ,
+        IFNULL(FLAG4,'') AS flag4 ,
+        IFNULL(FLAG3,'') AS flag3 ,
+        IFNULL(FLAG2,'') AS flag2 ,
+        IFNULL(FLAG1,'') AS flag1 ,
+        IFNULL(HOUSE_INTRODUCE,'') AS houseIntroduce,
+        IFNULL(HOUSE_CLASS,'') AS   houseClass,
+        IFNULL(HOUSE_CATEGORY,'') AS houseCategory,
+        IFNULL(HOUSE_CATEGORY_SUB,'') AS houseCategorySub,
+        IFNULL(HOUSE_CATEGORY0,'') AS houseCategory0,
+        IFNULL(HOUSE_CATEGORY1,'') AS houseCategory1,
+        IFNULL(HOUSE_CATEGORY2,'') AS houseCategory2,
+        IFNULL(HOUSE_CATEGORY3,'') AS houseCategory3,
+        IFNULL(HOUSE_CATEGORY4,'') AS houseCategory4,
+        IFNULL(HOUSE_CATEGORY5,'') AS houseCategory5,
+        IFNULL(HOUSE_CATEGORY6,'') AS houseCategory6,
+        IFNULL(HOUSE_CATEGORY7,'') AS houseCategory7,
+        IFNULL(HOUSE_CATEGORY8,'') AS houseCategory8,
+        IFNULL(HOUSE_GREADE,'') AS houseGreade ,
+        IFNULL(HOUSE_STAR,'3') AS houseStar
+        FROM sl_house_account
+        WHERE SL_CODE = #{filterMap.slCode}
+        AND HOUSE_CODE = #{filterMap.houseCode}
+        AND (DEL_FLG IS NULL OR DEL_FLG = 0)
+    </select>
+
+    <select id="findHouseManage" resultType="com.msk.core.entity.SlHouseManage" parameterType="BaseParam">
+        SELECT
+        mange.MID AS mid,
+        IFNULL(mange.SL_CODE,'') AS slCode,
+        IFNULL(mange.HOUSE_CODE,'') AS houseCode,
+        IFNULL(mange.CREATETIME,'') AS createtime,
+        IFNULL(mange.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(mange.LGCS_AREA_NAME,'') AS lgcsAreaName,
+        IFNULL(mange.CITY_CODE,'') AS cityCode,
+        IFNULL(mange.CITY_NAME,'') AS cityName,
+        IFNULL(mange.HOUSE_CATEGORY_CODE,'') AS houseCategoryCode,
+        IFNULL(mange.HOUSE_RECLASSIFY_CODE,'') AS houseReclassifyCode,
+        IFNULL(type1.TYPE_NAME,'') AS houseCategoryName,
+        IFNULL(type2.TYPE_NAME,'') AS houseReclassifyName,
+        IFNULL(mange.PUBLIC_BUYERS,'') AS publicBuyers,
+        IFNULL(mange.VIP_BUYERS,'') AS vipBuyers,
+        IFNULL(mange.MARKETING_DAYS,'') AS marketingDays,
+        IFNULL(mange.IS_CHANGE_BUYERS,'') AS isChangeBuyers,
+        IFNULL(mange.REMARK,'') AS remark,
+        IFNULL(mange.DEL_FLG,'') AS delFlg,
+        IFNULL(mange.CRT_ID,'') AS crtId,
+        IFNULL(mange.CRT_TIME,'') AS crtTime,
+        IFNULL(mange.UPD_ID,'') AS updId,
+        IFNULL(mange.UPD_TIME,'') AS updTime,
+        IFNULL(mange.ACT_ID,'') AS actId,
+        IFNULL(mange.ACT_TIME,'') AS actTime,
+        IFNULL(mange.VER,'') AS ver
+        FROM sl_house_manage  mange
+        LEFT JOIN sl_bs_house_type type1
+        ON mange.HOUSE_CATEGORY_CODE =type1.TYPE_CODE AND type1.TYPE_LEVER =0 and type1.ROLE_TYPE = 1
+        LEFT JOIN sl_bs_house_type type2
+        ON mange.HOUSE_RECLASSIFY_CODE =type2.TYPE_CODE AND type2.TYPE_LEVER =1 and type2.ROLE_TYPE = 1
+        WHERE
+        mange.SL_CODE = #{filterMap.houseAccount.slCode}
+        AND
+        mange.HOUSE_CODE = #{filterMap.houseAccount.houseCode}
+        AND
+        mange.LGCS_AREA_CODE = #{filterMap.houseAccount.vlgcsAreaCode}
+        AND
+        (mange.DEL_FLG = '0' OR mange.DEL_FLG IS  NULL )
+        GROUP BY mange.MID
+        order by mange.LGCS_AREA_NAME,mange.CITY_NAME,mange.HOUSE_CATEGORY_CODE,mange.HOUSE_RECLASSIFY_CODE ASC
+    </select>
+
+
+    <select id="findHouseGrade" resultType="com.msk.core.entity.SlHouseGrade" parameterType="BaseParam">
+        SELECT
+        IFNULL(account.HOUSE_SHOW_NAME,'') AS houseShowName,
+        IFNULL(CONCAT(info.SL_CODE_DIS,account.HOUSE_CODE_DIS),'') AS houseCodeDis ,
+        IFNULL(type1.TYPE_NAME, '') AS houseCategoryName,
+        IFNULL(type2.TYPE_NAME, '') AS houseReclassifyName,
+        IFNULL(grade.GRADE_ID, '') AS gradeId,
+        IFNULL(grade.SL_CODE, '') AS slCode,
+        IFNULL(grade.HOUSE_CODE, '') AS houseCode,
+        IFNULL(grade.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(grade.LGCS_AREA_NAME, '') AS lgcsAreaName,
+        IFNULL(grade.HOUSE_CATEGORY_CODE, '') AS houseCategoryCode,
+        IFNULL(grade.HOUSE_RECLASSIFY_CODE, '') AS houseReclassifyCode,
+        IFNULL(grade.GRADE_CODE, '') AS gradeCode,
+        IFNULL(grade.VALID_YEAR_MONTH, '') AS validYearMonth,
+        IFNULL(grade.STATUS, '') AS status
+        FROM sl_house_grade grade
+        LEFT JOIN sl_house_account account
+        ON account.SL_CODE = grade.SL_CODE
+        AND account.HOUSE_CODE = grade.HOUSE_CODE
+        LEFT JOIN sl_bs_basic_info info
+        ON info.SL_CODE = grade.SL_CODE
+        LEFT JOIN sl_bs_house_type type1 ON grade.HOUSE_CATEGORY_CODE = type1.TYPE_CODE
+        AND type1.TYPE_LEVER = 0
+        AND type1.ROLE_TYPE = 1
+        LEFT JOIN sl_bs_house_type type2 ON grade.HOUSE_RECLASSIFY_CODE = type2.TYPE_CODE
+        AND type2.TYPE_LEVER = 1
+        AND type2.ROLE_TYPE = 1
+        WHERE
+        (
+        grade.DEL_FLG = '0'
+        OR grade.DEL_FLG IS NULL
+        )
+        <if test="filterMap.flagStatus == true">
+        AND grade.STATUS != '9'
+        </if>
+        AND grade.SL_CODE = #{filterMap.houseAccount.slCode}
+        AND grade.HOUSE_CODE = #{filterMap.houseAccount.houseCode}
+        AND grade.VALID_YEAR_MONTH = #{filterMap.validYearMonth}
+        AND grade.LGCS_AREA_CODE = #{filterMap.houseAccount.vlgcsAreaCode}
+    </select>
+
+    <update id="modifyHouseGrade" parameterType="BaseParam">
+        UPDATE sl_house_grade grade
+        SET grade.DEL_FLG = '1'
+        WHERE
+        (
+        grade.DEL_FLG = '0'
+        OR grade.DEL_FLG IS NULL
+        )
+        AND grade.STATUS != '9'
+        AND grade.SL_CODE = #{filterMap.houseAccount.slCode}
+        AND grade.HOUSE_CODE = #{filterMap.houseAccount.houseCode}
+        AND grade.VALID_YEAR_MONTH = #{filterMap.validYearMonth}
+        AND grade.LGCS_AREA_CODE = #{filterMap.houseAccount.vlgcsAreaCode}
+    </update>
+</mapper>

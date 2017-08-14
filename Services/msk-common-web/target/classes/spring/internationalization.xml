@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <!-- Internationalization start -->
+    <bean id="messageSource" class="com.hoperun.plug.spring.web.interceptor.ResourceBundleMessageSourceExtend">
+        <property name="basename"
+            value="i18n/validator_message,i18n/message" />
+        <property name="useCodeAsDefaultMessage" value="true" />
+    </bean>
+
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+        <property name="defaultLocale" value="zh_CN" />
+    </bean>
+
+    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+        <property name="paramName" value="language" />
+    </bean>
+    <!-- Internationalization end -->
+</beans>

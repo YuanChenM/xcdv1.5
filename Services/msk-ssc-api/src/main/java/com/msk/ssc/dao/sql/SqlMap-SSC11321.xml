@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11321Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        A.VERIFICATION_ID AS verificationId,
+        A.VERIFICATION_CODE AS verificationCode,
+        A.CONTRACT_ID AS contractId,
+        A.CONTRACT_CODE AS contractCode,
+        A.CONTRACT_NAME AS contractName,
+        B.CONTRACT_STATUS AS contractStatus,
+        B.SUPPLIER_ID AS supplierId,
+        B.SUPPLIER_NAME AS supplierName,
+        B.SUPPLIER_CODE AS supplierCode,
+        B.PURCHASER_ID AS purchaserId,
+        B.PURCHASER_NAME AS purchaserName,
+        B.PURCHASER_CODE AS purchaserCode,
+        IFNULL(DATE_FORMAT(B.CONTRACT_ACT_DATE,'%Y-%m-%d'), '') AS contractActDate,
+        A.VERIFICATION_AMOUNT AS verificationAmount,
+        A.VERIFICATION_METHORD AS verificationMethord,
+        IFNULL(DATE_FORMAT(A.VERIFICATION_DATE,'%Y-%m-%d'), '') AS verificationDateStr,
+        A.STATUS AS status,
+        A.REMARK AS remark,
+        A.VERIFICATION_TYPE AS verificationType,
+        A.CHARGER_NAME AS chargerName,
+        A.CHARGER_ID AS chargerId,
+        A.AUDIT_STATUS AS auditStatus,
+        B.CONTRACT_AMOUNT AS contractAmount,
+        A.VERIFICATION_AMOUNT AS verificationAmount,
+        A.PURCHASER_CONFIRM_ID AS purchaserConfirmId,
+        A.PURCHASER_CONFIRM_NAME AS purchaserConfirmName,
+        A.PURCHASER_CONFIRM_TIME AS purchaserConfirmTime,
+        A.PURCHASER_CONFIRM_STATUS AS purchaserConfirmStatus,
+        ifnull(A.PURCHASER_CONFIRM_REMARK, '') AS purchaserConfirmRemark,
+        A.SUPPLIER_CONFIRM_ID AS supplierConfirmId,
+        A.SUPPLIER_CONFIRM_NAME AS supplierConfirmName,
+        A.SUPPLIER_CONFIRM_TIME AS supplierConfirmTime,
+        A.SUPPLIER_CONFIRM_STATUS AS supplierConfirmStatus,
+        ifnull(A.SUPPLIER_CONFIRM_REMARK, '') AS supplierConfirmRemark,
+        A.VERIFICATION_REMARK AS verificationRemark,
+        A.VER AS ver
+    </sql>
+
+    <!--条件 -->
+    <sql id="whereCondition">
+        1 = 1
+        <if test="delFlg != null and delFlg != ''">
+            AND A.DEL_FLG = #{delFlg}
+        </if>
+        <if test="verificationId != null and verificationId != ''">
+            AND A.VERIFICATION_ID = #{verificationId}
+        </if>
+        <if test="filterMap.verificationCode != null and filterMap.verificationCode != ''">
+            AND A.VERIFICATION_CODE LIKE '%${filterMap.verificationCode}%'
+        </if>
+        <if test="contractId != null and contractId != ''">
+            AND A.CONTRACT_ID = #{contractId}
+        </if>
+        <if test="filterMap.contractCode != null and filterMap.contractCode != ''">
+            AND A.CONTRACT_CODE LIKE '%${filterMap.contractCode}%'
+        </if>
+        <if test="filterMap.contractName != null and filterMap.contractName != ''">
+            AND A.CONTRACT_NAME LIKE '%${filterMap.contractName}%'
+        </if>
+        /*合同状态*/
+        <if test="contractStatusArr !=null and contractStatusArr.length>0">
+            AND B.CONTRACT_STATUS in
+            <foreach item="contractStatus" index="index" collection="contractStatusArr"
+                     open="(" separator="," close=")">
+                #{contractStatus}
+            </foreach>
+        </if>
+        <if test="supplierId != null and supplierId != ''">
+            AND SUPPLIER_ID = #{supplierId}
+        </if>
+        <if test="supplierName != null and supplierName != ''">
+            AND SUPPLIER_NAME = #{supplierName}
+        </if>
+        <if test="supplierCode != null and supplierCode != ''">
+            AND SUPPLIER_CODE = #{supplierCode}
+        </if>
+        <if test="purchaserId != null and purchaserId != ''">
+            AND PURCHASER_ID = #{purchaserId}
+        </if>
+        <if test="purchaserName != null and purchaserName != ''">
+            AND PURCHASER_NAME = #{purchaserName}
+        </if>
+        <if test="purchaserCode != null and purchaserCode != ''">
+            AND PURCHASER_CODE = #{purchaserCode}
+        </if>
+        <if test="verificationAmount != null and verificationAmount != ''">
+            AND VERIFICATION_AMOUNT = #{verificationAmount}
+        </if>
+        <if test="verificationMethord != null and verificationMethord != ''">
+            AND VERIFICATION_METHORD = #{verificationMethord}
+        </if>
+        <if test="verificationDate != null and verificationDate != ''">
+            AND VERIFICATION_DATE = #{verificationDate}
+        </if>
+        <if test="filterMap.verificationDateStr != null and filterMap.verificationDateStr != ''">
+            AND DATE_FORMAT(A.VERIFICATION_DATE,'%Y-%m-%d') = #{filterMap.verificationDateStr}
+        </if>
+        <if test="status != null and status != ''">
+            AND STATUS = #{status}
+        </if>
+        /*处理状态*/
+        <if test="statusArr !=null and statusArr.length>0">
+            AND A.STATUS in
+            <foreach item="status" index="index" collection="statusArr"
+                     open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+        <if test="remark != null and remark != ''">
+            AND REMARK = #{remark}
+        </if>
+        <if test="verificationType != null and verificationType != ''">
+            AND VERIFICATION_TYPE = #{verificationType}
+        </if>
+        <if test="filterMap.chargerName != null and filterMap.chargerName != ''">
+            AND A.CHARGER_NAME LIKE '%${filterMap.chargerName}%'
+        </if>
+        <if test="chargerId != null and chargerId != ''">
+            AND CHARGER_ID = #{chargerId}
+        </if>
+        <if test="auditStatuses != null and auditStatuses.size() > 0">
+            AND A.AUDIT_STATUS in
+            <foreach collection="auditStatuses" item="auditStatus" index="index" open="(" separator="," close=")">
+                #{auditStatus}
+            </foreach>
+        </if>
+        <if test="isPaymentRequest == 'true'">
+            AND
+            A.VERIFICATION_ID NOT IN (
+            SELECT VERIFICATION_ID
+            FROM ssc_payment_request
+            WHERE DEL_FLG = 0 AND PAYMENT_TYPE = #{paymentType}
+            AND VERIFICATION_ID is not null
+            )
+        </if>
+    </sql>
+
+    <!--数据插入 -->
+    <insert id="save" parameterType="BaseParam">
+        INSERT INTO ssc_verification_for_contract
+        (
+        <if test="verificationId != null and verificationId != ''">
+            VERIFICATION_ID,
+        </if>
+        <if test="verificationCode != null and verificationCode != ''">
+            VERIFICATION_CODE,
+        </if>
+        <if test="contractId != null and contractId != ''">
+            CONTRACT_ID,
+        </if>
+        <if test="contractCode != null and contractCode != ''">
+            CONTRACT_CODE,
+        </if>
+        <if test="contractName != null and contractName != ''">
+            CONTRACT_NAME,
+        </if>
+        <if test="supplierId != null and supplierId != ''">
+            SUPPLIER_ID,
+        </if>
+        <if test="supplierName != null and supplierName != ''">
+            SUPPLIER_NAME,
+        </if>
+        <if test="supplierCode != null and supplierCode != ''">
+            SUPPLIER_CODE,
+        </if>
+        <if test="purchaserId != null and purchaserId != ''">
+            PURCHASER_ID,
+        </if>
+        <if test="purchaserName != null and purchaserName != ''">
+            PURCHASER_NAME,
+        </if>
+        <if test="purchaserCode != null and purchaserCode != ''">
+            PURCHASER_CODE,
+        </if>
+        <if test="verificationAmount != null">
+            VERIFICATION_AMOUNT,
+        </if>
+        <if test="verificationMethord != null and verificationMethord != ''">
+            VERIFICATION_METHORD,
+        </if>
+        <if test="verificationDate != null and verificationDate != ''">
+            VERIFICATION_DATE,
+        </if>
+        <if test="status != null">
+            STATUS,
+        </if>
+        <if test="remark != null and remark != ''">
+            REMARK,
+        </if>
+        <if test="verificationRemark!=null and verificationRemark != ''">
+            VERIFICATION_REMARK,
+        </if>
+        <if test="verificationType != null and verificationType != ''">
+            VERIFICATION_TYPE,
+        </if>
+        <if test="chargerName != null and chargerName != ''">
+            CHARGER_NAME,
+        </if>
+        <if test="chargerId != null and chargerId != ''">
+            CHARGER_ID,
+        </if>
+        <if test="auditStatus != null">
+            AUDIT_STATUS,
+        </if>
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER
+        )
+        VALUES
+        (
+        <if test="verificationId!=null and verificationId != ''">
+            #{verificationId},
+        </if>
+        <if test="verificationCode!=null and verificationCode != ''">
+            #{verificationCode},
+        </if>
+        <if test="contractId!=null and contractId != ''">
+            #{contractId},
+        </if>
+        <if test="contractCode!=null and contractCode != ''">
+            #{contractCode},
+        </if>
+        <if test="contractName!=null and contractName != ''">
+            #{contractName},
+        </if>
+        <if test="supplierId!=null and supplierId != ''">
+            #{supplierId},
+        </if>
+        <if test="supplierName!=null and supplierName != ''">
+            #{supplierName},
+        </if>
+        <if test="supplierCode!=null and supplierCode != ''">
+            #{supplierCode},
+        </if>
+        <if test="purchaserId!=null and purchaserId != ''">
+            #{purchaserId},
+        </if>
+        <if test="purchaserName!=null and purchaserName != ''">
+            #{purchaserName},
+        </if>
+        <if test="purchaserCode!=null and purchaserCode != ''">
+            #{purchaserCode},
+        </if>
+        <if test="verificationAmount!=null">
+            #{verificationAmount},
+        </if>
+        <if test="verificationMethord!=null and verificationMethord != ''">
+            #{verificationMethord},
+        </if>
+        <if test="verificationDate!=null and verificationDate != ''">
+            #{verificationDate},
+        </if>
+        <if test="status != null">
+            #{status},
+        </if>
+        <if test="remark!=null and remark != ''">
+            #{remark},
+        </if>
+        <if test="verificationRemark!=null and verificationRemark != ''">
+            #{verificationRemark},
+        </if>
+        <if test="verificationType!=null and verificationType != ''">
+            #{verificationType},
+        </if>
+        <if test="chargerName!=null and chargerName != ''">
+            #{chargerName},
+        </if>
+        <if test="chargerId!=null and chargerId != ''">
+            #{chargerId},
+        </if>
+        <if test="auditStatus != null">
+            #{auditStatus},
+        </if>
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        1
+        )
+    </insert>
+
+    <update id="modify" parameterType="BaseParam">
+        update ssc_verification_for_contract
+        set
+        <if test="contractId!=null and contractId != ''">
+            CONTRACT_ID = #{contractId},
+        </if>
+        <if test="contractCode!=null and contractCode != ''">
+            CONTRACT_CODE = #{contractCode},
+        </if>
+        <if test="contractName!=null and contractName != ''">
+            CONTRACT_NAME = #{contractName},
+        </if>
+        <if test="supplierId!=null and supplierId != ''">
+            SUPPLIER_ID = #{supplierId},
+        </if>
+        <if test="supplierName!=null and supplierName != ''">
+            SUPPLIER_NAME = #{supplierName},
+        </if>
+        <if test="supplierCode!=null and supplierCode != ''">
+            SUPPLIER_CODE = #{supplierCode},
+        </if>
+        <if test="purchaserId!=null and purchaserId != ''">
+            PURCHASER_ID = #{purchaserId},
+        </if>
+        <if test="purchaserName!=null and purchaserName != ''">
+            PURCHASER_NAME = #{purchaserName},
+        </if>
+        <if test="purchaserCode!=null and purchaserCode != ''">
+            PURCHASER_CODE = #{purchaserCode},
+        </if>
+        <if test="verificationAmount!=null">
+            VERIFICATION_AMOUNT = #{verificationAmount},
+        </if>
+        <if test="verificationMethord!=null and verificationMethord != ''">
+            VERIFICATION_METHORD = #{verificationMethord},
+        </if>
+        <if test="verificationDate!=null and verificationDate != ''">
+            VERIFICATION_DATE = #{verificationDate},
+        </if>
+        <if test="status!=null">
+            STATUS = #{status},
+        </if>
+        <if test="remark!=null and remark != ''">
+            REMARK = #{remark},
+        </if>
+        <if test="verificationRemark!=null and verificationRemark != ''">
+            VERIFICATION_REMARK = #{verificationRemark},
+        </if>
+
+        <if test="verificationType!=null and verificationType != ''">
+            VERIFICATION_TYPE = #{verificationType},
+        </if>
+        <if test="chargerName!=null and chargerName != ''">
+            CHARGER_NAME = #{chargerName},
+        </if>
+        <if test="chargerId!=null and chargerId != ''">
+            CHARGER_ID = #{chargerId},
+        </if>
+        <if test="auditStatus != null">
+            AUDIT_STATUS = #{auditStatus},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+            DEL_FLG = 0
+        <if test="verificationId != null and verificationId != ''">
+            AND VERIFICATION_ID = #{verificationId}
+        </if>
+    </update>
+
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11321RsBean" parameterType="BaseParam">
+        SELECT
+            <include refid="selectSql"/>,
+            sum(if(C.PAYMENT_TYPE=2 and C.VERIFICATION_AMOUNT &lt; 0, -1*C.PAID_AMOUNT, C.PAID_AMOUNT)) AS contractAmountPaid
+        FROM
+            ssc_verification_for_contract A
+        LEFT JOIN ssc_contract_basic B ON A.CONTRACT_ID = B.CONTRACT_ID
+        LEFT JOIN ssc_payment_request C ON C.DEL_FLG = 0 AND A.CONTRACT_ID = C.CONTRACT_ID
+        WHERE
+            <include refid="whereCondition"/>
+        GROUP BY A.VERIFICATION_ID
+        ORDER BY A.VERIFICATION_ID DESC
+        <if test="paging==true">
+            LIMIT #{startPos}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        SELECT
+            count(1)
+        FROM
+            ssc_verification_for_contract A
+        LEFT JOIN ssc_contract_basic B ON A.CONTRACT_ID = B.CONTRACT_ID
+        WHERE
+            <include refid="whereCondition"/>
+    </select>
+
+    <select id="findMaxVerificationCode" parameterType="BaseParam" resultType="String">
+        SELECT max(VERIFICATION_CODE) FROM ssc_verification_for_contract WHERE VERIFICATION_CODE LIKE #{filterMap.verificationCode}
+    </select>
+
+    <update id="updateAuditStatus" parameterType="com.msk.ssc.bean.SSC11321RsBean">
+        UPDATE ssc_verification_for_contract
+        SET STATUS = #{status},
+            AUDIT_STATUS = #{auditStatus},
+            <if test="purchaserConfirmId != null and purchaserConfirmId != ''">
+                PURCHASER_CONFIRM_ID = #{purchaserConfirmId},
+                PURCHASER_CONFIRM_NAME = #{purchaserConfirmName},
+                PURCHASER_CONFIRM_TIME = #{purchaserConfirmTime},
+                PURCHASER_CONFIRM_STATUS = #{purchaserConfirmStatus},
+                PURCHASER_CONFIRM_REMARK = #{purchaserConfirmRemark},
+            </if>
+            <if test="supplierConfirmId != null and supplierConfirmId != ''">
+                SUPPLIER_CONFIRM_ID = #{supplierConfirmId},
+                SUPPLIER_CONFIRM_NAME = #{supplierConfirmName},
+                SUPPLIER_CONFIRM_TIME = #{supplierConfirmTime},
+                SUPPLIER_CONFIRM_STATUS = #{supplierConfirmStatus},
+                SUPPLIER_CONFIRM_REMARK = #{supplierConfirmRemark},
+            </if>
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+	        DEL_FLG = 0
+        AND VERIFICATION_ID = #{verificationId}
+    </update>
+
+    <update id="deleteVerification" parameterType="com.msk.ssc.bean.SSC11321RsBean">
+        UPDATE ssc_verification_for_contract
+        SET STATUS = 5,
+            DEL_FLG = 1,
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            DEL_FLG = 0
+        AND VERIFICATION_ID = #{verificationId}
+    </update>
+</mapper>

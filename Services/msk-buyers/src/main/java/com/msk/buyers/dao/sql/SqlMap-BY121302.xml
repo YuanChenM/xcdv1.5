@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121302Logic">
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        IFNULL(FOD_MARKET_ID,'')  AS fodMarketId,
+        IFNULL(MARKET_CODE,'')   AS marketCode,
+        IFNULL(MARKET_NAME,'')   AS marketName,
+        IFNULL(MARKET_ADDR,'')  AS marketAddr,
+        IFNULL(MARKET_TYPE,'')   AS marketType,
+        IFNULL(MARKET_TYPE_NAME,'')   AS marketTypeName,
+        IFNULL(SECTION_TYPE,'')   AS sectionType,
+        IFNULL(SECTION_TYPE_NAME,'')   AS sectionTypeName,
+        IFNULL(LGCS_AREA_CODE,'')   AS lgcsAreaCode,
+        IFNULL(LGCS_AREA_NAME,'') AS lgcsAreaName,
+        IFNULL(CITY_CODE,'')      AS cityCode,
+        IFNULL(CITY_NAME,'') AS cityName,
+        IFNULL(DISTRICT_CODE,'')   AS districtCode,
+        IFNULL(DISTRICT_NAME,'') AS districtName
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        WHERE DEL_FLG = '0'
+        <if test="filterMap.marketCode!=null and filterMap.marketCode!=''">
+            AND MARKET_CODE like #{filterMap.marketCode}
+        </if>
+        <if test="filterMap.marketName!=null and filterMap.marketName!=''">
+            AND MARKET_NAME like #{filterMap.marketName}
+        </if>
+        <if test="filterMap.lgcsAreaName!=null and filterMap.lgcsAreaName!=''">
+            AND LGCS_AREA_NAME LIKE #{filterMap.lgcsAreaName}
+        </if>
+        <if test="filterMap.cityName!=null and filterMap.cityName!=''">
+            AND CITY_NAME LIKE #{filterMap.cityName}
+        </if>
+        <if test="filterMap.districtName!=null and filterMap.districtName!=''">
+            AND DISTRICT_NAME LIKE #{filterMap.districtName}
+        </if>
+    </sql>
+
+    <select id="findPageList" resultType="com.msk.buyers.bean.BY121302Bean" parameterType="BaseParam">
+        select
+        <include refid="selectSql"/>
+        from by_market_food
+        <include refid="whereCondition"/>
+        ORDER BY fodMarketId
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        from by_market_food
+        <include refid="whereCondition"/>
+    </select>
+
+    <select id="findOne" resultType="com.msk.core.entity.ByMarketFood" parameterType="BaseParam">
+        select
+        <include refid="selectSql"/>
+        from by_market_food
+        WHERE FOD_MARKET_ID = #{filterMap.marketId}
+    </select>
+
+    <update id="deleteMarkerFood" parameterType="com.msk.buyers.bean.BY121302Bean">
+        UPDATE by_market_food
+        SET DEL_FLG = '1'
+            ,UPD_ID = #{updId}
+            ,UPD_TIME = #{updTime}
+        WHERE FOD_MARKET_ID = #{fodMarketId}
+    </update>
+</mapper>

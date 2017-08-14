@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.order.logic.BSO151404Logic">
+    <!-- 获取订单供货明细信息表(订单状态:已确认,订单类型:买手囤货订单,第三方买手囤货订单) -->
+    <select id="selectOrderNeedsTransfer" parameterType="BaseParam" resultType="com.msk.batch.order.bean.BSO151404Bean">
+        SELECT  t3.ORDER_ID orderId,
+        t3.ORDER_CODE orderCode,
+        t1.SUPPLIER_CODE supplierCode,
+        t1.SUPPLIER_NAME supplierName,
+        t3.SELLER_CODE sourceSellerCode,
+        t3.SELLER_NAME sourceSellerName,
+        t3.BUYER_ID sellerCode,
+        t3.BUYER_NAME sellerName,
+        t3.ORDER_SOURCE orderSource,
+        t3.DISTRICT_CODE districtCode,
+        t2.CLASSES_CODE classCode,
+        t2.CLASSES_NAME className,
+        t2.BREED_CODE breedCode,
+        t2.BREED_NAME breedName,
+        t2.FEATURE_CODE featureCode,
+        t2.FEATURE_NAME featureName,
+        t2.NORMS_CODE normsCode,
+        t2.NORMS_NAME normsName,
+        t2.PD_CODE pdCode,
+        t2.PD_NAME pdName,
+        t2.PD_LEVEL pdLevel,
+        t2.PD_GRADE_CODE pdGradeCode,
+        t2.PD_GRADE_NAME pdGradeName,
+        t2.UNIT unit,
+        t2.PACKING_VOLUME packingVolume,
+        t2.WEIGHT weight,
+        t2.VOLUME volume,
+        t1.SUPP_QTY suppQty,
+        t2.PD_PRICE pdPrice,
+        t3.SALE_PLATFORM salePlatform
+        FROM   so_order_ship_detail t1
+        LEFT JOIN so_order_detail t2
+        ON (t1.ORDER_DETAIL_ID = t2.ORDER_DETAIL_ID)
+        LEFT JOIN so_order t3
+        ON (t2.ORDER_ID = t3.ORDER_ID)
+        WHERE  t3.ORDER_ID = #{filterMap.orderId}
+        AND t1.DEL_FLG = 0
+        AND t2.DEL_FLG = 0
+        AND t3.DEL_FLG = 0
+    </select>
+    <!-- 更新订单供货明细信息表状态 -->
+    <update id="modifyDetailShipStatus" parameterType="BaseParam">
+        UPDATE so_order_ship_detail
+        SET SEND_QTY = SUPP_QTY,
+        RECEIVE_QTY = SUPP_QTY,
+        CANCEL_QTY = 0,
+        RETURN_QTY = 0,
+        DETAIL_STATUS = #{filterMap.status},
+        UPD_ID = #{updId},
+        UPD_TIME = sysdate(),
+        VER = VER + 1
+        WHERE ORDER_ID = #{orderId}
+        AND DEL_FLG = 0
+    </update>
+    <!-- 更新订单明细表状态 -->
+    <update id="modifyDetailStatus" parameterType="BaseParam">
+        UPDATE so_order_detail
+        SET  DETAIL_STATUS = #{filterMap.status},
+        SEND_QTY=ORDER_QTY,
+        RECEIVE_QTY= ORDER_QTY,
+        CANCEL_QTY= 0,
+        RETURN_QTY= 0,
+        UPD_ID = #{updId},
+        UPD_TIME = sysdate(),
+        VER = VER + 1
+        WHERE ORDER_ID = #{orderId}
+        AND DEL_FLG = 0
+    </update>
+    <!-- 更新订单主表状态 -->
+    <update id="modifyStatus" parameterType="BaseParam">
+        UPDATE so_order
+        SET  ORDER_STATUS = #{filterMap.status},
+        UPD_ID = #{updId},
+        UPD_TIME = sysdate(),
+        VER = VER + 1
+        WHERE ORDER_ID = #{orderId}
+        AND DEL_FLG = 0
+    </update>
+    <!-- 更新分批订单表状态 -->
+    <update id="modifySubStatus" parameterType="BaseParam">
+        UPDATE so_sub_order
+        SET SUB_ORDER_STATUS = #{filterMap.status},
+        UPD_ID = #{updId},
+        UPD_TIME = sysdate(),
+        VER = VER + 1
+        WHERE ORDER_ID = #{orderId}
+        AND DEL_FLG = 0
+    </update>
+    <!-- 更新分批订单明细表状态 -->
+    <update id="modifySubDetailStatus" parameterType="BaseParam">
+        UPDATE so_sub_order_detail
+        SET DETAIL_STATUS = #{filterMap.status},
+        SEND_QTY=ORDER_QTY,
+        RECEIVE_QTY= ORDER_QTY,
+        CANCEL_QTY= 0,
+        RETURN_QTY= 0,
+        UPD_ID = #{updId},
+        UPD_TIME = sysdate(),
+        VER = VER + 1
+        WHERE ORDER_ID = #{orderId}
+        AND DEL_FLG = 0
+    </update>
+
+    <update id="updateOrderStatus" parameterType="BaseParam">
+        UPDATE so_order_status
+        SET DEL_FLG = 1,
+        VER = VER + 1
+        WHERE ORDER_ID = #{orderId}
+        AND DEL_FLG = 0
+    </update>
+
+    <insert id="saveOrderStatus" parameterType="BaseParam">
+        INSERT INTO so_order_status (
+          STATUS_ID,
+          ORDER_ID,
+          ORDER_CODE,
+          ORDER_STATUS,
+          DEL_FLG,
+          CRT_ID,
+          CRT_TIME,
+          VER
+        )
+        VALUES
+          (
+            #{filterMap.statusId},
+            #{orderId},
+            #{orderCode},
+            #{filterMap.status},
+            0,
+            "BSO151404Batch",
+            #{updTime},
+            1
+          )
+    </insert>
+    <!--根据orderID查询分批订单id-->
+    <select id="findSubOrder" parameterType="BaseParam" resultType="com.msk.batch.order.bean.BSO151404Bean">
+        SELECT
+            SUB_ORDER_ID as subOrderId
+        FROM
+            so_sub_order
+        WHERE
+            ORDER_ID = #{orderId}
+        AND DEL_FLG = 0
+        AND (ORDER_TYPE = #{filterMap.orderType1} OR ORDER_TYPE = #{filterMap.orderType2})
+    </select>
+
+    <update id="updateSubOrderStatus" parameterType="BaseParam">
+        UPDATE so_sub_order_status
+        SET DEL_FLG = 1,
+        VER = VER + 1
+        WHERE SUB_ORDER_ID = #{subOrderId}
+        AND DEL_FLG = 0
+    </update>
+
+    <insert id="saveSubOrderStatus" parameterType="BaseParam">
+        INSERT INTO so_sub_order_status (
+        STATUS_ID,
+        SUB_ORDER_ID,
+        ORDER_ID,
+        SUB_ORDER_STATUS,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{filterMap.statusId},
+        #{subOrderId},
+        #{orderId},
+        #{filterMap.status},
+        0,
+        "batchAdmin",
+        #{updTime},
+        1
+        )
+    </insert>
+
+    <select id="getStockOrderList" resultType="com.msk.batch.order.bean.BSO151404Bean" parameterType="BaseParam">
+        SELECT DISTINCT
+        order_id AS orderId
+        FROM so_order
+        WHERE  ORDER_STATUS = #{filterMap.status}
+        AND  (ORDER_TYPE = #{filterMap.orderType1}
+        OR  ORDER_TYPE = #{filterMap.orderType2})
+        AND DEL_FLG = 0
+    </select>
+</mapper>
+

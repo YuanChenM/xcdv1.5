@@ -1,0 +1,12 @@
+spring:
+  configServer:
+        environment: st
+        modelName: MQ
+        configServerUrl: http://10.171.246.164/msk-config-server/api/load/properties
+amqp:
+    queues[0]: order-create-queue
+    queues[1]: order-payment-queue
+    queues[2]: order-delivery-queue
+server:
+  port: 9091
+  context-path: /msk-mq-server/

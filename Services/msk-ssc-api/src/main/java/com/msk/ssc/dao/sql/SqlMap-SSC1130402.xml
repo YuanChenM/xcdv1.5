@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC1130402Logic">
+
+    <!-- 根据合同ID和产品CODE，删除产品的交货计划 -->
+    <update id="deleteDeliveryPlanByCidPcode" parameterType="com.msk.ssc.bean.SSC11304DeliveryPlanBean">
+        UPDATE ssc_delivery_plan_basic
+        SET DEL_FLG = 1,
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            DEL_FLG = 0
+        AND CONTRACT_ID = #{contractId}
+        AND PD_CODE = #{pdCode}
+    </update>
+
+</mapper>

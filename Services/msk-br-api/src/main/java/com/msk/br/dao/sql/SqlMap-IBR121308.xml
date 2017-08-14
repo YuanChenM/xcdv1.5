@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121308Logic">
+
+
+    <select id="findList" resultType="com.msk.br.bean.IBR121308RsBean"
+            parameterType="com.msk.br.bean.IBR121308RsParam">
+        SELECT
+        IFNULL(binfo.BUYER_ID, '') AS buyerId,
+        IFNULL(binfo.BUYER_CODE, '') AS buyerCode,
+        IFNULL(binfo.BUYER_NAME, '') AS buyerName,
+        IFNULL(binfo.BUYER_TEL, '') AS buyerTel,
+        IFNULL(binfo.BUSI_TEL, '') AS busiTel,
+        IFNULL(binfo.BUYER_ACCOUNT, '') AS accountName,
+        IFNULL(binfo.BUYER_TYPE_NAME, '') AS buyerTypeName,
+        IFNULL(binfo.LGCS_AREA_CODE, '') AS lgcsAreaCode,
+        IFNULL(binfo.LGCS_AREA_NAME, '') AS lgcsAreaName,
+        IFNULL(binfo.CITY_CODE, '') AS cityCode,
+        IFNULL(binfo.CITY_NAME, '') AS cityName,
+        IFNULL(pro.PROVINCE_CODE, '') AS provinceCode,
+        IFNULL(pro.PROVINCE_NAME, '') AS provinceName,
+        IFNULL(binfo.DISTRICT_CODE, '') AS districtCode,
+        IFNULL(binfo.DISTRICT_NAME, '') AS districtName,
+        IFNULL(binfo.MANAGE_ADDR, '') AS buyerAddr,
+        IFNULL(binfo.BOSS_TEL, '') AS bossTel,
+        IFNULL(binfo.REC_PER_TEL, '') AS recPerTel,
+        IFNULL(binfo.BOSS_NAME, '') AS employeeName,
+        IFNULL(binfo.MARKET_CODE, '') AS marketId,
+        IFNULL(binfo.MARKET_NAME, '') AS marketName,
+        IFNULL(binfo.STORE_NO, '') AS buyerShop,
+        IFNULL(binfo.BUYER_TYPE, '') AS buyerType,
+        IFNULL(binfo.MARKETINGS_STATUS, '') AS marketingsStatusCode,
+        IFNULL(
+        binfo.MARKETINGS_STATUS_NAME,
+        '') AS marketingsStatusName,
+        IFNULL(binfo.SALES_TARGET, '') AS salestarget
+        FROM
+          br_o_buyer_info binfo
+        LEFT JOIN md_city city ON binfo.CITY_CODE = city.CITY_CODE
+        LEFT JOIN md_province pro ON city.PROVINCE_ID = pro.PROVINCE_ID
+        WHERE
+          binfo.DEL_FLG = '0'
+          AND binfo.BUYER_CODE <![CDATA[<> '']]>
+          AND binfo.BUYER_CODE IS NOT NULL
+          AND NOT EXISTS (
+            -- 查询买家池已绑定管家的买家
+            SELECT
+            1
+            FROM
+            (
+            SELECT
+            a.BUYER_ID
+            FROM
+            br_o_buyer_info a
+            INNER JOIN br_buyer_hk_relationship b ON a.BUYER_ID = b.BUYER_ID
+            AND b.DEL_FLG = '0'
+            WHERE
+            a.DEL_FLG = '0'
+            AND b.RELATION_TYPE <![CDATA[<> '0']]>
+            ) c
+            WHERE
+            binfo.BUYER_ID = c.BUYER_ID
+            )
+            <if test="marketingsStatusArray != null and marketingsStatusArray.length >0">
+                AND  binfo.MARKETINGS_STATUS IN
+                <foreach collection="marketingsStatusArray" item="marketingsStatus" open="(" separator="," close=")">
+                    #{marketingsStatus}
+                </foreach>
+            </if>
+            <if test="marketingsStatusName != null and marketingsStatusName != '' ">
+                AND  binfo.MARKETINGS_STATUS_NAME LIKE #{marketingsStatusName}
+            </if>
+
+            <if test="buyerTypeName != null and buyerTypeName != '' ">
+                AND binfo.BUYER_TYPE_NAME LIKE #{buyerTypeName}
+            </if>
+            <if test="accountName != null and accountName != '' ">
+                AND binfo.BUYER_ACCOUNT LIKE #{accountName}
+            </if>
+            <if test="buyerTel != null and buyerTel != '' ">
+                AND binfo.BUYER_TEL LIKE #{buyerTel}
+            </if>
+            <if test="lgcsAreaCode != null and lgcsAreaCode != '' ">
+                AND binfo.LGCS_AREA_CODE =#{lgcsAreaCode}
+            </if>
+            <if test="provinceCode != null and provinceCode != '' ">
+                AND pro.PROVINCE_CODE =#{provinceCode}
+            </if>
+            <if test="cityCode != null and cityCode != '' ">
+                AND binfo.CITY_CODE =#{cityCode}
+            </if>
+
+            <if test="employeeName != null and employeeName != '' ">
+                AND binfo.BOSS_NAME LIKE #{employeeName}
+            </if>
+            <if test="districtCode != null and districtCode != '' ">
+                AND binfo.DISTRICT_CODE =#{districtCode}
+            </if>
+            <if test="buyerAddr != null and buyerAddr != '' ">
+                AND binfo.MANAGE_ADDR  LIKE  #{buyerAddr}
+            </if>
+            <if test="bossTel != null and bossTel != '' ">
+                AND binfo.BOSS_TEL LIKE #{bossTel}
+            </if>
+            <if test="busiTel != null and busiTel != '' ">
+                AND binfo.BUSI_TEL LIKE #{busiTel}
+            </if>
+            <if test="recPerTel != null and recPerTel != '' ">
+                AND binfo.REC_PER_TEL LIKE #{recPerTel}
+            </if>
+            <if test="buyerName != null and buyerName != '' ">
+                AND binfo.BUYER_NAME LIKE #{buyerName}
+            </if>
+            <if test="buyerShop != null and buyerShop != '' ">
+                AND binfo.STORE_NO LIKE #{buyerShop}
+            </if>
+            <if test="buyerType != null and buyerType != '' ">
+                AND binfo.BUYER_TYPE = #{buyerType}
+            </if>
+            <if test="marketId != null and marketId != '' ">
+                AND binfo.MARKET_CODE =#{marketId}
+            </if>
+            <if test="buyerCode != null and buyerCode != '' ">
+                AND binfo.BUYER_CODE LIKE #{buyerCode}
+            </if>
+            <if test="buyerId != null and buyerId != '' ">
+                AND binfo.BUYER_ID = #{buyerId}
+            </if>
+            GROUP BY binfo.BUYER_ID
+            <if test="paging==true">
+                LIMIT #{startPos},#{pageSize}
+            </if>
+    </select>
+
+    <select id="getPageCount" resultType="int"
+            parameterType="com.msk.br.bean.IBR121308RsParam">
+        SELECT
+        COUNT(DISTINCT(binfo.BUYER_ID))
+        FROM
+        br_o_buyer_info binfo
+        LEFT JOIN md_city city ON binfo.CITY_CODE = city.CITY_CODE
+        LEFT JOIN md_province pro ON city.PROVINCE_ID = pro.PROVINCE_ID
+        WHERE
+        binfo.DEL_FLG = '0'
+        AND binfo.BUYER_CODE <![CDATA[<> '']]>
+        AND binfo.BUYER_CODE IS NOT NULL
+        AND NOT EXISTS (
+        -- 查询买家池已绑定管家的买家
+        SELECT
+        1
+        FROM
+        (
+        SELECT
+        a.BUYER_ID
+        FROM
+        br_o_buyer_info a
+        INNER JOIN br_buyer_hk_relationship b ON a.BUYER_ID = b.BUYER_ID
+        AND b.DEL_FLG = '0'
+        WHERE
+        a.DEL_FLG = '0'
+        AND b.RELATION_TYPE <![CDATA[<> '0']]>
+        ) c
+        WHERE
+        binfo.BUYER_ID = c.BUYER_ID
+        )
+
+        <if test="marketingsStatusArray != null and marketingsStatusArray.length >0">
+            AND  binfo.MARKETINGS_STATUS IN
+            <foreach collection="marketingsStatusArray" item="marketingsStatus" open="(" separator="," close=")">
+                #{marketingsStatus}
+            </foreach>
+        </if>
+        <if test="marketingsStatusName != null and marketingsStatusName != '' ">
+            AND  binfo.MARKETINGS_STATUS_NAME LIKE #{marketingsStatusName}
+        </if>
+
+        <if test="buyerTypeName != null and buyerTypeName != '' ">
+            AND binfo.BUYER_TYPE_NAME LIKE #{buyerTypeName}
+        </if>
+        <if test="accountName != null and accountName != '' ">
+            AND binfo.BUYER_ACCOUNT LIKE #{accountName}
+        </if>
+        <if test="buyerTel != null and buyerTel != '' ">
+            AND binfo.BUYER_TEL LIKE #{buyerTel}
+        </if>
+        <if test="lgcsAreaCode != null and lgcsAreaCode != '' ">
+            AND binfo.LGCS_AREA_CODE =#{lgcsAreaCode}
+        </if>
+        <if test="provinceCode != null and provinceCode != '' ">
+            AND pro.PROVINCE_CODE =#{provinceCode}
+        </if>
+        <if test="cityCode != null and cityCode != '' ">
+            AND binfo.CITY_CODE =#{cityCode}
+        </if>
+
+        <if test="employeeName != null and employeeName != '' ">
+            AND binfo.BOSS_NAME LIKE #{employeeName}
+        </if>
+        <if test="districtCode != null and districtCode != '' ">
+            AND binfo.DISTRICT_CODE =#{districtCode}
+        </if>
+        <if test="buyerAddr != null and buyerAddr != '' ">
+            AND binfo.MANAGE_ADDR  LIKE  #{buyerAddr}
+        </if>
+        <if test="bossTel != null and bossTel != '' ">
+            AND binfo.BOSS_TEL LIKE #{bossTel}
+        </if>
+        <if test="busiTel != null and busiTel != '' ">
+            AND binfo.BUSI_TEL LIKE #{busiTel}
+        </if>
+        <if test="recPerTel != null and recPerTel != '' ">
+            AND binfo.REC_PER_TEL LIKE #{recPerTel}
+        </if>
+        <if test="buyerName != null and buyerName != '' ">
+            AND binfo.BUYER_NAME LIKE #{buyerName}
+        </if>
+        <if test="buyerShop != null and buyerShop != '' ">
+            AND binfo.STORE_NO LIKE #{buyerShop}
+        </if>
+        <if test="buyerType != null and buyerType != '' ">
+            AND binfo.BUYER_TYPE = #{buyerType}
+        </if>
+        <if test="marketId != null and marketId != '' ">
+            AND binfo.MARKET_CODE =#{marketId}
+        </if>
+        <if test="buyerCode != null and buyerCode != '' ">
+            AND binfo.BUYER_CODE LIKE #{buyerCode}
+        </if>
+        <if test="buyerId != null and buyerId != '' ">
+            AND binfo.BUYER_ID = #{buyerId}
+        </if>
+    </select>
+
+    <select id="findbyBuyerPdClaList" parameterType="com.msk.br.bean.IBR121308RsParam" resultType="com.msk.br.bean.IBR121308RsBean">
+        SELECT
+        CLASSES_CODE AS classCode,
+        CLASSES_NAME AS className
+        FROM BR_O_BUYER_PD_CLA
+        WHERE
+        BUYER_ID = #{buyerId}
+        AND DEL_FLG = '0'
+    </select>
+</mapper>

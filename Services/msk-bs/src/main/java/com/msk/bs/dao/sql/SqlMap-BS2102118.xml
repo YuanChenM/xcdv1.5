@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2102118Logic">
+
+    <sql id="selectWorkHis">
+        IFNULL(WORK_HIS_ID,'') AS workHisId,
+        IFNULL(WORK_ID,'') AS workId,
+        IFNULL(SL_CODE,'') AS slCode,
+        IFNULL(HOUSE_CODE,'') AS houseCode,
+        WORK_START AS workStart,
+        WORK_END AS workEnd,
+        IFNULL(WORK_COMP,'') AS workComp,
+        IFNULL(WORK_POSITION,'') AS workPosition,
+        IFNULL(WORK_STATION,'') AS workStation,
+        IFNULL(CRT_TIME,'') AS crtTime,
+        IFNULL(ACT_FLG,'') AS actFlg
+    </sql>
+
+
+    <sql id="selectEduHis">
+        IFNULL(EDU_HIS_ID,'') AS eduHisId,
+        IFNULL(EDU_ID,'') AS eduId,
+        IFNULL(SL_CODE,'') AS slCode,
+        IFNULL(HOUSE_CODE,'') AS houseCode,
+        EDU_START AS eduStart,
+        EDU_END AS eduEnd,
+        IFNULL(EDU_COMP,'') AS eduComp,
+        IFNULL(EDU_RECORD,'') AS eduRecord,
+        IFNULL(EDU_DEGREE,'') AS eduDegree,
+        IFNULL(CRT_TIME,'') AS crtTime,
+        IFNULL(ACT_FLG,'') AS actFlg
+    </sql>
+
+
+    <sql id="selectTrainHis">
+        IFNULL(TRAIN_HIS_ID,'') AS trainHisId,
+        IFNULL(TRAIN_ID,'') AS trainId,
+        IFNULL(SL_CODE,'') AS slCode,
+        IFNULL(HOUSE_CODE,'') AS houseCode,
+        TRAIN_START AS trainStart,
+        TRAIN_END AS trainEnd,
+        IFNULL(TRAIN_COMP,'') AS trainComp,
+        IFNULL(TRAIN_CERTIFICATE,'') AS trainCertificate,
+        IFNULL(CRT_TIME,'') AS crtTime,
+        IFNULL(ACT_FLG,'') AS actFlg
+    </sql>
+
+
+    <select id="findWorkHis" resultType="com.msk.core.entity.SlHouseWorkHis" parameterType="BaseParam">
+        SELECT
+        <include refid="selectWorkHis"/>
+        FROM sl_house_work_his
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        AND
+        SL_CODE = #{filterMap.slCode}
+        AND
+        HOUSE_CODE = #{filterMap.houseCode}
+        ORDER BY WORK_HIS_ID DESC
+    </select>
+
+
+    <select id="findEduHis" resultType="com.msk.core.entity.SlHouseEducationHis" parameterType="BaseParam">
+        SELECT
+        <include refid="selectEduHis"/>
+        FROM sl_house_education_his
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        AND
+        SL_CODE = #{filterMap.slCode}
+        AND
+        HOUSE_CODE = #{filterMap.houseCode}
+        ORDER BY EDU_HIS_ID DESC
+    </select>
+
+
+    <select id="findTrainHis" resultType="com.msk.core.entity.SlHouseTrainingHis" parameterType="BaseParam">
+        SELECT
+        <include refid="selectTrainHis"/>
+        FROM sl_house_training_his
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        AND
+        SL_CODE = #{filterMap.slCode}
+        AND
+        HOUSE_CODE = #{filterMap.houseCode}
+        ORDER BY TRAIN_HIS_ID DESC
+    </select>
+</mapper>
+

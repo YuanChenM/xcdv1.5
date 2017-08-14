@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>购物车显示</title>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+      <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+      <meta name="apple-mobile-web-app-capable" content="yes"/>
+      <link href="css/common.css" type="text/css" rel="stylesheet"/>
+      <link href="css/BA2141109.css" type="text/css" rel="stylesheet"/>
+      <link href="css/wan-spinner.css" rel="stylesheet"/>
+      <script src="jquery/jquery-1.11.1.min.js"></script>
+      <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+      <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+      <script src="jquery/wan-spinner.js"></script>
+      <script src="js/constantDef.js"></script>
+      <script src="jquery/simplemodal.js"></script>
+      <link rel="stylesheet" href="css/loaders.css">
+      <link rel="stylesheet" href="css/animate.min.css">
+  </head>
+  <body>
+  <script type="text/javascript" src="cordova.js"></script>
+  <script type="text/javascript" src="js/plugin/httpClient.js"></script>
+  <!--加载指示器-->
+  <span id='messageLoading'>
+     <div id="messageLoadingText">正在加载中...</div>
+     <div class="loader-inner ball-clip-rotate">
+          <div></div>
+        </div>
+ </span>
+  <div class="container">
+        <div class="header">
+                <div class="fanhui" id="return"></div>
+                <div class="title" name="shopCar">
+                  <span class="title_span">购物车</span>
+                </div>
+            <div class="bianji" id="finish"><span class="bianji_span">完成</span></div>
+        </div>
+      <!--<div class="wancheng" style="text-align: right"><p><span style="font-family: '微软雅黑';">完成</span></p></div>-->
+      <div class="main">
+        <div class="main_d1">
+            <input id="carId" type="hidden">
+              <ul id="list">
+                  <!---->
+                <li style="display: none">
+                  <div class="content">
+                        <div class="checkbox"><a class="check" href="javascript:void(0);"><input name="carDetailId" type="hidden" value=""><input name="pdNum" type="hidden" value=""></a></div>
+                        <div class="tupian">
+                          <img width="87" height="87" src='img/u3.png'/>
+                        </div>
+                    </div>
+                    <div class="product">
+                      <div class="breed"><span style="font-weight:700;font-size: 15px;">undefinde</span></div>
+                      <div class="neirong"><p name='neirong'></p><p name='weight'></p></div>
+                      <div class="num_price">
+                          <span class="price" ><span name="price" style="font-weight:700;color:#FF0000;">￥123.90</span></span>
+                          <input name="pdCode" type="hidden" value="">
+                          <span class="num"><div class="wan-spinner wan-spinner-3"><a href="javascript:void(0)" class="minus"></a>
+                              <input name="num" type="text" value="1">
+                              <a href="javascript:void(0)" class="plus"></a> </div></span>
+                      </div>
+
+                   </div>
+                </li>
+              </ul>
+        </div>
+      </div>
+
+      <div class="footer1">
+          <div class="checkAllDiv"><a class="checkAll" id="checkAll" href="javascript:void(0);">全选</a></div>
+          <div class="buy" id="delete"><span class="buy_span">删除</span></div>
+          <div></div>
+      </div>
+      <div class="bottom">
+          <span id="index"><div><img src="img/home1.png"></div><div>首页</div></span>
+          <span id="center"><div><img src="img/center2.png"></div><div>个人中心</div></span>
+          <span id="car" class="current"><div><img src="img/car2.png"></div><div>购物车</div></span>
+          <span id="setting"><div><img src="img/setting2.png"></div><div>设置</div></span>
+      </div>
+  </div>
+  </body>
+  <script src="js/BA2141109.js"></script>
+</html>

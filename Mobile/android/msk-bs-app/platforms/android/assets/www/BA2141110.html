@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>订单提交</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" type="text/css" href="css/css.css" />
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script src="js/constantDef.js"></script>
+    <script type="text/javascript" src="jquery/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+</head>
+<body>
+<!--页眉开始-->
+<div class="wapp-head">订单提交
+    <a href="javascript:void(0);" class="head-back">返回</a>
+</div>
+<!--页眉结束/-->
+
+<!--订单列表开始-->
+<div class="order-list">
+    <!--收货地址开始-->
+    <div class="orderpr" id="addInfo">
+        <div id="hiddiv" class="addressClass" style="display: none;">
+            <font hidden="hidden" class="hideBuyer"></font>
+            <font class="buyer"></font>
+            <font class="tel"></font>
+            <span class="address"></span>
+        </div>
+        <div class="prompt"><span><font>选择收货地址></font></span></div>
+    </div>
+    <!--收货地址结束-->
+
+    <!--产品列表开始-->
+    <div class="orderpr">
+        <div class="til"><span>订单列表</span></div>
+        <ul id="productList">
+            <li style="display: none;list-style:none">
+                <img src="img/pic.png">
+                <div class="con">
+                    <h4 class="breed"></h4>
+                    <p>产品品牌：神农客</p>
+                    <p class="gradeClass"></p>
+                    <p class="featureClass"></p>
+                    <p class="normsClass"></p>
+                </div>
+                <div class="jg-box">单价：<span>￥</span><span class="unitPrice"></span>X<span class="num"></span></div>
+            </li>
+
+        </ul>
+    </div>
+    <!--产品列表结束/-->
+
+    <!--支付方式开始-->
+    <div class="orderpr">
+        <div class="til"><span>支付方式</span></div>
+        <div class="pay-type">
+            <label name="payOnDelivery"  class="checked" data-payType="2">货到付款</label>
+            <!--暂时未开放线上支付-->
+            <!--<label  name="payOnLine"  data-payType="1">线上支付</label>-->
+        </div>
+    </div>
+    <!--支付方式结束/-->
+
+    <!--付款金额开始-->
+    <div class="orderpr">
+        <div class="pay-all">
+            <span>应付总额<font>￥<font id="payable" class="price">0.00</font></font></span>
+            <span class="no-bor">运费<font>￥<font id="yunFei" class="yunFei">0.00</font></font></span>
+        </div>
+    </div>
+    <!--付款金额结束/-->
+</div>
+<!--订单列表结束/-->
+
+<!--支付方式页尾结束/-->
+<div class="order-footer">
+    <span>已选<font id="number" class="number">0</font>件商品，总金额：<font>￥<font id="totalPrice" class="totalPrice">0.00</font></font></span>
+    <a href="javascript:void(0);" class="orderBtn">提交订单</a>
+</div>
+<!--支付方式页尾结束/-->
+</body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<script src="js/BA2141110.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

@@ -1,0 +1,602 @@
+﻿form {
+    height: 100%;
+}
+
+.Content {
+    height: 100%;
+    margin-top: 44px;
+    overflow: auto;
+}
+
+.Container {
+    width: 100%;
+    height: 100%;
+    background: url("../img/bg.png") repeat;
+}
+
+.Content ul {
+    width: 100%;
+    float: left;
+    padding: 0px;
+    margin: 0px;
+}
+
+.Content ul li {
+    width: 100%;
+    height: 40px;
+    float: left;
+    border-bottom: 1px solid #d8d8d8;
+    line-height: 40px;
+    BACKGROUND-IMAGE: url("../img/input.png");
+    BACKGROUND-REPEAT: no-repeat
+}
+
+.Content ul li .account {
+    width: 100%;
+    height: 40px;
+    float: left;
+    pading-top: 1px;
+}
+
+.Content ul li .account .left {
+    width: 38%;
+    height: 100%;
+    float: left;
+    pading-top: 1px;
+}
+
+.Content ul li .account .right {
+    width: 62%;
+    height: 100%;
+    line-height: 40px;
+    float: right;
+    pading-top: 1px;
+}
+
+.account .radio-div {
+    height: 40px;
+    width: 100%;
+    margin-left: 20px;
+    float: right;
+}
+
+.name {
+    border: 0;
+    height: 37px;
+    width: 65%;
+    margin-left: 69px;
+    font-size: 16px;
+    font-weight: 200;
+    text-align: left;
+    color: #898989;
+    BACKGROUND-IMAGE: url("../img/input.png");
+    BACKGROUND-REPEAT: no-repeat
+}
+
+.accountInfo {
+    border: 0;
+    height: 38px;
+    width: 94%;
+    margin-left: 10px;
+    font-size: 1.3rem;
+    font-weight: 200;
+    text-align: left;
+    color: #898989;
+
+}
+#category,#categorySub{
+    appearance:none;
+    -moz-appearance:none;
+    -webkit-appearance:none;
+    background: url("../img/arrow_down.png") no-repeat right center;
+    background-size: 17px;
+    background-position-x: 95%;
+}
+
+.selectM {
+    border: 0;
+    height: 45px;
+    width: 65%;
+    margin-left: 10px;
+    font-size: 16px;
+    font-weight: 200;
+    text-align: left;
+    color: #898989;
+    BACKGROUND-IMAGE: url("../img/input.png");
+    BACKGROUND-REPEAT: no-repeat
+}
+
+.sex-div {
+    float: left;
+    height: 100%;
+}
+
+.sex {
+    font-size: 16px;
+    font-weight: 200;
+    text-align: right;
+    color: #898989;
+}
+
+.account .sex-div .sex_span {
+    color: #3D3837;
+    padding: 3px;
+    width: 22px;
+    font-size: 20px;
+    line-height: 50px;
+    color: #898989;
+}
+
+.account a {
+    width: 94px;
+    height: 50px;
+    line-height: 25px;
+    font-size: 14px;
+    color: #595757;
+    background: url('../img/choose1.png') no-repeat left center;
+    text-align: left;
+    text-indent: 66px;
+    float: left;
+    margin: 0px;
+}
+
+.account a.on {
+    width: 75px;
+    height: 50px;
+    line-height: 25px;
+    font-size: 14px;
+    color: #595757;
+    background: url('../img/choose2.png') no-repeat left center;
+    text-align: left;
+    text-indent: 68px;
+    float: left;
+    margin: 0px;
+}
+
+._citys {
+    width: 100%;
+    display: inline-block;
+    border: 2px solid #eee;
+    padding: 5px;
+    position: relative;
+    background-color: whitesmoke
+}
+
+._citys span {
+    color: #56b4f8;
+    height: 30px;
+    width: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 3px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    border: 1px solid #56b4f8;
+    cursor: pointer;
+}
+
+._citys0 {
+    width: 100%;
+    height: 50px;
+    display: inline-block;
+    border-bottom: 2px solid #56b4f8;
+    padding: 0;
+    margin: 0;
+}
+
+._citys0 li {
+    display: inline-block;
+    line-height: 50px;
+    font-size: 15px;
+    color: #888;
+    width: 80px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.citySel {
+    background-image: url("../img/button.png");
+    color: #fff !important;
+}
+
+._citys1 {
+    width: 100%;
+    display: inline-block;
+    padding: 10px 0;
+}
+
+._citys1 a {
+    width: 80px;
+    height: 35px;
+    display: inline-block;
+    background-color: #f5f5f5;
+    color: #666;
+    margin-left: 6px;
+    margin-top: 3px;
+    line-height: 35px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    overflow: hidden;
+}
+
+._citys1 a:hover {
+    color: #fff;
+    background-image: url("../img/button.png");
+}
+
+.AreaS {
+    background-color: #56b4f8 !important;
+    color: #fff !important;
+}
+
+.address {
+    background: url("../img/arrow_down.png") no-repeat right center;
+    background-size: 17px;
+    background-position-x: 95%;
+    height: 38px;
+    width: 60%;
+    border: 0;
+    font-size: 1.3rem; /*margin-left: 10px;*/
+    vertical-align: text-bottom;
+    text-indent: 10px;
+}
+
+.addressr {
+    background: url("../img/arrow_down.png") no-repeat right center;
+    background-size: 17px;
+    background-position-x: 95%;
+    height: 38px;
+    width: 60%;
+    border: 0;
+    font-size: 1.2rem; /*margin-left: 10px;*/
+    vertical-align: text-bottom;
+    text-indent: 5px;
+}
+
+.street {
+    border: 0;
+    height: 45px;
+    width: 70%;
+    margin-left: 107px;
+    font-size: 16px;
+    font-weight: 200;
+    text-align: left;
+    color: #898989;
+    BACKGROUND-IMAGE: url("../img/input.png");
+    BACKGROUND-REPEAT: no-repeat
+}
+
+.QQInfo {
+    border: 0;
+    height: 45px;
+    width: 65%;
+    margin-left: 60px;
+    font-size: 16px;
+    font-weight: 200;
+    text-align: left;
+    color: #898989;
+    BACKGROUND-IMAGE: url("../img/input.png");
+    BACKGROUND-REPEAT: no-repeat
+}
+
+.accNameInfo {
+    border: 0;
+    height: 45px;
+    width: 65%;
+    margin-left: 64px;
+    font-size: 16px;
+    font-weight: 200;
+    text-align: left;
+    color: #898989;
+    BACKGROUND-IMAGE: url("../img/input.png");
+    BACKGROUND-REPEAT: no-repeat
+}
+
+.firstType {
+    border: 0;
+    height: 45px;
+    width: 60%;
+    margin-left: 5px;
+    font-size: 16px;
+    font-weight: 200;
+    text-align: left;
+    color: #898989;
+    BACKGROUND-IMAGE: url("../img/input.png");
+    BACKGROUND-REPEAT: no-repeat;
+}
+
+.houseType {
+    border: 0;
+    height: 45px;
+    width: 54%;
+    margin-left: 3px;
+    font-size: 16px;
+    font-weight: 200;
+    text-align: left;
+    color: #898989;
+    BACKGROUND-IMAGE: url("../img/input.png");
+    BACKGROUND-REPEAT: no-repeat;
+}
+
+.bindTel {
+    border: 0;
+    height: 45px;
+    width: 65%;
+    margin-left: 15px;
+    font-size: 16px;
+    font-weight: 200;
+    text-align: left;
+    color: #898989;
+    BACKGROUND-IMAGE: url("../img/input.png");
+    BACKGROUND-REPEAT: no-repeat
+}
+
+.nextInfo {
+    border: 0;
+    height: 45px;
+    width: 65%;
+    margin-left: 49px;
+    font-size: 16px;
+    font-weight: 200;
+    text-align: left;
+    color: #898989;
+    BACKGROUND-IMAGE: url("../img/input.png");
+    BACKGROUND-REPEAT: no-repeat
+}
+
+.font-account {
+    text-align: left;
+    color: #898989;
+    font-size: 1.3rem;
+    font-weight: 200;
+    height: 40px;
+    width: 100%;
+    display: inline-block;
+    text-indent: 10px;
+    vertical-align: top;
+}
+
+.sure {
+    border: 0;
+    height: 50px;
+    width: 100%;
+    text-align: center;
+    background-color: #002e62;
+    font-size: 1.5rem;
+}
+
+.register {
+    height: 100px;
+    width: 80%;
+    text-align: center;
+    margin-left: 35px;
+    margin-top: 30px;
+    border: 1px solid #000;
+    border-image-source: url("../img/Button3.png");
+    border-image-slice: 10;
+    border-image-repeat: stretch;
+}
+
+.span-sure {
+    font-family: "Microsoft Yahei", "Microsoft Yahei";
+    color: white;
+    font-weight: 400;
+    line-height: 50px;
+}
+
+.info {
+    height: 20px;
+    text-align: center;
+    vertical-align: middle;
+    margin-top: 10px;
+}
+
+.account .check-div {
+    height: 45px;
+    width: 70%;
+    margin-left: 20px;
+    float: right;
+}
+
+.read {
+    font-family: 'Microsoft Yahei', 'Microsoft Yahei';
+    color: #22BD9B;
+    font-size: 19px;
+    font-weight: 300;
+    line-height: 39px;
+}
+
+.message {
+    height: 30px;
+    padding: 5px;
+    text-align: center;
+    margin: 5px auto;
+    border: 0;
+}
+
+label {
+    /*设置label的样式*/
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+    font-weight: normal;
+    left: -3px;
+}
+.opt-text{
+    display: inline-block;
+    height: 100%;
+    line-height: 40px;
+}
+.sex-div .option {
+    /*把优化后的按钮图片设置为该div的背景图片，把该div定位到原生样式的上方，遮盖住原生样式。*/
+    width: 50px;
+    height: 40px;
+    position: absolute;
+    top: 0px;
+    left: 3px;
+    background-size: cover;
+    background: url("../img/Radio2.png") no-repeat;
+    background-size: cover;
+}
+
+.sex-div input[type="radio"] {
+    /*为了保险起见，把原生样式隐藏掉*/
+    display: inline-block;
+    margin-right: 15px;
+    opacity: 0;
+}
+
+input[type="radio"]:checked + div {
+    /*当radiuo被选中时，把input下边的div标签的背景图片替换掉*/
+    background: url("../img/Radio1.png") no-repeat;
+    background-size: cover;
+}
+
+.chk-div {
+   height: 100%;
+}
+
+.chk-div label {
+    /*设置label的样式*/
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    line-height: 37px;
+    font-size: 1.3rem;
+}
+
+.chk-div .option {
+    /*把优化后的按钮图片设置为该div的背景图片，把该div定位到原生样式的上方，遮盖住原生样式。*/
+    width: 50px;
+    height: 44px;
+    position: absolute;
+    top: 0px;
+    left: -3px;
+    margin-top: -1px;
+    background-size: cover;
+    background: url("../img/choose1.png") no-repeat;
+    background-size: cover;
+}
+
+.chk-div input[type="checkbox"] {
+    /*为了保险起见，把原生样式隐藏掉*/
+    display: inline-block;
+    margin-right: 11px;
+    opacity: 0;
+}
+/*设置滑动插件的高度*/
+.swiper-container {
+    height: 300px;
+}
+input[type="checkbox"]:checked + div {
+    /*当radiuo被选中时，把input下边的div标签的背景图片替换掉*/
+    background: url("../img/choose2.png") no-repeat;
+    background-size: cover;
+}
+.gad,.gadChoose,.bigCion{
+    position: fixed;
+    z-index: 999999;
+    height: 100%;
+    width: 100%;
+    background: lightslategray;
+    top:0px;
+    left: 0px;
+    background-color: rgba(0,0,0,0.7);
+}
+.bigCion{
+    display: flex;
+    background: black;
+}
+.footerbottom{
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+}
+
+.photo, .camera,.cancel,.carded{
+    width: 90%;
+    height: 50px;
+    line-height: 50px;
+    background: white;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 0 auto;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-family: "微软雅黑";
+    color: lightseagreen;
+}
+.photo,.fornt{
+    margin-bottom: 10px;
+}
+.cameraBorder{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: #343435;
+    z-index:1000000
+}
+.cameraBorder video{
+  position: relative;
+}
+.cameraBingo{
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    width: 70px;
+    height: 70px;
+    margin-left: -35px;
+    border-radius: 100%;
+    background: white;
+    display: flex;
+    flex-flow: row;
+}
+.cameraBingo div{
+    width: 60px;
+    height: 60px;
+    background: lightcoral;
+    margin: auto auto;
+    border-radius: 100%;
+}
+#canvas1{
+    position: absolute;
+    bottom: 5%;
+    margin-left: 10px;
+    left: 0px;
+    height: 150px;
+    width: 75px;
+    height: 75px
+}
+.usePhoto{
+    display: inline-block;
+    height: 60px;
+    width: 60px;
+    text-align: center;
+    line-height: 60px;
+    position: absolute;
+    bottom: 5%;
+    margin-right: 18px;
+    right: 0px;
+    font-size: 1.5rem;
+    color: white;
+}
+.getImageBetter {
+    height: 100%;
+    width: 100%;
+    display:table;
+    text-align: center;
+}
+.getImageBetter span{
+    display:table-cell;
+    vertical-align:middle;
+}
+
+

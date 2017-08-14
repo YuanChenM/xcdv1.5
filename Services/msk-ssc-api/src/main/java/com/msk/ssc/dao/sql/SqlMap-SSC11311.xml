@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11311Logic">
+    <!-- ssc_differ_basic表字段 -->
+    <sql id="differBasicFields">
+        A.DIFFER_ID AS differId,
+        ifnull(A.DIFFER_CODE, '') AS differCode,
+        ifnull(A.DELIVERY_PRE_INTO_ID, '') AS deliveryPreIntoId,
+        ifnull(A.DELIVERY_PRE_INTO_CODE, '') AS deliveryPreIntoCode,
+        A.DELIVERY_ID AS deliveryId,
+        ifnull(A.DELIVERY_CODE, '') AS deliveryCode,
+        A.CONTRACT_ID AS contractId,
+        ifnull(A.CONTRACT_CODE, '') AS contractCode,
+        ifnull(A.REMARK, '') AS remark,
+        ifnull(A.CONFIRM_STATUS, 0) AS confirmStatus,
+        IFNULL(A.CONFIRM_ID,'') AS confirmId,
+        IFNULL(A.CONFIRM_NAME,'') AS confirmName,
+        A.CONFIRM_TIME AS confirmTime
+    </sql>
+
+    <!-- ssc_contract_basic表字段 -->
+    <sql id="contractBasicFields">
+        ifnull(B.CONTRACT_NAME, '') AS contractName
+    </sql>
+
+    <!-- ssc_delivery_order_basic表字段 -->
+    <sql id="deliveryOrderBasicFields">
+        ifnull(C.PURCHASER_NAME, '') AS purchaserName,
+        ifnull(C.SUPPLIER_NAME, '') AS supplierName
+    </sql>
+
+    <!-- ssc_delivery_pre_into表字段 -->
+    <sql id="deliveryPreIntoFields">
+        group_concat(ifnull(date_format(D.ETD, '%Y-%m-%d'), '')) AS etd,
+        group_concat(ifnull(date_format(D.ETA, '%Y-%m-%d'), '')) AS eta,
+        group_concat(ifnull(date_format(D.DELIVERY_DATE, '%Y-%m-%d'), '')) AS deliveryDate,
+        group_concat(ifnull(date_format(D.ARRIVE_DATE, '%Y-%m-%d'), '')) AS arriveDate
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="condition">
+        <if test="differId != null and differId != ''">
+            AND A.DIFFER_ID = #{differId}
+        </if>
+        <if test="differCode != null and differCode != ''">
+            AND A.DIFFER_CODE LIKE #{differCode}
+        </if>
+        <if test="contractId != null and contractId != ''">
+            AND A.CONTRACT_ID LIKE #{contractId}
+        </if>
+        <if test="contractCode != null and contractCode != ''">
+            AND A.CONTRACT_CODE LIKE #{contractCode}
+        </if>
+        <if test="deliveryCode != null and deliveryCode != ''">
+            AND A.DELIVERY_CODE LIKE #{deliveryCode}
+        </if>
+        <if test="deliveryPreIntoCode != null and deliveryPreIntoCode != ''">
+            AND A.DELIVERY_PRE_INTO_CODE LIKE #{deliveryPreIntoCode}
+        </if>
+        <if test="confirmStatus != null and confirmStatus != ''">
+            AND A.CONFIRM_STATUS = #{confirmStatus}
+        </if>
+        <if test="contractName != null and contractName != ''">
+            AND B.CONTRACT_NAME LIKE #{contractName}
+        </if>
+        <if test="purchaserName != null and purchaserName != ''">
+            AND C.PURCHASER_NAME LIKE #{purchaserName}
+        </if>
+        <if test="supplierName != null and supplierName != ''">
+            AND C.SUPPLIER_NAME LIKE #{supplierName}
+        </if>
+        <if test="etd != null and etd != ''">
+            AND date_format(D.ETD, '%Y-%m-%d') = #{etd}
+        </if>
+        <if test="eta != null and eta != ''">
+            AND date_format(D.ETA, '%Y-%m-%d') = #{eta}
+        </if>
+        <if test="deliveryDate != null and deliveryDate != ''">
+            AND date_format(D.DELIVERY_DATE, '%Y-%m-%d') = #{deliveryDate}
+        </if>
+        <if test="arriveDate != null and arriveDate != ''">
+            AND date_format(D.ARRIVE_DATE, '%Y-%m-%d') = #{arriveDate}
+        </if>
+    </sql>
+
+    <select id="findPageList" parameterType="com.msk.ssc.bean.SSC11311Param" resultType="com.msk.ssc.bean.SSC11311Bean">
+        SELECT
+            <include refid="differBasicFields" />,
+            <include refid="contractBasicFields" />,
+            <include refid="deliveryOrderBasicFields" />,
+            <include refid="deliveryPreIntoFields" />
+        FROM
+            ssc_differ_basic AS A
+        LEFT JOIN ssc_contract_basic B ON A.CONTRACT_ID = B.CONTRACT_ID
+        LEFT JOIN ssc_delivery_order_basic C ON A.DELIVERY_ID = C.DELIVERY_ID
+        LEFT JOIN ssc_delivery_pre_into D ON find_in_set(D.DELIVERY_PRE_INTO_ID, A.DELIVERY_PRE_INTO_ID)
+        WHERE
+            (A.DEL_FLG = 0 OR A.DEL_FLG IS NULL)
+        AND (B.DEL_FLG = 0 OR B.DEL_FLG IS NULL)
+        AND (C.DEL_FLG = 0 OR C.DEL_FLG IS NULL)
+        AND (D.DEL_FLG = 0 OR D.DEL_FLG IS NULL)
+        <include refid="condition" />
+        GROUP BY A.DIFFER_ID
+        ORDER BY A.DIFFER_ID DESC
+        <if test="paging == true">
+            LIMIT #{startPos}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" parameterType="com.msk.ssc.bean.SSC11311Param" resultType="int">
+        SELECT
+            count(1)
+        FROM (
+            SELECT
+                A.DIFFER_ID
+            FROM
+                ssc_differ_basic AS A
+            LEFT JOIN ssc_contract_basic B ON A.CONTRACT_ID = B.CONTRACT_ID
+            LEFT JOIN ssc_delivery_order_basic C ON A.DELIVERY_ID = C.DELIVERY_ID
+            LEFT JOIN ssc_delivery_pre_into D ON find_in_set(D.DELIVERY_PRE_INTO_ID, A.DELIVERY_PRE_INTO_ID)
+            WHERE
+                (A.DEL_FLG = 0 OR A.DEL_FLG IS NULL)
+            AND (B.DEL_FLG = 0 OR B.DEL_FLG IS NULL)
+            AND (C.DEL_FLG = 0 OR C.DEL_FLG IS NULL)
+            AND (D.DEL_FLG = 0 OR D.DEL_FLG IS NULL)
+            <include refid="condition"/>
+            GROUP BY A.DIFFER_ID
+        ) temp
+    </select>
+
+    <!-- 根据发货订单ID，查询差异单 -->
+    <select id="findDifferByDeliveryId" parameterType="com.msk.ssc.bean.SSC11311Param" resultType="com.msk.ssc.bean.SSC11311Bean">
+        SELECT
+            <include refid="differBasicFields" />
+        FROM
+            ssc_differ_basic AS A
+        WHERE
+            (A.DEL_FLG = 0 OR A.DEL_FLG IS NULL)
+        AND A.DELIVERY_ID = #{deliveryId}
+    </select>
+
+    <!-- 根据入库单编号，查询入库单ID，发货订单ID和CODE，合同ID和CODE -->
+    <select id="findIdsByIntoStoreCode" parameterType="com.msk.ssc.bean.SSC11311Param" resultType="com.msk.ssc.bean.SSC11311Bean">
+        SELECT
+            A.DELIVERY_PRE_INTO_ID AS intoStoreId,
+            A.DELIVERY_PRE_INTO_CODE AS intoStoreCode,
+            A.CONTRACT_ID AS contractId,
+            A.CONTRACT_CODE AS contractCode,
+            B.DELIVERY_ID AS deliveryId,
+            B.DELIVERY_CODE AS deliveryCode
+        FROM
+            ssc_delivery_pre_into A
+        LEFT JOIN ssc_delivery_confirm_basic B on A.DELIVERY_CONFIRM_ID = B.DELIVERY_CONFIRM_ID
+        WHERE
+            (A.DEL_FLG = 0 OR A.DEL_FLG IS NULL)
+        AND (B.DEL_FLG = 0 OR B.DEL_FLG IS NULL)
+        AND A.DELIVERY_PRE_INTO_CODE = #{intoStoreCode};
+    </select>
+
+    <!-- 获得最大差异单编号 -->
+    <select id="findMaxDifferCode" parameterType="com.msk.ssc.bean.SSC11311Param" resultType="com.msk.ssc.bean.SSC11311Bean">
+        SELECT
+            max(substring(DIFFER_CODE, 3)) AS differCode
+        FROM
+            ssc_differ_basic
+        WHERE
+            DIFFER_CODE LIKE '${differCode}%'
+    </select>
+
+    <insert id="save" parameterType="com.msk.ssc.bean.SSC11311Bean">
+        INSERT ssc_differ_basic
+            (DIFFER_ID, DIFFER_CODE, DELIVERY_PRE_INTO_ID, DELIVERY_PRE_INTO_CODE, DELIVERY_ID, DELIVERY_CODE, CONTRACT_ID, CONTRACT_CODE, REMARK, CONFIRM_STATUS, DEL_FLG, CRT_ID, CRT_TIME, ACT_ID, ACT_TIME, VER)
+        VALUES
+            (#{differId}, #{differCode}, #{deliveryPreIntoId}, #{deliveryPreIntoCode}, #{deliveryId}, #{deliveryCode}, #{contractId}, #{contractCode}, #{remark}, '0', '0', #{crtId}, #{crtTime}, #{crtId}, #{crtTime}, 1)
+    </insert>
+
+    <!-- 根据差异单ID，将差异单状态更新为已确认 -->
+    <update id="confirm" parameterType="com.msk.ssc.bean.SSC11311Bean">
+        UPDATE ssc_differ_basic
+        SET
+            <if test="confirmStatus != null and confirmStatus != ''">
+                CONFIRM_STATUS = #{confirmStatus},
+            </if>
+            <if test="confirmId != null and confirmId != ''">
+                CONFIRM_ID = #{confirmId},
+            </if>
+            <if test="confirmName != null and confirmName != ''">
+                CONFIRM_NAME = #{confirmName},
+            </if>
+            <if test="confirmTime != null and confirmTime != ''">
+                CONFIRM_TIME = #{confirmTime},
+            </if>
+            <if test="contractId != null and contractId != ''">
+                CONTRACT_ID = #{contractId},
+            </if>
+            <if test="contractCode != null and contractCode != ''">
+                CONTRACT_CODE = #{contractCode},
+            </if>
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            (DEL_FLG = 0 OR DEL_FLG IS NULL)
+            <if test="differId != null and differId != ''">
+                AND DIFFER_ID = #{differId}
+            </if>
+            <if test="deliveryId != null and deliveryId != ''">
+                AND DELIVERY_ID = #{deliveryId}
+            </if>
+    </update>
+
+    <!-- 根据差异单ID，追加入库单ID和Code -->
+    <update id="appendIntoStoreIdCode">
+        UPDATE ssc_differ_basic
+        SET DELIVERY_PRE_INTO_ID = #{deliveryPreIntoId},
+            DELIVERY_PRE_INTO_CODE = #{deliveryPreIntoCode},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            (DEL_FLG = 0 OR DEL_FLG IS NULL)
+        AND DIFFER_ID = #{differId}
+    </update>
+</mapper>

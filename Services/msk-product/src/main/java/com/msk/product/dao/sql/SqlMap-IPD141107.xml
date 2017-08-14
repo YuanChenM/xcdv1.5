@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141107Logic">
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141107RsResult">
+		SELECT
+		 A.TNC_STD_ITEM_ID AS tncStdItemId
+		,B.TNC_STD_ITEM_NAME AS tncStdItemName
+		,A.TNC_STD_VAL1 AS tncStdVal1
+		,A.TNC_STD_VAL2 AS tncStdVal2
+		,A.TNC_STD_VAL3 AS tncStdVal3
+		FROM
+		PD_TNC_STD AS A
+		LEFT JOIN PD_TNC_STD_ITEM B ON A.TNC_STD_ITEM_ID = B.TNC_STD_ITEM_ID
+		WHERE
+		A.STANDARD_ID = (SELECT tnc.STANDARD_ID FROM PD_STANDARD AS tnc WHERE tnc.CLASSESTREE_CODE = #{filterMap.classestreeCode})
+		ORDER BY A.TNC_STD_ITEM_ID
+	</select>
+</mapper>

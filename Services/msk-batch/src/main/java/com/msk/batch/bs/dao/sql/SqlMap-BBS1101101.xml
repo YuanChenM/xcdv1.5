@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.bs.logic.BBS1101101Logic">
+    <select id="findSlBsBuyer" resultType="com.msk.core.entity.SlBsBuyerHis">
+       SELECT
+        A.SL_CODE AS slCode,
+        A.HOUSE_CODE AS houseCode,
+        A.BUYER_ID AS buyerId,
+        A.START_TIME AS startTime,
+        A.END_TIME AS endTime,
+        A.APPLY_SIDE AS applySide,
+        A.APPLY_STATUS AS applyStatus,
+        A.APPLY_TIME AS applyTime,
+        A.DEL_FLG AS delFlg,
+        A.CRT_ID AS crtId,
+        A.CRT_TIME AS crtTime,
+        A.UPD_ID AS updId,
+        A.UPD_TIME AS updTime,
+        A.ACT_ID AS actId,
+        A.ACT_TIME AS actTime,
+        A.VER AS ver
+        FROM
+        sl_bs_buyer AS A
+        WHERE
+        A.APPLY_STATUS IN (1,2) AND
+        <![CDATA[A.END_TIME<NOW()]]>
+    </select>
+    <insert id="save" parameterType="com.msk.core.entity.SlBsBuyerHis">
+        INSERT INTO sl_bs_buyer_his (
+        HIS_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        BUYER_REASON,
+        BUYERSHOP_REASON,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{hisId},
+        #{slCode},
+        #{houseCode},
+        #{buyerId},
+        #{startTime},
+        #{endTime},
+        #{buyerReason},
+        #{buyershopReason},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        #{ver}
+        )
+    </insert>
+    <delete id="remove" parameterType="com.msk.core.entity.SlBsBuyerHis">
+        DELETE FROM sl_bs_buyer
+        WHERE
+        SL_CODE = #{slCode}
+        AND HOUSE_CODE = #{houseCode}
+        AND BUYER_ID = #{buyerId}
+    </delete>
+</mapper>

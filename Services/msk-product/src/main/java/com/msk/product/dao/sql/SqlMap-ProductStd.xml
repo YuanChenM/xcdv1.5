@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.ProductStdLogic">
+    <select id="findListMctStd" parameterType="BaseParam" resultType="com.msk.product.bean.StdResult">
+		SELECT
+		A.MCT_STD_ITEM_ID AS mctStdItemId
+		,B.MCT_STD_ITEM_NAME AS mctStdItemName
+		,A.MCT_OK_VAL AS mctStdVal1
+		,A.MCT_NG_VAL AS mctStdVal2
+		FROM
+		PD_MCT_STD AS A
+		LEFT JOIN PD_MCT_STD_ITEM B ON A.MCT_STD_ITEM_ID = B.MCT_STD_ITEM_ID
+		WHERE
+		A.STANDARD_ID = (SELECT mct.STANDARD_ID FROM PD_STANDARD AS mct WHERE mct.CLASSESTREE_CODE = #{classestreeCode} AND mct.DEL_FLG = 0) AND A.DEL_FLG = 0 AND B.DEL_FLG = 0
+		ORDER BY A.MCT_STD_ITEM_ID
+	</select>
+
+    <select id="findListTncStd" parameterType="BaseParam" resultType="com.msk.product.bean.StdResult">
+		SELECT
+		A.TNC_STD_ITEM_ID AS tncStdItemId
+		,B.TNC_STD_ITEM_NAME AS tncStdItemName
+		,A.TNC_STD_VAL1 AS tncStdVal1
+		,A.TNC_STD_VAL2 AS tncStdVal2
+		,A.TNC_STD_VAL3 AS tncStdVal3
+		FROM
+		PD_TNC_STD AS A
+		LEFT JOIN PD_TNC_STD_ITEM B ON A.TNC_STD_ITEM_ID = B.TNC_STD_ITEM_ID
+		WHERE
+		A.STANDARD_ID = (SELECT tnc.STANDARD_ID FROM PD_STANDARD AS tnc WHERE tnc.CLASSESTREE_CODE = #{classestreeCode} AND tnc.DEL_FLG = 0) AND A.DEL_FLG = 0 AND B.DEL_FLG = 0
+		ORDER BY A.TNC_STD_ITEM_ID
+	</select>
+
+    <select id="findListMatStd" parameterType="BaseParam"
+            resultType="com.msk.core.entity.PdClassestreeMat">
+        SELECT
+        A.SCIENTIFIC_NAME AS scientificName,
+        A.LOCAL_NAME AS localName,
+        A.SALES_NAME AS salesName,
+        A.PLACE_ORIGIN AS placeOrigin,
+        A.PLACE_CURRENT AS placeCurrent,
+        A.SOURCE AS source,
+        A.CHILD_TYPE AS childType,
+        A.FEED_TYPE AS feedType,
+        A.FEED_PERIOD AS feedPeriod
+        FROM pd_classestree_mat AS A
+        <where>
+            <if test="filterMap.classestreeCode != null and filterMap.classestreeCode != ''">
+                A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+            </if>
+            <if test="filterMap.delFlg != null and filterMap.delFlg != ''">
+                AND A.DEL_FLG=#{filterMap.delFlg}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findListOrgStd" parameterType="BaseParam"
+            resultType="com.msk.product.bean.StdResult">
+		SELECT
+		B.ORG_STD_ITEM_ID AS orgStdItemId,
+		B.ORG_STD_ITEM_NAME AS orgStdItemName,
+		A.ORG_GOOD_VAL AS goodVal,
+		A.ORG_NORMAL_VAL AS normalVal,
+		A.ORG_BAD_VAL AS badVal
+		FROM
+		pd_org_std AS A,
+		pd_org_std_item AS B
+		WHERE
+		A.ORG_STD_ITEM_ID = B.ORG_STD_ITEM_ID
+		AND A.STANDARD_ID = #{standardId} AND A.DEL_FLG = 0 AND B.DEL_FLG = 0
+	</select>
+
+    <select id="findListFedStd" parameterType="BaseParam"
+            resultType="com.msk.product.bean.StdResult">
+		SELECT
+		B.FED_STD_ITEM_ID AS fedStdItemId,
+		B.FED_STD_ITEM_NAME AS fedStdItemName,
+		A.FED_GOOD_VAL AS goodVal,
+		A.FED_NORMAL_VAL AS normalVal,
+		A.FED_BAD_VAL AS badVal
+		FROM
+		pd_fed_std AS A,
+		pd_fed_std_item AS B
+		WHERE
+		A.FED_STD_ITEM_ID = B.FED_STD_ITEM_ID
+		AND A.STANDARD_ID = #{standardId}
+	</select>
+
+    <select id="findPdStandard" parameterType="BaseParam"
+            resultType="com.msk.core.entity.PdStandard">
+		SELECT
+		A.STANDARD_ID AS standardId
+		FROM
+		pd_standard AS A
+		WHERE
+		A.CLASSES_CODE =#{classesCode}
+		AND A.MACHINING_CODE =#{machiningCode}
+		AND A.BREED_CODE=#{breedCode}
+	</select>
+
+    <select id="findGnqSecondLevel" parameterType="BaseParam"
+            resultType="com.msk.product.bean.GnqStdBean">
+		SELECT
+		b.GNQ_STD_ITEM_ID gnqStdItemId,
+		b.GNQ_STD_ITEM_NAME gnqStdItemName,
+		a.GNQ_OK_VAL okVal,
+		a.GNQ_NG_VAL ngVal
+		FROM
+		pd_gnq_std a
+		INNER JOIN pd_gnq_std_item b
+		ON a.GNQ_STD_ITEM_ID = b.GNQ_STD_ITEM_ID
+		AND a.STANDARD_ID = #{standardId}
+		AND b.PARENT_ID= #{parentId} AND a.DEL_FLG = 0 AND b.DEL_FLG = 0
+	</select>
+
+    <select id="findGnqFirstLevel" parameterType="BaseParam"
+            resultType="com.msk.product.bean.StdResult">
+		SELECT
+		b.GNQ_STD_ITEM_ID gnqStdClaId,
+		b.GNQ_STD_ITEM_NAME gnqStdClaName
+		FROM
+		pd_gnq_std_item b
+		WHERE
+		b.LEVEL_ID = #{levelId} AND b.DEL_FLG = 0
+	</select>
+
+    <select id="findTspSecondLevel" parameterType="BaseParam"
+            resultType="com.msk.product.bean.TspStdBean">
+		SELECT
+		b.TSP_STD_ITEM_ID tspStdItemId,
+		b.TSP_STD_ITEM_NAME tspStdItemName,
+		a.TSP_OK_VAL okVal,
+		a.TSP_NG_VAL ngVal
+		FROM
+		pd_tsp_std a
+		INNER JOIN pd_tsp_std_item b
+		ON a.TSP_STD_ITEM_ID = b.TSP_STD_ITEM_ID
+		AND a.STANDARD_ID = #{standardId}
+		AND b.PARENT_ID= #{parentId}
+	</select>
+
+    <select id="findTspFirstLevel" parameterType="BaseParam"
+            resultType="com.msk.product.bean.StdResult">
+		SELECT
+		b.TSP_STD_ITEM_ID tspStdClaId,
+		b.TSP_STD_ITEM_NAME tspStdClaName
+		FROM
+		pd_tsp_std_item b
+		WHERE
+		b.LEVEL_ID = #{levelId}
+	</select>
+
+
+    <select id="findListSftStd" parameterType="BaseParam"
+            resultType="com.msk.product.bean.StdResult">
+		SELECT
+		SFT_STD_ITEM_ID AS sftStdClaId
+		,SFT_STD_ITEM_NAME AS sftStdClaName
+		FROM PD_SFT_STD_ITEM
+		WHERE LEVEL_ID = '1'
+		ORDER BY SFT_STD_ITEM_ID
+	</select>
+
+    <!--查询standardID-->
+    <select id="findSftStd" parameterType="com.msk.product.bean.PDInfoParam"
+            resultType="com.msk.core.entity.PdStandard">
+		SELECT
+		STANDARD_ID AS standardId
+		FROM PD_STANDARD
+		WHERE CLASSESTREE_CODE = CONCAT(#{classesCode},#{machiningCode},#{breedCode})
+	</select>
+
+    <!--查询对应的sftstd表中数据-->
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.SftStdBean">
+		SELECT
+		A.SFT_STD_ITEM_ID AS sftStdSubId
+		,A.SFT_STD_ITEM_NAME AS sftStdSubName
+		,B.SFT_GOOD_VAL AS sftStdExcVal
+		,B.SFT_OK_VAL AS sftStdSuitVal
+		,B.SFT_NG_VAL AS sftStdUnqualVal
+		FROM PD_SFT_STD_ITEM AS A
+		LEFT JOIN PD_SFT_STD AS B ON A.SFT_STD_ITEM_ID = B.SFT_STD_ITEM_ID AND B.STANDARD_ID = #{standardId}
+		WHERE A.PARENT_ID = #{sftStdItemId}
+	</select>
+
+    <sql id="PdTncStdSql">
+		IFNULL(A.STANDARD_ID,'') AS standardId,
+		IFNULL(A.TNC_STD_ITEM_ID,'') AS tncStdItemId,
+		IFNULL(A.TNC_STD_VAL1,'') AS tncStdVal1,
+		IFNULL(A.TNC_STD_VAL2,'') AS tncStdVal2,
+		IFNULL(A.TNC_STD_VAL3,'') AS tncStdVal3,
+		IFNULL(A.REMARK,'') AS remark
+	</sql>
+    <sql id="PdTncStdItemSql">
+		IFNULL(B.TNC_STD_ITEM_ID,'') AS tncStdItemId,
+		IFNULL(B.TNC_STD_ITEM_NAME,'') AS tncStdItemName,
+		IFNULL(B.LEVEL_ID,'') AS levelId,
+		IFNULL(B.PARENT_ID,'') AS parentId,
+		IFNULL(B.IS_CATALOG,'') AS isCatalog
+	</sql>
+    <select id="getTncStdInfo" resultType="com.msk.product.bean.TncStdBean" parameterType="BaseParam">
+        SELECT
+        <include refid="PdTncStdItemSql"/>
+        ,
+        <include refid="PdTncStdSql"/>
+        FROM PD_TNC_STD A
+        INNER JOIN PD_TNC_STD_ITEM B ON A.TNC_STD_ITEM_ID=B.TNC_STD_ITEM_ID
+        <if test="standardId !=null and standardId!=''">
+            AND A.STANDARD_ID = #{standardId}
+        </if>
+        WHERE B.LEVEL_ID=#{levelId} AND (B.DEL_FLG=0 OR B.DEL_FLG IS NULL)
+        <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 start-->
+        AND (A.DEL_FLG=0 OR A.DEL_FLG IS NULL) AND B.TNC_STD_ITEM_NAME IS NOT NULL AND (A.TNC_STD_VAL1 IS NOT NULL OR A.TNC_STD_VAL2 IS NOT NULL OR A.TNC_STD_VAL3 IS NOT NULL)
+        <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 end-->
+        <if test="stdParams != null and stdParams.size() > 0">
+            AND
+            <foreach collection="stdParams" item="item" open="(" separator="OR" close=")">
+                A.STANDARD_ID = #{item.standardId} AND B.TNC_STD_ITEM_ID = #{item.stdItemId}
+            </foreach>
+        </if>
+
+    </select>
+
+    <sql id="PdMctStdSql">
+		IFNULL(A.STANDARD_ID,'') AS standardId,
+		IFNULL(A.MCT_STD_ITEM_ID,'') AS mctStdItemId,
+		IFNULL(A.MCT_OK_VAL,'') AS mctOkVal,
+		IFNULL(A.MCT_NG_VAL,'') AS mctNgVal,
+		IFNULL(A.REMARK,'') AS remark
+	</sql>
+    <sql id="PdMctStdItemSql">
+		IFNULL(B.MCT_STD_ITEM_ID,'') AS mctStdItemId,
+		IFNULL(B.MCT_STD_ITEM_NAME,'') AS mctStdItemName,
+		IFNULL(B.LEVEL_ID,'') AS levelId,
+		IFNULL(B.PARENT_ID,'') AS parentId,
+		IFNULL(B.IS_CATALOG,'') AS isCatalog
+	</sql>
+
+    <select id="getMctStdInfo" resultType="com.msk.product.bean.MctStdBean" parameterType="BaseParam">
+        SELECT
+        <include refid="PdMctStdItemSql"/>
+        ,
+        <include refid="PdMctStdSql"/>
+        FROM PD_MCT_STD_ITEM B
+        LEFT JOIN PD_MCT_STD A ON A.MCT_STD_ITEM_ID=B.MCT_STD_ITEM_ID
+        <if test="standardId !=null and standardId!=''">
+            AND A.STANDARD_ID = #{standardId}
+        </if>
+        WHERE B.LEVEL_ID=#{levelId}
+        <if test="stdParams != null and stdParams.size() > 0">
+            AND
+            <foreach collection="stdParams" item="item" open="(" separator="OR" close=")">
+                A.STANDARD_ID = #{item.standardId} AND B.MCT_STD_ITEM_ID = #{item.stdItemId}
+            </foreach>
+        </if>
+        <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 start-->
+        AND A.DEL_FLG = 0 AND B.DEL_FLG = 0 AND B.MCT_STD_ITEM_NAME IS NOT NULL AND (A.MCT_OK_VAL IS NOT NULL OR A.MCT_NG_VAL IS NOT NULL)
+        <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 end-->
+    </select>
+
+
+    <sql id="PdOrgStdSql">
+		IFNULL(A.STANDARD_ID,'') AS standardId,
+		IFNULL(A.ORG_STD_ITEM_ID,'') AS orgStdItemId,
+		IFNULL(A.ORG_GOOD_VAL,'') AS orgGoodVal,
+		IFNULL(A.ORG_NORMAL_VAL,'') AS orgNormalVal,
+		IFNULL(A.ORG_BAD_VAL,'') AS orgBadVal
+	</sql>
+    <sql id="PdOrgStdItemSql">
+		IFNULL(B.ORG_STD_ITEM_ID,'') AS orgStdItemId,
+		IFNULL(B.ORG_STD_ITEM_NAME,'') AS orgStdItemName,
+		IFNULL(B.LEVEL_ID,'') AS levelId,
+		IFNULL(B.PARENT_ID,'') AS parentId,
+		IFNULL(B.IS_CATALOG,'') AS isCatalog
+	</sql>
+    <select id="getOrgStdInfo" resultType="com.msk.product.bean.OrgStdBean" parameterType="BaseParam">
+        SELECT
+        <include refid="PdOrgStdItemSql"/>
+        ,
+        <include refid="PdOrgStdSql"/>
+        FROM PD_Org_STD_ITEM B
+        INNER JOIN PD_Org_STD A ON A.ORG_STD_ITEM_ID=B.ORG_STD_ITEM_ID
+        <if test="standardId !=null and standardId!=''">
+            AND A.STANDARD_ID = #{standardId}
+        </if>
+        WHERE B.LEVEL_ID=#{levelId} AND (B.DEL_FLG=0 OR B.DEL_FLG IS NULL)
+        <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 start-->
+        AND (A.DEL_FLG=0 OR A.DEL_FLG IS NULL) AND B.ORG_STD_ITEM_NAME IS NOT NULL AND
+        (A.ORG_GOOD_VAL IS NOT NULL OR A.ORG_NORMAL_VAL IS NOT NULL OR A.ORG_BAD_VAL IS NOT NULL)
+        <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 end-->
+        <if test="stdParams != null and stdParams.size() > 0">
+            AND
+            <foreach collection="stdParams" item="item" open="(" separator="OR" close=")">
+                A.STANDARD_ID = #{item.standardId} AND B.ORG_STD_ITEM_ID = #{item.stdItemId}
+            </foreach>
+        </if>
+		GROUP BY A.STANDARD_ID,B.ORG_STD_ITEM_NAME
+    </select>
+
+
+    <sql id="PdFedStdSql">
+		IFNULL(A.STANDARD_ID,'') AS standardId,
+		IFNULL(A.FED_STD_ITEM_ID,'') AS fedStdItemId,
+		IFNULL(A.FED_GOOD_VAL,'') AS fedGoodVal,
+		IFNULL(A.FED_NORMAL_VAL,'') AS fedNormalVal,
+		IFNULL(A.FED_BAD_VAL,'') AS fedBadVal
+	</sql>
+    <sql id="PdFedStdItemSql">
+		IFNULL(B.FED_STD_ITEM_ID,'') AS fedStdItemId,
+		IFNULL(B.FED_STD_ITEM_NAME,'') AS fedStdItemName,
+		IFNULL(B.LEVEL_ID,'') AS levelId,
+		IFNULL(B.PARENT_ID,'') AS parentId,
+		IFNULL(B.IS_CATALOG,'') AS isCatalog
+	</sql>
+    <select id="getFedStdInfo" resultType="com.msk.product.bean.FedStdBean" parameterType="BaseParam">
+        SELECT
+        <include refid="PdFedStdItemSql"/>
+        ,
+        <include refid="PdFedStdSql"/>
+        FROM PD_FED_STD_ITEM B
+        LEFT JOIN PD_FED_STD A ON A.FED_STD_ITEM_ID=B.FED_STD_ITEM_ID
+        <if test="standardId !=null and standardId!=''">
+            AND A.STANDARD_ID = #{standardId}
+        </if>
+        <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 start-->
+        WHERE B.LEVEL_ID=#{levelId} AND (A.DEL_FLG=0 OR A.DEL_FLG IS NULL) AND B.FED_STD_ITEM_NAME IS NOT NULL AND
+        (A.FED_GOOD_VAL IS NOT NULL OR A.FED_NORMAL_VAL IS NOT NULL OR A.FED_BAD_VAL)
+        <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 end-->
+        AND (B.DEL_FLG=0 OR B.DEL_FLG IS NULL)
+        <if test="stdParams != null and stdParams.size() > 0">
+            AND
+            <foreach collection="stdParams" item="item" open="(" separator="OR" close=")">
+                A.STANDARD_ID = #{item.standardId} AND B.FED_STD_ITEM_ID = #{item.stdItemId}
+            </foreach>
+        </if>
+		GROUP BY A.STANDARD_ID,B.FED_STD_ITEM_NAME
+    </select>
+
+    <sql id="PdGnqStdSql">
+		IFNULL(A.STANDARD_ID,'') AS standardId,
+		IFNULL(A.GNQ_STD_ITEM_ID,'') AS gnqStdItemId,
+		IFNULL(A.GNQ_GOOD_VAL,'') AS gnqGoodVal,
+		IFNULL(A.GNQ_OK_VAL,'') AS gnqOkVal,
+		IFNULL(A.GNQ_NG_VAL,'') AS gnqNgVal
+	</sql>
+    <sql id="PdGnqStdItemSql">
+		IFNULL(B.GNQ_STD_ITEM_ID,'') AS gnqStdItemId,
+		IFNULL(B.GNQ_STD_ITEM_NAME,'') AS gnqStdItemName,
+		IFNULL(B.LEVEL_ID,'') AS levelId,
+		IFNULL(B.PARENT_ID,'') AS parentId,
+		IFNULL(B.IS_CATALOG,'') AS isCatalog
+	</sql>
+    <select id="getGnqStdInfo" resultType="com.msk.product.bean.GnqStdBean" parameterType="BaseParam">
+        SELECT
+        <include refid="PdGnqStdItemSql"/>
+        ,
+        <include refid="PdGnqStdSql"/>
+        FROM PD_GNQ_STD_ITEM B
+        LEFT JOIN PD_GNQ_STD A ON A.GNQ_STD_ITEM_ID=B.GNQ_STD_ITEM_ID
+        <if test="standardId !=null and standardId!=''">
+            AND A.STANDARD_ID = #{standardId}
+        </if>
+        <if test="stdParams != null and stdParams.size() > 0">
+            AND A.STANDARD_ID IN
+            <foreach collection="stdParams" item="item" open="(" separator="," close=")">
+                #{item.standardId}
+            </foreach>
+        </if>
+        WHERE B.LEVEL_ID=#{levelId}
+        AND (B.DEL_FLG=0 OR B.DEL_FLG IS NULL)
+        <if test="levelId == 2">
+            <if test="stdParams != null and stdParams.size() > 0">
+                AND
+                <foreach collection="stdParams" item="item" open="(" separator="OR" close=")">
+                    A.STANDARD_ID = #{item.standardId} AND B.GNQ_STD_ITEM_ID = #{item.stdItemId}
+                </foreach>
+            </if>
+            <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 start-->
+            AND (A.GNQ_GOOD_VAL IS NOT NULL OR A.GNQ_OK_VAL IS NOT NULL OR A.GNQ_NG_VAL IS NOT NULL)
+        </if>
+        <if test="parentId!=null and parentId!=''">
+            AND B.PARENT_ID=#{parentId}
+        </if>
+        AND B.GNQ_STD_ITEM_NAME IS NOT NULL
+        <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 end-->
+		GROUP BY A.STANDARD_ID,B.GNQ_STD_ITEM_NAME
+    </select>
+
+    <sql id="PdTspStdSql">
+		IFNULL(A.STANDARD_ID,'') AS standardId,
+		IFNULL(A.TSP_STD_ITEM_ID,'') AS tspStdItem,
+		IFNULL(A.TSP_GOOD_VAL,'') AS tspGoodVal,
+		IFNULL(A.TSP_OK_VAL,'') AS tspOkVal,
+		IFNULL(A.TSP_NG_VAL,'') AS tspNgVal
+	</sql>
+    <sql id="PdTspStdItemSql">
+		IFNULL(B.TSP_STD_ITEM_ID,'') AS tspStdItemId,
+		IFNULL(B.TSP_STD_ITEM_NAME,'') AS tspStdItemName,
+		IFNULL(B.LEVEL_ID,'') AS levelId,
+		IFNULL(B.PARENT_ID,'') AS parentId,
+		IFNULL(B.IS_CATALOG,'') AS isCatalog
+	</sql>
+    <select id="getTspStdInfo" resultType="com.msk.product.bean.TspStdBean" parameterType="BaseParam">
+        SELECT
+        <include refid="PdTspStdItemSql"/>
+        ,
+        <include refid="PdTspStdSql"/>
+        FROM PD_TSP_STD_ITEM B
+        LEFT JOIN PD_TSP_STD A ON A.TSP_STD_ITEM_ID=B.TSP_STD_ITEM_ID
+        <if test="standardId !=null and standardId!=''">
+            AND A.STANDARD_ID = #{standardId}
+        </if>
+        <if test="stdParams != null and stdParams.size() > 0">
+            AND A.STANDARD_ID IN
+            <foreach collection="stdParams" item="item" open="(" separator="," close=")">
+                #{item.standardId}
+            </foreach>
+        </if>
+        WHERE B.LEVEL_ID=#{levelId}
+        <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 start-->
+        AND (B.DEL_FLG=0 OR B.DEL_FLG IS NULL) AND B.TSP_STD_ITEM_NAME IS  NOT NULL
+        <if test="levelId == 2">
+            <if test="stdParams != null and stdParams.size() > 0">
+                AND
+                <foreach collection="stdParams" item="item" open="(" separator="OR" close=")">
+                    A.STANDARD_ID = #{item.standardId} AND B.TSP_STD_ITEM_ID = #{item.stdItemId}
+                </foreach>
+            </if>
+            AND (A.TSP_GOOD_VAL IS NOT NULL OR A.TSP_OK_VAL IS NOT NULL OR A.TSP_NG_VAL IS NOT NULL)
+        </if>
+        <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 end-->
+        <if test="parentId!=null and parentId!=''">
+            AND B.PARENT_ID=#{parentId}
+        </if>
+		GROUP BY A.STANDARD_ID,B.TSP_STD_ITEM_NAME
+    </select>
+
+    <sql id="PdSftStdSql">
+		IFNULL(A.STANDARD_ID,'') AS standardId,
+		IFNULL(A.SFT_STD_ITEM_ID,'') AS sftStdItem,
+		IFNULL(A.SFT_GOOD_VAL,'') AS sftGoodVal,
+		IFNULL(A.SFT_OK_VAL,'') AS sftOkVal,
+		IFNULL(A.SFT_NG_VAL,'') AS sftNgVal
+	</sql>
+    <sql id="PdSftStdItemSql">
+		IFNULL(B.SFT_STD_ITEM_ID,'') AS sftStdItemId,
+		IFNULL(B.SFT_STD_ITEM_NAME,'') AS sftStdItemName,
+		IFNULL(B.LEVEL_ID,'') AS levelId,
+		IFNULL(B.PARENT_ID,'') AS parentId,
+		IFNULL(B.IS_CATALOG,'') AS isCatalog
+	</sql>
+    <select id="getSftStdInfo" resultType="com.msk.product.bean.SftStdBean" parameterType="BaseParam">
+        SELECT
+        <include refid="PdSftStdItemSql"/>
+        ,
+        <include refid="PdSftStdSql"/>
+        FROM PD_SFT_STD_ITEM B
+        LEFT JOIN PD_SFT_STD A ON A.SFT_STD_ITEM_ID=B.SFT_STD_ITEM_ID
+        <if test="standardId !=null and standardId!=''">
+            AND A.STANDARD_ID = #{standardId}
+        </if>
+        <if test="stdParams != null and stdParams.size() > 0">
+            AND A.STANDARD_ID IN
+            <foreach collection="stdParams" item="item" open="(" separator="," close=")">
+                #{item.standardId}
+            </foreach>
+        </if>
+        WHERE B.LEVEL_ID=#{levelId}
+        <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 start-->
+        AND (B.DEL_FLG=0 OR B.DEL_FLG IS NULL) AND B.SFT_STD_ITEM_NAME IS NOT NULL
+        <if test="levelId == 2">
+            <if test="stdParams != null and stdParams.size() > 0">
+                AND
+                <foreach collection="stdParams" item="item" open="(" separator="OR" close=")">
+                    A.STANDARD_ID = #{item.standardId} AND B.SFT_STD_ITEM_ID = #{item.stdItemId}
+                </foreach>
+            </if>
+            AND (A.SFT_GOOD_VAL IS NOT NULL OR A.SFT_OK_VAL IS NOT NULL OR A.SFT_NG_VAL IS NOT NULL)
+            <!--改善 #2328 卖家添加产品，加工技术标准”、“加工质量标准”、“其他标准 ” 标准找不到的时候的提示 统一修改为 “对不起，没有查询到记录！” 2016/10/09 by 杨春艳 end-->
+        </if>
+        <if test="parentId!=null and parentId!=''">
+            AND B.PARENT_ID=#{parentId}
+        </if>
+		GROUP BY A.STANDARD_ID,B.SFT_STD_ITEM_NAME
+    </select>
+</mapper>

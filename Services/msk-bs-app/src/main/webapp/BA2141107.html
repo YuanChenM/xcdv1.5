@@ -1,0 +1,218 @@
+﻿<html>
+<head>
+    <title>产品详情</title>
+    <meta http-equiv="Access-Control-Allow-Origin" content="http://localhost:8081/">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="resources/css/common.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/jquery.spinner.css" rel="stylesheet"/>
+    <script src="resources/js/com/jquery-1.7.1.min.js"></script>
+    <script src="resources/js/com/jquery-ui-1.8.10.custom.min.js"></script>
+    <script src="resources/js/com/common.js"></script>
+    <link rel="stylesheet" href="resources/css/BA2141107.css">
+
+</head>
+<!--onload="loadPdFeature()"-->
+<body>
+<div class="container">
+    <div class="header">
+        <div class="fanhui" onclick="window.location.href = 'BA2141106.html'"></div>
+        <div class="title">
+            <span class="title_span">产品详情</span>
+        </div>
+    </div>
+<section id="rt-showcase-surround">
+    <div id="rt-showcase" class="slider-container rt-overlay-dark">
+        <div class="rt-container slider-container">
+            <div class="rt-grid-12 rt-alpha rt-omega">
+
+
+                <div class="csslider1 autoplay">
+                    <input name="cs_anchor1" autocomplete="off" id="cs_slide1_0" type="radio"
+                           class="cs_anchor slide">
+                    <input name="cs_anchor1" autocomplete="off" id="cs_slide1_1" type="radio"
+                           class="cs_anchor slide">
+                    <input name="cs_anchor1" autocomplete="off" id="cs_slide1_2" type="radio"
+                           class="cs_anchor slide">
+                    <input name="cs_anchor1" autocomplete="off" id="cs_play1" type="radio" class="cs_anchor"
+                           checked>
+                    <input name="cs_anchor1" autocomplete="off" id="cs_pause1" type="radio" class="cs_anchor">
+                    <ul id="ul_show">
+                        <div style="width: 100%; visibility: hidden; font-size: 0px; line-height: 0;"><img
+                                src="resources/images/1.jpg" style="width: 100%;"></div>
+                        <li class="num0 img"><img id="img_show" src="resources/images/1.jpg" alt="Clouds"
+                                                  title="Clouds"/></li>
+                        <li class="num1 img"><img src="resources/images/2.jpg" alt="Typewriter"
+                                                  title="Typewriter"/>
+                        </li>
+                        <li class="num2 img"><img src="resources/images/3.jpg" alt="Bicycle"
+                                                  title="Bicycle"/></li>
+                    </ul>
+                    <div class="cs_arrowprev">
+                        <label class="num0" for="cs_slide1_0"></label>
+                        <label class="num1" for="cs_slide1_1"></label>
+                        <label class="num2" for="cs_slide1_2"></label>
+                    </div>
+                    <div class="cs_arrownext">
+                        <label class="num0" for="cs_slide1_0"></label>
+                        <label class="num1" for="cs_slide1_1"></label>
+                        <label class="num2" for="cs_slide1_2"></label>
+                    </div>
+
+                    <div class="cs_bullets">
+                        <label class="num0" for="cs_slide1_0">
+                            <span class="cs_point"></span>
+                            <span class="cs_thumb"></span>
+                        </label>
+                        <label class="num1" for="cs_slide1_1">
+                            <span class="cs_point"></span>
+                            <span class="cs_thumb"></span>
+                        </label>
+                        <label class="num2" for="cs_slide1_2">
+                            <span class="cs_point"></span>
+                            <span class="cs_thumb"></span>
+                        </label>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</section>
+<div class="text_title">
+    <div style="float: left;font-weight: 900;">云冻品</div>
+    <div style="float: left;font-weight: 900;margin-left: 10px;" id="pdBreed">三黄鸡</div>
+    <div style="float: right;font-weight: 900;color: #ff4251">数量随心订&nbsp;&nbsp;价格大不同</div>
+</div>
+<div class="text_price_way">
+    <table class="text_price_title">
+        <tr>
+            <td>随心量：（单位：箱）</td>
+        </tr>
+        <tr>
+            <td>通道阶梯价（元/kg）（元/箱）</td>
+        </tr>
+    </table>
+    <table class="text_table">
+        <tr>
+            <td>
+                <div id="pdPriceWay">
+
+                </div>
+            </td>
+        </tr>
+    </table>
+    <table class="text_table_pd">
+        <tr>
+            <td style="width: 195px;text-align: right">产品特征：
+            </td>
+            <td>
+                <div class="text_span" id="pdFeature">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right">产品净重：</td>
+            <td>
+                <div class="text_span" id="pdWeight">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right">产品等级：</td>
+            <td>
+                <div class="text_span" id="pdGrade">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right">可销售数量：</td>
+            <td>
+                <div class="text_span" id="isSaleNum" style="color: #666666;float: left">1000</div>（箱）
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right">订货数量：</td>
+            <td>
+                <div class="product">
+                    <div class="num"><input name="num" onchange="getOldPrice()" style="width: 200px;height:50px;font-size: 32px" id="pdNum" type="text" class="spinner"></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right">阶梯价格：</td>
+            <td>
+                <div id="showPriceWay" class="text_span">
+                    11.93（元/kg）119.3（元/箱）
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right">配送费：</td>
+            <td>
+                <div class="text_span">
+                    0元/箱
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: right">付款方式：</td>
+            <td>
+                <div class="text_span">
+                    货到付款
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<div style="margin-bottom:100px; ">
+    <table class="text_batten" style="width: 100%">
+        <tr>
+            <td>商品详情</td>
+            <td>商品评价</td>
+        </tr>
+    </table>
+</div>
+<div>
+    <table class="text_batten" style="width: 100%;position:fixed;bottom:0px;">
+        <tr>
+            <td style="color: #FFFFFF;background-color: #22BD9B;width: 50%;" onclick="addCar()">加入购物车</td>
+            <td style="color: #FFFFFF;background-color: #079878 ">购买</td>
+        </tr>
+    </table>
+</div>
+<div id="disPrice" style="display: none;">
+    <div style="float: left;">
+        <div>boxName箱</div>
+        priceOfKg元/kg&nbsp;priceOfBox元/箱
+</div>
+<div id="disFeature" style="display: none">
+    <div style="font-size: 24px" class="spanNoCheck" id="featurefeatureCode"
+         onclick="checkFeature('featureCode')">copyFeature
+    </div>
+</div>
+</div>
+<div id="disWeight" style="display: none">
+    <div style="font-size: 24px;" class="spanNoCheck" id="weightweightCode"
+         onclick="checkWeight('weightCode')">copyWeight</div>
+</div>
+<div id="disGrade" style="display: none">
+    <div style="font-size: 24px;" class="spanNoCheck" id="gradegradeCode"
+         onclick="checkGrade('gradeCode')">copyGrade</div>
+</div>
+    </div>
+</body>
+<script>
+    var browser_width = $("#img_show").height();
+    $("#ul_show").css("height", browser_width);
+    $(window).resize(function () {
+        browser_width = $(document.body).height();
+        $("#ul_show").css("height", browser_width);
+    });
+</script>
+
+<script src="static/js/BA2141107.js"></script>
+</html>

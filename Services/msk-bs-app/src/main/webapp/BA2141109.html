@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>购物车显示</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="resources/css/common.css" type="text/css" rel="stylesheet"/>
+    <link href="resources/css/BA2141109.css" type="text/css" rel="stylesheet"/>
+    <script src="./resources/js/com/jquery-1.7.1.min.js"></script>
+    <script src="./static/js/BA2141109.js"></script>
+    <script src="./resources/js/com/common.js"></script>
+  </head>
+  <body>
+  <div id="container">
+    <div class="header">
+            <div class="fanhui" onclick="window.location.href = 'BA2141108.html'"></div>
+            <div class="title" name="shopCar">
+              <span class="title_span">购物车</span>
+            </div>
+    </div>
+      <!--<div class="wancheng" style="text-align: right"><p><span style="font-family: '微软雅黑';">完成</span></p></div>-->
+      <div class="main">
+        <div class="main_d1">
+              <ul id="list">
+                <li style="display: none;">
+                  <div class="content">
+                        <div class="checkbox"><a class="check" href="javascript:void(0);"><input name="id" type="hidden" value=""> </a></div>
+                        <div class="tupian">
+                          <img width="150" height="140" src='./resources/images/u3.png'/>
+                        </div>
+                    </div>
+                    <div class="product">
+                      <div class="breed"><p><span></span></p></div>
+                      <div class="neirong"><p><span name="neirong" style="font-family:'Applied Font Regular', 'Applied Font';"></span></p></div>
+                      <div class="price" ><p><span name="price" style="font-weight:700;color:#FF0000;"></span></p></div>
+                      <div class="shownum"></div>
+                      </div>
+                </li>
+              </ul>
+        </div>
+      </div>
+
+      <div class="footer">
+          <div class="checkAll"><a class="checkAll" href="javascript:void(0);"><span class="chkAll_span">全选</span></a></div>
+          <div class="buy" onclick="deleteProduct()"><p ><span class="buy_span">删除</span></p></div>
+      </div>
+
+  </div>
+  </body>
+</html>

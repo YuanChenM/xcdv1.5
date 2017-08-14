@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.stock.logic.ISO151433Logic">
+
+	<sql id="whereCondition">
+		WHERE    LGCS_CODE= #{lgcsCode} and  DEL_FLG=0
+		<if test="pdCode!=null and pdCode!=''">
+			and Pd_Code=#{pdCode}
+		</if>
+
+		<if test="pdTypeCode!=null and pdTypeCode!=''">
+			and Pd_Code like   '${pdTypeCode}%'
+		</if>
+		<if test="classesCode!=null and classesCode!=''">
+			and Pd_Code like  '${classesCode}%'
+		</if>
+
+		<if test="breedCode!=null and breedCode!=''">
+			and Pd_Code like '___${breedCode}%'
+		</if>
+		<if test="pdName!=null and pdName!=''">
+			and   PD_NAME like '%${pdName}%'
+		</if>
+		<if test="salePlatform!=null and salePlatform!=''">
+			and   SALE_PLATFORM  =#{salePlatform}
+		</if>
+	</sql>
+
+
+<select id="com.msk.stock.logic.ISO151433Logic.findSLStock" resultType="com.msk.stock.bean.Stock" parameterType="map">
+
+	   SELECT
+	   IF(SUM(sl.ENABLED_STOCK_QTY)=0 ,10000,SUM(sl.ENABLED_STOCK_QTY)) as pdTypeSumStock ,
+	   998 AS enabledStockQty,
+	   LGCS_CODE as lgcsCode,
+	   LGCS_NAME as lgcsName,
+	   WAREHOUSE_CODE as warehouseCode,
+	   WAREHOUSE_NAME as warehouseName,
+	   SALE_PLATFORM    as salePlatform,
+	   PD_NAME     as pdName
+	   FROM  so_stock_sl sl
+	<include refid="whereCondition" />
+</select>
+
+
+</mapper>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11312Logic">
+    <!-- ssc_differ_detail表字段 -->
+    <sql id="differDetailFields">
+        A.ID AS id,
+        A.DIFFER_ID AS differId,
+        ifnull(A.DIFFER_CODE, '') AS differCode,
+        ifnull(A.PRODUCT_ATTR_CODE, '') AS productAttrCode,
+        A.SEND_WEIGHT AS sendWeight,
+        A.RECEIVE_WEIGHT AS receiveWeight,
+        A.UNIT_PRICE AS unitPrice,
+        A.SEND_BOX AS sendBox,
+        A.SEND_AMOUNT AS sendAmount,
+        A.RECEIVE_BOX AS receiveBox,
+        A.RECEIVE_PRICE AS receivePrice,
+        A.RECEIVE_AMOUNT AS receiveAmount,
+        A.PD_DIFFER_AMOUNT AS pdDifferAmount,
+        A.PD_DIFFER_BOX AS pdDifferBox,
+        A.SEND_CARTON_USE_NUM AS sendCartonUseNum,
+        A.SEND_CARTON_AMOUNT AS sendCartonAmount,
+        A.SEND_INNER_BAG_USE_NUM AS sendInnerBagUseNum,
+        A.SEND_INNER_BAG_AMOUNT AS sendInnerBagAmount,
+        A.RECEIVE_CARTON_USE_NUM AS receiveCartonUseNum,
+        A.RECEIVE_CARTON_AMOUNT AS receiveCartonAmount,
+        A.RECEIVE_INNER_BAG_USE_NUM AS receiveInnerBagUseNum,
+        A.RECEIVE_INNER_BAG_AMOUNT AS receiveInnerBagAmount,
+        A.PACKAGE_MATERIAL_DIFFER_AMOUNT AS packageMaterialDifferAmount,
+        A.IS_VERIFICATION AS isVerification,
+        ifnull(A.REMARK, '') AS remark
+    </sql>
+
+    <!-- ssc_differ_basic表字段 -->
+    <sql id="differBasicFields">
+        B.DELIVERY_ID AS deliveryId
+    </sql>
+
+    <!-- ssc_delivery_order_pd表字段 -->
+    <sql id="deliveryOrderPdFields">
+        ifnull(C.PD_DESC, '') AS productName,
+        ifnull(C.BREED_NAME, '') AS breedName,
+        ifnull(C.FEATURE_NAME, '') AS featureName,
+        C.WEIGHT_VAL AS weightVal,
+        ifnull(C.NORMS_NAME, '') AS normsName,
+        ifnull(C.GRADE_NAME, '') AS gradeName,
+        ifnull(C.BRAND_NAME, '') AS brandName,
+        ifnull(C.WEIGHT_NAME, '') AS weightName
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="condition">
+        <if test="differId != null and differId != ''">
+            AND A.DIFFER_ID = #{differId}
+        </if>
+        <if test="differIds != null and differIds.size() > 0">
+            AND A.DIFFER_ID IN
+            <foreach collection="differIds" item="differId" index="index" open="(" separator="," close=")">
+                #{differId}
+            </foreach>
+        </if>
+        <if test="deliveryIds != null and deliveryIds.size() > 0">
+            AND B.DELIVERY_ID IN
+            <foreach collection="deliveryIds" item="deliveryId" index="index" open="(" separator="," close=")">
+                #{deliveryId}
+            </foreach>
+        </if>
+    </sql>
+
+    <select id="findPageList" parameterType="com.msk.ssc.bean.SSC11312Param" resultType="com.msk.ssc.bean.SSC11312Bean">
+        SELECT
+            <include refid="differDetailFields" />,
+            <include refid="differBasicFields" />,
+            <include refid="deliveryOrderPdFields" />
+        FROM
+            ssc_differ_detail AS A
+        LEFT JOIN ssc_differ_basic AS B ON A.DIFFER_ID = B.DIFFER_ID
+        LEFT JOIN ssc_delivery_order_pd AS C ON C.DELIVERY_ID = B.DELIVERY_ID AND A.PRODUCT_ATTR_CODE = C.PD_CODE
+        WHERE
+            (A.DEL_FLG = 0 OR A.DEL_FLG IS NULL)
+        AND (B.DEL_FLG = 0 OR B.DEL_FLG IS NULL)
+        AND (C.DEL_FLG = 0 OR C.DEL_FLG IS NULL)
+        <include refid="condition" />
+        GROUP BY A.ID
+        <if test="paging == true">
+            LIMIT #{startPos}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" parameterType="com.msk.ssc.bean.SSC11312Param" resultType="int">
+        SELECT
+            count(1)
+        FROM
+            ssc_differ_detail AS A
+        WHERE
+            (A.DEL_FLG = 0 OR A.DEL_FLG IS NULL)
+        <include refid="condition" />
+    </select>
+
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO ssc_differ_detail
+            (ID, DIFFER_ID, DIFFER_CODE, PRODUCT_ATTR_CODE, SEND_WEIGHT, RECEIVE_WEIGHT, UNIT_PRICE, SEND_BOX, SEND_AMOUNT, RECEIVE_BOX, RECEIVE_PRICE, RECEIVE_AMOUNT, PD_DIFFER_AMOUNT, PD_DIFFER_BOX, SEND_CARTON_USE_NUM, SEND_CARTON_AMOUNT, SEND_INNER_BAG_USE_NUM, SEND_INNER_BAG_AMOUNT, RECEIVE_CARTON_USE_NUM, RECEIVE_CARTON_AMOUNT, RECEIVE_INNER_BAG_USE_NUM, RECEIVE_INNER_BAG_AMOUNT, PACKAGE_MATERIAL_DIFFER_AMOUNT, IS_VERIFICATION, REMARK, DEL_FLG, CRT_ID, CRT_TIME, UPD_ID, UPD_TIME, ACT_ID, ACT_TIME, VER)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id}, #{item.differId}, #{item.differCode}, #{item.productAttrCode}, #{item.sendWeight}, #{item.receiveWeight}, #{item.unitPrice}, #{item.sendBox}, #{item.sendAmount}, #{item.receiveBox}, #{item.receivePrice}, #{item.receiveAmount}, #{item.pdDifferAmount}, #{item.pdDifferBox}, #{item.sendCartonUseNum}, #{item.sendCartonAmount}, #{item.sendInnerBagUseNum}, #{item.sendInnerBagAmount}, #{item.receiveCartonUseNum}, #{item.receiveCartonAmount}, #{item.receiveInnerBagUseNum}, #{item.receiveInnerBagAmount}, #{item.packageMaterialDifferAmount}, #{item.isVerification}, #{item.remark}, '0', #{item.crtId}, #{item.crtTime}, #{item.crtId}, #{item.crtTime}, #{item.crtId}, #{item.crtTime}, 1)
+        </foreach>
+    </insert>
+
+    <update id="updateDifferDetails" parameterType="com.msk.ssc.bean.SSC11312Bean">
+        <foreach collection="differDetails" item="item" index="index" separator=";" close=";">
+            UPDATE ssc_differ_detail
+            SET SEND_WEIGHT = #{item.sendWeight},
+                RECEIVE_WEIGHT = #{item.receiveWeight},
+                SEND_BOX = #{item.sendBox},
+                RECEIVE_BOX = #{item.receiveBox},
+                UNIT_PRICE = #{item.unitPrice},
+                RECEIVE_PRICE = #{item.receivePrice},
+                UPD_ID = #{item.updId},
+                UPD_TIME = #{item.updTime},
+                VER = VER + 1
+            WHERE
+                DEL_FLG = 0
+            AND ID = #{item.id}
+        </foreach>
+    </update>
+
+    <update id="deleteDifferDetails" parameterType="com.msk.ssc.bean.SSC11312Bean">
+        <foreach collection="differDetails" item="item" index="index" separator=";" close=";">
+            UPDATE ssc_differ_detail
+            SET DEL_FLG = 1,
+                UPD_ID = #{item.updId},
+                UPD_TIME = #{item.updTime},
+                VER = VER + 1
+            WHERE
+                DEL_FLG = 0
+            AND ID = #{item.id}
+        </foreach>
+    </update>
+</mapper>

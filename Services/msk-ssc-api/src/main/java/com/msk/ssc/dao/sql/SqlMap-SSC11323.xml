@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11323Logic">
+    <!--查询发票申请一览-->
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11323Bean"
+            parameterType="com.msk.ssc.bean.SSC11323Param">
+        SELECT
+        A.INVOICE_REQUEST_CODE AS invoiceRequestCode
+        ,A.INVOICE_REQUEST_ID AS invoiceRequestId
+        ,A.CONTRACT_CODE AS contractCode
+        ,A.CONTRACT_NAME AS contractName
+        ,A.INVOICE_TYPE AS invoiceType
+        ,DATE_FORMAT(A.REQUEST_TIME,'%Y-%m-%d') AS requestTimeStr
+        ,A.PAYER AS payer
+        ,A.RECEIVING AS receiving
+        ,A.INVOICE_REQUEST_DESC AS invoiceRequestDesc
+        ,A.INVOICE_AMOUNT AS invoiceAmount
+        ,A.STATUS AS status
+        ,A.REQUESTER AS requester
+        ,A.REMARK  AS remark
+        ,B.CONTRACT_STATUS AS contractStatus
+        ,A.VER AS ver
+        FROM
+        SSC_INVOICE_REQUEST AS A
+        LEFT JOIN SSC_CONTRACT_BASIC B ON A.CONTRACT_ID = B.CONTRACT_ID
+        WHERE
+        <include refid="detailSearchCondition" />
+        ORDER BY A.CRT_TIME DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.ssc.bean.SSC11323Param">
+        SELECT
+        COUNT(1)
+        FROM SSC_INVOICE_REQUEST A
+        WHERE
+        <include refid="detailSearchCondition" />
+    </select>
+     <!--详细列表查询条件-->
+    <sql id="detailSearchCondition">
+        1=1
+        <if test="invoiceRequestCode!=null and invoiceRequestCode!=''">
+            AND INVOICE_REQUEST_CODE LIKE '${invoiceRequestCode}'
+        </if>
+        <if test="contractCode!=null and contractCode!=''">
+            AND A.CONTRACT_CODE LIKE '${contractCode}'
+        </if>
+        <if test="contractId!=null and contractId!=''">
+            AND A.CONTRACT_ID LIKE '${contractId}'
+        </if>
+        <if test="contractName!=null and contractName!=''">
+            AND A.CONTRACT_NAME LIKE '${contractName}'
+        </if>
+        <if test="requestTimeStr!=null and requestTimeStr!=''">
+           AND DATE_FORMAT(A.REQUEST_TIME,'%Y-%m-%d') = #{requestTimeStr}
+        </if>
+        <if test="invoiceTypeArr !=null and invoiceTypeArr.length>0">
+            and A.INVOICE_TYPE in
+            <foreach item="invoiceTypeArrItem" index="index" collection="invoiceTypeArr"
+                     open="(" separator="," close=")">
+                #{invoiceTypeArrItem}
+            </foreach>
+        </if>
+        <if test="statusArr !=null and statusArr.length>0">
+            and A.STATUS in
+            <foreach item="statusArrItem" index="index" collection="statusArr"
+                     open="(" separator="," close=")">
+                #{statusArrItem}
+            </foreach>
+        </if>
+        <if test="payer!=null and payer!=''">
+            AND A.PAYER LIKE '${payer}'
+        </if>
+        <if test="receiving!=null and receiving!=''">
+            AND A.RECEIVING LIKE '${receiving}'
+        </if>
+        <if test="invoiceRequestDesc!=null and invoiceRequestDesc!=''">
+            AND A.INVOICE_REQUEST_DESC LIKE '${invoiceRequestDesc}'
+        </if>
+            <if test="statusArr ==null">
+            AND A.DEL_FLG=0
+        </if>
+    </sql>
+
+    <update id="deleteInvoiceRequest" parameterType="com.msk.ssc.bean.SSC11323Param">
+        update SSC_INVOICE_REQUEST
+        set
+        STATUS=#{status},
+        DEL_FLG = 1,
+        UPD_ID = #{updId},
+        UPD_TIME =  #{updTime},
+        VER = VER + 1
+        WHERE
+        INVOICE_REQUEST_CODE = #{invoiceRequestCode}
+        AND INVOICE_REQUEST_ID = #{invoiceRequestId}
+        AND CONTRACT_CODE = #{contractCode}
+        AND CONTRACT_NAME = #{contractName}
+    </update>
+
+</mapper>

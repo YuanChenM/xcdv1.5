@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD14210101Logic">
+
+    <select id="findPageList" parameterType="com.hoperun.core.bean.BasePageParam"
+            resultType="com.msk.product.bean.PD14210101Bean">
+        SELECT
+        B.LEVEL_NAME AS classesName,
+        A.LEVEL_NAME AS machiningName,
+        C.LEVEL_NAME AS breedName,
+        C.CLASSESTREE_CODE AS classestreeCode,
+        G.SCIENTIFIC_NAME AS scientificName,
+        G.LOCAL_NAME AS localName
+        FROM
+        pd_classestree AS A
+        INNER JOIN (
+        SELECT
+        CLASSESTREE_CODE,
+        LEVEL_NAME
+        FROM
+        PD_CLASSESTREE
+        WHERE CLASSESTREE_CODE = #{filterMap.classesCode}
+        ) AS B ON B.CLASSESTREE_CODE = A.PARENT_CODE
+        INNER JOIN pd_classestree C ON C.PARENT_CODE = A.CLASSESTREE_CODE
+      <if test="filterMap.breedName!=null and filterMap.breedName!= ''">
+         AND C.LEVEL_NAME LIKE #{filterMap.breedName}
+      </if>
+        INNER JOIN pd_classestree_mat G ON G.CLASSESTREE_CODE = C.CLASSESTREE_CODE
+        <where>
+            <if test="filterMap.machiningName!=null and filterMap.machiningName!= ''">
+                AND A.LEVEL_CODE = #{filterMap.machiningName}
+            </if>
+        </where>
+        order by B.CLASSESTREE_CODE,A.CLASSESTREE_CODE,C.CLASSESTREE_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer" parameterType="com.hoperun.core.bean.BasePageParam">
+        SELECT COUNT(1)
+        FROM
+        pd_classestree AS A
+        INNER JOIN (
+        SELECT
+        CLASSESTREE_CODE,
+        LEVEL_NAME
+        FROM
+        PD_CLASSESTREE
+        WHERE CLASSESTREE_CODE = #{filterMap.classesCode}
+        ) AS B ON B.CLASSESTREE_CODE = A.PARENT_CODE
+        INNER JOIN pd_classestree C ON C.PARENT_CODE = A.CLASSESTREE_CODE
+        <if test="filterMap.breedName!=null and filterMap.breedName!= ''">
+            AND C.LEVEL_NAME LIKE #{filterMap.breedName}
+        </if>
+        INNER JOIN pd_classestree_mat G ON G.CLASSESTREE_CODE = C.CLASSESTREE_CODE
+        <where>
+            <if test="filterMap.machiningName!=null and filterMap.machiningName!= ''">
+                AND A.LEVEL_CODE = #{filterMap.machiningName}
+            </if>
+        </where>
+    </select>
+
+</mapper>

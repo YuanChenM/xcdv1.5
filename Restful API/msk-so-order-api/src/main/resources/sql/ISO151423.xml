@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+     <sql id="ISO151423.getSellerOrdersFront">
+         SELECT
+         COUNT(*) as statusQty
+         ,soo.ORDER_STATUS as orderStatusNum
+         FROM
+         (
+     </sql>
+
+    <sql id="ISO151423.getSellerOrdersMiddle">
+        SELECT DISTINCT
+        sosd.ORDER_ID as orderId
+        FROM
+        SO_ORDER_SHIP_DETAIL sosd
+        LEFT JOIN SO_SUB_ORDER sso
+        ON sosd.ORDER_ID = sso.ORDER_ID
+        WHERE
+        sosd.DEL_FLG = 0
+        <![CDATA[AND sso.order_type <> 5]]>
+        <![CDATA[AND sso.order_type <> 6]]>
+    </sql>
+
+    <sql id="ISO151423.getSellerOrdersBottom">
+        ) a
+        LEFT JOIN SO_ORDER soo
+        ON soo.ORDER_ID = a.orderId
+        WHERE
+        soo.DEL_FLG = 0
+        GROUP BY
+        soo.ORDER_STATUS
+    </sql>
+
+    <sql id="ISO151423.getBuyerOrdersFront">
+        SELECT
+        COUNT(*) AS statusQty
+        , so.ORDER_STATUS AS orderStatusNum
+        FROM
+          (
+    </sql>
+
+    <sql id="ISO151423.getBuyerOrdersMiddleFront">
+        SELECT
+        so.ORDER_ID as orderId
+        FROM
+        SO_ORDER so
+        LEFT JOIN SO_SUB_ORDER sso
+        ON so.ORDER_ID = sso.ORDER_ID
+        WHERE
+        so.DEL_FLG = 0
+        AND sso.DEL_FLG = 0
+        AND (sso.ORDER_TYPE = 5 OR sso.ORDER_TYPE = 6)
+    </sql>
+
+    <sql id="ISO151423.getBuyerOrdersMiddleBottom">
+        UNION
+        SELECT
+        soo.ORDER_ID as orderId
+        FROM
+        SO_ORDER soo
+        WHERE
+        (soo.ORDER_TYPE = 4 OR soo.ORDER_TYPE = 7)
+        AND soo.DEL_FLG = 0
+
+    </sql>
+
+    <sql id="ISO151423.getBuyerOrdersBottom">
+        ) a
+        LEFT JOIN SO_ORDER so
+        ON a.orderId = so.ORDER_ID
+        WHERE
+        so.DEL_FLG = 0
+        GROUP BY
+        so.ORDER_STATUS
+    </sql>
+
+    <sql id="ISO151423.getHousekeepingOrders">
+        SELECT
+        COUNT(*) AS statusQty
+        , so.ORDER_STATUS AS orderStatusNum
+        FROM
+        SO_ORDER so
+        WHERE
+        so.DEL_FLG = 0
+    </sql>
+</sqlList>

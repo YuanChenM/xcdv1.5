@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2101104Logic">
+
+    <select id="getAllBuyerId" resultType="com.msk.bs.bean.BS2101104Bean" parameterType="BaseParam">
+        SELECT A.BUYER_ID AS buyerId
+        from sl_bs_buyer A
+       INNER JOIN
+       (
+            SELECT  SL_CODE
+            FROM sl_bs_account  account
+            INNER JOIN sl_bs_basic_info basic ON account.SL_ACCOUNT = basic.SL_ACCOUNT
+            WHERE (account.DEL_FLG IS NULL OR account.DEL_FLG = 0)
+       )B ON A.SL_CODE = B.SL_CODE
+        WHERE (A.DEL_FLG IS NULL OR A.DEL_FLG = 0)
+    </select>
+
+    <select id="findHouseInfoByBuyerId" resultType="int" parameterType="BaseParam" >
+        SELECT COUNT(1) from sl_bs_buyer A INNER JOIN
+       (
+            SELECT  SL_CODE
+            FROM sl_bs_account  account
+            INNER JOIN sl_bs_basic_info basic ON account.SL_ACCOUNT = basic.SL_ACCOUNT
+            WHERE (account.DEL_FLG IS NULL OR account.DEL_FLG = 0)
+       )B ON A.SL_CODE = B.SL_CODE
+        WHERE (A.DEL_FLG IS NULL OR A.DEL_FLG = 0) AND A.BUYER_ID = #{filterMap.buyerId}
+    </select>
+
+    <select id="findBsBuyerByBuyerId" resultType="com.msk.bs.bean.IBS2101107Bean" parameterType="BaseParam">
+        SELECT
+        IFNULL(buyer.SL_CODE,'') AS slCode,
+        IFNULL(buyer.HOUSE_CODE,'') AS houseCode,
+        IFNULL(buyer.BUYER_ID,'') AS buyerId,
+        IFNULL(buyer.START_TIME,'') AS startTime,
+        IFNULL(buyer.END_TIME,'') AS endTime,
+        IFNULL(buyer.APPLY_SIDE,'') AS applySide,
+        IFNULL(buyer.APPLY_STATUS,'') AS applyStatus,
+        IFNULL(buyer.APPLY_TIME,'') AS applyTime,
+        IFNULL(buyer.DEL_FLG,'') AS delFlg,
+        <!--Modif  Bug #3404 2016/10/19   BY  ni_shaotang  Start-->
+        IFNULL(buyer.CRT_ID,'') AS crtId,
+        IFNULL(buyer.UPD_ID,'') AS updId,
+        IFNULL(buyer.ACT_ID,'') AS actId,
+        <!--Modif  Bug #3404 2016/10/19   BY  ni_shaotang  End-->
+        IFNULL(buyer.VER,'') AS ver,
+        IFNULL(account.HOUSE_SHOW_NAME,'') AS houseShowName,
+        IFNULL(account.HOUSE_ACCOUNT,'') AS houseAccount
+        FROM
+        sl_bs_buyer buyer
+        LEFT JOIN sl_house_account account
+        ON account.SL_CODE = buyer.SL_CODE
+        AND account.HOUSE_CODE = buyer.HOUSE_CODE
+        AND (account.DEL_FLG IS NULL OR account.DEL_FLG = 0)
+        WHERE
+        (buyer.DEL_FLG IS NULL OR buyer.DEL_FLG = 0)
+        AND buyer.BUYER_ID IN
+        <foreach collection="filterMap.buyerList" item="item" index="index" open="(" separator="," close=")">
+            #{item.buyerId}
+        </foreach>
+    </select>
+
+            <select id="findBuyerByBuyerId" resultType="com.msk.bs.bean.IBS2101107Bean" parameterType="BaseParam">
+        SELECT
+        IFNULL(buyer.SL_CODE,'') AS slCode,
+        IFNULL(buyer.HOUSE_CODE,'') AS houseCode,
+        IFNULL(buyer.BUYER_ID,'') AS buyerId,
+        IFNULL(buyer.START_TIME,'') AS startTime,
+        IFNULL(buyer.END_TIME,'') AS endTime,
+        IFNULL(buyer.APPLY_SIDE,'') AS applySide,
+        IFNULL(buyer.APPLY_STATUS,'') AS applyStatus,
+        IFNULL(buyer.APPLY_TIME,'') AS applyTime,
+        IFNULL(buyer.DEL_FLG,'') AS delFlg,
+        IFNULL(buyer.CRT_ID,'') AS crtId,
+        IFNULL(buyer.UPD_ID,'') AS updId,
+        IFNULL(buyer.ACT_ID,'') AS actId,
+        buyer.CRT_TIME AS crtTime,
+        buyer.UPD_TIME AS updTime,
+        buyer.ACT_TIME AS actTime,
+        IFNULL(buyer.VER,'') AS ver
+        FROM
+        sl_bs_buyer buyer
+        LEFT JOIN sl_house_account account
+        ON account.SL_CODE = buyer.SL_CODE
+        AND account.HOUSE_CODE = buyer.HOUSE_CODE
+        AND (account.DEL_FLG IS NULL OR account.DEL_FLG = 0)
+        WHERE
+        (buyer.DEL_FLG IS NULL OR buyer.DEL_FLG = 0)
+        AND buyer.BUYER_ID IN
+        <foreach collection="filterMap.buyerList" item="item" index="index" open="(" separator="," close=")">
+            #{item.buyerId}
+        </foreach>
+    </select>
+
+    <update id="updateBuyerByBuyerId" parameterType="BaseParam">
+        UPDATE sl_bs_buyer buyer
+        SET buyer.DEL_FLG = 1
+        WHERE
+        (buyer.DEL_FLG IS NULL OR buyer.DEL_FLG = 0)
+        AND buyer.BUYER_ID IN
+        <foreach collection="filterMap.buyerList" item="item" index="index" open="(" separator="," close=")">
+            #{item.buyerId}
+        </foreach>
+    </update>
+
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO sl_bs_buyer_his (
+        HIS_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        APPLY_SIDE,
+        APPLY_STATUS,
+        APPLY_TIME,
+        BUYER_REASON,
+        BUYERSHOP_REASON,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.hisId},
+            #{item.slCode},
+            #{item.houseCode},
+            #{item.buyerId},
+            #{item.startTime},
+            #{item.endTime},
+            #{item.applySide},
+            #{item.applyStatus},
+            #{item.applyTime},
+            #{item.buyerReason},
+            #{item.buyershopReason},
+            #{item.delFlg},
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            #{item.actId},
+            #{item.actTime},
+            #{item.ver}
+            )
+        </foreach>
+    </insert>
+</mapper>

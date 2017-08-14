@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11309Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        A.INTO_ID  as intoId,
+        A.CONTRACT_CODE as contractCode,
+        IFNULL(B.CONTRACT_NAME, '') AS contractName,
+        IFNULL(C.SUPPLIER_NAME, '') AS supplierName,
+        IFNULL(C.PURCHASER_NAME, '') AS purchaserName,
+        A.INTO_CODE as intoCode,
+        (CASE A.INTO_TYPE
+        WHEN 0 THEN '采购入库'
+        WHEN 1 THEN '调拨入库'
+        WHEN 2 THEN '样品入库'
+        WHEN 3 THEN '退货入库'
+        ELSE '' END)AS intoType,
+        IFNULL(C.DELIVERY_WAREHOUSE, '') AS deliveryWarehouse,
+        IFNULL(C.ARRIVE_WAREHOUSE, '') AS arriveWarehouse,
+        DATE_FORMAT(C.ETA,'%Y-%m-%d') AS expectArriveDate,
+        DATE_FORMAT(A.ARRIVE_DATE,'%Y-%m-%d') AS realArriveDate,
+        A.DELIVERY_CODE  as deliveryCode,
+        IFNULL(A.REMARK, '') AS remark
+</sql>
+
+<!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="contractId!=null and contractId!=''">
+                AND A.CONTRACT_ID = #{contractId}
+            </if>
+            <if test="contractCode!=null and contractCode!=''">
+                AND A.CONTRACT_CODE LIKE '%${contractCode}%'
+            </if>
+            <if test="contractName!=null and contractName!=''">
+                AND B.CONTRACT_NAME LIKE '%${contractName}%'
+            </if>
+            <if test="supplierName!=null and supplierName!=''">
+                AND C.SUPPLIER_NAME LIKE '%${supplierName}%'
+            </if>
+            <if test="purchaserName!=null and purchaserName!=''">
+                AND C.PURCHASER_NAME LIKE '%${purchaserName}%'
+            </if>
+            <if test="intoCode!=null and intoCode!=''">
+                AND A.INTO_CODE LIKE '%${intoCode}%'
+            </if>
+            <if test="intoTypes !=null and intoTypes.length>0">
+                and A.INTO_TYPE in
+                <foreach item="intoTypeItem" index="index" collection="intoTypes"
+                         open="(" separator="," close=")">
+                    #{intoTypeItem}
+                </foreach>
+            </if>
+            <if test="deliveryCode!=null and deliveryCode!=''">
+                AND A.DELIVERY_CODE LIKE '%${deliveryCode}%'
+            </if>
+            AND A.DEL_FLG = 0
+        </where>
+    </sql>
+
+    <!--查询生产商入库单列表-->
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11309RsBean"
+            parameterType="com.msk.ssc.bean.SSC11309RsParam">
+        SELECT
+        <include refid="selectSql"/>
+        FROM SSC_INTO_BASIC A
+        LEFT JOIN SSC_CONTRACT_BASIC B ON A.CONTRACT_ID = B.CONTRACT_ID
+        LEFT JOIN SSC_DELIVERY_PRE_INTO C ON A.DELIVERY_PRE_INTO_ID = C.DELIVERY_PRE_INTO_ID
+        <include refid="whereCondition"/>
+        ORDER BY INTO_ID DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        FROM SSC_INTO_BASIC A
+        LEFT JOIN SSC_CONTRACT_BASIC B ON A.CONTRACT_ID = B.CONTRACT_ID
+        LEFT JOIN SSC_DELIVERY_PRE_INTO C ON A.DELIVERY_PRE_INTO_ID = C.DELIVERY_PRE_INTO_ID
+        <include refid="whereCondition"/>
+    </select>
+
+    <!--插入入库单列表信息-->
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO SSC_INTO_BASIC (
+        INTO_ID,
+        INTO_CODE,
+        REMARK,
+        ARRIVE_DATE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (
+            #{item.intoId},
+            #{item.intoCode},
+            #{item.remark},
+            #{item.arriveDate},
+            0,
+            #{item.crtId},
+            #{item.crtTime},,
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.crtId},
+            #{item.crtTime},
+            1
+            )
+        </foreach>
+    </insert>
+</mapper>

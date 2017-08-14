@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121223Logic">
+    <sql id="selectFiled">
+        IFNULL(B.BUYER_ID,'') AS buyerId,
+        IFNULL(B.BUYER_CODE,'') AS buyerCode,
+        IFNULL(B.BUYER_NAME,'') AS buyerName,
+        ifnull(B.STORE_NO, '') AS  buyerShop,
+        IFNULL(B.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(B.LGCS_AREA_NAME,'') AS lgcsAreaName,
+        IFNULL(B.PROVINCE_CODE,'') AS provinceCode,
+        IFNULL(B.PROVINCE_NAME,'') AS provinceName,
+        IFNULL(B.CITY_CODE,'') AS cityCode,
+        IFNULL(B.CITY_NAME,'') AS cityName,
+        IFNULL(B.DISTRICT_CODE,'') AS districtCode,
+        IFNULL(B.DISTRICT_NAME,'') AS districtName,
+        IFNULL(B.BUYER_ADDR,'') AS buyerAddr,
+        IFNULL(CONCAT(IFNULL(B.PROVINCE_NAME,''),' ',IFNULL(B.CITY_NAME,''),' ',IFNULL(B.DISTRICT_NAME,''),' '),'') AS domainName,
+         ifnull(J.ACCOUNT_NAME, '') AS accountName,
+        ifnull(B.SUPERIOR_TYPE, '') AS superiorType,
+        ifnull(B.SUPERIOR_NAME, '') AS superiorName,
+        ifnull(B.BUSI_TEL, '') AS busiTel,
+        ifnull(J.TEL_NO, '') AS  telNo,
+        IFNULL(B.MARKETINGS_STATUS,'') AS marketingsStatusCode,
+        IFNULL(L.EMPLOYEE_NAME,'') AS employeeName,
+        IFNULL(B.SUPERIOR_TYPE,'') AS buyerType,
+        IFNULL(B.SUPERIOR_NAME,'') AS buyerTypeName,
+        IFNULL(TERMINAL.MARKET_NAME,FOOD.MARKET_NAME) AS marketName,
+        IFNULL(B.SUPERIOR_ID,'') AS marketId
+
+    </sql>
+    <sql id="selectFrom">
+        FROM by_buyer_basic_info AS B
+        LEFT JOIN by_buyer_account J ON J.BUYER_ID = B.BUYER_ID AND J.DEL_FLG = B.DEL_FLG
+        LEFT JOIN by_buyer_employee L ON L.EMPLOYEE_TYPE='1' AND L.BUYER_ID=B.BUYER_ID AND L.DEL_FLG = B.DEL_FLG
+        LEFT JOIN by_market_food AS FOOD ON FOOD.FOD_MARKET_ID=B.SUPERIOR_ID AND B.SUPERIOR_TYPE='2' AND FOOD.DEL_FLG = B.DEL_FLG
+        LEFT JOIN by_market_terminal AS TERMINAL ON TERMINAL.TER_MARKET_ID=B.SUPERIOR_ID AND B.SUPERIOR_TYPE='1' AND B.DEL_FLG = TERMINAL.DEL_FLG
+        <if test="filterMap.salesTargetType!=null and filterMap.salesTargetType!=''">
+            INNER JOIN by_buyer_salestarget H ON H.BUYER_ID=B.BUYER_ID AND H.DEL_FLG = B.DEL_FLG
+        </if>
+        <if test="filterMap.classCode!=null and filterMap.classCode!=''">
+            INNER JOIN by_buyer_pd_cla I ON I.BUYER_ID=B.BUYER_ID AND I.DEL_FLG = B.DEL_FLG
+        </if>
+    </sql>
+    <sql id="whereCondition">
+        <where>
+            (B.DEL_FLG IS NULL OR B.DEL_FLG = 0)
+            <if test="buyerCode!=null and buyerCode!=''">
+                <!--AND B.BUYER_CODE LIKE '%${buyerCode}%'-->
+                AND B.BUYER_CODE LIKE #{buyerCode}
+            </if>
+            <if test="provinceCode!=null and provinceCode!=''">
+                AND B.PROVINCE_CODE = #{provinceCode}
+            </if>
+            <if test="cityCode!=null and cityCode!=''">
+                AND B.CITY_CODE=#{cityCode}
+            </if>
+            <if test="districtCode!=null and districtCode!=''">
+                AND B.DISTRICT_CODE=#{districtCode}
+            </if>
+            <if test="buyerAddr!=null and buyerAddr!=''">
+                <!--AND B.BUYER_ADDR like '%${buyerAddr}%'-->
+                AND B.BUYER_ADDR like #{buyerAddr}
+            </if>
+            <if test="salesTargetType!=null and salesTargetType!=''">
+                AND H.SALES_TARGET_TYPE=#{salesTargetType}
+            </if>
+            <if test="classCode!=null and classCode!=''">
+                AND I.CLASS_CODE=#{classCode}
+            </if>
+            <if test="accountName!=null and accountName!=''">
+                <!--AND J.ACCOUNT_NAME like '%${accountName}%'--><!---->
+                AND J.ACCOUNT_NAME like #{accountName}
+            </if>
+            <if test="telNo!=null and telNo!=''">
+                <!--AND J.TEL_NO like  '%${telNo}%'-->
+                AND J.TEL_NO like  #{telNo}
+            </if>
+            <if test="buyerName!=null and buyerName!=''">
+                <!--AND B.BUYER_NAME like '%${buyerName}%'-->
+                AND B.BUYER_NAME like #{buyerName}
+            </if>
+            <if test="superiorName!=null and superiorName!=''">
+                <!--AND B.SUPERIOR_NAME like '%${superiorName}%'-->
+                AND B.SUPERIOR_NAME like #{superiorName}
+            </if>
+            <if test="marketingsStatusCode!=null and marketingsStatusCode!=''">
+                AND B.MARKETINGS_STATUS = #{marketingsStatusCode}
+            </if>
+            <if test="busiTel!=null and busiTel!=''">
+                <!--AND B.BUSI_TEL like '%${busiTel}%'-->
+                AND B.BUSI_TEL like #{busiTel}
+            </if>
+            <if test="employeeName!=null and employeeName!=''">
+                <!--AND L.EMPLOYEE_NAME like '%${employeeName}%'-->
+                AND L.EMPLOYEE_NAME like #{employeeName}
+            </if>
+        </where>
+        GROUP BY B.BUYER_ID
+    </sql>
+
+    <select id="findList" resultType="com.msk.buyers.bean.IBY121223Result"
+            parameterType="com.msk.buyers.bean.IBY121223Param">
+        SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+    </select>
+</mapper>

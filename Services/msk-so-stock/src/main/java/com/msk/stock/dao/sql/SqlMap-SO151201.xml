@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.stock.logic.SO151201Logic">
+
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            sp.DEL_FLG = 0
+            <if test="filterMap.lgcsCode!=null and filterMap.lgcsCode!=''">
+                AND LGCS_CODE like #{filterMap.lgcsCode}
+            </if>
+            <if test="filterMap.warehouseCode!=null and filterMap.warehouseCode!=''">
+                AND WAREHOUSE_CODE like #{filterMap.warehouseCode}
+            </if>
+            <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+                AND PD_CODE like #{filterMap.pdCode}
+            </if>
+            <if test="filterMap.lgcsName!=null and filterMap.lgcsName!=''">
+                AND LGCS_NAME like #{filterMap.lgcsName}
+            </if>
+            <if test="filterMap.warehouseName!=null and filterMap.warehouseName!=''">
+                AND WAREHOUSE_NAME like #{filterMap.warehouseName}
+            </if>
+            <if test="filterMap.slName!=null and filterMap.slName!=''">
+                AND SL_NAME like #{filterMap.slName}
+            </if>
+            <if test="filterMap.supplyPlayFrom!=null and filterMap.supplyPlayFrom!=''">
+                AND SUPPLY_PLATFORM = #{filterMap.supplyPlayFrom}
+            </if>
+
+            <if test="filterMap.slCodeList!=null and filterMap.slCodeList.size()>0">
+                and  SL_CODE IN
+                <foreach collection="filterMap.slCodeList" item="item" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="filterMap.supplierCodeList!=null and filterMap.supplierCodeList.size()>0">
+                and  SUPPLIER_CODE  IN
+                <foreach collection="filterMap.supplierCodeList" item="item" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+   <sql id="stockSpSql">
+       (  SELECT
+       STOCK_ID AS stockId
+       , LGCS_CODE AS lgcsCode
+       ,IFNULL(LGCS_NAME,'未知区域') AS lgcsName
+       ,IFNULL(WAREHOUSE_CODE,'') AS warehouseCode
+       ,IFNULL(WAREHOUSE_NAME,'') AS warehouseName
+       ,IFNULL(SUPPLY_PLATFORM,'') AS supplyPlayFrom
+       ,SL_CODE AS slCode
+       ,SUPPLIER_CODE AS supplierCode
+       ,IFNULL(PD_CODE,'') AS pdCode
+       ,IFNULL(SL_NAME,'') AS slName
+       ,IFNULL(concat(IFNULL(CLASSES_NAME,''),IFNULL(BREED_NAME,'')), '未知产品') AS pdName
+       , STOCK_QTY AS stockQty
+       ,ENABLED_STOCK_QTY  as  enabledStockQty
+       FROM
+       so_stock_sp sp
+       <include refid="whereCondition" />
+       ORDER BY STOCK_ID , STOCK_QTY DESC)
+   </sql>
+
+
+    <select id="findPageList" parameterType="BasePageParam"
+            resultType="com.msk.stock.bean.SO151201Bean">
+      SELECT stockSp.* FROM <include refid="stockSpSql" />  AS  stockSp
+        <if test="filterMap.pdName!=null and filterMap.pdName!=''">
+            where  pdName like #{filterMap.pdName}
+        </if>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer"
+            parameterType="BasePageParam">
+        SELECT
+        COUNT(1)
+        FROM  <include refid="stockSpSql"/> As  stockSp
+        <if test="filterMap.pdName!=null and filterMap.pdName!=''">
+            where  pdName like #{filterMap.pdName}
+        </if>
+
+    </select>
+
+    <update id="saveStockQty" parameterType="BasePageParam">
+        UPDATE so_stock_sp
+        SET STOCK_QTY = #{filterMap.stockQty}
+        WHERE STOCK_ID = #{filterMap.stockId}
+    </update>
+
+
+</mapper>

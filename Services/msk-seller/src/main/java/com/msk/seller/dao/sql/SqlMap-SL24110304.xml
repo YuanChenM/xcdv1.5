@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241103Logic">
+    <select id="queryList0401" parameterType="BaseParam" resultType="com.msk.seller.bean.SL2411030303Bean">
+        select 
+        IFNULL(EP_ID,'') AS epId,
+        IFNULL(WORKSHOP_ID,'') AS  workshopId,
+        IFNULL(WORKSHOP_NAME,'') AS workshopName,
+        IFNULL(PRODUCT,'') AS product,
+        IFNULL(PROCESS,'') AS process
+        from SL_EP_WORKSHOP
+        where EP_ID=#{filterMap.epId}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+    
+    <select id="queryList0402" parameterType="BaseParam" resultType="com.msk.seller.bean.SL2411030302Bean">
+        select 
+        IFNULL(EP_ID,'') AS epId,
+        IFNULL(FTY_ASSET,'') AS ftyAsset,
+        IFNULL(FTY_REG_CAPITAL,'') AS ftyRegCapital,
+        IFNULL(FTY_LAND_AREA,'') AS ftyLandArea,
+        IFNULL(FTY_FLOOR_AREA,'') AS ftyFloorpArea,
+        IFNULL(FTY_EQUIPMENT,'') AS ftyEquipment,
+        IFNULL(FTY_DESIGN_CAP,'') AS ftyDesignCap,
+        IFNULL(FTY_ACTUAL_CAP,'') AS ftyActualCap,
+        IFNULL(FTY_FT_RATE,'') AS ftyFtRate,
+        IFNULL(FTY_DS_RATE,'') AS ftyDsRate,
+        IFNULL(FTY_AS_RATE,'') AS ftyAsRate,
+        IFNULL(SCAP_MATERIAL,'') AS scapMaterial,
+        IFNULL(SCAP_PRODUCT,'') AS scapProduct
+        from SL_EP_CAP
+        where EP_ID=#{filterMap.epId}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+    
+    <select id="findOneSL2411030302Bean" parameterType="BaseParam" resultType="com.msk.seller.bean.SL2411030302Bean">
+        select 
+        IFNULL(EP_ID,'') AS epId,
+        IFNULL(FTY_ASSET,'') AS ftyAsset,
+        IFNULL(FTY_REG_CAPITAL,'') AS ftyRegCapital,
+        IFNULL(FTY_LAND_AREA,'') AS ftyLandArea,
+        IFNULL(FTY_FLOOR_AREA,'') AS ftyFloorpArea,
+        IFNULL(FTY_EQUIPMENT,'') AS ftyEquipment,
+        IFNULL(FTY_DESIGN_CAP,'') AS ftyDesignCap,
+        IFNULL(FTY_ACTUAL_CAP,'') AS ftyActualCap,
+        IFNULL(FTY_FT_RATE,'') AS ftyFtRate,
+        IFNULL(FTY_DS_RATE,'') AS ftyDsRate,
+        IFNULL(FTY_AS_RATE,'') AS ftyAsRate,
+        IFNULL(SCAP_MATERIAL,'') AS scapMaterial,
+        IFNULL(SCAP_PRODUCT,'') AS scapProduct,
+        IFNULL(LAB_AREA,'') AS labArea,
+        IFNULL(LAB_FUNCTION,'') AS labFunction,
+        IFNULL(LAB_INVESTMENT,'') AS labInvestment,
+        IFNULL(LAB_MEMBER,'') AS labMember,
+        IFNULL(DD_EQUIPMENT,'') AS ddEquipment
+        from SL_EP_CAP
+        where EP_ID=#{filterMap.epId}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+    
+    
+</mapper>

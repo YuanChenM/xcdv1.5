@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101109RsLogic">
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.SlHouseAccount">
+       SELECT
+        A.ACCOUNT_PSD AS accountPsd
+        FROM
+            sl_house_account A
+        WHERE
+            A.HOUSE_ACCOUNT = #{filterMap.houseAccount}
+            AND A.ACCOUNT_PSD = #{filterMap.oldAccountPsd}
+            AND (A.DEL_FLG IS NULL OR A.DEL_FLG =0)
+    </select>
+
+   <update id="modify" parameterType="com.msk.bs.bean.IBS2101109RsParam">
+       UPDATE sl_house_account SET
+       ACCOUNT_PSD = #{newAccountPsd}
+       <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+       ,UPD_ID = #{updId},
+       UPD_TIME = #{updTime}
+       <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+       <!--Modify delflag横展开 2016/10/09 任强 Start-->
+       ,VER=VER+1
+       <!--Modify delflag横展开 2016/10/09 任强 End-->
+       WHERE HOUSE_ACCOUNT = #{houseAccount}
+       AND ACCOUNT_PSD = #{oldAccountPsd}
+       <!--Modify delflag横展开 2016/10/09 任强 Start-->
+       and  (DEL_FLG IS NULL OR DEL_FLG =0)
+       <!--Modify delflag横展开 2016/10/09 任强 End-->
+   </update>
+</mapper>

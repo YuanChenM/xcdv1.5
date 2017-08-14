@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.ProductBuyerStdLogic">
+       <select id="getPdOrg" resultType="com.msk.core.entity.ByResearchStdOrg" parameterType="BaseParam">
+              SELECT 0 AS id
+              , '' AS buyerId
+              , a.CLASSES_CODE AS classesCode
+              , a.MACHINING_CODE AS machiningCode
+              , a.BREED_CODE AS breedCode
+              , a.STANDARD_ID AS standardId
+              , b.ORG_STD_ITEM_ID AS orgStdItemId
+              , c.ORG_STD_ITEM_NAME AS orgStdItemName
+              , b.ORG_GOOD_VAL AS goodVal
+              , '0' AS goodValAgree
+              , b.ORG_NORMAL_VAL AS normalVal
+              , '0' AS normalValAgree
+              , b.ORG_BAD_VAL AS badVal
+              , '0' AS badValAgree
+              , '' AS description
+              , b.REMARK AS remark
+              , '0' AS isResearch
+              FROM pd_standard a
+              INNER JOIN pd_org_std b
+              ON b.STANDARD_ID = a.STANDARD_ID
+              INNER JOIN pd_org_std_item c
+              ON c.ORG_STD_ITEM_ID = b.ORG_STD_ITEM_ID
+              AND c.IS_CATALOG = '1'
+              WHERE a.CLASSES_CODE = #{filterMap.classesCode}
+              AND a.MACHINING_CODE = #{filterMap.machiningCode}
+              AND a.BREED_CODE = #{filterMap.breedCode}
+              AND a.CLASSESTREE_CODE = #{filterMap.treeCode}
+              AND a.DEL_FLG = '0'
+       </select>
+       <select id="getPdOrgStd" resultType="com.msk.core.entity.ByResearchStdOrg" parameterType="BaseParam">
+              SELECT STANDARD_ID AS standardId
+              FROM pd_standard
+              WHERE CLASSES_CODE = #{filterMap.classesCode}
+              AND MACHINING_CODE = #{filterMap.machiningCode}
+              AND BREED_CODE = #{filterMap.breedCode}
+              AND CLASSESTREE_CODE = #{filterMap.treeCode}
+              AND DEL_FLG = '0'
+       </select>
+
+       <select id="findModifyOrgInfo" parameterType="BaseParam" resultType="com.msk.core.entity.ByResearchStdOrg">
+       SELECT @rownum:=0 AS id
+       , #{buyerId} AS buyerId
+       , #{classesCode} AS classesCode
+       , #{machiningCode} AS machiningCode
+       , #{breedCode} AS breedCode
+       , #{standardId} AS standardId
+       , '0' AS goodValAgree
+       , '0' AS badValAgree
+       , '' AS description
+       , std.ORG_STD_ITEM_ID AS orgStdItemId
+       , item.ORG_STD_ITEM_NAME AS orgStdItemName
+       , std.ORG_GOOD_VAL AS goodVal
+       , std.ORG_NORMAL_VAL AS normalVal
+       , '0' AS normalValAgree
+       , std.ORG_BAD_VAL AS badVal
+       , std.REMARK AS remark
+       , '0' AS isResearch
+       FROM pd_org_std std
+       INNER JOIN pd_org_std_item item
+       ON item.ORG_STD_ITEM_ID = std.ORG_STD_ITEM_ID
+       AND item.IS_CATALOG = '1'
+       WHERE std.STANDARD_ID = #{standardId}
+       AND std.DEL_FLG = '0'
+       ORDER BY std.ORG_STD_ITEM_ID) a
+      </select>
+
+
+       <select id="getPdMctStd" resultType="com.msk.core.entity.ByResearchStdMct" parameterType="BaseParam">
+              SELECT STANDARD_ID AS standardId
+              FROM pd_standard
+              WHERE CLASSES_CODE = #{filterMap.classesCode}
+              AND MACHINING_CODE = #{filterMap.machiningCode}
+              AND BREED_CODE = #{filterMap.breedCode}
+              AND CLASSESTREE_CODE = #{filterMap.treeCode}
+       </select>
+
+       <select id="getPdMct" resultType="com.msk.core.entity.ByResearchStdMct" parameterType="BaseParam">
+              SELECT 0 AS id
+              , '' AS buyerId
+              , a.CLASSES_CODE AS classesCode
+              , a.MACHINING_CODE AS machiningCode
+              , a.BREED_CODE AS breedCode
+              , a.STANDARD_ID AS standardId
+              , b.MCT_STD_ITEM_ID AS mctStdItemId
+              , c.MCT_STD_ITEM_NAME AS mctStdItemName
+              , b.MCT_OK_VAL AS okVal
+              , b.MCT_NG_VAL AS ngVal
+              , '' AS description
+              , b.REMARK AS remark
+              , '0' AS isResearch
+              FROM pd_standard a
+              INNER JOIN pd_mct_std b
+              ON b.STANDARD_ID = a.STANDARD_ID
+              INNER JOIN pd_mct_std_item c
+              ON c.MCT_STD_ITEM_ID = b.MCT_STD_ITEM_ID
+              AND c.IS_CATALOG = '1'
+              WHERE a.CLASSES_CODE = #{filterMap.classesCode}
+              AND a.MACHINING_CODE = #{filterMap.machiningCode}
+              AND a.BREED_CODE = #{filterMap.breedCode}
+              AND a.CLASSESTREE_CODE = #{filterMap.treeCode}
+       </select>
+
+
+       <select id="getPdTncStd" resultType="com.msk.core.entity.ByResearchStdTnc" parameterType="BaseParam">
+              SELECT STANDARD_ID AS standardId
+              FROM pd_standard
+              WHERE CLASSES_CODE = #{filterMap.classesCode}
+              AND MACHINING_CODE = #{filterMap.machiningCode}
+              AND BREED_CODE = #{filterMap.breedCode}
+              AND CLASSESTREE_CODE = #{filterMap.treeCode}
+       </select>
+
+       <select id="getPdTnc" resultType="com.msk.core.entity.ByResearchStdTnc" parameterType="BaseParam">
+              SELECT 0 AS id
+              , '' AS buyerId
+              , a.CLASSES_CODE AS classesCode
+              , a.MACHINING_CODE AS machiningCode
+              , a.BREED_CODE AS breedCode
+              , a.STANDARD_ID AS standardId
+              , b.TNC_STD_ITEM_ID AS tncStdItemId
+              , c.TNC_STD_ITEM_NAME AS tncStdItemName
+              , b.TNC_STD_VAL1 AS stdVal1
+              , b.TNC_STD_VAL2 AS stdVal2
+              , b.TNC_STD_VAL3 AS stdVal3
+              , '' AS description
+              , b.REMARK AS remark
+              , '0' AS isResearch
+              FROM pd_standard a
+              INNER JOIN pd_tnc_std b
+              ON b.STANDARD_ID = a.STANDARD_ID
+              INNER JOIN pd_tnc_std_item c
+              ON c.TNC_STD_ITEM_ID = b.TNC_STD_ITEM_ID
+              AND c.IS_CATALOG = '1'
+              WHERE a.CLASSES_CODE = #{filterMap.classesCode}
+              AND a.MACHINING_CODE = #{filterMap.machiningCode}
+              AND a.BREED_CODE = #{filterMap.breedCode}
+              AND a.CLASSESTREE_CODE = #{filterMap.treeCode}
+       </select>
+
+
+       <select id="getPdFedStd" resultType="com.msk.core.entity.ByResearchStdFed" parameterType="BaseParam">
+              SELECT STANDARD_ID AS standardId
+              FROM pd_standard
+              WHERE CLASSES_CODE =#{filterMap.classesCode}
+              AND MACHINING_CODE = #{filterMap.machiningCode}
+              AND BREED_CODE = #{filterMap.breedCode}
+              AND CLASSESTREE_CODE = #{filterMap.treeCode}
+       </select>
+
+       <select id="getPdFed" resultType="com.msk.core.entity.ByResearchStdFed" parameterType="BaseParam">
+              SELECT 0 AS id
+              , '' AS buyerId
+              , a.CLASSES_CODE AS classesCode
+              , a.MACHINING_CODE AS machiningCode
+              , a.BREED_CODE AS breedCode
+              , a.STANDARD_ID AS standardId
+              , b.FED_STD_ITEM_ID AS fedStdItemId
+              , c.FED_STD_ITEM_NAME AS fedStdItemName
+              , b.FED_GOOD_VAL AS goodVal
+              , '0' AS goodValAgree
+              , b.FED_NORMAL_VAL AS normalVal
+              , '0' AS normalValAgree
+              , b.FED_BAD_VAL AS badVal
+              , '0' AS badValAgree
+              , '' AS description
+              , b.REMARK AS remark
+              , '0' AS isResearch
+              FROM pd_standard a
+              INNER JOIN pd_fed_std b
+              ON b.STANDARD_ID = a.STANDARD_ID
+              INNER JOIN pd_fed_std_item c
+              ON c.FED_STD_ITEM_ID = b.FED_STD_ITEM_ID
+              AND c.IS_CATALOG = '1'
+              WHERE a.CLASSES_CODE = #{filterMap.classesCode}
+              AND a.MACHINING_CODE = #{filterMap.machiningCode}
+              AND a.BREED_CODE = #{filterMap.breedCode}
+              AND a.CLASSESTREE_CODE = #{filterMap.treeCode}
+       </select>
+
+
+       <select id="getPdGnqStd" resultType="com.msk.core.entity.ByResearchStdGnq" parameterType="BaseParam">
+              SELECT STANDARD_ID AS standardId
+              FROM pd_standard
+              WHERE CLASSES_CODE =#{filterMap.classesCode}
+              AND MACHINING_CODE = #{filterMap.machiningCode}
+              AND BREED_CODE = #{filterMap.breedCode}
+              AND CLASSESTREE_CODE = #{filterMap.treeCode}
+       </select>
+
+       <select id="getPdGnq" resultType="com.msk.core.entity.ByResearchStdGnq" parameterType="BaseParam">
+              SELECT 0 AS id
+              , '' AS buyerId
+              , a.CLASSES_CODE AS classesCode
+              , a.MACHINING_CODE AS machiningCode
+              , a.BREED_CODE AS breedCode
+              , a.STANDARD_ID AS standardId
+              , b.GNQ_STD_ITEM_ID AS gnqStdItemId
+              , c.GNQ_STD_ITEM_NAME AS gnqStdItemName
+              , b.GNQ_OK_VAL AS okVal
+              , '0' AS okValAgree
+              , b.GNQ_NG_VAL AS ngVal
+              , '' AS description
+              , b.REMARK AS remark
+              , '0' AS isResearch
+              FROM pd_standard a
+              INNER JOIN pd_gnq_std b
+              ON b.STANDARD_ID = a.STANDARD_ID
+              INNER JOIN pd_gnq_std_item c
+              ON c.GNQ_STD_ITEM_ID = b.GNQ_STD_ITEM_ID
+              AND c.IS_CATALOG = '1'
+              WHERE a.CLASSES_CODE = #{filterMap.classesCode}
+              AND a.MACHINING_CODE = #{filterMap.machiningCode}
+              AND a.BREED_CODE = #{filterMap.breedCode}
+              AND a.CLASSESTREE_CODE = #{filterMap.treeCode}
+       </select>
+
+
+       <select id="getPdSftStd" resultType="com.msk.core.entity.ByResearchStdSft" parameterType="BaseParam">
+              SELECT STANDARD_ID AS standardId
+              FROM pd_standard
+              WHERE CLASSES_CODE =#{filterMap.classesCode}
+              AND MACHINING_CODE = #{filterMap.machiningCode}
+              AND BREED_CODE = #{filterMap.breedCode}
+              AND CLASSESTREE_CODE = #{filterMap.treeCode}
+       </select>
+
+       <select id="getPdSft" resultType="com.msk.core.entity.ByResearchStdSft" parameterType="BaseParam">
+              SELECT 0 AS id
+              , '' AS buyerId
+              , a.CLASSES_CODE AS classesCode
+              , a.MACHINING_CODE AS machiningCode
+              , a.BREED_CODE AS breedCode
+              , a.STANDARD_ID AS standardId
+              , b.SFT_STD_ITEM_ID AS sftStdItemId
+              , c.SFT_STD_ITEM_NAME AS sftStdItemName
+              , b.SFT_OK_VAL AS okVal
+              , '0' AS okValAgree
+              , b.SFT_NG_VAL AS ngVal
+              , '' AS description
+              , b.REMARK AS remark
+              , '0' AS isResearch
+              FROM pd_standard a
+              INNER JOIN pd_sft_std b
+              ON b.STANDARD_ID = a.STANDARD_ID
+              INNER JOIN pd_sft_std_item c
+              ON c.SFT_STD_ITEM_ID = b.SFT_STD_ITEM_ID
+              AND c.IS_CATALOG = '1'
+              WHERE a.CLASSES_CODE = #{filterMap.classesCode}
+              AND a.MACHINING_CODE = #{filterMap.machiningCode}
+              AND a.BREED_CODE = #{filterMap.breedCode}
+              AND a.CLASSESTREE_CODE = #{filterMap.treeCode}
+       </select>
+
+
+       <select id="getPdTspStd" resultType="com.msk.core.entity.ByResearchStdTsp" parameterType="BaseParam">
+              SELECT STANDARD_ID AS standardId
+              FROM pd_standard
+              WHERE CLASSES_CODE =#{filterMap.classesCode}
+              AND MACHINING_CODE = #{filterMap.machiningCode}
+              AND BREED_CODE = #{filterMap.breedCode}
+              AND CLASSESTREE_CODE = #{filterMap.treeCode}
+       </select>
+
+       <select id="getPdTsp" resultType="com.msk.core.entity.ByResearchStdTsp" parameterType="BaseParam">
+              SELECT 0 AS id
+              , '' AS buyerId
+              , a.CLASSES_CODE AS classesCode
+              , a.MACHINING_CODE AS machiningCode
+              , a.BREED_CODE AS breedCode
+              , a.STANDARD_ID AS standardId
+              , b.TSP_STD_ITEM_ID AS tspStdItemId
+              , c.TSP_STD_ITEM_NAME AS tspStdItemName
+              , b.TSP_OK_VAL AS okVal
+              , '0' AS okValAgree
+              , b.TSP_NG_VAL AS ngVal
+              , '' AS description
+              , b.REMARK AS remark
+              , '0' AS isResearch
+              FROM pd_standard a
+              INNER JOIN pd_tsp_std b
+              ON b.STANDARD_ID = a.STANDARD_ID
+              INNER JOIN pd_tsp_std_item c
+              ON c.TSP_STD_ITEM_ID = b.TSP_STD_ITEM_ID
+              AND c.IS_CATALOG = '1'
+              WHERE a.CLASSES_CODE = #{filterMap.classesCode}
+              AND a.MACHINING_CODE = #{filterMap.machiningCode}
+              AND a.BREED_CODE = #{filterMap.breedCode}
+              AND a.CLASSESTREE_CODE = #{filterMap.treeCode}
+       </select>
+
+
+       <select id="getPdNor" resultType="com.msk.core.entity.ByResearchStdNor" parameterType="BaseParam">
+              SELECT
+              NORMS_CODE AS normsCode
+              , NORMS_SUTTLE AS normsSuttle
+              , NORMS_ERROR AS normsError
+              , NORMS_NUMBER AS normsNumber
+              , NORMS_SIZE AS normsSize
+              , NORMS_TEXTURE AS normsTexture
+              , NORMS_OUT AS normsOut
+              , NORMS_KG AS normsKg
+              , NORMS_OUT_SIZE AS normsOutSize
+              , NORMS_OUT_TEXTURE AS normsOutTexture
+              , '0' AS isResearch
+              FROM pd_norms_std
+              WHERE STANDARD_ID = #{filterMap.standardId}
+              AND NORMS_CODE = #{filterMap.normsCode}
+       </select>
+
+
+
+</mapper>

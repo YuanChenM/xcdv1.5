@@ -1,0 +1,15 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<form action="${ctx}/PD141106/loadStandard" id="PD141106SearchForm">
+<table style="width: 100%" class="dataTable no-footer">
+	<tr>
+         <td colspan="5" align="center"><strong>神农客</strong></td>
+    </tr>
+	<tr>
+		<td width="80px" align="right" style="background:#DBDBDB">类别名称</td>
+		<td width="40%">${classes.classesName}</td>
+		<td width="80px" align="right" style="background:#DBDBDB">品种名称</td>
+		<td>${breed.breedName}</td>
+		<td></td>
+	</tr>
+</table>
+</form>

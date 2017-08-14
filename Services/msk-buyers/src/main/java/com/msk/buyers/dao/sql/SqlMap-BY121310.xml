@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121310Logic">
+
+    <select id="findDelFlg" resultType="com.msk.core.entity.ByBuyerPdCla" parameterType="com.msk.buyers.bean.BY121310Param">
+      SELECT
+        CLASS_CODE AS classCode,
+        CLASS_NAME AS className,
+        MACHINING_CODE AS machiningCode
+      FROM BY_BUYER_PD_CLA
+      WHERE DEL_FLG = 1
+      AND BUYER_ID = #{buyerId}
+    </select>
+
+    <update id="updateDelFlg" parameterType="com.msk.buyers.bean.BY121310Param">
+      UPDATE BY_BUYER_PD_CLA
+      SET
+          DEL_FLG = 1
+         ,UPD_ID = #{updId}
+         ,UPD_TIME = #{updTime}
+      WHERE BUYER_ID = #{buyerId}
+    </update>
+
+    <update id="updateMacining" parameterType="com.msk.buyers.bean.BY121310Param">
+        UPDATE BY_BUYER_PD_CLA
+        SET MACHINING_CODE = #{machiningCodeU}
+         ,UPD_ID = #{updId}
+         ,UPD_TIME = #{updTime}
+          ,DEL_FLG = 0
+        WHERE BUYER_ID = #{buyerId}
+        AND   CLASS_CODE = #{classCode}
+    </update>
+    <insert id="save" parameterType="com.msk.buyers.bean.BY121310Param">
+        INSERT INTO BY_BUYER_PD_CLA(
+        ID,
+        BUYER_ID,
+        CLASS_CODE,
+        CLASS_NAME,
+        MACHINING_CODE,
+        DEL_FLG,
+
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+
+        VER
+        )VALUES (
+        #{Id},
+        #{buyerId},
+        #{classCode},
+        #{className},
+        #{machiningCodeU},
+        0,
+         #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+
+    </insert>
+
+
+    <select id="findSuperiorType" resultType="com.msk.buyers.bean.BY121310Bean" parameterType="com.msk.buyers.bean.BY121310Param">
+        SELECT
+        BUYER_CODE AS buyerCode,
+        SUPERIOR_TYPE AS superiorType,
+        MARKETINGS_STATUS AS marketingsStatus,
+        MARKET_EXCEPTION_STATUS AS marketExceptionStatus,
+        LGCS_AREA_CODE AS lgcsAreaCode,
+        CITY_CODE AS cityCode
+        FROM
+        BY_BUYER_BASIC_INFO
+        WHERE
+        BUYER_ID = #{buyerId}
+        AND DEL_FLG =0
+    </select>
+
+
+
+</mapper>

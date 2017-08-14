@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ds.logic.ISC1891I1Logic">
+
+    <sql id="whereCondition">
+        <where>
+            a.DEL_FLG='0'
+            AND P.DEL_FLG='0'
+            <if test="distMonth!=null and distMonth!=''">
+                AND a.DIST_MONTH=#{distMonth}
+            </if>
+            <if test="lgcsCode!=null and lgcsCode!=''">
+                AND a.LGCS_CODE=#{lgcsCode}
+            </if>
+            <if test="suppCode!=null and suppCode!=''">
+                AND a.SUPP_CODE=#{suppCode}
+            </if>
+            <if test="pdCode!=null and pdCode!=''">
+                AND a.PD_CODE=#{pdCode}
+            </if>
+        </where>
+    </sql>
+    <select id="getUnStockNum" resultType="com.msk.ds.bean.ISC1891I1RsResultInfo"
+            parameterType="java.util.HashMap">
+        SELECT a.DIST_MONTH AS distMonth,
+                a.LGCS_CODE AS lgcsCode,
+                a.SUPP_CODE AS suppCode,
+                a.PD_CODE as pdCode,
+        SUM(p.NEW_PLAN_NUM) - SUM(a.NEW_ACTUAL_NUM) AS unStockNum
+        FROM ds_pd_virtual_stock_actual a
+        INNER JOIN ds_pd_virtual_stock_plan p ON
+                a.DIST_MONTH=p.DIST_MONTH
+                AND  a.LGCS_CODE = p.LGCS_CODE
+                AND  a.SUPP_CODE = p.SUPP_CODE
+                AND a.PD_CODE=p.PD_CODE
+        <include refid="whereCondition" />
+        GROUP BY  a.DIST_MONTH,a.LGCS_CODE,a.SUPP_CODE,p.PD_CODE
+        ORDER BY a.DIST_MONTH,a.LGCS_CODE,a.SUPP_CODE,p.PD_CODE ASC
+        <if test="flag==1">
+        GROUP BY  a.DIST_MONTH,a.LGCS_CODE,p.PD_CODE
+        ORDER BY a.DIST_MONTH,a.LGCS_CODE,p.PD_CODE ASC
+        </if>
+    </select>
+
+</mapper>

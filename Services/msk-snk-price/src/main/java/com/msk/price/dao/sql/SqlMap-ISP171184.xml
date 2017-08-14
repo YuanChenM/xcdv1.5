@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.ISP171184Logic">
+
+    <select id="getResult" resultType="com.msk.price.bean.ISP171184Bean"
+            parameterType="BaseParam">
+       SELECT
+	        A.PD_CODE AS productId,
+	        B.GRADE_CODE AS gradeCode,
+	        A.LGCS_CODE AS logiAreaCode
+        FROM
+	        SP_WAYGRADE_PD A
+        LEFT JOIN SP_LOGS_PRODUCT B
+        ON A.PD_CODE = B.PD_CODE
+        AND A.LGCS_CODE=B.LGCS_CODE
+        AND A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+    </select>
+
+    <select id="getWay" resultType="com.msk.price.bean.ISP171184WayBean"
+            parameterType="BaseParam">
+       SELECT
+	        C.WAYGRADE_CODE AS orderLevel,
+            (cast(round(C.WAYGRADE_START,2) as decimal(18,0))) AS boxMin,
+            (cast(round(C.WAYGRADE_END,2) as decimal(18,0))) AS boxMax
+        FROM
+	        SP_WAYGRADE_PD A
+        LEFT JOIN SP_WAYG_DETAIL C
+        ON A.WAY_CODE= C.WAY_CODE
+        WHERE A.PD_CODE=#{filterMap.pdCode}
+        AND  A.LGCS_CODE=#{filterMap.LgcsCode}
+        AND A.DEL_FLG = 0
+        AND C.DEL_FLG = 0
+        ORDER BY WAYGRADE_CODE DESC
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        FROM
+	        SP_WAYGRADE_PD A
+        LEFT JOIN SP_LOGS_PRODUCT B
+        ON A.PD_CODE = B.PD_CODE
+        AND A.LGCS_CODE=B.LGCS_CODE
+        LEFT JOIN SP_WAYG_DETAIL C
+        ON A.WAY_CODE= C.WAY_CODE
+        AND A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+        AND C.DEL_FLG = 0
+    </select>
+    <select id="getPriceWayCount" resultType="Integer" parameterType="com.msk.price.bean.ISP171184Param">
+        select count(1)
+        FROM
+        SP_WAYGRADE_PD A
+        LEFT JOIN SP_LOGS_PRODUCT B ON A.PD_CODE = B.PD_CODE
+        AND A.LGCS_CODE = B.LGCS_CODE
+        LEFT JOIN SP_WAYG_DETAIL C ON A.WAY_CODE = C.WAY_CODE
+        WHERE
+        A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+        AND C.DEL_FLG = 0
+        <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+            AND a.PD_CODE = #{filterMap.pdCode}
+        </if>
+    </select>
+    <select id="getPriceWay" resultType="com.msk.price.bean.ISP171184Bean"
+            parameterType="com.msk.price.bean.ISP171184Param">
+        SELECT
+        A.PD_CODE AS productId,
+        B.GRADE_CODE AS gradeCode,
+        A.LGCS_CODE AS logiAreaCode
+        FROM
+        SP_WAYGRADE_PD A
+        LEFT JOIN SP_LOGS_PRODUCT B
+        ON A.PD_CODE = B.PD_CODE
+        AND A.LGCS_CODE=B.LGCS_CODE
+        WHERE
+        A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+        <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+            AND a.PD_CODE = #{filterMap.pdCode}
+        </if>
+    </select>
+</mapper>

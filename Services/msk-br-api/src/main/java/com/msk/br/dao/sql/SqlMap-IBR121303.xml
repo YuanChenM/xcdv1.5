@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121303Logic">
+
+    <select id="findPageList" resultType="com.msk.core.entity.BrOClaMachiningInfo" parameterType="com.msk.br.bean.BY121310RsParam">
+        SELECT
+          MAX(NULLIF (cla.CLASSES_CODE,'')) AS classesCode,
+          NULLIF (cla.CLASSES_NAME,'') AS classesName
+        FROM  BR_O_CLA_MACHINING_INFO cla
+          LEFT JOIN BR_O_ORDER_INFO ord  ON cla.CLASSES_CODE = ord.CLASSES_CODE AND cla.MACHINING_CODE = ord.MACHINING_CODE AND  cla.DEL_FLG = ord.DEL_FLG
+        WHERE cla.DEL_FLG = 0
+          AND ord.BUYER_ID = #{buyerId}
+        GROUP BY cla.CLASSES_NAME
+        ORDER BY ord.PD_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+    <select id="getPageCount" resultType="int" parameterType="com.msk.br.bean.BY121310RsParam">
+        SELECT count(1)
+        FROM  BR_O_CLA_MACHINING_INFO cla
+          LEFT JOIN BR_O_ORDER_INFO ord  ON cla.CLASSES_CODE = ord.CLASSES_CODE AND cla.MACHINING_CODE = ord.MACHINING_CODE AND  cla.DEL_FLG = ord.DEL_FLG
+        WHERE cla.DEL_FLG = 0
+          AND ord.BUYER_ID = #{buyerId}
+    </select>
+
+    <select id="findMachiningName" resultType="com.msk.core.entity.BrOClaMachiningInfo" parameterType="com.msk.br.bean.BY121310RsParam">
+      SELECT
+        NULLIF (cla.MACHINING_NAME,'') AS machiningName
+      FROM  BR_O_CLA_MACHINING_INFO cla
+        LEFT JOIN BR_O_ORDER_INFO ord  ON cla.CLASSES_CODE = ord.CLASSES_CODE AND cla.MACHINING_CODE = ord.MACHINING_CODE AND  cla.DEL_FLG = ord.DEL_FLG
+      WHERE cla.DEL_FLG = 0
+        AND  cla.CLASSES_CODE = #{classesCode}
+      GROUP BY cla.MACHINING_NAME
+    </select>
+
+</mapper>

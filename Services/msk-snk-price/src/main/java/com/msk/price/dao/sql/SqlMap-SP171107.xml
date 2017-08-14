@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171107Logic">
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.price.bean.SP171107Bean">
+        SELECT
+            e.CLASSES_CODE AS classesCode
+            ,e.MACHINING_CODE AS machiningCode
+            ,e.BREED_CODE AS breedCode
+            ,e.FEATURE_CODE AS featureCode
+            ,e.WEIGHT_CODE AS weightCode
+            ,IFNULL(e.CLASSES,'') AS classesName
+            ,IFNULL(e.MACHINING,'') AS machiningName
+            ,IFNULL(e.BREED,'') AS breedName
+            ,IFNULL(e.FEATURE,'') AS featureName
+            ,IFNULL(e.WEIGHT,'') AS weightName
+            ,IFNULL(e.PD_NAME,'') AS pdName
+            ,IFNULL(e.SCIENTIFIC_NAME,'') AS scientificName
+            ,IFNULL(e.LOCAL_NAME,'') AS localName
+            ,B.PD_CODE AS pdCode
+            ,B.GRADE_CODE AS gradeCode
+            ,IFNULL(e.GRADE,'') AS gradeName
+            ,IFNULL(B.PUBLISH_NUM,'') AS publishNum
+            ,IFNULL(C.DEMAND_ID,'') AS demandId
+            ,IFNULL(C.SL_ID,'') AS slId
+            ,IFNULL(C.SL_CODE,'') AS slCode
+            ,IFNULL(C.EP_NAME,'') AS slName
+            ,IFNULL(C.APPLY_NUM,'') AS applyNum
+            ,IFNULL(C.IS_CONFIRM,'') AS isConfirm
+        FROM SP_PD_DEMAND_PUBLISH A
+        INNER JOIN  SP_PD_DEMAND_PUBLISH_DETAIL B ON
+            A.PUBLISH_ID = B.PUBLISH_ID
+            AND A.DEL_FLG = 0
+            AND B.DEL_FLG = 0
+        LEFT JOIN  SP_SELLER_PD_DEMANDAPPLY_NUM C ON
+            A.PUBLISH_YM = C.DEMAND_YEARMONTH
+            AND A.LGCS_CODE = C.LGCS_CODE
+            AND B.PD_CODE = C.PD_CODE
+            AND B.GRADE_CODE = C.GRADE_CODE
+            AND C.IS_CONFIRM in(1,3)
+            AND C.DEL_FLG = 0
+        LEFT JOIN sp_logs_product e on e.LGCS_CODE = a.LGCS_CODE AND e.PD_CODE = b.PD_CODE
+        <include refid="whereCondition"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        FROM SP_PD_DEMAND_PUBLISH A
+        INNER JOIN  SP_PD_DEMAND_PUBLISH_DETAIL B ON
+        A.PUBLISH_ID = B.PUBLISH_ID
+        AND A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+        LEFT JOIN  SP_SELLER_PD_DEMANDAPPLY_NUM C ON
+        A.PUBLISH_YM = C.DEMAND_YEARMONTH
+        AND A.LGCS_CODE = C.LGCS_CODE
+        AND B.PD_CODE = C.PD_CODE
+        AND B.GRADE_CODE = C.GRADE_CODE
+        AND C.IS_CONFIRM in(1,3)
+        AND C.DEL_FLG = 0
+        LEFT JOIN sp_logs_product e on e.LGCS_CODE = a.LGCS_CODE AND e.PD_CODE = b.PD_CODE
+        <include refid="whereCondition"/>
+    </select>
+
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.lgcsCode!=null and filterMap.lgcsCode!=''">
+                AND A.LGCS_CODE = #{filterMap.lgcsCode}
+            </if>
+            <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+                AND B.PD_CODE = #{filterMap.pdCode}
+            </if>
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND C.SL_CODE  <![CDATA[<> #{filterMap.slCode}]]>
+            </if>
+            <if test="filterMap.demandYearMonth!=null and filterMap.demandYearMonth!=''">
+                AND A.PUBLISH_YM = #{filterMap.demandYearMonth}
+            </if>
+        </where>
+    </sql>
+</mapper>

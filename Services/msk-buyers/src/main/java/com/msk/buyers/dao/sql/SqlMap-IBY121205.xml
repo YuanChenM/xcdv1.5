@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121205Logic">
+    <select id="findLinece" parameterType="BaseParam" resultType="com.msk.buyers.bean.IBY121205RsParam">
+        SELECT
+           ID AS id,
+           BUYER_ID AS buyerId,
+           LIC_NAME AS licName,
+           LIC_NUMBER AS licNumber,
+           LEGAL_NAME AS legalName,
+           LEGAL_LIC_TYPE AS legalLicType,
+           LEGAL_LIC_NUMBER AS legalLicNumber
+        FROM
+           by_buyer_licence
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+           <if test="filterMap.licName != null and filterMap.licName != ''">
+               AND LIC_NAME = #{filterMap.licName}
+           </if>
+           <if test="filterMap.licNumber != null and filterMap.licNumber != ''">
+                AND LIC_NUMBER = #{filterMap.licNumber}
+           </if>
+           <if test="filterMap.legalName != null and filterMap.legalName != ''">
+                AND LEGAL_NAME = #{filterMap.legalName}
+           </if>
+           <if test="filterMap.legalLicType != null and filterMap.legalLicType != ''">
+                AND LEGAL_LIC_TYPE = #{filterMap.legalLicType}
+           </if>
+           <if test="filterMap.legalLicNumber != null and filterMap.legalLicNumber != ''">
+                AND LEGAL_LIC_NUMBER = #{filterMap.legalLicNumber}
+           </if>
+           AND DEL_FLG = #{filterMap.delFlg}
+    </select>
+    <update id="buyerLineceModify" parameterType="BaseEntity">
+        UPDATE
+           by_buyer_licence
+        SET
+        <if test="buyerId!=null and buyerId!=''">
+            BUYER_ID=#{buyerId},
+        </if>
+        <if test="licName!=null and licName!=''">
+            LIC_NAME=#{licName},
+        </if>
+        <if test="licNumber!=null and licNumber!=''">
+            LIC_NUMBER=#{licNumber},
+        </if>
+        <if test="legalName!=null and legalName!=''">
+            LEGAL_NAME=#{legalName},
+        </if>
+        <if test="legalLicType!=null and legalLicType!=''">
+            LEGAL_LIC_TYPE=#{legalLicType},
+        </if>
+        <if test="legalLicNumber!=null and legalLicNumber!=''">
+            LEGAL_LIC_NUMBER=#{legalLicNumber},
+        </if>
+           UPD_ID = #{updId},
+           UPD_TIME = #{updTime}
+        WHERE
+           ID = #{id}
+           AND DEL_FLG = 0
+    </update>
+    <insert id="buyerLineceInsert" parameterType="BaseEntity">
+        INSERT INTO
+           by_buyer_licence(
+               ID,
+               BUYER_ID,
+               LIC_NAME,
+               LIC_NUMBER,
+               LEGAL_NAME,
+               LEGAL_LIC_TYPE,
+               LEGAL_LIC_NUMBER,
+               DEL_FLG,
+               CRT_ID,
+               CRT_TIME,
+               UPD_ID,
+               UPD_TIME,
+               ACT_ID,
+               ACT_TIME,
+               VER
+           )VALUES (
+               #{id},
+               #{buyerId},
+               #{licName},
+               #{licNumber},
+               #{legalName},
+               #{legalLicType},
+               #{legalLicNumber},
+               0,
+               #{crtId},
+               #{crtTime},
+               #{updId},
+               #{updTime},
+               #{actId},
+               #{actTime},
+               1
+           )
+    </insert>
+
+    <select id="findLineceList" parameterType="BaseParam" resultType="com.msk.buyers.bean.IBY121205RsParam">
+        SELECT
+        ID AS id,
+        BUYER_ID AS buyerId,
+        LIC_NAME AS licName,
+        LIC_NUMBER AS licNumber,
+        LEGAL_NAME AS legalName,
+        LEGAL_LIC_TYPE AS legalLicType,
+        LEGAL_LIC_NUMBER AS legalLicNumber
+        FROM
+        by_buyer_licence
+        WHERE
+        DEL_FLG = 0
+        <if test="buyerIdList !=null and buyerIdList.size()>0">
+            AND BUYER_ID in
+            <foreach item="buyerId" index="index" collection="buyerIdList"
+                     open="(" separator="," close=")">
+                #{buyerId}
+            </foreach>
+        </if>
+        <if test="filterMap.licName != null and filterMap.licName != ''">
+            AND LIC_NAME = #{filterMap.licName}
+        </if>
+        <if test="filterMap.licNumber != null and filterMap.licNumber != ''">
+            AND LIC_NUMBER = #{filterMap.licNumber}
+        </if>
+        <if test="filterMap.legalName != null and filterMap.legalName != ''">
+            AND LEGAL_NAME = #{filterMap.legalName}
+        </if>
+        <if test="filterMap.legalLicType != null and filterMap.legalLicType != ''">
+            AND LEGAL_LIC_TYPE = #{filterMap.legalLicType}
+        </if>
+        <if test="filterMap.legalLicNumber != null and filterMap.legalLicNumber != ''">
+            AND LEGAL_LIC_NUMBER = #{filterMap.legalLicNumber}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.ISO153104Logic">
+
+    <resultMap type="com.msk.so.bean.SOCp153111Bean" id="resultInfo">
+        <id property="sellerBillId" column="SELLER_BILL_ID"/>
+        <result property="businessMainId" column="BUSINESS_MAIN_ID"/>
+        <result property="businessMainCode" column="BUSINESS_MAIN_CODE"/>
+        <result property="businessMainName" column="BUSINESS_MAIN_NAME"/>
+        <result property="businessMainRole" column="BUSINESS_MAIN_ROLE"/>
+        <result property="settlementFlg" column="SETTLEMENT_FLG"/>
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+        <result property="sellerBillNo" column="SELLER_BILL_NO"/>
+        <result property="billType" column="BILL_TYPE"/>
+        <result property="billAmount" column="BILL_AMOUNT"/>
+        <result property="refundable" column="REFUNDABLE"/>
+        <result property="handingCharge" column="HANDING_CHARGE"/>
+        <result property="handingCharge" column="HANDING_CHARGE"/>
+        <result property="remark" column="REMARK"/>
+        </resultMap>
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        SELLER_BILL_ID AS  sellerBillId,
+        BUSINESS_MAIN_ID AS businessMainId,
+        BUSINESS_MAIN_CODE AS businessMainCode,
+        BUSINESS_MAIN_NAME AS businessMainName,
+        BUSINESS_MAIN_ROLE AS businessMainRole,
+        SETTLEMENT_FLG AS settlementFlg,
+        START_DATE  AS startDate,
+        END_DATE  AS endDate,
+        CONCAT(DATE_FORMAT(START_DATE,'%Y%m%d'),'-',DATE_FORMAT(END_DATE,'%Y%m%d'))  AS accountDate, <!--账期 -->
+        SELLER_BILL_NO AS sellerBillNo,
+        BILL_TYPE AS billType,
+        BILL_AMOUNT AS billAmount,
+        REFUNDABLE AS refundable,
+        HANDING_CHARGE  AS handingCharge,
+        REMARK  AS remark
+    </sql>
+
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <!--收款方ID-->
+            <if test="businessMainId!=null and businessMainId!=''">
+                AND sb.BUSINESS_MAIN_ID =#{businessMainId}
+            </if>
+            <!--结算标志-->
+            <if test="settlementFlgs!=null">
+                AND sb.SETTLEMENT_FLG IN
+                <foreach collection="settlementFlgs" item="settlementFlg" open="(" separator="," close=")">
+                    #{settlementFlg}
+                </foreach>
+            </if>
+            <!--备注-->
+            <if test="remark!=null and remark!=''">
+                AND sb.REMARK like #{remark}
+            </if>
+
+            <!--开始、结束时间-->
+            <!--只存在开始时间-->
+            <if test="startTime!=null and startTime!='' and (endTime==null or endTime=='') ">
+                <![CDATA[
+                   AND DATE_FORMAT(#{startTime},'%Y-%m-%d') <= DATE_FORMAT(sb.END_DATE,'%Y-%m-%d')
+
+                ]]>
+            </if>
+            <!--只存在结束时间-->
+            <if test="endTime!=null and endTime!='' and (startTime==null or startTime=='') ">
+                <![CDATA[
+                   AND DATE_FORMAT(sb.START_DATE,'%Y-%m-%d') <=  DATE_FORMAT(#{endTime},'%Y-%m-%d')
+                ]]>
+            </if>
+            <!--开始时间 结束时间都存-->
+            <if test="startTime!=null and startTime!='' and endTime!=null and endTime!='' ">
+                <![CDATA[
+                     AND (DATE_FORMAT(sb.START_DATE,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{startTime},'%Y-%m-%d') AND DATE_FORMAT(#{endTime},'%Y-%m-%d')
+                     OR DATE_FORMAT(sb.END_DATE,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{startTime},'%Y-%m-%d') AND DATE_FORMAT(#{endTime},'%Y-%m-%d'))
+                ]]>
+            </if>
+            AND sb.DEL_FLG = 0
+        </where>
+    </sql>
+
+
+   <select id="getDeliveryCode" parameterType="BaseParam" resultType="com.msk.so.bean.SOCp153111Bean">
+        SELECT
+           DELIVERY_CODE AS deliveryCode
+        FROM
+           SO_CP_SEL_CHARGING
+        WHERE
+           SELLER_BILLING_ID  =  #{filterMap.sellerBillId}
+           AND DEL_FLG = 0
+    </select>
+
+    <select id="getRefundCode" parameterType="BaseParam" resultType="com.msk.so.bean.SOCp153111Bean">
+        SELECT
+            REFUND_CODE AS refundCode
+        FROM
+             SO_CP_REFUND
+        WHERE
+        SELLER_BILL_ID  =  #{filterMap.sellerBillId}
+        AND DEL_FLG = 0
+    </select>
+
+    <select id="findPageList" parameterType="com.msk.so.bean.ISO153104Param"  resultMap="resultInfo">
+        select
+        <include refid="selectSql"/>
+        from SO_CP_SELLER_BILL sb
+        <include refid="whereCondition" />
+        ORDER BY sb.SELLER_BILL_ID DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        select count(1)
+        from SO_CP_SELLER_BILL sb
+        <include refid="whereCondition"/>
+    </select>
+
+</mapper>

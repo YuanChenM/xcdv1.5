@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/rabbit
+       http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+    <!-- 连接服务配置 -->
+    <!--
+    <rabbit:connection-factory id="connectionFactory"
+                               host="10.20.16.157" username="rabbitmq" password="Admin123#" port="5672" />
+    -->
+    <!--<rabbit:admin connection-factory="connectionFactoryRabbit" />-->
+
+    <!--<bean id="connectionFactoryRabbit"  class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory">-->
+        <!--<constructor-arg value="10.20.16.157"/>-->
+        <!--<property name="port" value="5672"/>-->
+        <!--<property name="username" value="rabbitmq"/>-->
+        <!--<property name="password" value="Admin123#"/>-->
+        <!--<property name="channelCacheSize" value="25"/>-->
+    <!--</bean>-->
+    <!--&lt;!&ndash; queue 队列声明 &ndash;&gt;-->
+    <!--<rabbit:queue name="queue_create_order" />-->
+
+
+    <!--&lt;!&ndash; exchange queue binging key 绑定 &ndash;&gt;-->
+    <!--<rabbit:topic-exchange name="queue_create_order_exchange"-->
+                           <!--durable="true" auto-delete="false" id="my-mq-exchange">-->
+        <!--<rabbit:bindings>-->
+            <!--<rabbit:binding queue="queue_create_order" pattern="queue.*" />-->
+        <!--</rabbit:bindings>-->
+    <!--</rabbit:topic-exchange>-->
+
+    <!--&lt;!&ndash; 消息对象json转换类 &ndash;&gt;-->
+    <!--<bean id="jsonMessageConverter" class="org.springframework.amqp.support.converter.Jackson2JsonMessageConverter" />-->
+
+    <!--&lt;!&ndash; spring template声明&ndash;&gt;-->
+    <!--<rabbit:template exchange="queue_create_order_exchange" id="amqpTemplate" routing-key="queue.order"-->
+                     <!--connection-factory="connectionFactoryRabbit" message-converter="jsonMessageConverter" />-->
+    <!--<bean class="com.msk.common.mq.logic.MqProducer" id="mqProducer">-->
+        <!--<property name="amqpTemplate" ref="amqpTemplate"></property>-->
+    <!--</bean>-->
+    <!--<bean id="queueListenter" class="com.msk.common.mq.listenter.QueueListenter" />-->
+    <!--&lt;!&ndash; 从queue中取出数据&ndash;&gt;-->
+    <!--<rabbit:listener-container connection-factory="connectionFactoryRabbit">-->
+        <!--<rabbit:listener ref="queueListenter" method="listen" queue-names="queue_create_order" />-->
+    <!--</rabbit:listener-container>-->
+
+
+</beans>

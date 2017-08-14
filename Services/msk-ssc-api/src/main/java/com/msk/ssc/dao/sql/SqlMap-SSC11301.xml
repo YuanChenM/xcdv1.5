@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11301Logic">
+
+    <sql id="selectSql">
+         BID_ID AS bidId
+        ,IFNULL(BID_PROJECT_NO,'') AS bidProjectNo
+        ,IFNULL(BID_PROJECT_NAME,'') AS bidProjectName
+        ,SUPPLIER_ID AS supplierId
+        ,IFNULL(SUPPLIER_NAME,'') AS supplierName
+        ,IFNULL(SUPPLIER_CODE,'') AS supplierCode
+        ,PURCHASER_ID AS purchaserId
+        ,IFNULL(PURCHASER_NAME,'') AS purchaserName
+        ,IFNULL(PURCHASER_CODE,'') AS purchaserCode
+        /*,IFNULL(BID_STATUS,'') AS bidStatus*/
+        ,BID_STATUS  AS bidStatus
+
+        ,PURCHASER_CONFIRM_ID AS purchaserConfirmId
+        ,PURCHASER_CONFIRM_NAME AS purchaserConfirmName
+        ,PURCHASER_CONFIRM_TIME AS purchaserConfirmTime
+        ,SUPPLIER_CONFIRM_ID AS supplierConfirmId
+        ,SUPPLIER_CONFIRM_NAME AS supplierConfirmName
+        ,SUPPLIER_CONFIRM_TIME AS supplierConfirmTime
+
+        ,PURCHASER_CODE AS slCode
+        ,DATE_FORMAT(BID_OPEN_DATE,'%Y-%m-%d') AS openDate
+        ,DATE_FORMAT(BID_START_DATE,'%Y-%m-%d') AS startDate
+        ,DATE_FORMAT(BID_END_DATE,'%Y-%m-%d') AS endDate
+        ,IFNULL(VER,'') AS ver
+    </sql>
+
+    <!--查询中标确认书列表-->
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11301RsBean"
+            parameterType="com.msk.ssc.bean.SSC11301RsParam">
+        SELECT
+          <include refid="selectSql"/>
+        FROM SSC_BID_BASIC_INFO
+        WHERE
+        <include refid="detailSearchCondition" />
+        ORDER BY CRT_TIME DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.ssc.bean.SSC11301RsParam">
+        SELECT
+        COUNT(1)
+        FROM SSC_BID_BASIC_INFO
+        WHERE
+        <include refid="detailSearchCondition" />
+    </select>
+     <!--详细列表查询条件-->
+    <sql id="detailSearchCondition">
+        1=1
+        <if test="bidFlag != null and bidFlag!=''">
+            AND BID_ID NOT IN(
+            SELECT C.BID_ID FROM ssc_contract_basic AS C
+            WHERE BID_ID IS NOT NULL AND C.DEL_FLG=0
+            )
+        </if>
+        <if test="bidId != null and bidId!='' ">
+            AND BID_ID  =  #{bidId}
+        </if>
+        <if test="delFlg != null and delFlg!='' ">
+            AND DEL_FLG  =  #{delFlg}
+        </if>
+
+        <if test="bidProjectNo!=null and bidProjectNo!=''">
+            AND BID_PROJECT_NO LIKE  #{bidProjectNo}
+        </if>
+
+        <if test="bidStatusArr !=null and bidStatusArr.length>0">
+            and BID_STATUS in
+            <foreach item="bidStatusArrItem" index="index" collection="bidStatusArr"
+                     open="(" separator="," close=")">
+                #{bidStatusArrItem}
+            </foreach>
+        </if>
+
+        <if test="purchaserName!=null and purchaserName!=''">
+            AND PURCHASER_NAME LIKE  #{purchaserName}
+        </if>
+        <if test="bidProjectName!=null and bidProjectName!=''">
+            AND BID_PROJECT_NAME LIKE  #{bidProjectName}
+        </if>
+        <if test="supplierName!=null and supplierName!=''">
+            AND SUPPLIER_NAME LIKE  #{supplierName}
+        </if>
+
+
+        <if test="startDate!=null and filterMap.startDate!=''">
+            <![CDATA[ AND DATE_FORMAT(BID_START_DATE,'%Y-%m-%d') >= #{startDate}]]>
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            <![CDATA[ AND DATE_FORMAT(BID_END_DATE,'%Y-%m-%d') <= #{endDate}]]>
+        </if>
+
+    </sql>
+
+
+    <!--查询未关联合同的中标基础信息-->
+    <select id="findNoRelatedBidBase" resultType="com.msk.ssc.bean.SSC11301RsBean" parameterType="com.msk.ssc.bean.SSC11301RsParam" >
+        SELECT
+         <include refid="selectSql"/>
+        FROM ssc_bid_basic_info AS B  WHERE BID_ID NOT IN(
+        SELECT C.BID_ID FROM ssc_contract_basic AS C WHERE BID_ID IS  NOT NULL  AND C.DEL_FLG=0
+        ) AND B.DEL_FLG=0 AND B.BID_STATUS != #{bidStatus}
+        <if test="bidProjectNo != null and bidProjectNo!='' ">
+            AND B.BID_PROJECT_NO = #{bidProjectNo}
+        </if>
+        ORDER BY B.CRT_TIME DESC
+    </select>
+
+
+
+</mapper>

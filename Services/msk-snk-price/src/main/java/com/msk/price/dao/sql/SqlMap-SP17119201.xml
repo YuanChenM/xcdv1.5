@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP17119201Logic">
+
+    <select id="findMaxCode" resultType="com.msk.price.bean.SP171192Bean" parameterType="BaseParam">
+        select MAX(t.WAY_CODE+0)+1 as wayCode from sp_wayg_detail t
+    </select>
+    <insert id="saveWay" parameterType="BaseParam">
+        insert into sp_wayg_detail(
+        WAY_CODE,
+        WAYGRADE_CODE,
+        WAYGRADE_NAME,
+        WAYGRADE_START,
+        WAYGRADE_END,
+        WAYGRADE_PERCENT,
+        SELL_WAY_CODE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )values (
+        #{wayCode},
+        #{waygradeCode},
+        #{waygradeName},
+        #{waygradeStart},
+        #{waygradeEnd},
+        #{waygradePercent},
+        #{sellWayCode},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+    <insert id="saveMainWay" parameterType="BaseParam">
+        insert into sp_way(
+        WAY_CODE,
+        WAY_NAME,
+        SYSTEM_TYPE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )values (
+        #{wayCode},
+        #{wayName},
+        #{systemType},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+
+        <update id="updateWay" parameterType="BaseParam">
+        update sp_wayg_detail t
+        set
+        t.waygrade_start=#{waygradeStart},
+        t.waygrade_end=#{waygradeEnd},
+        t.waygrade_percent = #{waygradePercent}
+        <!--Modify 添加公共属性字段 2016/10/24 Start-->
+        ,t.UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        <!--Modify 添加公共属性字段 2016/10/24 End-->
+        where t.way_code=#{wayCode} and t.waygrade_code=#{waygradeCode} and t.del_flg=0
+    </update>
+    <update id="updateMainWay" parameterType="BaseParam">
+        update sp_way t set t.way_name=#{wayName}
+        <!--Modify 添加公共属性字段 2016/10/24 Start-->
+        ,t.UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        <!--Modify 添加公共属性字段 2016/10/24 End-->
+        where t.way_code=#{wayCode} and t.del_flg=0
+    </update>
+
+    <select id="checkWayInfo" parameterType="BaseParam" resultType="Integer">
+        SELECT COUNT(1) from sp_way  sp where sp.DEL_FLG =0
+            AND sp.WAY_NAME = #{filterMap.wayName}
+        <if test="filterMap.wayCode !=null and filterMap.wayCode !=''">
+            AND sp.WAY_CODE != #{filterMap.wayCode}
+        </if>
+    </select>
+
+</mapper>

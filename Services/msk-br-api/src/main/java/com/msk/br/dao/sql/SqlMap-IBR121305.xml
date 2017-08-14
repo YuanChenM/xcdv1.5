@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121305Logic">
+    <select id="findPageList" resultType="com.msk.core.entity.BrHkGroup" parameterType="com.msk.br.bean.IBR121305RsParam">
+        SELECT
+            IFNULL(LGCS_AREA_CODE,'') AS lgcsAreaCode,
+            IFNULL(LGCS_AREA_NAME,'') AS lgcsAreaName,
+            IFNULL(CITY_CODE,'') AS cityCode,
+            IFNULL(CITY_NAME,'') AS cityName,
+            IFNULL(BUYER_TYPE,'') AS buyerType,
+            IFNULL(BUYER_TYPE_NAME,'') AS buyerTypeName,
+            IFNULL(BUYER_SUB_TYPE,'') AS buyerSubType,
+            IFNULL(BUYER_SUB_TYPE_NAME,'') AS buyerSubTypeName,
+            IFNULL(CLASSES_CODE,'') AS classesCode,
+            IFNULL(CLASSES_NAME,'') AS classesName,
+            IFNULL(MACHINING_CODE_U,'') AS machiningCodeU,
+            IFNULL(MACHINING_NAME_U,'') AS machiningNameU,
+            IFNULL(HK_GROUP_ID,'') AS hkGroupId,
+            IFNULL(HK_GROUP_NAME,'') AS hkGroupName
+        FROM
+            br_hk_group
+        WHERE
+            DEL_FLG = '0'
+        <if test="lgcsAreaCode!=null and lgcsAreaCode!=''">
+            AND LGCS_AREA_CODE LIKE #{lgcsAreaCode}
+        </if>
+        <if test="cityCode!=null and cityCode!=''">
+            AND CITY_CODE LIKE #{cityCode}
+        </if>
+        <if test="buyerType!=null and buyerType!=''">
+            AND BUYER_TYPE LIKE #{buyerType}
+        </if>
+        <if test="buyerSubType!=null and buyerSubType!=''">
+            AND BUYER_SUB_TYPE LIKE #{buyerSubType}
+        </if>
+        <if test="classesCode!=null and classesCode!=''">
+            AND CLASSES_CODE LIKE #{classesCode}
+        </if>
+        <if test="machiningCode!=null and machiningCode!=''">
+        AND MACHINING_CODE_U LIKE #{machiningCode}
+        </if>
+        <if test="hkGroupId!=null and hkGroupId!=''">
+            AND HK_GROUP_ID LIKE #{hkGroupId}
+        </if>
+        ORDER BY hkGroupId
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.br.bean.IBR121305RsParam">
+        SELECT
+            Count(1)
+        FROM
+            br_hk_group
+        WHERE
+            DEL_FLG = '0'
+        <if test="lgcsAreaCode!=null and lgcsAreaCode!=''">
+            AND LGCS_AREA_CODE = #{lgcsAreaCode}
+        </if>
+        <if test="cityCode!=null and cityCode!=''">
+            AND CITY_CODE = #{cityCode}
+        </if>
+        <if test="buyerType!=null and buyerType!=''">
+            AND BUYER_TYPE = #{buyerType}
+        </if>
+        <if test="buyerSubType!=null and buyerSubType!=''">
+            AND BUYER_SUB_TYPE = #{buyerSubType}
+        </if>
+        <if test="classesCode!=null and classesCode!=''">
+            AND CLASSES_CODE = #{classesCode}
+        </if>
+        <if test="machiningCode!=null and machiningCode!=''">
+            AND MACHINING_CODE_U = #{machiningCode}
+        </if>
+        <if test="hkGroupId!=null and hkGroupId!=''">
+            AND HK_GROUP_ID LIKE #{hkGroupId}
+        </if>
+    </select>
+
+    <update id="updateHkGroup" parameterType="com.msk.br.bean.IBR121305RsParam">
+            update BR_HK_GROUP
+            set
+             HK_GROUP_NAME=#{hkGroupName}
+            ,UPD_ID = #{updId}
+            ,UPD_TIME = #{updTime}
+            WHERE HK_GROUP_ID = #{hkGroupId}
+    </update>
+
+    <insert id="save" parameterType="com.msk.core.entity.BrHkGroup">
+        INSERT INTO br_hk_group
+        (
+        HK_GROUP_ID,
+        HK_GROUP_NAME,
+        CLASSES_CODE,
+        CLASSES_NAME,
+        MACHINING_CODE_U,
+        MACHINING_NAME_U,
+        BUYER_TYPE,
+        BUYER_TYPE_NAME,
+        BUYER_SUB_TYPE,
+        BUYER_SUB_TYPE_NAME,
+        LGCS_AREA_CODE,
+        LGCS_AREA_NAME,
+        CITY_CODE,
+        CITY_NAME,
+        DEL_FLG,
+
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+
+        VER)
+        VALUES
+            (
+            #{hkGroupId},
+            #{hkGroupName},
+            #{classesCode},
+            #{classesName},
+            #{machiningCodeU},
+            #{machiningNameU},
+            #{buyerType},
+            #{buyerTypeName},
+            #{buyerSubType},
+            #{buyerSubTypeName},
+            #{lgcsAreaCode},
+            #{lgcsAreaName},
+            #{cityCode},
+            #{cityName},
+            0,
+
+          #{crtId},
+          #{crtTime},
+          #{updId},
+          #{updTime},
+          #{actId},
+          #{actTime},
+
+            1)
+    </insert>
+
+    <select id="getHkGroupCount" resultType="int" parameterType="com.msk.core.entity.BrHkGroup">
+        SELECT
+        COUNT(1)
+        FROM
+        br_hk_group
+        WHERE CLASSES_CODE = #{classesCode}
+        AND BUYER_TYPE = #{buyerType}
+        AND LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND CITY_CODE = #{cityCode}
+        AND MACHINING_CODE_U = #{machiningCodeU}
+    </select>
+</mapper>

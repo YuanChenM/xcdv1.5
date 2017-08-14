@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="./resources/js/BY121229.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+        <script type="text/javascript" src="./resources/js/com/jquery-form.js"></script>
+		<title>第三方品牌新增</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="text-align:center;width:76%;height:40px;line-height:45px;text-shadow:none;color:#3290B3;font-size: 23px;font-weight: bold;">通路注册营销一体化工作站</div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div style="width: 80%;margin-left:20px;color: #52C2E9;text-align:left;line-height:40px;text-shadow:none;height:40px;font-size: 23px;margin-top:10px;">第三方品牌照</div>
+            <div style="width: 80%;margin-left:30px;color: #CCCCCC;text-align:left;text-shadow:none;font-size: 17px;">录入第三方品牌信息,拍照上传并输入品牌名称</div>
+            <div style="width: 80%;margin-left:40px;">
+                <div id="brandPic" style="width: 270px;height:200px;border:1px #CCCCCC solid;color:#CCCCCC;font-size:17px;margin-top:10px;">
+                    还未上传照片<br/>
+                    请选择照片文件上传
+                </div>
+            </div>
+            <div style="width: 80%;margin-left:25px;">
+                <form id="uploadForm" method="post" enctype="multipart/form-data" onchange="upload(this)">
+                    <div class="ui-grid-b" style="width: 100%">
+                        <div class="ui-block-a" style="width: 50%"><input type="file" name="file" id="importFile" value="选择"></div>
+                        <div class="ui-block-b" style="width: 50%"><div id="brandPicPath" style="height:35px;line-height: 40px;background-color: #A0D468;color:#FFFFFF;text-align:center;text-shadow:none;margin-top:10px;margin-left:10px;" onclick="fileUpload(this)">上传</div></div>
+                    </div>
+                </form>
+            </div>
+            <div style="width: 80%;margin-left:25px;color: #CCCCCC;text-align:left;text-shadow:none;font-size: 20px;margin-top:10px;">产品名称</div>
+            <div id="breedName" style="width: 80%;margin-left:30px;color: #52C2E9;text-align:center;line-height:40px;text-shadow:none;height:40px;font-size: 23px;"></div>
+            <div style="width: 80%;margin-left:25px;color: #CCCCCC;text-align:left;text-shadow:none;font-size: 20px;">品牌名称</div>
+            <div style="width: 80%;margin-left:30px;">
+                <input id="brandName" name="brandName" placeholder="请输入品牌名称" type="text"/>
+            </div>
+            <div id="message" style="width: 66%;margin-left:50px;display: none;height:30px;padding-left:10px;line-height:35px;font-size:17px;"></div>
+            <div style="width: 40%;margin-left:25px;height:35px;line-height: 40px;background-color:#52C2E9;color: #FFFFFF;text-align:center;text-shadow:none;font-size: 20px;" onclick="brandSave()">保存</div>
+            <br/>
+        </div>
+	</body>
+</html>

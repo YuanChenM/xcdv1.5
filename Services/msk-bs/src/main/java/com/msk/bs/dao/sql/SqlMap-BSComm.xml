@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BSCommLogic">
+    <!-- <select id="findMdProvince" resultType="com.msk.core.entity.MdProvince" parameterType="BaseParam">
+
+         SELECT
+         PROVINCE_ID AS provinceId,
+         AREA_ID AS areaId,
+         PROVINCE_CODE AS provinceCode,
+         PROVINCE_NAME AS provinceName,
+         DIVISION_LEVEL AS divisionLevel,
+         SPELL AS spell,
+         SHORT_SPELL AS shortSpell,
+         FULL_CODE AS fullCode,
+         FULL_NAME AS fullName
+         FROM MD_PROVINCE
+
+    </select>
+        -->
+        <!--
+            <select id="findMdCity" resultType="com.msk.core.entity.MdCity" parameterType="BaseParam">
+
+                SELECT
+                CITY_ID AS cityId,
+                PROVINCE_ID AS provinceId,
+                LGCS_AREA_ID AS lgcsAreaId,
+                CITY_CODE AS cityCode,
+                CITY_NAME AS cityName,
+                DIVISION_LEVEL AS divisionLevel,
+                SPELL AS spell,
+                SHORT_SPELL AS shortSpell,
+                SHORT_CODE_P AS shortCodeP,
+                SHORT_NAME_P AS shortNameP,
+                SHORT_CODE_L AS shortCodeL,
+                SHORT_NAME_L AS shortNameL,
+                FULL_CODE_P AS fullCodeP,
+                FULL_NAME_P AS fullNameP,
+                FULL_CODE_L AS fullCodeL,
+                FULL_NAME_L AS fullNameL
+                FROM MD_CITY
+                WHERE PROVINCE_ID =#{filterMap.provinceId}
+
+    </select>
+        -->
+        <!--
+            <select id="findMdDistrict" resultType="com.msk.core.entity.MdDistrict" parameterType="BaseParam">
+            <
+                SELECT
+                DISTRICT_ID AS districtId,
+                CITY_ID AS cityId,
+                DISTRICT_CODE AS districtCode,
+                DISTRICT_NAME AS districtName,
+                DIVISION_LEVEL AS divisionLevel,
+                SPELL AS spell,
+                SHORT_SPELL AS shortSpell,
+                SHORT_CODE AS shortCode,
+                SHORT_NAME AS shortName,
+                FULL_CODE_P AS fullCodeP,
+                FULL_NAME_P AS fullNameP,
+                FULL_CODE_L AS fullCodeL,
+                FULL_NAME_L AS fullNameL
+                FROM MD_DISTRICT
+                WHERE CITY_ID=#{filterMap.cityId}
+
+    </select>
+        -->
+        <!--
+            <select id="findProvinceCode" resultType="com.msk.core.entity.MdProvince"
+                    parameterType="BaseParam">
+
+                SELECT
+                AREA_ID AS areaId,
+                PROVINCE_ID AS provinceId
+                FROM MD_PROVINCE
+                WHERE
+                PROVINCE_CODE=#{filterMap.provinceCode}
+
+    </select>
+        -->
+
+        <!--
+            <select id="findMdArea" resultType="com.msk.core.entity.MdArea"
+                    parameterType="BaseParam">
+
+                SELECT
+                AREA_CODE AS areaCode
+                FROM MD_AREA
+                WHERE
+                AREA_ID=#{filterMap.areaId}
+
+    </select>
+        -->
+
+        <!--
+            <select id="findCityCode" resultType="com.msk.core.entity.MdCity"
+                    parameterType="BaseParam">
+
+                        SELECT
+                        LGCS_AREA_ID AS lgcsAreaId,
+                        CITY_ID AS cityId
+                        FROM MD_CITY
+                        WHERE
+                        CITY_CODE=#{filterMap.cityCode}
+
+    </select>
+    -->
+</mapper>

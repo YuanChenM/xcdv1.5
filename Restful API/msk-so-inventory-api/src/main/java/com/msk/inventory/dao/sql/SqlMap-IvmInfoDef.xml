@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.InfoDefServiceImpl">
+    <!-- 表字段 -->
+	<sql id="selectSql">
+        CODE_TYPE AS codeType,
+        CODE_VALUE AS codeValue,
+        CODE_DESC AS codeDesc,
+        REMARK AS remark
+	</sql>
+    <!--条件 -->
+	<sql id="whereCondition">
+		<where>
+            <if test="codeType!=null">
+                  AND CODE_TYPE=#{codeType}
+            </if> 
+            <if test="codeValue!=null">
+                  AND CODE_VALUE=#{codeValue}
+            </if> 
+            <if test="codeDesc!=null">
+                  AND CODE_DESC=#{codeDesc}
+            </if> 
+            <if test="remark!=null">
+                  AND REMARK=#{remark}
+            </if> 
+
+		</where>
+	</sql>
+    <!--数据插入 -->
+	<insert id="insertOne" parameterType="com.msk.inventory.bean.IvmInfoDefBean">
+		INSERT INTO ivm_info_def
+		(
+            <if test="codeType!=null">
+                CODE_TYPE,
+            </if> 
+            <if test="codeValue!=null">
+                CODE_VALUE,
+            </if> 
+            <if test="codeDesc!=null">
+                CODE_DESC,
+            </if> 
+            <if test="remark!=null">
+                REMARK,
+            </if> 			
+		)
+		VALUES
+		(
+            <if test="codeType!=null">
+                #{codeType},
+            </if> 
+            <if test="codeValue!=null">
+                #{codeValue},
+            </if> 
+            <if test="codeDesc!=null">
+                #{codeDesc},
+            </if> 
+            <if test="remark!=null">
+                #{remark},
+            </if> 
+		)
+	</insert>
+	<update id="editOne" parameterType="com.msk.inventory.bean.IvmInfoDefBean">
+		update ivm_info_def 
+		set
+            CODE_DESC=#{codeDesc},
+            REMARK=#{remark}
+        WHERE
+            CODE_TYPE=#{codeType}
+        AND CODE_VALUE=#{codeValue}
+	</update>
+	<select id="queryListByCondition" resultType="com.msk.inventory.bean.IvmInfoDefBean">
+		select 
+		<include refid="selectSql"/>
+		from ivm_info_def
+        <include refid="whereCondition"/>
+	</select>
+	
+	<select id="countByCondition" resultType="Integer" parameterType="com.msk.inventory.bean.IvmInfoDefBean">
+		select count(1)
+		from ivm_info_def
+		<include refid="whereCondition"/>
+	</select>
+
+    <insert id="overwriteInfo" parameterType="com.msk.inventory.bean.IvmInfoDefBean">
+        INSERT INTO ivm_info_def(
+            CODE_TYPE,
+            CODE_VALUE,
+            CODE_DESC,
+            REMARK
+        )
+        VALUES
+           ('-1', '-1', NULL, NULL)
+        <if test="sqlList !=null">
+            <foreach collection="sqlList" item="item" open="," separator=",">
+                (#{item.codeType}, #{item.codeValue}, #{item.codeDesc}, #{item.remark})
+            </foreach>
+        </if>
+        ON DUPLICATE KEY
+        UPDATE
+            CODE_DESC = VALUES(CODE_DESC),
+            REMARK = VALUES(REMARK);
+    </insert>
+</mapper>

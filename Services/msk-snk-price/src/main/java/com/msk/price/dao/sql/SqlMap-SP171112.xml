@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171112Logic">
+    <sql id="selectSql">
+        sp.PRICE_PERIOD AS pricePeriod,
+        sp.PRICE_STARTDATE AS priceStartDate,
+        sp.PRICE_ENDDATE AS priceEndDate,
+        sp.LGCS_CODE AS lgcdCode,
+        IFNULL(sps.LGCS_NAME,'') AS lgcsName,
+        sp.PD_CODE AS pdCode,
+        IFNULL(sps.PD_NAME,'') AS pdName,
+        IFNULL(sps.CLASSES_CODE,'') AS classCode,
+        IFNULL(sps.CLASSES,'') AS classesName,
+        IFNULL(sps.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(sps.MACHINING,'') AS machiningName,
+        IFNULL(sps.BREED_CODE,'') AS breedCode,
+        IFNULL(sps.BREED,'') AS breedName,
+        IFNULL(sps.FEATURE_CODE,'') AS featureCode,
+        IFNULL(sps.FEATURE,'') AS featureName,
+        IFNULL(sps.WEIGHT_CODE,'') AS weightCode,
+        IFNULL(sps.WEIGHT,'') AS weightName,
+        IFNULL(sps.GRADE_CODE,'') AS gradeCode,
+        IFNULL(sps.GRADE,'') AS gradeName,
+        sp.WAY_CODE AS wayCode,
+        sp.WAYGRADE_CODE AS wayGradeCode,
+        IFNULL(convert(sp.WAYGRADE_PRICE,decimal(10,2)),'-') AS wayGradePrice,
+        IFNULL(sp.WAYGRADE_PRICE_BOX,'-') AS wayGradePriceBox,
+        sp.WAYGRADE_NAME AS wayGradeName
+    </sql>
+    <sql id="whereCondition">
+        WHERE sp.DEL_FLG = '0'
+        AND sp.WAYGRADE_CODE = '5'
+        AND sp.PRICE_PERIOD = #{filterMap.pricePeriod}
+        <if test="filterMap.pdTypeCodeList != null and filterMap.pdTypeCodeList.size() != 0 and filterMap.pricePeriod == 2">
+            AND(
+            <foreach item="item" index="index" collection="filterMap.pdTypeCodeList" open="(" separator="or" close=")">
+                sp.PD_CODE = #{item.pdCode}
+            </foreach>)
+        </if>
+        <if test="filterMap.lgcsCodes!=null and filterMap.lgcsCodes!=''">
+            AND sp.LGCS_CODE IN
+            <foreach collection="filterMap.lgcsCodes" item="lgcsCode" open="(" separator="," close=")">
+                #{lgcsCode}
+            </foreach>
+        </if>
+        <if test="filterMap.pdName!=null and filterMap.pdName!=''">
+            AND sps.PD_NAME LIKE #{filterMap.pdName}
+        </if>
+        <if test="filterMap.classesName!=null and filterMap.classesName!=''">
+            AND sps.CLASSES LIKE #{filterMap.classesName}
+        </if>
+        <if test="filterMap.machiningName!=null and filterMap.machiningName!=''">
+            AND sps.MACHINING LIKE #{filterMap.machiningName}
+        </if>
+        <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+            AND sps.FEATURE LIKE #{filterMap.featureName}
+        </if>
+        <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+            AND sps.BREED LIKE #{filterMap.breedName}
+        </if>
+        <if test="filterMap.weightName!=null and filterMap.weightName!=''">
+            AND sps.WEIGHT LIKE #{filterMap.weightName}
+        </if>
+        <if test="filterMap.gradeCodes!=null and filterMap.gradeCodes!=''">
+            AND sps.GRADE_CODE IN
+            <foreach collection="filterMap.gradeCodes" item="gradeCode" open="(" separator="," close=")">
+                #{gradeCode}
+            </foreach>
+        </if>
+        <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+            AND sp.PD_CODE LIKE #{filterMap.pdCode}
+        </if>
+    </sql>
+    <select id="findPageList" resultType="com.msk.price.bean.SP171112Bean" parameterType="BaseParam">
+        select
+        <include refid="selectSql"/>
+        from sp_seller_pd_priceplate sp
+        LEFT JOIN sp_logs_product sps ON sp.LGCS_CODE = sps.LGCS_CODE AND sp.PD_CODE = sps.PD_CODE
+        <include refid="whereCondition"/>
+        ORDER BY sp.LGCS_CODE,sp.PD_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        from sp_seller_pd_priceplate sp
+        LEFT JOIN sp_logs_product sps ON sp.LGCS_CODE = sps.LGCS_CODE AND sp.PD_CODE = sps.PD_CODE
+        <include refid="whereCondition"/>
+    </select>
+
+    <update id="remove" parameterType="com.msk.price.bean.SP171112Bean">
+        UPDATE sp_seller_pd_priceplate
+        SET UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        ,DEL_FLG = 1
+        ,VER = VER + 1
+        WHERE PRICE_PERIOD=#{pricePeriod}
+        AND PD_CODE = #{pdCode}
+        AND LGCS_CODE = #{lgcdCode}
+        AND WAY_CODE = #{wayCode}
+        AND  DEL_FLG='0'
+    </update>
+
+</mapper>

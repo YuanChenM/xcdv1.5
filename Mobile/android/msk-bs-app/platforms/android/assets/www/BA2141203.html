@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="css/common.css" type="text/css" rel="stylesheet"/>
+    <link href="css/css.css" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="js/constantDef.js"></script>
+    <script src="js/commonUtil.js"></script>
+    <script src="jquery/Popt.js"></script>
+    <script src="jquery/citySet.js"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+    <title>冻品管家列表信息</title>
+    <script src="jquery/simplemodal.js"></script>
+    <link rel="stylesheet" href="css/loaders.css">
+    <link rel="stylesheet" href="css/animate.min.css">
+</head>
+
+<body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<!--加载指示器-->
+<span id='messageLoading' style="display: none">
+     <div id="messageLoadingText">正在加载中...</div>
+     <div class="loader-inner ball-clip-rotate">
+          <div></div>
+        </div>
+ </span>
+<!--页眉开始-->
+<div class="wapp-head">冻品管家详情信息
+    <a href="javascript:void(0);" id="fanhui" class="head-back">返回</a>
+    <a href="javascript:void(0);" id="introduce" class="head-forward">自我介绍</a>
+</div>
+<!--页眉结束/-->
+<!--详情信息主体开始-->
+<div class="lbxx-list04">
+    <input type="hidden" id="slCode" />
+    <input type="hidden" id="houseCode" />
+    <ul>
+        <li>管家账号<span id="houseAccount" style="color: #808080"></span></li>
+        <li>显示名称<span><input id="houseShowName" type="text" /></span></li>
+        <li>联系人姓名<span id="houseContact" style="color: #808080"></span></li>
+        <li>联系人电话<span id="houseTel" style="color: #808080"></span></li>
+        <li>登录密码<span><input id="accountPsd" type="text" /></span></li>
+        <li>管家身份证<span id="slIdcard" style="color: #808080"></span></li>
+        <li>微信号码<span><input id="wechat" type="text" /></span></li>
+        <li>QQ号码<span><input id="qq" type="text" /></span></li>
+        <li>邮箱<span><input id="email" type="text" /></span></li>
+        <li>固定电话<span><input id="fixedTel" type="text" /></span></li>
+        <li>传真<span><input id="fax" type="text" /></span></li>
+        <li><div class="address-js" id="r">地址<span>
+            <input class="wl_input" required type="text" id="cityAll" readonly="readonly"/>
+            <input type="hidden" id="rhprovince" name="hprovince" title="" value=""/>
+            <input type="hidden" id="rhcity" name="hcity" title="" value=""/>
+            <input type="hidden" id="rhdistrict" name="hdistrict" title="" value=""/>
+        </span></div></li>
+        <li>管家地址<span><input id="houseAddress" type="text" /></span></li>
+        <li>虚拟经营城市<span><input class="wl_input" style="color: #808080" type="text" id="vCityAll" readonly="readonly"/></span></li>
+        <li>虚拟经营地址<span id="vhouseAddress" style="color: #808080"></span></li>
+        <li>管家分类<span id="houseCategoryName" style="color: #808080"></span></li>
+    </ul>
+</div>
+<!--列表信息主体结束-->
+<!--页尾开始/-->
+<div class="wapp-footer"><a href="javascript:void(0);" id="saveInfo" class="all">确认</a></div>
+<!--页尾结束/-->
+</body>
+<script src="js/BA2141203.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

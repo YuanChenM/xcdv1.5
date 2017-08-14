@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241103Logic">
+	<select id="findList030801" parameterType="BaseParam"
+		resultType="com.msk.seller.bean.SL2411030801Bean">
+		
+		SELECT HONOR_NO AS honorNo
+             , CERT_DATE AS certDate
+             , CERT_ISSUER AS certIssuer
+             , BRAND_ID  AS brandId
+        FROM SL_EP_BRAND_HONOR
+        <where>
+            DEL_FLG = 0
+            <if test="filterMap.epId!=null and filterMap.epId!=''">
+                AND EP_ID=#{filterMap.epId}
+            </if>
+            <if test="filterMap.brandId!=null and filterMap.brandId!=''">
+                AND BRAND_ID=#{filterMap.brandId}
+            </if>
+        </where>
+	</select>
+</mapper>

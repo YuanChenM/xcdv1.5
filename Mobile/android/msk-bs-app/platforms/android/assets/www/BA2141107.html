@@ -1,0 +1,203 @@
+﻿<html>
+<head>
+    <title>产品详情</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="css/common.css" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/scroll.css" type="text/css">
+    <link rel="stylesheet" href="css/css.css">
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <link rel="stylesheet" href="css/swiper-3.3.1.min.css">
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="jquery/simplemodal.js"></script>
+    <link rel="stylesheet" href="css/loaders.css">
+    <link rel="stylesheet" href="css/animate.min.css">
+    <script src="js/constantDef.js"></script>
+    <script src="js/commonUtil.js"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+</head>
+<body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<!--加载指示器-->
+<span id='messageLoading'>
+     <div id="messageLoadingText">正在加载中...</div>
+     <div class="loader-inner ball-clip-rotate">
+         <div></div>
+     </div>
+ </span>
+<!--产品详情开始-->
+<div class="pr-com">
+    <div class="pr-img">
+        <a href="javascript:void(0);" id="fanhui" class="back">返回</a>
+        <div class="swiper-container" style="height:25vh">
+            <div class="swiper-wrapper" >
+                <div class='swiper-slide '><img src="img/u66.png" ></div>
+            </div>
+            <!-- 如果需要分页器 -->
+            <div class="swiper-pagination  swiper-pagination-white"></div>
+        </div>
+        <div class="tips">
+            <span>数量随心订 · 价格大不同</span>
+            <font>注：随心量（单位：箱）, 通道阶梯价（元/kg）（元/箱子）</font>
+        </div>
+    </div>
+
+    <ul class="pri-box">
+        <li>
+            <span class="num bor01" id="way1"></span>
+            <div class="pri">
+                <span class="bor01"><span id="price1"></span> <font>元/kg</font></span>
+                <span class="bor01"><span id="box1"></span> <font>元/箱</font></span>
+            </div>
+        </li>
+        <li>
+            <span class="num bor02" id="way2"></span>
+            <div class="pri">
+                <span class="bor02"><span id="price2"></span> <font>元/kg</font></span>
+                <span class="bor02"><span id="box2"></span> <font>元/箱</font></span>
+            </div>
+        </li>
+        <li>
+            <span class="num bor03" id="way3"></span>
+            <div class="pri">
+                <span class="bor03"><span id="price3"></span> <font>元/kg</font></span>
+                <span class="bor03"><span id="box3"></span> <font>元/箱</font></span>
+            </div>
+        </li>
+        <li>
+            <span class="num bor04" id="way4"></span>
+            <div class="pri">
+                <span class="bor04"><span id="price4"></span> <font>元/kg</font></span>
+                <span class="bor04"><span id="box4"></span> <font>元/箱</font></span>
+            </div>
+        </li>
+        <li>
+            <span class="num bor05" id="way5"></span>
+            <div class="pri">
+                <span class="bor05"><span id="price5"></span> <font>元/kg</font></span>
+                <span class="bor05"><span id="box5"></span> <font>元/箱</font></span>
+            </div>
+        </li>
+        <li>
+            <span class="num bor06" id="way6"></span>
+            <div class="pri">
+                <span class="bor06"><span id="price6"></span> <font>元/kg</font></span>
+                <span class="bor06"><span id="box6"></span> <font>元/箱</font></span>
+            </div>
+        </li>
+        <li>
+            <span class="num bor07" id="way7"></span>
+            <div class="pri">
+                <span class="bor07"><span id="price7"></span> <font>元/kg</font></span>
+                <span class="bor07"><span id="box7"></span> <font>元/箱</font></span>
+            </div>
+        </li>
+        <li>
+            <span class="num bor08" id="way8"></span>
+            <div class="pri">
+                <span class="bor08"><span id="price8"></span> <font>元/kg</font></span>
+                <span class="bor08"><span id="box8"></span> <font>元/箱</font></span>
+            </div>
+        </li>
+        <li>
+            <span class="num bor09" id="way9"></span>
+            <div class="pri">
+                <span class="bor09"><span id="price9"></span> <font>元/kg</font></span>
+                <span class="bor09"><span id="box9"></span> <font>元/箱</font></span>
+            </div>
+        </li>
+    </ul>
+
+    <div class="pr-content">
+        <div class="til">
+            <h4>云冻品<span  id="pdBreed">三黄土鸡</span></h4>
+            <h5>通道阶梯价：<font id="showKgPrice"></font> 元/kg&nbsp;&nbsp;&nbsp;&nbsp;<font id="showBoxPrice"></font> 元/箱</h5>
+            <a href="javascript:void(0);">收藏</a>
+        </div>
+        <ul>
+            <li>
+                <span>产品规格：</span>
+                <div class="con" id="pdFeature">
+                </div>
+            </li>
+            <li>
+                <span>单箱净重：</span>
+                <div class="con" id="pdWeight">
+                </div>
+            </li>
+            <li>
+                <span>产品等级：</span>
+                <div class="con" id="pdGrade">
+                </div>
+            </li>
+            <li>
+                <span>订货数量：</span>
+                <div class="con">
+                    <a href="javascript:BA2141107.updateNum(-1);" class="num-link icon01">减少</a>
+                    <div class="input-box"><input name="" id="pdNum" oninput="BA2141107.getOldPrice()" onblur="BA2141107.setNumDefault()" onpropertychange="BA2141107.getOldPrice()" type="text" value="1"></div>
+                    <a href="javascript:BA2141107.updateNum(1);" class="num-link icon02">增加</a>
+                    <div class="tips">可售量（箱）：<font id="isSaleNum"></font></div>
+                </div>
+            </li>
+            <li>
+                <span>配送费用：</span>
+                <div class="con">
+                    <p><font>0</font>元/kg</p>
+                </div>
+            </li>
+        </ul>
+        <div class="pay-type">
+            <div class="mode">
+                <span>付款方式：</span>
+                <div class="con">
+                    <a href="javascript:void(0);" class="type on">货到付款</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <table class="text_bottom" style="width: 100%">
+            <tr>
+                <td>商品详情</td>
+                <td>商品评价</td>
+            </tr>
+        </table>
+    </div>
+    <div>
+        <table class="text_bottom" style="width: 100%;position:fixed;bottom:0px;">
+            <tr>
+                <td id="addCar" style="color: #FFFFFF;background-color: #002E62;width: 50%;">加入购物车</td>
+                <td id="goShop" style="color: #FFFFFF;background-color: #8FC320; ">购买</td>
+            </tr>
+        </table>
+    </div>
+</div>
+<!--产品详情结束/-->
+<div id="disPrice" style="display: none;">
+    <font>priceOfKg元</font>元/kg&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font>priceOfBox</font>元/kg
+</div>
+<div id="disFeature" style="display: none">
+    <a href="javascript:BA2141107.checkFeature('featureCode');" id="featurefeatureCode" class="type">copyFeature</a>
+</div>
+</div>
+<div id="disWeight" style="display: none">
+    <a href="javascript:BA2141107.checkWeight('weightCode');" id="weightweightCode" class="type">copyWeight</a>
+</div>
+<div id="disGrade" style="display: none">
+    <a href="javascript:BA2141107.checkGrade('gradeCode');" id="gradegradeCode" class="type">copyGrade</a>
+</div>
+<div id="featureShow" style="display: none">
+    <a href="javascript:BA2141107.moreFeature();" id="featureButton" class="type">更多</a>
+</div>
+<div id="weightShow" style="display: none">
+    <a href="javascript:BA2141107.moreWeight();" id="weightButton" class="type">更多</a>
+</div>
+    </div>
+</body>
+<script src="js/BA2141107.js"></script>
+<script src="jquery/swiper-3.3.1.min.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

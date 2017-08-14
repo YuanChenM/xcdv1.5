@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL2411010401Logic">
+
+    <update id="updateSlEpHonor" parameterType="com.msk.core.entity.SlEpHonor">
+         UPDATE SL_EP_HONOR SET
+         HONOR_DESC=#{honorDesc},
+        <if test="certDate !=null and certDate !=''">
+            CERT_DATE =#{certDate},
+        </if>
+        <if test="certIssuer !=null and certIssuer !=''">
+            CERT_ISSUER = #{certIssuer},
+        </if>
+         UPD_ID=#{updId},
+         VER= VER + 1,
+         UPD_TIME=#{updTime}
+        WHERE
+        EP_ID=#{epId} AND HONOR_ID=#{honorId}
+    </update>
+    <delete id="remove" parameterType="com.msk.core.entity.SlEpHonor">
+        DELETE
+        FROM SL_EP_HONOR
+        WHERE
+        EP_ID=#{epId}
+        AND
+        HONOR_ID=#{honorId}
+    </delete>
+</mapper>

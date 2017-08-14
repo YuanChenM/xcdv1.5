@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2102120Logic">
+
+    <select id="findSlBsAccount" resultType="com.msk.bs.bean.BS2102125Bean"
+            parameterType="com.msk.core.entity.SlAccount">
+        SELECT
+        SL_ACCOUNT AS slAccount,
+        SL_CONTACT AS slContact
+        FROM
+        sl_bs_account
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="slAccount != null and slAccount != ''">
+                AND SL_ACCOUNT = #{slAccount}
+            </if>
+        </where>
+    </select>
+
+    <select id="findBsBasicInfo" resultType="com.msk.bs.bean.BS2102125Bean"
+            parameterType="com.msk.bs.bean.BS2102125Bean">
+        SELECT
+        SL_ACCOUNT AS slAccount,
+        MEMO7 AS memo7,
+        MEMO8 AS memo8,
+        MEMO9 AS memo9,
+        MEMO1 AS memo1,
+        MEMO2 AS memo2,
+        IFNULL(AGENT_TYPE,'') AS agentType,
+        IFNULL(DISTRIBUTION,'') AS distribution,
+        IFNULL(DEMESNE,'') AS demesne,
+        IFNULL(REGISTER_SOURCE,'') AS registerSource,
+        SL_CODE_DIS AS slCodeDis,
+        IFNULL(LGCS_AREA_CODE,'') AS lgcsAreaName,
+        PROVINCE_CODE AS provinceCode,
+        PROVINCE_NAME AS provinceName,
+        CITY_CODE AS cityCode,
+        CITY_NAME AS cityName,
+        DISTRICT_CODE AS districtCode,
+        DISTRICT_NAME AS districtName
+        FROM
+        sl_bs_basic_info
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="slAccount != null and slAccount != ''">
+                AND SL_ACCOUNT = #{slAccount}
+            </if>
+            <if test="slCode != null and slCode != ''">
+                AND SL_CODE = #{slCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="findBsSexBySlCode" resultType="com.msk.bs.bean.BS2102125Bean"
+            parameterType="com.msk.bs.bean.BS2102125Bean">
+        SELECT
+        SL_CODE AS slCode,
+        FLAG1 AS flag1
+        FROM
+        sl_bs_buyershop
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="slCode != null and slCode != ''">
+                AND SL_CODE = #{slCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="findBankInfoBySlCode" resultType="com.msk.bs.bean.BS2102125Bean"
+            parameterType="com.msk.bs.bean.BS2102125Bean">
+        SELECT
+        SL_CODE AS slCode,
+        ACCOUNT_NAME AS accountName,
+        BANK_NAME AS bankName,
+        BANK_NO AS bankNo
+        FROM
+        sl_bs_bankaccount
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="slCode != null and slCode != ''">
+                AND SL_CODE = #{slCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="findLevelName" resultType="com.msk.core.entity.SlHouseType"
+            parameterType="com.msk.core.entity.SlHouseType">
+        SELECT
+        TYPE_NAME AS typeName,
+        TYPE_CODE AS typeCode,
+        PARENT_TYPE_CODE AS parentTypeCode ,
+        TYPE_LEVER AS typeLever
+        FROM
+        sl_bs_house_type
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="typeCode != null and typeCode != ''">
+                AND TYPE_CODE = #{typeCode}
+            </if>
+            <if test="typeLever != null and typeLever != ''">
+                AND TYPE_LEVER = #{typeLever}
+            </if>
+            AND ROLE_TYPE='0'
+        </where>
+    </select>
+
+</mapper>

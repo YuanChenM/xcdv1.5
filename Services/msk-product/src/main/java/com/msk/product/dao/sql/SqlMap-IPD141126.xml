@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141126Logic">
+
+    <select id="findSecondLevel" parameterType="BaseParam"
+            resultType="com.msk.product.bean.IPD141126Bean">
+        SELECT
+        b.TSP_STD_ITEM_ID tspStdItemId,
+        b.TSP_STD_ITEM_NAME tspStdItemName,
+        a.TSP_OK_VAL okVal,
+        a.TSP_NG_VAL ngVal
+        FROM
+        pd_tsp_std a
+        INNER JOIN pd_tsp_std_item b
+        ON a.TSP_STD_ITEM_ID = b.TSP_STD_ITEM_ID
+        AND a.STANDARD_ID = #{filterMap.standardId}
+        AND b.PARENT_ID= #{filterMap.parentId}
+    </select>
+
+    <select id="findFirstLevel" parameterType="BaseParam"
+            resultType="com.msk.product.bean.IPD141126RsResult">
+        SELECT
+        b.TSP_STD_ITEM_ID tspStdClaId,
+        b.TSP_STD_ITEM_NAME tspStdClaName
+        FROM
+        pd_tsp_std_item b
+        WHERE
+        b.LEVEL_ID = #{filterMap.levelId}
+    </select>
+
+    <select id="findPdStandard" parameterType="BaseParam"
+            resultType="com.msk.core.entity.PdStandard">
+        SELECT
+        A.STANDARD_ID AS standardId
+        FROM pd_standard AS A
+        WHERE A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+    </select>
+
+</mapper>

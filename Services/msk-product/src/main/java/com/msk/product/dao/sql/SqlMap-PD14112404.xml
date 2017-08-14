@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD14112404Logic">
+
+
+	<!-- 修改操作 产品特征数据 -->
+	<select id="findWeightExist" parameterType="BaseParam" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM PD_WEIGHT
+		WHERE MACHINING_CODE = #{filterMap.machiningCode}
+		AND CLASSES_CODE = #{filterMap.classesCode}
+		AND BREED_CODE = #{filterMap.breedCode}
+		<if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+			AND FEATURE_CODE = #{filterMap.featureCode}
+		</if>
+		<if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+			AND WEIGHT_CODE = #{filterMap.weightCode}
+		</if>
+		<if test="filterMap.weightName!=null and filterMap.weightName!=''">
+			AND WEIGHT_VAL = #{filterMap.weightName}
+		</if>
+		<if test="filterMap.weightVal!=null and filterMap.weightVal!=''">
+			AND WEIGHT_NAME = #{filterMap.weightVal}
+		</if>
+	</select>
+
+	<select id="findWeightExistTwo" parameterType="BaseParam" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM PD_WEIGHT
+		WHERE MACHINING_CODE = #{filterMap.machiningCode}
+		AND CLASSES_CODE = #{filterMap.classesCode}
+		AND BREED_CODE = #{filterMap.breedCode}
+		AND WEIGHT_NAME = #{filterMap.weightName}
+	</select>
+	<!--获取特征最大id-->
+	<select id="findWeightMaxId" parameterType="BaseParam" resultType="com.msk.core.entity.PdWeight">
+		SELECT
+		CASE
+		WHEN MAX(WEIGHT_CODE) IS NULL THEN 1
+		ELSE MAX(WEIGHT_CODE)+1 END AS weightCode
+		FROM PD_WEIGHT
+		WHERE MACHINING_CODE = #{filterMap.machiningCode}
+		AND CLASSES_CODE = #{filterMap.classesCode}
+		AND BREED_CODE = #{filterMap.breedCode}
+	</select>
+
+	<!--查询产品标准有无重复-->
+	<select id="findPdStand" parameterType="BaseParam" resultType="int">
+		SELECT COUNT(1)
+		FROM PD_STANDARD A
+		WHERE A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</select>
+
+	<!--产品树形表中是否存在-->
+	<select id="findClassesTreeExist" parameterType="BaseParam" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM PD_CLASSESTREE
+		WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</select>
+
+	<select id="findClassesByParentCode" parameterType="BaseParam" resultType="int">
+		SELECT COUNT(1)
+		FROM PD_CLASSESTREE A
+		WHERE A.PARENT_CODE = #{filterMap.parentCode}
+		AND A.LEVEL_NAME = #{filterMap.levelName}
+	</select>
+
+	<!--保存产品净重数据-->
+	<insert id="saveWeight" parameterType="com.msk.core.entity.PdFeature">
+		INSERT INTO PD_WEIGHT (
+			CLASSES_CODE,
+			MACHINING_CODE,
+			BREED_CODE,
+			FEATURE_CODE,
+			WEIGHT_CODE,
+			WEIGHT_NAME,
+			WEIGHT_VAL,
+			CLASSESTREE_CODE,
+			DEL_FLG,
+			CRT_ID,
+			CRT_TIME,
+			UPD_ID,
+			UPD_TIME,
+			ACT_ID,
+			ACT_TIME,
+			VER)
+			VALUES
+				(
+					#{classesCode},
+					#{machiningCode},
+					#{breedCode},
+					#{featureCode},
+					#{weightCode},
+					#{weightName},
+					#{weightVal},
+					#{classestreeCode},
+					'0',
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+					#{crtId},
+					#{crtTime},
+					#{updId},
+					#{updTime},
+					<!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+					#{actId},
+					<!--Modify: 添加公共属性 2016/09/20   BY  任强  End -->
+					#{actTime},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+					'1'
+				);
+	</insert>
+
+	<!--保存商品标准数据-->
+	<insert id="savePdStand" parameterType="com.msk.core.entity.PdStandard">
+		INSERT INTO PD_STANDARD (
+		STANDARD_ID,
+		CLASSES_CODE,
+		MACHINING_CODE,
+		BREED_CODE,
+		FEATURE_CODE,
+		WEIGHT_CODE,
+		CLASSESTREE_CODE,
+		QLT_FLG,
+		TNC_FLG,
+		NOR_FLG,
+		ORG_FLG,
+		FED_FLG,
+		MCQ_FLG,
+		GNQ_FLG,
+		TSP_FLG,
+		DEL_FLG,
+		CRT_ID,
+		CRT_TIME,
+		UPD_ID,
+		UPD_TIME,
+		ACT_ID,
+		ACT_TIME,
+		VER
+		)
+		VALUES
+		(
+		#{standardId},
+		#{classesCode},
+		#{machiningCode},
+		#{breedCode},
+		#{featureCode},
+		#{weightCode},
+		#{classestreeCode},
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0' ,
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		#{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+		<!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+		#{actId},
+		<!--Modify: 添加公共属性 2016/09/20   BY  任强  End -->
+		#{actTime},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		'1'
+		);
+	</insert>
+	<insert id="save" parameterType="com.msk.core.entity.PdClassestree">
+		INSERT INTO PD_CLASSESTREE (
+		CLASSESTREE_ID,
+		CLASSESTREE_CODE,
+		LEVEL_CODE,
+		LEVEL_NAME,
+		PARENT_CODE,
+		PARENT_NAME,
+		TREE_LEVEL,
+		DEL_FLG,
+		CRT_ID,
+		CRT_TIME,
+		UPD_ID,
+		UPD_TIME,
+		ACT_ID,
+		ACT_TIME,
+		VER)
+		VALUES
+		(
+		#{classestreeId},
+		#{classestreeCode},
+		#{levelCode},
+		#{levelName},
+		#{parentCode},
+		#{parentName},
+		#{treeLevel},
+		'0',
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		#{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+		<!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+		#{actId},
+		<!--Modify: 添加公共属性 2016/09/20   BY  任强  End -->
+		#{actTime},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		'1'
+		);
+	</insert>
+	<!--修改操作-->
+	<update id="modifyWeightName" parameterType="com.msk.core.entity.PdWeight" >
+		UPDATE PD_WEIGHT AS A SET
+		A.WEIGHT_NAME = #{weightName}
+		,A.WEIGHT_VAL = #{weightVal}
+		,A.UPD_ID = #{updId}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		,A.UPD_TIME = #{updTime}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+		WHERE A.CLASSESTREE_CODE =#{classestreeCode}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+			AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+	</update >
+
+	<select id="findListParentNameIsWeightName" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestree">
+		SELECT
+		PARENT_NAME AS parentName,
+		CLASSESTREE_CODE AS classestreeCode
+		FROM PD_CLASSESTREE
+		WHERE PARENT_CODE = #{filterMap.parentWeight}
+	</select>
+
+	<update id="modifyParentNameIsWeightName"  parameterType="com.msk.core.entity.PdClassestree" >
+		UPDATE PD_CLASSESTREE AS A SET
+		A.PARENT_NAME = #{parentName}
+		,A.UPD_ID = #{updId}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		,A.UPD_TIME = #{updTime}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+		WHERE A.CLASSESTREE_CODE =#{classestreeCode}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+			AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+	</update>
+
+	<update id="modify"  parameterType="com.msk.core.entity.PdClassestree" >
+		UPDATE PD_CLASSESTREE AS A SET
+		A.LEVEL_NAME= #{levelName}
+		,A.UPD_ID = #{updId}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		,A.UPD_TIME = #{updTime}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+		WHERE A.CLASSESTREE_CODE =#{classestreeCode}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+			AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+	</update>
+
+	<!--删除操作-->
+	<!--查询当前节点下是否存在子节点-->
+	<select id="findList" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestree">
+		SELECT CLASSESTREE_CODE
+		FROM PD_CLASSESTREE
+		WHERE PARENT_CODE = #{filterMap.classestreeCode}
+	</select>
+
+	<!-- 删除classes产品类别信息表中数据-->
+	<delete id="removePdWeight" parameterType="BaseParam">
+		DELETE FROM PD_WEIGHT
+		WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</delete>
+
+	<!-- 删除产品标准表中数据-->
+	<delete id="removePdStandard" parameterType="BaseParam">
+		DELETE FROM PD_STANDARD
+		WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</delete>
+
+
+	<!-- 删除classes产品类别信息表中数据-->
+	<delete id="remove" parameterType="BaseParam">
+		DELETE FROM PD_CLASSESTREE
+		WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</delete>
+
+	<select id="findPdListWeightL" parameterType="BaseParam" resultType="com.msk.core.entity.PdWeight">
+		SELECT
+		DISTINCT
+		A.WEIGHT_NAME AS weightName,
+		A.WEIGHT_CODE AS weightCode
+		FROM PD_WEIGHT AS A
+		WHERE A.CLASSES_CODE = #{filterMap.classestreeCode1} AND A.MACHINING_CODE= #{filterMap.classestreeCode2} AND BREED_CODE = #{filterMap.classestreeCode3}
+		AND A.FEATURE_CODE is not NULL
+		AND A.FEATURE_CODE != ''
+		AND A.WEIGHT_CODE is not NULL
+		AND A.WEIGHT_CODE != ''
+	</select>
+</mapper>

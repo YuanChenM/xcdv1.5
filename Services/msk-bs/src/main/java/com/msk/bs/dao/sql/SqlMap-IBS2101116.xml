@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101116RsLogic">
+    <select id="findList" resultType="com.msk.bs.bean.IBS2101116Bean" parameterType="com.hoperun.core.bean.BaseParam">
+        SELECT
+        sbb.BUYER_ID AS buyerId,
+        bbi.SL_CODE_DIS AS slCode,
+        bbi.SL_CODE AS slId,
+        <!--Modif 买手名称字段更换 ni_shaotang 2016-11-02 start-->
+        ba.SL_SHOW_NAME AS slName,
+        <!--Modif 买手名称字段更换 ni_shaotang 2016-11-02 end-->
+        sha.HOUSE_CODE AS houseId,
+        sha.HOUSE_CODE_DIS AS houseCode,
+        sha.HOUSE_SHOW_NAME AS houseName
+        FROM
+        sl_bs_buyer sbb
+        LEFT JOIN sl_bs_basic_info bbi ON bbi.SL_CODE = sbb.SL_CODE AND bbi.DEL_FLG = 0
+        <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 start-->
+        LEFT JOIN sl_bs_account ba ON ba.SL_ACCOUNT = bbi.SL_ACCOUNT AND (ba.DEL_FLG = 0 OR ba.DEL_FLG IS NULL )
+        LEFT JOIN sl_house_account sha ON sha.HOUSE_CODE = sbb.HOUSE_CODE AND sha.SL_CODE = sbb.SL_CODE AND (sha.DEL_FLG = 0 OR sha.DEL_FLG IS NULL ) AND sha.AUTH_STATUS = 2
+        <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 end-->
+        WHERE
+        (sbb.DEL_FLG = 0 OR sbb.DEL_FLG IS NULL )
+        <if test="filterMap.list != null">
+            AND sbb.BUYER_ID IN
+            <foreach collection="filterMap.list" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+</mapper>
+

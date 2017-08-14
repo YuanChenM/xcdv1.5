@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141401Logic">
+    <!-- 表字段映射 -->
+    <sql id="selectSql">
+        A.SL_ACCOUNT AS slAccount,
+        A.SL_TEL AS slTel ,
+        IFNULL(D.EP_NAME,'') AS slShowName,
+        A.SL_CONTACT AS slContact ,
+        B.SL_CODE AS slCode,
+        IFNULL(B.SL_CODE_DIS,'') AS slCodeDis,
+        (CASE B.SL_MAIN_CLASS
+        WHEN 0 THEN '生产型'
+        WHEN 1 THEN '自产型'
+        WHEN 2 THEN '代理型'
+        WHEN 3 THEN 'OEM型'
+        ELSE '' END)AS slMainClass,
+        IFNULL(CONCAT(C.AREANAME,' ',C.PRLGCSNAME,' ',C.CITYNAME,' ',C.DISTRICTNAME),'') AS cityName
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+                AND B.SL_CODE_DIS like #{filterMap.slCodeDis}
+            </if>
+            <if test="filterMap.slShowName!=null and filterMap.slShowName!=''">
+                AND D.EP_NAME like #{filterMap.slShowName}
+            </if>
+            <if test="filterMap.slContact!=null and filterMap.slContact!=''">
+                AND A.SL_CONTACT like #{filterMap.slContact}
+            </if>
+            <if test="filterMap.slSelfFlg!=null and filterMap.slSelfFlg!=''">
+                AND B.SELF_FLG = '1'
+            </if>
+            <if test="filterMap.slProxyFlg!=null and filterMap.slProxyFlg!=''">
+                AND B.AGENT_FLG='1'
+            </if>
+            <if test="filterMap.slOemFlg!=null and filterMap.slOemFlg!=''">
+                AND B.OEM_FLG='1'
+            </if>
+            <if test="filterMap.slMainClasses!=null">
+                AND B.SL_MAIN_CLASS IN
+                <foreach collection="filterMap.slMainClasses" item="slMain" open="(" separator="," close=")">
+                    #{slMain}
+                </foreach>
+            </if>
+            <if test="filterMap.slTel!=null and filterMap.slTel!=''">
+                AND A.SL_TEL like #{filterMap.slTel}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND A.DEL_FLG = #{filterMap.delFlg}
+            </if>
+            <if test="filterMap.cityName!=null and filterMap.cityName!=''">
+                AND CONCAT(C.AREANAME,' ',C.PRLGCSNAME,' ',C.CITYNAME,' ',C.DISTRICTNAME) like #{filterMap.cityName}
+            </if>
+        </where>
+    </sql>
+    <select id="findPageList" parameterType="com.hoperun.core.bean.BasePageParam"
+            resultType="com.msk.product.bean.PD141401Bean">
+        select
+        <include refid="selectSql"/>
+        from SL_ACCOUNT AS A
+        INNER JOIN SL_SELLER AS B
+        ON A.SL_ACCOUNT=B.SL_ACCOUNT
+        LEFT JOIN v_md_dist_area C ON C.PRLGCSCODE=B.PROVINCE_CODE
+        AND C.CITYCODE=B.CITY_CODE AND C.DISTRICTCODE=B.DISTRICT_CODE
+        LEFT JOIN SL_ENTERPRISE D ON D.EP_ID=B.EP_ID
+        <include refid="whereCondition"/>
+        ORDER BY B.SL_CODE_DIS
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer"
+            parameterType="com.hoperun.core.bean.BasePageParam">
+        select COUNT(1)
+        from SL_ACCOUNT AS A
+        INNER JOIN SL_SELLER AS B ON A.SL_ACCOUNT=B.SL_ACCOUNT
+        LEFT JOIN v_md_dist_area C ON C.PRLGCSCODE=B.PROVINCE_CODE AND C.CITYCODE=B.CITY_CODE AND
+        C.DISTRICTCODE=B.DISTRICT_CODE
+        LEFT JOIN SL_ENTERPRISE D ON D.EP_ID=B.EP_ID
+        <include refid="whereCondition"/>
+    </select>
+
+</mapper>

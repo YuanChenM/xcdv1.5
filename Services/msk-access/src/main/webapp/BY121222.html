@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="resources/js/BY121222.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>产品饲养标准调研</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div id="breedStandard" style="width: 80%;margin-left:25px;" class="divCommon1"></div>
+            <div style="width: 80%;margin-left:30px;" class="divCommon2">根据指标和标准,记录买家调研意见</div>
+            <div style="width: 85%;margin-left:25px;background-color: #E1E4E9;height: 30px;line-height: 30px;" class="divCommon1"><span style="padding-left:15px;">指标内容</span></div>
+            <div id="fedStdItemName" style="width: 85%;margin-left:25px;background-color: #F0F2F5;" class="divCommon2"><span style="padding-left:25px;">幼苗季节性标准指标</span></div>
+            <input type="hidden" id="fedStdItemId"/>
+            <div style="width: 85%;margin-left:25px;background-color: #E1E4E9;height: 30px;line-height: 30px;" class="divCommon1"><span style="padding-left:15px;">指标等级</span></div>
+            <div style="width: 85%;margin-left:25px;" class="divCommon3">
+                <div style="padding-left:25px;" class="divCommon3">优良</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea id="goodVal" name="goodVal" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="padding-left:20px;width: 100px;">
+                    <input name="goodValAgree" id="goodValAgree" type="checkbox" data-mini="true"/>
+                    <label for="goodValAgree" style="color:#52C2E9;background-color:#F0F2F5;border-style: none;font-size: 17px;">同意</label>
+                </div>
+                <div style="padding-left:25px;" class="divCommon3">一般</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea id="normalVal" name="normalVal" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="padding-left:20px;width: 100px;">
+                    <input name="normalValAgree" id="normalValAgree" type="checkbox" data-mini="true"/>
+                    <label for="normalValAgree" style="color:#52C2E9;background-color:#F0F2F5;border-style: none;font-size: 17px;">同意</label>
+                </div>
+                <div style="padding-left:25px;" class="divCommon3">差</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea id="badVal" name="badVal" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="padding-left:20px;width: 100px;">
+                    <input name="badValAgree" id="badValAgree" type="checkbox" data-mini="true"/>
+                    <label for="badValAgree" style="color:#52C2E9;background-color:#F0F2F5;border-style: none;font-size: 17px;">同意</label>
+                </div>
+            </div>
+            <div style="width: 85%;margin-left:25px;background-color: #E1E4E9;height: 30px;line-height: 30px;" class="divCommon1"><span style="padding-left:15px;">备注</span></div>
+            <div style="width: 85%;margin-left:25px;text-shadow:none;font-size: 17px;background-color: #F0F2F5;">
+                <div id="remark" style="padding-left:25px;color:#898989"></div>
+            </div>
+            <div style="width: 85%;margin-left:25px;background-color: #E1E4E9;color: #52C2E9;text-align:left;line-height:35px;text-shadow:none;height:30px;font-size: 17px;margin-top:5px;"><span style="padding-left:15px;">调研描述</span></div>
+            <div style="width: 85%;margin-left:25px;text-shadow:none;font-size: 17px;background-color: #F0F2F5;">
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea id="description" name="description"></textarea>
+                </div>
+            </div>
+            <div style="width: 85%;margin-left:25px;margin-top:20px;" class="ui-grid-a">
+                <div style="width: 40%;height:40px;line-height: 45px;background-color:#A0D468;color: #FFFFFF;text-align:center;text-shadow:none;font-size: 20px;" class="ui-block-a" onclick="skip()">跳过</div>
+                <div id="nextItem" style="width: 40%;height:40px;line-height: 45px;background-color:#A0D468;color: #FFFFFF;text-align:center;text-shadow:none;font-size: 20px;margin-left:60px;" class="ui-block-b" onclick="nextItem()">下一项</div>
+            </div>
+            <br/>
+        </div>
+	</body>
+</html>

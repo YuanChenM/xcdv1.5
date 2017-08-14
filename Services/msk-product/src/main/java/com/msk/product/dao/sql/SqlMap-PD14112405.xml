@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD14112405Logic">
+
+	<select id="findStandIdByClassestreeCode" parameterType="BaseParam" resultType="com.msk.core.entity.PdStandard">
+		SELECT A.STANDARD_ID AS standardId
+		FROM PD_STANDARD A
+		WHERE A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</select>
+
+	<!--获取包装最大id-->
+	<select id="findNormsMaxId" parameterType="BaseParam" resultType="com.msk.core.entity.PdNormsStd">
+		SELECT
+		CASE
+		WHEN MAX(NORMS_CODE) IS NULL THEN 1
+		ELSE MAX(NORMS_CODE)+1 END AS normsCode
+		FROM PD_NORMS_STD A
+		WHERE A.STANDARD_ID IN (SELECT B.STANDARD_ID FROM PD_STANDARD B WHERE B.CLASSES_CODE=#{filterMap.classesCode}
+		 AND B.MACHINING_CODE = #{filterMap.machiningCode}
+		 AND B.BREED_CODE = #{filterMap.breedCode}
+		AND B.WEIGHT_CODE= #{filterMap.weightCode})
+	</select>
+
+	<!--产品树形表中是否存在-->
+	<select id="findClassesTreeExist" parameterType="BaseParam" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM PD_CLASSESTREE
+		WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</select>
+
+	<!--保存产品净重数据-->
+	<insert id="save" parameterType="com.msk.core.entity.PdNormsStd">
+		INSERT INTO PD_NORMS_STD (
+			STANDARD_ID,
+			NORMS_CODE,
+			NORMS_OUT,
+			CLASSESTREE_CODE,
+			DEL_FLG,
+			CRT_ID,
+			CRT_TIME,
+			UPD_ID,
+			UPD_TIME,
+			ACT_ID,
+			ACT_TIME,
+			VER
+		)
+			VALUES
+				(
+				#{standardId},
+				#{normsCode},
+				#{normsOut},
+				#{classestreeCode},
+				'0',
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+				#{crtId},
+				#{crtTime},
+				#{updId},
+				#{updTime},
+				<!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+				#{actId},
+				<!--Modify: 添加公共属性 2016/09/20   BY  任强  End -->
+				#{actTime},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+				'1'
+				);
+	</insert>
+
+	<insert id="saveTree" parameterType="com.msk.core.entity.PdClassestree">
+		INSERT INTO PD_CLASSESTREE (
+		CLASSESTREE_ID,
+		CLASSESTREE_CODE,
+		LEVEL_CODE,
+		LEVEL_NAME,
+		PARENT_CODE,
+		PARENT_NAME,
+		TREE_LEVEL,
+		DEL_FLG,
+		CRT_ID,
+		CRT_TIME,
+		UPD_ID,
+		UPD_TIME,
+		ACT_ID,
+		ACT_TIME,
+		VER)
+		VALUES
+		(
+		#{classestreeId},
+		#{classestreeCode},
+		#{levelCode},
+		#{levelName},
+		#{parentCode},
+		#{parentName},
+		#{treeLevel},
+		'0',
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		#{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+		<!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+		#{actId},
+		<!--Modify: 添加公共属性 2016/09/20   BY  任强  End -->
+		#{actTime},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		'1'
+		);
+	</insert>
+
+	<!--删除操作-->
+	<!-- 删除classes产品类别信息表中数据-->
+	<delete id="removePdNorms" parameterType="BaseParam">
+		DELETE FROM PD_NORMS_STD
+		WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</delete>
+
+	<!-- 删除classes产品类别信息表中数据-->
+	<delete id="remove" parameterType="BaseParam">
+		DELETE FROM PD_CLASSESTREE
+		WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</delete>
+
+	<!--修改业务编码查询操作  xhy   classesCode+machiningCode+breedCode+weightCode 查询对应的产品包装数据-->
+	<select id="findListExistNorms" parameterType="BaseParam" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM PD_NORMS_STD AS A
+		WHERE A.STANDARD_ID IN (SELECT B.STANDARD_ID FROM PD_STANDARD B WHERE B.CLASSES_CODE=#{filterMap.classesCode}
+		 AND B.MACHINING_CODE = #{filterMap.machiningCode}
+		 AND B.BREED_CODE = #{filterMap.breedCode}
+		AND B.WEIGHT_CODE= #{filterMap.weightCode}
+		<if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+
+			AND B.FEATURE_CODE = #{filterMap.featureCode}
+		</if>
+		 )
+		<if test="filterMap.normsCode!=null and filterMap.normsCode!=''">
+			AND A.NORMS_CODE = #{filterMap.normsCode}
+		</if>
+		<if test="filterMap.normsOut!=null and filterMap.normsOut!=''">
+			AND A.NORMS_OUT = #{filterMap.normsOut}
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY1213141Logic">
+    <select id="findOne" parameterType = "BaseParam" resultType = "com.msk.core.entity.ByBuyerDelivery">
+        SELECT
+           ID AS id,
+           BUYER_ID AS buyerId,
+           PROVINCE_CODE AS provinceCode,
+           PROVINCE_NAME AS provinceName,
+           CITY_CODE AS cityCode,
+           CITY_NAME AS cityName,
+           DISTRICT_CODE AS districtCode,
+           DISTRICT_NAME AS districtName,
+           DELIVERY_ADDR AS deliveryAddr,
+           REFERENCE_ADDR AS referenceAddr,
+           MANAGE_ADDR AS manageAddr,
+           REC_PER_NAME AS recPerName,
+           REC_PER_TEL AS recPerTel,
+           REC_PER_WECHAT AS recPerWechat,
+           REC_PER_QQ AS recPerQq,
+           IS_DEFAULT AS isDefault,
+           SH_OD_DELIVERY_AREA AS shOdDeliveryArea
+        FROM
+           by_buyer_delivery
+        WHERE
+           ID = #{filterMap.id}
+           AND DEL_FLG = 0
+    </select>
+    <insert id="save" parameterType = "com.msk.core.entity.ByBuyerDelivery">
+        INSERT INTO
+           by_buyer_delivery(
+           ID,
+           BUYER_ID,
+           PROVINCE_CODE,
+           PROVINCE_NAME,
+           CITY_CODE,
+           CITY_NAME,
+           DISTRICT_CODE,
+           DISTRICT_NAME,
+           DELIVERY_ADDR,
+           REFERENCE_ADDR,
+           MANAGE_ADDR,
+           REC_PER_NAME,
+           REC_PER_TEL,
+           REC_PER_WECHAT,
+           REC_PER_QQ,
+           IS_DEFAULT,
+           SH_OD_DELIVERY_AREA,
+           DEL_FLG,
+
+           CRT_ID,
+           CRT_TIME,
+           UPD_ID,
+           UPD_TIME,
+           ACT_ID,
+           ACT_TIME,
+
+           VER
+           )VALUES (
+           #{id},
+           #{buyerId},
+           #{provinceCode},
+           #{provinceName},
+           #{cityCode},
+           #{cityName},
+           #{districtCode},
+           #{districtName},
+           #{deliveryAddr},
+           #{referenceAddr},
+           #{manageAddr},
+           #{recPerName},
+           #{recPerTel},
+           #{recPerWechat},
+           #{recPerQq},
+           #{isDefault},
+           #{shOdDeliveryArea},
+           0,
+
+           #{crtId},
+           #{crtTime},
+           #{updId},
+           #{updTime},
+           #{actId},
+           #{actTime},
+
+           1
+           )
+    </insert>
+    <update id="modify" parameterType = "com.msk.core.entity.ByBuyerDelivery">
+        UPDATE
+           by_buyer_delivery
+        SET
+           PROVINCE_CODE = #{provinceCode},
+           PROVINCE_NAME = #{provinceName},
+           CITY_CODE = #{cityCode},
+           CITY_NAME = #{cityName},
+           DISTRICT_CODE = #{districtCode},
+           DISTRICT_NAME = #{districtName},
+           DELIVERY_ADDR = #{deliveryAddr},
+           REFERENCE_ADDR = #{referenceAddr},
+           MANAGE_ADDR = #{manageAddr},
+           REC_PER_NAME = #{recPerName},
+           REC_PER_TEL = #{recPerTel},
+           REC_PER_WECHAT = #{recPerWechat},
+           REC_PER_QQ = #{recPerQq},
+           IS_DEFAULT = #{isDefault},
+           SH_OD_DELIVERY_AREA = #{shOdDeliveryArea}
+          ,UPD_ID = #{updId}
+          ,UPD_TIME = #{updTime}
+        WHERE
+           ID = #{id}
+        AND DEL_FLG = 0
+    </update>
+   <update id="modifyDefaultAddr" parameterType="com.msk.core.entity.ByBuyerDelivery">
+        UPDATE
+           by_buyer_delivery
+        SET
+           IS_DEFAULT = 0
+          ,UPD_ID = #{updId}
+          ,UPD_TIME = #{updTime}
+        WHERE
+           BUYER_ID = #{buyerId}
+        AND DEL_FLG = 0
+   </update>
+
+   <update id="deleteDelivery" parameterType="BaseParam">
+        UPDATE
+           by_buyer_delivery
+        SET
+           DEL_FLG = 1
+           ,UPD_ID = #{filterMap.updId}
+          ,UPD_TIME = #{filterMap.updTime}
+        WHERE
+           ID = #{filterMap.id}
+        AND DEL_FLG = 0
+   </update>
+   <select id="findBuyerIdByDeliveryId" parameterType="BaseParam" resultType="com.msk.buyers.bean.BY121001Bean">
+      SELECT
+        BUYER_ID AS buyerId
+      FROM
+      by_buyer_delivery
+      WHERE
+        ID = #{filterMap.id}
+   </select>
+   <select id="findBuyerCodeByBuyerId" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerBasicInfo">
+      SELECT
+        BUYER_CODE AS buyerCode
+      FROM
+        by_buyer_basic_info
+      WHERE
+        BUYER_ID = #{filterMap.buyerId}
+      AND DEL_FLG = 0
+   </select>
+   <update id="modifyBuyerCodeByBuyerId" parameterType = "com.msk.core.entity.ByBuyerBasicInfo">
+      UPDATE
+        BY_BUYER_BASIC_INFO
+      SET
+        BUYER_CODE = #{buyerCode}
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+      WHERE
+      BUYER_ID = #{buyerId}
+      AND DEL_FLG = 0
+   </update>
+</mapper>

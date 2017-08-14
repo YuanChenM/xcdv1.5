@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11303Logic">
+    <!--合同管理一览列表-->
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11303RsBean"
+            parameterType="com.msk.ssc.bean.SSC11303RsParam">
+        SELECT
+        IFNULL(a.BID_PROJECT_NO,'') AS bidProjectNo,
+        a.CONTRACT_ID AS contractId,
+        IFNULL(a.CONTRACT_CODE,'') AS contractCode,
+        a.BID_ID AS bidId,
+        IFNULL(a.BID_PROJECT_NO,'') AS bidProjectNo,
+        IFNULL(a.BID_RELATION_TYPE,'') AS bidRelationType,
+        IFNULL(a.CONTRACT_NAME,'') AS contractName,
+        a.SUPPLIER_ID AS supplierId,
+        IFNULL(a.SUPPLIER_NAME,'') AS supplierName,
+        IFNULL(a.SUPPLIER_CODE,'') AS supplierCode,
+        a.PURCHASER_ID AS purchaserId,
+        IFNULL(a.PURCHASER_NAME,'') AS purchaserName,
+        IFNULL(a.PURCHASER_CODE,'') AS purchaserCode,
+        a.CONTRACT_ACT_DATE AS contractActDate,
+        IFNULL(DATE_FORMAT(a.CONTRACT_ACT_DATE,'%Y-%m-%d'),'') AS contractActDateStr,
+        a.CONTRACT_TYPE AS contractType,
+        a.CONTRACT_STATUS AS  contractStatus,
+        a.CONTRACT_AMOUNT AS   contractAmount,
+        a.VER AS ver
+        FROM
+         SSC_CONTRACT_BASIC a
+
+        <include refid="whereCondition"/>
+        ORDER BY CONTRACT_ID DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.ssc.bean.SSC11303RsParam">
+        SELECT
+        COUNT(1)
+        FROM SSC_CONTRACT_BASIC a
+        <include refid="whereCondition"/>
+    </select>
+
+
+    <sql id="whereCondition">
+      <where>
+          1=1
+          <if test="isPaymentRequest =='true'">
+                  AND
+                  a.CONTRACT_ID  NOT IN (
+                  SELECT CONTRACT_ID
+                  FROM ssc_payment_request
+                  WHERE DEL_FLG=0
+                  AND PAYMENT_TYPE=0
+                  AND ssc_payment_request.CONTRACT_ID is not null
+                  )
+          </if>
+          <if test="isPaymentRequest =='isPaymentRequest'">
+              AND
+              a.CONTRACT_ID   IN (
+              SELECT CONTRACT_ID
+              FROM ssc_payment_request
+              WHERE DEL_FLG=0
+              AND PAYED_STATUS IN (1,2,3)
+              AND CONTRACT_ID is not null
+              )
+          </if>
+          <if test="contractId != '' and contractId != null ">
+              AND CONTRACT_ID =#{contractId}
+          </if>
+        <if test="contractCode != '' and contractCode != null ">
+            AND CONTRACT_CODE LIKE  #{contractCode}
+        </if>
+        <if test="contractName != '' and contractName != null ">
+            AND CONTRACT_NAME LIKE  #{contractName}
+        </if>
+        <if test="bidProjectNo != '' and bidProjectNo != null ">
+            AND BID_PROJECT_NO LIKE #{bidProjectNo}
+        </if>
+        <!--生产商-->
+        <if test="supplierName != '' and supplierName != null ">
+            AND SUPPLIER_NAME LIKE  #{supplierName}
+        </if>
+        <!--采购商-->
+        <if test="purchaserName != '' and purchaserName != null ">
+            AND PURCHASER_NAME LIKE  #{purchaserName}
+        </if>
+          <!--合同生效日期-->
+        <if test="contractActDate!=null and contractActDate!=''">
+          AND DATE_FORMAT(CONTRACT_ACT_DATE,'%Y-%m-%d') = #{contractActDate}
+        </if>
+        <if test="contractStatusArr !=null and contractStatusArr.length>0">
+            and CONTRACT_STATUS in
+            <foreach item="contractStatusArrItem" index="index" collection="contractStatusArr"
+                     open="(" separator="," close=")">
+                #{contractStatusArrItem}
+            </foreach>
+        </if>
+          <if test="bidRelationTypeArr !=null and bidRelationTypeArr.length>0">
+              and BID_RELATION_TYPE in
+              <foreach item="bidRelationTypeArrItem" index="index" collection="bidRelationTypeArr"
+                       open="(" separator="," close=")">
+                  #{bidRelationTypeArrItem}
+              </foreach>
+          </if>
+        <if test="contractStatusArr ==null">
+            AND CONTRACT_STATUS != '9'
+            AND DEL_FLG  = 0
+        </if>
+      </where>
+    </sql>
+
+    <update id="deleteContractBasic" parameterType="com.msk.ssc.bean.SSC11303RsParam">
+        update SSC_CONTRACT_BASIC
+        set
+        CONTRACT_STATUS = '9',
+        DEL_FLG = 1,
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        CONTRACT_ID = #{contractId}
+        AND DEL_FLG  = 0
+    </update>
+</mapper>

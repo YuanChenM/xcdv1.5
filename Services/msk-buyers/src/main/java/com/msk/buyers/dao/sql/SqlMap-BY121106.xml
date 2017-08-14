@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121106Logic">
+    <select id="findByLicPicture" parameterType="com.msk.buyers.bean.BY121106Bean" resultType="com.msk.buyers.bean.BY121106Bean">
+        SELECT
+        ID AS id,
+        BUYER_ID AS buyerId,
+        BUS_LIC_PIC_SERVER_ID AS busLicPicServerId,
+        BUS_LIC_PIC AS busLicPic,
+        BUS_LIC_SUF AS busLicSuf,
+        ORG_CERTIFICATE_PIC_SERVER_ID AS orgCertificatePicServerId,
+        ORG_CERTIFICATE_PIC AS orgCertificatePic,
+        ORG_CERTIFICATE_SUF AS orgCertificateSuf,
+        TAX_CERTIFICATE_PIC_SERVER_ID AS taxCertificatePicServerId,
+        TAX_CERTIFICATE_PIC AS taxCertificatePic,
+        TAX_CERTIFICATE_SUF AS taxCertificateSuf,
+        FOOD_CERTIFICATE_PIC_SERVER_ID AS foodCertificatePicServerId,
+        FOOD_CERTIFICATE_PIC AS foodCertificatePic,
+        FOOD_CERTIFICATE_SUF AS foodCertificateSuf,
+        LEGAL_CERTIFICATE_PIC_SERVER_ID AS legalCertificatePicServerId,
+        LEGAL_CERTIFICATE_PIC AS legalCertificatePic,
+        LEGAL_CERTIFICATE_SUF AS legalCertificateSuf
+        FROM
+        by_buyer_pictures
+        WHERE
+        BUYER_ID = #{buyerId}
+        AND DEL_FLG = 0
+    </select>
+    <update id="modifyByLicPicture" parameterType="com.msk.buyers.bean.BY121106Bean">
+        UPDATE
+        by_buyer_pictures
+        SET
+        BUYER_ID = #{buyerId}
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        <if test="busLicPicServerId != null and busLicPicServerId != ''">
+            BUS_LIC_PIC_SERVER_ID = #{busLicPicServerId}
+        </if>
+        <if test="busLicPic != null and busLicPic != ''">
+            ,BUS_LIC_PIC = #{busLicPic}
+        </if>
+        <if test="busLicSuf != null and busLicSuf != ''">
+            ,BUS_LIC_SUF = #{busLicSuf}
+        </if>
+        <if test="orgCertificatePicServerId != null and orgCertificatePicServerId != ''">
+            ORG_CERTIFICATE_PIC_SERVER_ID = #{orgCertificatePicServerId}
+        </if>
+        <if test="orgCertificatePic != null and orgCertificatePic != ''">
+            ,ORG_CERTIFICATE_PIC = #{orgCertificatePic}
+        </if>
+        <if test="orgCertificateSuf != null and orgCertificateSuf != ''">
+            ,ORG_CERTIFICATE_SUF = #{orgCertificateSuf}
+        </if>
+        <if test="taxCertificatePicServerId != null and taxCertificatePicServerId != ''">
+            TAX_CERTIFICATE_PIC_SERVER_ID = #{taxCertificatePicServerId}
+        </if>
+        <if test="taxCertificatePic != null and taxCertificatePic != ''">
+            ,TAX_CERTIFICATE_PIC = #{taxCertificatePic}
+        </if>
+        <if test="taxCertificateSuf != null and taxCertificateSuf != ''">
+            ,TAX_CERTIFICATE_SUF = #{taxCertificateSuf}
+        </if>
+        <if test="foodCertificatePicServerId != null and foodCertificatePicServerId != ''">
+            FOOD_CERTIFICATE_PIC_SERVER_ID = #{foodCertificatePicServerId}
+        </if>
+        <if test="foodCertificatePic != null and foodCertificatePic != ''">
+            ,FOOD_CERTIFICATE_PIC = #{foodCertificatePic}
+        </if>
+        <if test="foodCertificateSuf != null and foodCertificateSuf != ''">
+            ,FOOD_CERTIFICATE_SUF = #{foodCertificateSuf}
+        </if>
+        <if test="legalCertificatePicServerId != null and legalCertificatePicServerId != ''">
+            LEGAL_CERTIFICATE_PIC_SERVER_ID = #{legalCertificatePicServerId}
+        </if>
+        <if test="legalCertificatePic != null and legalCertificatePic != ''">
+            ,LEGAL_CERTIFICATE_PIC = #{legalCertificatePic}
+        </if>
+        <if test="legalCertificateSuf != null and legalCertificateSuf != ''">
+            ,LEGAL_CERTIFICATE_SUF = #{legalCertificateSuf}
+        </if>
+        WHERE
+        BUYER_ID = #{buyerId}
+        AND DEL_FLG = 0
+    </update>
+    <insert id="addByLicPicture" parameterType="com.msk.buyers.bean.BY121106Bean">
+        INSERT INTO by_buyer_pictures (
+            ID,
+            BUYER_ID,
+            BUS_LIC_PIC_SERVER_ID,
+            BUS_LIC_PIC,
+            BUS_LIC_SUF,
+            ORG_CERTIFICATE_PIC_SERVER_ID,
+            ORG_CERTIFICATE_PIC,
+            ORG_CERTIFICATE_SUF,
+            TAX_CERTIFICATE_PIC_SERVER_ID,
+            TAX_CERTIFICATE_PIC,
+            TAX_CERTIFICATE_SUF,
+            FOOD_CERTIFICATE_PIC_SERVER_ID,
+            FOOD_CERTIFICATE_PIC,
+            FOOD_CERTIFICATE_SUF,
+            LEGAL_CERTIFICATE_PIC_SERVER_ID,
+            LEGAL_CERTIFICATE_PIC,
+            LEGAL_CERTIFICATE_SUF,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )VALUES (
+            #{id},
+            #{buyerId},
+            #{busLicPicServerId},
+            #{busLicPic},
+            #{busLicSuf},
+            #{orgCertificatePicServerId},
+            #{orgCertificatePic},
+            #{orgCertificateSuf},
+            #{taxCertificatePicServerId},
+            #{taxCertificatePic},
+            #{taxCertificateSuf},
+            #{foodCertificatePicServerId},
+            #{foodCertificatePic},
+            #{foodCertificateSuf},
+            #{legalCertificatePicServerId},
+            #{legalCertificatePic},
+            #{legalCertificateSuf},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+        )
+    </insert>
+</mapper>

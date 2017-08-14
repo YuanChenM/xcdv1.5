@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.BR121404Logic">
+	<select id="findPageList" resultType="com.msk.core.entity.BrSingleByFileInfo"  parameterType="com.msk.br.bean.BR121404RsParam" >
+		SELECT
+		IFNULL(a.BUYER_ID, '') AS buyerId
+		,IFNULL(c.FILE_ID, '') AS fileId
+		,IFNULL(c.FILE_SERVER_ID, '') AS fileServerId
+        ,IFNULL(c.FILE_SERVER_IP,'') AS  fileServerIp
+		,IFNULL(c.FILE_NAME, CONCAT(b.CLASSES_NAME,b.MACHINING_NAME,#{fileName})) AS fileName
+		,IFNULL(c.FILE_SUF, '') AS fileSuf
+		,IFNULL(c.FILE_STATUS, '0') AS fileStatus
+		,IFNULL(c.CLASSES_CODE,a.CLASSES_CODE) AS classesCode
+		,IFNULL(c.MACHINING_CODE,a.MACHINING_CODE) AS machiningCode
+		FROM
+		br_o_order_info a
+		INNER JOIN br_o_cla_machining_info b ON b.CLASSES_CODE = a.CLASSES_CODE AND a.DEL_FLG = b.DEL_FLG
+		AND b.MACHINING_CODE = a.MACHINING_CODE
+		LEFT JOIN br_single_by_file_info c ON c.BUYER_ID = a.BUYER_ID
+		AND c.CLASSES_CODE = a.CLASSES_CODE
+		AND c.MACHINING_CODE = a.MACHINING_CODE
+		WHERE a.DEL_FLG = 0
+		AND a.BUYER_ID = #{buyerId}
+		AND a.DETAIL_STATUS = #{detailStatus}
+		GROUP BY
+		a.BUYER_ID,
+		b.CLASSES_NAME,
+		b.MACHINING_NAME
+		ORDER BY buyerId
+		<if test="paging==true">
+			LIMIT #{startPos},#{pageSize}
+		</if>
+	</select>
+
+	<select id="getPageCount" resultType="Integer" parameterType="com.msk.br.bean.BR121404RsParam">
+		SELECT
+			count(1)
+		FROM
+			(
+				SELECT
+					a.BUYER_ID,
+					b.CLASSES_NAME,
+					b.MACHINING_NAME
+				FROM
+					br_o_order_info a
+				INNER JOIN br_o_cla_machining_info b ON b.CLASSES_CODE = a.CLASSES_CODE AND a.DEL_FLG = b.DEL_FLG
+				AND b.MACHINING_CODE = a.MACHINING_CODE
+				WHERE
+					a.DEL_FLG = 0
+				AND a.BUYER_ID = #{buyerId}
+				AND a.DETAIL_STATUS = #{detailStatus}
+				GROUP BY
+					a.BUYER_ID,
+					b.CLASSES_NAME,
+					b.MACHINING_NAME
+			) t
+	</select>
+
+	<!--查询所有单一买家产品池数据-->
+	<select id="findAllSingleByInfo" resultType="com.msk.br.bean.BR121404RsBean" parameterType="BaseParam">
+		SELECT
+			IFNULL(c.CLASSES_NAME, '') AS className,
+			IFNULL(c.SALES_NAME, '') AS salesName,
+			IFNULL(c.SCIENTIFIC_NAME, '') AS scientificName,
+			IFNULL(c.LOCAL_NAME, '') AS localName,
+			IFNULL(c.FEATURE_NAME, '') AS featureName,
+			IFNULL(c.GRADE_NAME, '') AS gradeName,
+			IFNULL(c.WEIGHT_NAME, '') AS weightName,
+			IFNULL(c.NORMS_NAME, '') AS normsName,
+			IFNULL(
+				CONCAT(
+					c.CLASSES_CODE,
+					c.MACHINING_CODE,
+					c.BREED_CODE,
+					c.FEATURE_CODE,
+					c.GRADE_CODE,
+					c.WEIGHT_CODE,
+					c.NORMS_CODE
+				),
+				''
+			) AS pdCode,
+			IFNULL(a.orderCount, '') AS orderCount,
+			IFNULL(a.ORDER_QTY, '') AS orderQty,
+			IFNULL(b.lastOrderCount, '') AS lastOrderCount,
+			IFNULL(b.lastOrderQty, '') AS lastOrderQty,
+			IFNULL(c.sOrderCount, '') AS sumOrderCount,
+			IFNULL(c.sOrderQty, '') AS sumOrderQty
+		FROM
+			(
+				SELECT
+					br_cla.CLASSES_NAME,
+					br_breed.SALES_NAME,
+					br_breed.SCIENTIFIC_NAME,
+					br_breed.LOCAL_NAME,
+					br_breed.FEATURE_NAME,
+					br_breed.GRADE_NAME,
+					br_wei.WEIGHT_NAME,
+					br_wei.NORMS_NAME,
+					br_cla.CLASSES_CODE,
+					br_cla.MACHINING_CODE,
+					br_breed.BREED_CODE,
+					br_breed.FEATURE_CODE,
+					br_breed.GRADE_CODE,
+					br_wei.WEIGHT_CODE,
+					br_wei.NORMS_CODE,
+					COUNT(br_order.ORDER_ID) AS orderCount,
+					br_order.ORDER_QTY,
+					COUNT(br_order.ORDER_ID) sOrderCount,
+					SUM(br_order.ORDER_QTY) sOrderQty,
+					br_order.ORDER_ID
+				FROM
+					BR_O_CLA_MACHINING_INFO br_cla
+				INNER JOIN BR_O_BREED_FEA_INFO br_breed ON br_cla.CLA_ID = br_breed.CLA_ID AND br_cla.DEL_FLG = br_breed.DEL_FLG
+				INNER JOIN BR_O_WEI_NOR_INFO br_wei ON br_breed.ID = br_wei.ID AND br_breed.DEL_FLG = br_wei.DEL_FLG
+				LEFT JOIN BR_O_ORDER_INFO br_order ON br_cla.CLASSES_CODE = br_order.CLASSES_CODE AND br_cla.DEL_FLG = br_order.DEL_FLG
+				INNER JOIN BR_O_BUYER_INFO br_buyer ON br_order.BUYER_ID = br_buyer.BUYER_ID AND br_order.DEL_FLG = br_buyer.DEL_FLG
+				AND br_cla.MACHINING_CODE = br_order.MACHINING_CODE
+				AND br_breed.BREED_CODE = br_order.BREED_CODE
+				AND br_breed.FEATURE_CODE = br_order.FEATURE_CODE
+				AND br_breed.GRADE_CODE = br_order.GRADE_CODE
+				AND br_order.DEL_FLG = 0
+				WHERE
+					br_buyer.BUYER_ID = #{filterMap.buyerId}
+				AND br_order.DETAIL_STATUS = #{filterMap.detailStatus}
+				GROUP BY
+					br_order.ORDER_ID
+			) c
+		LEFT JOIN
+			(
+				SELECT
+					COUNT(br_order.ORDER_ID) AS orderCount,
+					br_order.ORDER_QTY,
+					br_order.ORDER_ID
+				FROM
+					BR_O_CLA_MACHINING_INFO br_cla
+				INNER JOIN BR_O_BREED_FEA_INFO br_breed ON br_cla.CLA_ID = br_breed.CLA_ID AND br_cla.DEL_FLG = br_breed.DEL_FLG
+				INNER JOIN BR_O_WEI_NOR_INFO br_wei ON br_breed.ID = br_wei.ID AND br_breed.DEL_FLG = br_wei.DEL_FLG
+				LEFT JOIN BR_O_ORDER_INFO br_order ON br_cla.CLASSES_CODE = br_order.CLASSES_CODE AND br_cla.DEL_FLG = br_order.DEL_FLG
+				INNER JOIN BR_O_BUYER_INFO br_buyer ON br_order.BUYER_ID = br_buyer.BUYER_ID AND br_order.DEL_FLG = br_buyer.DEL_FLG
+				AND br_cla.MACHINING_CODE = br_order.MACHINING_CODE
+				AND br_breed.BREED_CODE = br_order.BREED_CODE
+				AND br_breed.FEATURE_CODE = br_order.FEATURE_CODE
+				AND br_breed.GRADE_CODE = br_order.GRADE_CODE
+				AND br_order.DEL_FLG = 0
+				WHERE
+					br_buyer.BUYER_ID = #{filterMap.buyerId}
+				AND br_order.RECEIVED_TIME BETWEEN  #{filterMap.nowStartReceivedTime}
+				AND #{filterMap.nowEndReceivedTime}
+				AND br_order.DETAIL_STATUS = #{filterMap.detailStatus}
+				GROUP BY
+					br_order.ORDER_ID
+			) a ON c.ORDER_ID=a.ORDER_ID
+		LEFT JOIN
+			(
+				SELECT
+					COUNT(br_order.ORDER_ID) lastOrderCount,
+					br_order.ORDER_QTY AS lastOrderQty,
+					br_order.ORDER_ID
+				FROM
+					BR_O_CLA_MACHINING_INFO br_cla
+				INNER JOIN BR_O_BREED_FEA_INFO br_breed ON br_cla.CLA_ID = br_breed.CLA_ID AND br_cla.DEL_FLG = br_breed.DEL_FLG
+				INNER JOIN BR_O_WEI_NOR_INFO br_wei ON br_breed.ID = br_wei.ID AND br_breed.DEL_FLG = br_wei.DEL_FLG
+				LEFT JOIN BR_O_ORDER_INFO br_order ON br_cla.CLASSES_CODE = br_order.CLASSES_CODE AND br_cla.DEL_FLG = br_order.DEL_FLG
+				INNER JOIN BR_O_BUYER_INFO br_buyer ON br_order.BUYER_ID = br_buyer.BUYER_ID AND br_order.DEL_FLG = br_buyer.DEL_FLG
+				AND br_cla.MACHINING_CODE = br_order.MACHINING_CODE
+				AND br_breed.BREED_CODE = br_order.BREED_CODE
+				AND br_breed.FEATURE_CODE = br_order.FEATURE_CODE
+				AND br_breed.GRADE_CODE = br_order.GRADE_CODE
+				AND br_order.DEL_FLG = 0
+				WHERE
+					br_buyer.BUYER_ID = #{filterMap.buyerId}
+				AND br_order.RECEIVED_TIME BETWEEN #{filterMap.lastStartReceivedTime}
+				AND #{filterMap.lastEndReceivedTime}
+				AND br_order.DETAIL_STATUS = #{filterMap.detailStatus}
+				GROUP BY
+					br_order.ORDER_ID
+			) b ON b.ORDER_ID=c.ORDER_ID
+
+	</select>
+
+	<select id="count" resultType="Integer" parameterType="BaseParam">
+		SELECT
+		COUNT(1)
+		FROM
+		br_single_by_file_info
+		WHERE DEL_FLG = 0
+		AND BUYER_ID = #{filterMap.buyerId}
+		AND FILE_ID = #{filterMap.fileId}
+	</select>
+
+	<!--查询买家基本信息-->
+	<select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.BrOBuyerInfo">
+		SELECT
+		IFNULL(BUYER_NAME,'') AS buyerName
+		,IFNULL(BUYER_CODE,'') AS buyerCode
+		,IFNULL(MARKET_NAME,'') AS marketName
+		FROM BR_O_BUYER_INFO
+		WHERE BUYER_ID = #{filterMap.buyerId}
+		AND DEL_FLG = 0
+	</select>
+
+	<!--查询买家需求产品-->
+	<select id="findList" resultType="com.msk.core.entity.BrONeedFeaDetail" parameterType="BaseParam">
+		SELECT
+			IFNULL(SALE_NAME,'') AS saleName,
+			IFNULL(SCIENTIFIC_NAME,'') AS scientificName,
+			IFNULL(POPULAR_NAME,'') AS popularName,
+			IFNULL(FEATURE_CODE,'') AS featureCode
+		FROM
+			BR_O_NEED_FEA_DETAIL
+		WHERE BUYER_ID = #{filterMap.buyerId}
+		AND DEL_FLG = 0
+	</select>
+
+	<update id="modify" parameterType="com.msk.core.entity.BrSingleByFileInfo">
+		UPDATE BR_SINGLE_BY_FILE_INFO
+		SET FILE_SERVER_ID = #{fileServerId},
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime}
+	</update>
+
+	<!-- 插入EXCEL文件信息表信息 -->
+	<insert id="save" parameterType = "com.msk.core.entity.BrSingleByFileInfo">
+		INSERT INTO BR_SINGLE_BY_FILE_INFO
+		(
+		FILE_ID,
+		FILE_SERVER_ID,
+        FILE_SERVER_IP,
+		FILE_NAME,
+		FILE_SUF,
+		FILE_MONTH,
+		FILE_STATUS,
+		BUYER_ID,
+		BUYER_CODE,
+		BUYER_NAME,
+		BUYER_TYPE,
+		CLASSES_CODE,
+		MACHINING_CODE,
+		DEL_FLG,
+		CRT_ID,
+		CRT_TIME,
+		UPD_ID,
+		UPD_TIME,
+		ACT_ID,
+		ACT_TIME,
+		VER
+		)
+		VALUES
+		(
+		#{fileId},
+		#{fileServerId},
+		#{fileServerIp},
+		#{fileName},
+		#{fileSuf},
+		#{fileMonth},
+		1,
+		#{buyerId},
+		#{buyerCode},
+		#{buyerName},
+		#{buyerType},
+		#{classesCode},
+		#{machiningCode},
+		0,
+		#{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+		#{actId},
+		#{actTime},
+		1
+		)
+	</insert>
+</mapper>

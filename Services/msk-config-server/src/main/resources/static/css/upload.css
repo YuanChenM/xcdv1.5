@@ -1,0 +1,31 @@
+body{font-size:14px; font-family:微软雅黑;}
+#custom-demo .uploadifyQueueItem {
+    background-color: #FFFFFF;
+    border: none;
+    border-bottom: 1px solid #E5E5E5;
+    font: 11px Verdana, Geneva, sans-serif;
+    height: 20px;
+    margin-top: 0;
+    padding: 10px;
+    width: 350px;
+}
+#custom-demo #custom-queue {
+    border: 1px solid #E5E5E5;
+    margin-bottom: 10px;
+    width: 370px;
+}
+#custom-demo object{
+    float:left;
+}
+.button{
+    /**float:right;**/
+    width:120px;
+    height:30px;
+    background-color:#525252;
+    color:#fff;
+    border:0;
+    font-size:14px; font-family:微软雅黑;
+    cursor:pointer;
+    margin-right:10px;
+    _margin-right:7px;
+}

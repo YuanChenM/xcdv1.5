@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2102112Logic">
+
+
+    <select id="findHouseAccountBuyer" resultType="com.msk.bs.bean.BS2102112Bean" parameterType="com.msk.core.entity.SlHouseAccount">
+      SELECT
+      info.SL_CODE AS slCode,info.SL_CODE_DIS AS slCodeDis,account.SL_CONTACT AS slContact
+      FROM sl_bs_basic_info info
+      LEFT JOIN sl_bs_account account
+      ON info.SL_ACCOUNT = account.SL_ACCOUNT
+      WHERE info.SL_CODE = #{slCode}
+      AND (info.DEL_FLG IS NULL OR info.DEL_FLG =0)
+    </select>
+
+
+</mapper>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141101Logic">
+	<!-- 查询产品类别数据 -->
+	<select id="findListClasses" resultType="com.msk.product.bean.IPD141101RsParam">
+		SELECT
+		A.CLASSES_CODE AS
+		classesCode
+		,A.CLASSES_NAME AS classesName
+		FROM PD_CLASSES AS A
+	</select>
+
+</mapper>

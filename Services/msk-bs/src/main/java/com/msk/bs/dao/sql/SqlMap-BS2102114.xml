@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2102114Logic">
+
+    <sql id="selectFiled">
+        a.SL_CODE AS slCode,
+        a.HOUSE_CODE AS houseCode,
+        ifnull( a.HOUSE_CODE_DIS,'') AS houseCodeDis,
+        ifnull(a.HOUSE_SHOW_NAME,'') AS houseShowName,
+        ifnull(s.STAR_CODE,'') AS houseStar
+    </sql>
+
+    <select id="findHouseShowName" resultType="com.msk.bs.bean.BS2102114Bean" parameterType="BaseParam">
+        SELECT
+        <include refid="selectFiled"/>
+        FROM
+        sl_house_account a
+        LEFT JOIN  sl_house_star s
+        ON
+        a.SL_CODE=s.SL_CODE
+        AND a.HOUSE_CODE = s.HOUSE_CODE
+        WHERE
+          a.SL_CODE = #{filterMap.slCode} AND a.HOUSE_CODE = #{filterMap.houseCode}
+          AND a.DEL_FLG='0'
+          <if test="filterMap.validYearMonth != null and filterMap.validYearMonth != ''">
+            AND s.VALID_YEAR_MONTH = #{filterMap.validYearMonth}
+          </if>
+          <if test="delFlg != null and delFlg != ''">
+            AND s.DEL_FLG = '0'
+          </if>
+
+    </select>
+
+
+    <update id="modifyStar" parameterType="BaseParam">
+        UPDATE
+          sl_house_star
+           SET  STAR_CODE = #{starCode},
+               UPD_ID =  #{updId},
+               UPD_TIME =#{updTime},
+               ACT_ID = #{actId},
+               ACT_TIME = #{actTime},
+               VER = VER+1
+           WHERE
+              SL_CODE = #{slCode}
+              AND HOUSE_CODE = #{houseCode}
+              AND VALID_YEAR_MONTH = #{validYearMonth}
+              <!--Modify delflag横展开 2016/10/09 任强 Start-->
+              AND  DEL_FLG='0'
+              <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+
+    <select id="count" parameterType="BaseParam" resultType="int">
+        SELECT  COUNT(1) FROM sl_house_star
+           WHERE  SL_CODE = #{slCode}
+            AND HOUSE_CODE = #{houseCode}
+            <if test="validYearMonth != null and validYearMonth != ''">
+                AND VALID_YEAR_MONTH = #{validYearMonth}
+            </if>
+            <!--Modify delflag横展开 2016/10/09 任强 Start-->
+            AND  DEL_FLG='0'
+            <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </select>
+
+    <insert id="save" parameterType="com.msk.bs.bean.BS2102114Param">
+        INSERT  INTO sl_house_star
+        (GRADE_ID,SL_CODE,
+        HOUSE_CODE,
+        HOUSE_CATEGORY_CODE,
+        HOUSE_RECLASSIFY_CODE,
+        STAR_CODE,
+        VALID_YEAR_MONTH,
+        END_TIME,
+        EXTEND_TIME,
+        STATUS,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES (
+         #{gradeId},
+         #{slCode},
+         #{houseCode},
+         #{houseCategoryCode},
+         #{houseReclassifyCode},
+         #{starCode},
+         #{validYearMonth},
+         #{endTime},
+         #{extendTime},
+         #{status},
+         #{remark},
+         0,
+         #{crtId},
+         #{crtTime},
+         #{updId},
+         #{updTime},
+         #{actId},
+         #{actTime},
+         0
+
+        )
+
+    </insert>
+
+
+    <select id="findHouseAccount" parameterType="BaseParam" resultType="com.msk.core.entity.SlHouseAccount">
+        SELECT
+        IFNULL(SL_CODE,'') AS slCode,
+        IFNULL(HOUSE_ACCOUNT,'') AS houseAccount,
+        IFNULL(HOUSE_CODE,'') AS houseCode,
+        IFNULL(HOUSE_CODE_DIS,'') AS houseCodeDis,
+        IFNULL(HOUSE_TEL,'') AS houseTel,
+        IFNULL(HOUSE_SHOW_NAME,'') AS houseShowName,
+        IFNULL(HOUSE_CONTACT,'') AS houseContact,
+        IFNULL(ACCOUNT_PSD,'') AS accountPsd,
+        IFNULL(AUTH_STATUS,'') AS authStatus,
+        IFNULL(SL_IDCARD,'') AS slIdcard,
+        IFNULL(SL_CON_FLG,'') AS slConFlg,
+        IFNULL(R_AREA_CODE,'') AS rareaCode,
+        IFNULL(R_LGCS_AREA_CODE,'') AS rlgcsAreaCode,
+        IFNULL(R_PROVINCE_CODE,'') AS rprovinceCode,
+        IFNULL(R_CITY_CODE,'') AS rcityCode,
+        IFNULL(R_DISTRICT_CODE,'') AS rdistrictCode,
+        IFNULL(R_HOUSE_ADDRESS,'') AS  rhouseAddress,
+        IFNULL(AREA_CODE,'') AS areaCode,
+        IFNULL(LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(PROVINCE_CODE,'') AS provinceCode,
+        IFNULL(CITY_CODE,'') AS cityCode,
+        IFNULL(DISTRICT_CODE,'') AS districtCode,
+        IFNULL(HOUSE_ADDRESS,'') AS houseAddress,
+        IFNULL(V_AREA_CODE,'') AS   vareaCode,
+        IFNULL(V_LGCS_AREA_CODE,'') AS vlgcsAreaCode,
+        IFNULL(V_PROVINCE_CODE,'') AS vprovinceCode,
+        IFNULL(V_CITY_CODE,'') AS vcityCode,
+        IFNULL(V_DISTRICT_CODE,'') AS vdistrictCode,
+        IFNULL(V_HOUSE_ADDRESS,'') AS vhouseAddress,
+        IFNULL(LAT,'') AS lat,
+        IFNULL(LON,'') AS lon ,
+        IFNULL(V_LAT,'') AS vlat,
+        IFNULL(V_LON,'') AS vlon,
+        IFNULL(LICENSES,'') AS licenses,
+        IFNULL(BUYER_ASIGN,'') AS buyerAsign,
+        IFNULL(WECHAT,'') AS wechat,
+        IFNULL(QQ,'') AS qq,
+        IFNULL(EMAIL,'') AS email,
+        IFNULL(FIXED_TEL,'') AS fixedTel,
+        IFNULL(FAX,'') AS fax,
+        IFNULL(FLAG20,'') AS flag20,
+        IFNULL(FLAG19,'') AS flag19,
+        IFNULL(FLAG18,'') AS flag18,
+        IFNULL(FLAG17,'') AS flag17,
+        IFNULL(FLAG16,'') AS flag16,
+        IFNULL(FLAG15,'') AS flag15,
+        IFNULL(FLAG14,'') AS flag14,
+        IFNULL(FLAG13,'') AS flag13,
+        IFNULL(FLAG12,'')AS flag12,
+        IFNULL(FLAG11,'') AS flag11,
+        IFNULL(FLAG10,'') AS flag10,
+        IFNULL(FLAG9,'') AS flag9 ,
+        IFNULL(FLAG8,'') AS flag8 ,
+        IFNULL(FLAG7,'') AS flag7 ,
+        IFNULL(FLAG6,'') AS flag6 ,
+        IFNULL(FLAG5,'') AS flag5 ,
+        IFNULL(FLAG4,'') AS flag4 ,
+        IFNULL(FLAG3,'') AS flag3 ,
+        IFNULL(FLAG2,'') AS flag2 ,
+        IFNULL(FLAG1,'') AS flag1 ,
+        IFNULL(HOUSE_INTRODUCE,'') AS houseIntroduce,
+        IFNULL(HOUSE_CLASS,'') AS   houseClass,
+        IFNULL(HOUSE_CATEGORY,'') AS houseCategory,
+        IFNULL(HOUSE_CATEGORY_SUB,'') AS houseCategorySub,
+        IFNULL(HOUSE_CATEGORY0,'') AS houseCategory0,
+        IFNULL(HOUSE_CATEGORY1,'') AS houseCategory1,
+        IFNULL(HOUSE_CATEGORY2,'') AS houseCategory2,
+        IFNULL(HOUSE_CATEGORY3,'') AS houseCategory3,
+        IFNULL(HOUSE_CATEGORY4,'') AS houseCategory4,
+        IFNULL(HOUSE_CATEGORY5,'') AS houseCategory5,
+        IFNULL(HOUSE_CATEGORY6,'') AS houseCategory6,
+        IFNULL(HOUSE_CATEGORY7,'') AS houseCategory7,
+        IFNULL(HOUSE_CATEGORY8,'') AS houseCategory8,
+        IFNULL(HOUSE_GREADE,'') AS houseGreade ,
+        IFNULL(HOUSE_STAR,'3') AS houseStar
+        FROM sl_house_account
+        WHERE SL_CODE = #{filterMap.slCode}
+        AND HOUSE_CODE = #{filterMap.houseCode}
+        AND (DEL_FLG IS NULL OR DEL_FLG = 0)
+    </select>
+</mapper>
+

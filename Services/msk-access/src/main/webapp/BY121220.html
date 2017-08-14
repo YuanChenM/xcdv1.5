@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="resources/js/BY121220.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>加工技术标准调研</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div id="breedStandard" style="width: 80%;margin-left:25px;" class="divCommon1"></div>
+            <div style="width: 80%;margin-left:30px;" class="divCommon2">根据指标和标准,记录买家调研意见</div>
+            <div style="width: 85%;margin-left:25px;background-color: #E1E4E9;height: 30px;line-height: 30px;" class="divCommon1"><span style="padding-left:15px;">指标内容</span></div>
+            <div id="orgStdItemName" style="width: 85%;margin-left:25px;background-color: #F0F2F5;" class="divCommon2"></div>
+            <input type="hidden" id="orgStdItemId"/>
+            <div style="width: 85%;margin-left:25px;background-color: #E1E4E9;height: 30px;line-height: 30px;" class="divCommon1"><span style="padding-left:15px;">指标目录</span></div>
+            <div style="width: 85%;margin-left:25px;" class="divCommon3">
+                <div style="padding-left:25px;" class="divCommon3">合格状态描述</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea id="okVal" name="okVal" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="width: 85%;margin-left:25px;" class="divCommon3">不合格状态描述</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea id="ngVal" name="ngVal" style="color:#000000" disabled></textarea>
+                </div>
+            </div>
+            <div style="width: 85%;margin-left:25px;background-color: #E1E4E9;height: 30px;line-height: 30px;" class="divCommon1"><span style="padding-left:15px;">备注</span></div>
+            <div style="width: 85%;margin-left:25px;text-shadow:none;font-size: 17px;background-color: #F0F2F5;">
+                <div id="remark" style="padding-left:25px;color:#898989"></div>
+            </div>
+            <div style="width: 85%;margin-left:25px;background-color: #E1E4E9;color: #52C2E9;text-align:left;line-height:35px;text-shadow:none;height:30px;font-size: 17px;margin-top:5px;"><span style="padding-left:15px;">调研描述</span></div>
+            <div style="width: 85%;margin-left:25px;text-shadow:none;font-size: 17px;background-color: #F0F2F5;">
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea id="description" name="description"></textarea>
+                </div>
+            </div>
+            <div style="width: 85%;margin-left:25px;margin-top:20px;" class="ui-grid-a">
+                <div style="width: 40%;height:40px;line-height: 45px;background-color:#A0D468;color: #FFFFFF;text-align:center;text-shadow:none;font-size: 20px;" class="ui-block-a" onclick="skip()">跳过</div>
+                <div id="nextItem" style="width: 40%;height:40px;line-height: 45px;background-color:#A0D468;color: #FFFFFF;text-align:center;text-shadow:none;font-size: 20px;margin-left:60px;" class="ui-block-b" onclick="nextItem()">下一项</div>
+            </div>
+            <br/>
+        </div>
+	</body>
+</html>

@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.district.logic.CityLogic">
+
+    <sql id="selectCitySql">
+        C.CITY_ID AS cityId,
+        C.PROVINCE_ID AS provinceId,
+        C.LGCS_AREA_ID AS lgcsAreaId,
+        C.CITY_CODE AS cityCode,
+        C.CITY_NAME AS cityName,
+        C.DIVISION_LEVEL AS divisionLevel,
+        C.SPELL AS spell,
+        C.SHORT_SPELL AS shortSpell,
+        C.SHORT_CODE_P AS shortCodeP,
+        C.SHORT_NAME_P AS shortNameP,
+        C.SHORT_CODE_L AS shortCodeL,
+        C.SHORT_NAME_L AS shortNameL,
+        C.FULL_CODE_P AS fullCodeP,
+        C.FULL_NAME_P AS fullNameP,
+        C.FULL_CODE_L AS fullCodeL,
+        C.FULL_NAME_L AS fullNameL,
+        C.OPEN_SERVICE_FLG AS openServiceFlg
+    </sql>
+    <sql id="selectProvinceSql">
+        P.PROVINCE_CODE AS provinceCode,
+        P.PROVINCE_NAME AS provinceName,
+    </sql>
+    <sql id="selectLgcsAreaSql">
+        L.LGCS_AREA_CODE AS lgcsAreaCode,
+        L.LGCS_AREA_CODE AS lgcsAreaCode,
+        L.LGCS_AREA_NAME AS lgcsAreaName,
+    </sql>
+    <sql id="selectAreaSql">
+        A.AREA_CODE AS areaCode,
+        A.AREA_NAME AS areaName,
+    </sql>
+    <!--排序条件-->
+    <sql id="orderByCondition">
+        <if test="cityOrderBy!=null and cityOrderBy == 1">
+            ORDER BY C.SHORT_SPELL
+        </if>
+        <if test="cityOrderBy!=null and cityOrderBy == 2">
+            ORDER BY C.CITY_NAME
+        </if>
+        <if test="cityOrderBy!=null and cityOrderBy == 3">
+            ORDER BY C.CITY_CODE
+        </if>
+    </sql>
+    <select id="findList" resultType="com.msk.district.bean.CityBean" parameterType="com.msk.district.bean.DistrictParam">
+        SELECT
+        <include refid="selectAreaSql"/>
+        <include refid="selectLgcsAreaSql"/>
+        <include refid="selectProvinceSql"/>
+        <include refid="selectCitySql"/>
+        FROM MD_CITY AS C
+        LEFT JOIN md_province AS P ON C.PROVINCE_ID = P.PROVINCE_ID  AND P.DEL_FLG = 0
+        LEFT JOIN md_area as A on A.AREA_ID = P.AREA_ID AND A.DEL_FLG = 0
+        LEFT JOIN md_logistics_area AS L ON C.LGCS_AREA_ID = L.LGCS_AREA_ID AND L.DEL_FLG = 0
+        WHERE C.DEL_FLG = 0
+        <if test="filterMap.cityName!=null and filterMap.cityName!=''">
+            AND C.CITY_NAME like #{filterMap.cityName}
+        </if>
+        <if test="filterMap.shortSpell!=null and filterMap.shortSpell!=''">
+            AND C.SHORT_SPELL like #{filterMap.shortSpell}
+        </if>
+        <if test="provinceCode != null and provinceCode !=''">
+             and P.PROVINCE_CODE = #{provinceCode}
+        </if>
+        <if test="lgcsAreaCode != null and lgcsAreaCode !=''">
+             and L.LGCS_AREA_CODE = #{lgcsAreaCode}
+        </if>
+        <if test="cityCode != null and cityCode !=''">
+            and C.CITY_CODE =#{cityCode}
+        </if>
+        <if test="cityName!=null and cityName!=''">
+            AND C.CITY_NAME=#{cityName}
+        </if>
+        <if test="openServiceFlg!=null and openServiceFlg!=''">
+            AND C.OPEN_SERVICE_FLG = #{openServiceFlg}
+        </if>
+        <if test="cityCodes !=null and cityCodes.length>0">
+             and CITY_CODE in
+            <foreach item="cityCode" index="index" collection="cityCodes"
+                     open="(" separator="," close=")">
+                #{cityCode}
+            </foreach>
+        </if>
+        <include refid="orderByCondition"/>
+    </select>
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        CITY_ID AS cityId,
+        PROVINCE_ID AS provinceId,
+        LGCS_AREA_ID AS lgcsAreaId,
+        CITY_CODE AS cityCode,
+        CITY_NAME AS cityName,
+        DIVISION_LEVEL AS divisionLevel,
+        SPELL AS spell,
+        SHORT_SPELL AS shortSpell,
+        ifnull(SHORT_CODE_P, '') AS shortCodeP,
+        ifnull(SHORT_NAME_P, '') AS shortNameP,
+        ifnull(SHORT_CODE_L, '') AS shortCodeL,
+        ifnull(SHORT_NAME_L, '') AS shortNameL,
+        ifnull(FULL_CODE_P, '') AS fullCodeP,
+        ifnull(FULL_NAME_P, '') AS fullNameP,
+        ifnull(FULL_CODE_L, '') AS fullCodeL,
+        ifnull(FULL_NAME_L, '') AS fullNameL,
+        (CASE OPEN_SERVICE_FLG
+        WHEN '1' THEN '是'
+        ELSE '否' END) AS openServiceFlg,
+        (CASE DEL_FLG
+        WHEN '1' THEN '是'
+        ELSE '否' END) AS delFlg,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.provinceId!=null and filterMap.provinceId!=''">
+                AND PROVINCE_ID LIKE #{filterMap.provinceId}
+            </if>
+            <if test="filterMap.lgcsAreaId!=null and filterMap.lgcsAreaId!=''">
+                AND LGCS_AREA_ID LIKE #{filterMap.lgcsAreaId}
+            </if>
+            <if test="filterMap.cityCode!=null and filterMap.cityCode!=''">
+                AND CITY_CODE LIKE #{filterMap.cityCode}
+            </if>
+            <if test="filterMap.cityName!=null and filterMap.cityName!=''">
+                AND CITY_NAME LIKE #{filterMap.cityName}
+            </if>
+            <if test="filterMap.spell!=null and filterMap.spell!=''">
+                AND SPELL LIKE #{filterMap.spell}
+            </if>
+            <if test="filterMap.shortSpell!=null and filterMap.shortSpell!=''">
+                AND SHORT_SPELL LIKE #{filterMap.shortSpell}
+            </if>
+            <if test="filterMap.shortCodeP!=null and filterMap.shortCodeP!=''">
+                AND SHORT_CODE_P LIKE #{filterMap.shortCodeP}
+            </if>
+            <if test="filterMap.shortNameP!=null and filterMap.shortNameP!=''">
+                AND SHORT_NAME_P LIKE #{filterMap.shortNameP}
+            </if>
+            <if test="filterMap.shortCodeL!=null and filterMap.shortCodeL!=''">
+                AND SHORT_CODE_L LIKE #{filterMap.shortCodeL}
+            </if>
+            <if test="filterMap.shortNameL!=null and filterMap.shortNameL!=''">
+                AND SHORT_NAME_L LIKE #{filterMap.shortNameL}
+            </if>
+            <if test="filterMap.fullCodeP!=null and filterMap.fullCodeP!=''">
+                AND FULL_CODE_P LIKE #{filterMap.fullCodeP}
+            </if>
+            <if test="filterMap.fullNameP!=null and filterMap.fullNameP!=''">
+                AND FULL_NAME_P LIKE #{filterMap.fullNameP}
+            </if>
+            <if test="filterMap.fullCodeL!=null and filterMap.fullCodeL!=''">
+                AND FULL_CODE_L LIKE #{filterMap.fullCodeL}
+            </if>
+            <if test="filterMap.fullNameL!=null and filterMap.fullNameL!=''">
+                AND FULL_NAME_L LIKE #{filterMap.fullNameL}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND DEL_FLG = #{filterMap.delFlg}
+            </if>
+            <if test="filterMap.openServiceFlg!=null and filterMap.openServiceFlg!=''">
+                AND OPEN_SERVICE_FLG = #{filterMap.openServiceFlg}
+            </if>
+        </where>
+    </sql>
+    <!--数据插入 -->
+    <insert id="save" parameterType="com.msk.district.bean.CityBean">
+        INSERT INTO md_city
+        (
+        CITY_ID,
+        PROVINCE_ID,
+        LGCS_AREA_ID,
+        CITY_CODE,
+        CITY_NAME,
+        DIVISION_LEVEL,
+        SPELL,
+        SHORT_SPELL,
+        SHORT_CODE_P,
+        SHORT_NAME_P,
+        SHORT_CODE_L,
+        SHORT_NAME_L,
+        FULL_CODE_P,
+        FULL_NAME_P,
+        FULL_CODE_L,
+        FULL_NAME_L,
+        OPEN_SERVICE_FLG,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        SELECT
+        ifnull(MAX(CITY_ID),0) + 1,
+        #{provinceId},
+        #{lgcsAreaId},
+        #{cityCode},
+        #{cityName},
+        #{divisionLevel},
+        #{spell},
+        #{shortSpell},
+        #{shortCodeP},
+        #{shortNameP},
+        #{shortCodeL},
+        #{shortNameL},
+        #{fullCodeP},
+        #{fullNameP},
+        #{fullCodeL},
+        #{fullNameL},
+        #{openServiceFlg},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        #{ver}
+        FROM md_city
+    </insert>
+    <update id="modify" parameterType="com.msk.district.bean.CityBean">
+        update md_city
+        set
+        PROVINCE_ID=#{provinceId},
+        LGCS_AREA_ID=#{lgcsAreaId},
+        CITY_CODE=#{cityCode},
+        CITY_NAME=#{cityName},
+        DIVISION_LEVEL=#{divisionLevel},
+        SPELL=#{spell},
+        SHORT_SPELL=#{shortSpell},
+        SHORT_CODE_P=#{shortCodeP},
+        SHORT_NAME_P=#{shortNameP},
+        SHORT_CODE_L=#{shortCodeL},
+        SHORT_NAME_L=#{shortNameL},
+        FULL_CODE_P=#{fullCodeP},
+        FULL_NAME_P=#{fullNameP},
+        FULL_CODE_L=#{fullCodeL},
+        FULL_NAME_L=#{fullNameL},
+        OPEN_SERVICE_FLG=#{openServiceFlg}
+        WHERE
+        CITY_ID=#{cityId}
+    </update>
+    <select id="findPageList" resultType="com.msk.district.bean.CityBean" parameterType="BaseParam">
+        select
+        <include refid="selectSql"/>
+        from md_city
+        <include refid="whereCondition"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        from md_city
+        <include refid="whereCondition"/>
+    </select>
+
+    <update id="abolish" parameterType="com.msk.district.bean.CityBean">
+        update md_city
+        SET DEL_FLG = 1,
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime}
+        WHERE CITY_ID=#{cityId}
+    </update>
+    <update id="restore" parameterType="com.msk.district.bean.CityBean">
+        update md_city
+        SET DEL_FLG = 0,
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime}
+        WHERE CITY_ID=#{cityId}
+    </update>
+
+</mapper>

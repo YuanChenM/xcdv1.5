@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ds.logic.SC182205Logic">
+
+    <select id="getDsProductLot" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182205Bean">
+        SELECT DISTINCT
+        dsproductlot.classes_code as classesCode,
+        IFNULL(plan.classes_name, '') AS classesName,
+        dsproductlot.breed_code as breedCode,
+        IFNULL(plan.breed_name, '') AS breedName,
+        dsproductlot.machining_code as machiningCode,
+        IFNULL(plan.machining_name, '') AS machiningName,
+        dsproductlot.feature_code as featureCode,
+        IFNULL(plan.feature_name, '') AS featureName,
+        dsproductlot.weight_code as weightCode,
+        IFNULL(plan.weight_name, '') AS weightName,
+        dsproductlot.grade_code as gradeCode,
+        IFNULL(plan.grade_name, '') AS gradeName,
+        dsproductlot.manu_date as manuDate,
+        dsproductlot.shelf_life as shelfLife,
+        dsproductlot.stor_condition as storCondition,
+        dsproductlot.food_manu_licen as foodManuLicen,
+        dsproductlot.client as client,
+        dsproductlot.un_client as unClient,
+        dsproductlot.client_addr as clientAddr,
+        dsproductlot.un_client_addr as unClientAddr,
+        dsproductlot.client_phone as clientPhone,
+        dsproductlot.un_client_phone as unClientPhone,
+        dsproductlot.manu_origin as manuOrigin,
+        dsproductlot.sum_new_act_num as sumNewActNum,
+        dsproductlot.brand_logo as brandLogo,
+        dsproductlot.pro_lot_num as proLotNum,
+        dsproductlot.read_pro_lot_num as readProLotNum
+        FROM
+        ds_product_lot dsproductlot
+        LEFT JOIN ds_pd_virtual_stock_plan AS plan ON dsproductlot.classes_code = plan.classes_code
+        AND dsproductlot.breed_code = plan.breed_code AND dsproductlot.machining_code = plan.machining_code
+        AND dsproductlot.feature_code = plan.feature_code AND dsproductlot.weight_code = plan.weight_code
+        AND dsproductlot.grade_code = plan.grade_code AND plan.del_flg = 0
+        WHERE
+        dsproductlot.pro_lot_num = #{proLotNum}
+        AND dsproductlot.del_flg = 0
+    </select>
+
+    <select id="getClasses" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182205Bean">
+        SELECT
+        classes_name as classesName
+        FROM
+        ds_pd_virtual_stock_plan
+        WHERE
+        ds_pd_virtual_stock_plan.classes_code=#{classesCode}
+        AND del_flg = 0
+    </select>
+
+    <select id="getBreed" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182205Bean">
+        SELECT DISTINCT
+        breed_name as breedName
+        FROM
+        ds_pd_virtual_stock_plan
+        WHERE
+        ds_pd_virtual_stock_plan.breed_code=#{breedCode}
+        AND del_flg = 0
+    </select>
+
+    <select id="getMachining" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182205Bean">
+        SELECT
+        machining_name as machiningName
+        FROM
+        ds_pd_virtual_stock_plan
+        WHERE
+        ds_pd_virtual_stock_plan.machining_code=#{machiningCode}
+        AND del_flg = 0
+    </select>
+
+    <select id="getFeature" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182205Bean">
+        SELECT
+        feature_name as featureName
+        FROM
+        ds_pd_virtual_stock_plan
+        WHERE
+        ds_pd_virtual_stock_plan.feature_code=#{featureCode}
+        AND del_flg = 0
+   </select>
+
+    <select id="getWeight" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182205Bean">
+        SELECT
+        weight_name as weightName
+        FROM
+        ds_pd_virtual_stock_plan as stockPlan
+        WHERE
+        stockPlan.weight_code=#{weightCode}
+        AND del_flg = 0
+    </select>
+
+    <select id="getGrade" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182205Bean">
+        SELECT
+        grade_name as gradeName
+        FROM
+        ds_pd_virtual_stock_plan
+        WHERE
+        ds_pd_virtual_stock_plan.grade_code=#{gradeCode}
+        AND del_flg = 0
+    </select>
+
+    <insert id="save" parameterType="BaseParam">
+        INSERT INTO ds_print_label(
+        ds_print_label.pro_lot_num,
+        ds_print_label.product_print_num,
+        ds_print_label.print_time,
+<!-- Add for Bug#2547 at 2016/09/09 by li_kai1 Start -->
+        del_flg,
+        crt_id,
+        crt_time,
+        upd_id,
+        upd_time,
+        act_id,
+        act_time,
+        ver
+<!-- Add for Bug#2547 at 2016/09/09 by li_kai1 End -->
+        )
+        VALUES(
+        #{proLotNum},
+        #{productPrintNum},
+        #{printTime},
+<!-- Add for Bug#2547 at 2016/09/09 by li_kai1 Start -->
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+<!-- Add for Bug#2547 at 2016/09/09 by li_kai1 End  -->
+        )
+    </insert>
+
+</mapper>

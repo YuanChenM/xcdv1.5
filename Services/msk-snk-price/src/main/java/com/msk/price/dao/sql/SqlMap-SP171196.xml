@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171196Logic">
+    <select id="findOne" parameterType="com.msk.price.bean.SP171196Bean" resultType="com.msk.price.bean.SP171196Bean">
+      SELECT SL_CODE AS slCode,
+      MAX(CASE VIEW_KEY WHEN 'SUPPLY' THEN (CASE VIEW_FLG WHEN 1 THEN '是' ELSE '否' END) END) as isSupply,
+      MAX(CASE VIEW_KEY WHEN 'NUM' THEN (CASE VIEW_FLG WHEN 1 THEN '是' ELSE '否' END) END) as isNum,
+      MAX(CASE VIEW_KEY WHEN 'PRICE' THEN (CASE VIEW_FLG WHEN 1 THEN '是' ELSE '否' END) END) as isPrice
+      FROM sp_view_set WHERE LGCS_CODE = #{lgcsCode} AND SL_CODE =#{slCode} GROUP BY SL_CODE;
+    </select>
+    <select id="count" resultType="Integer" parameterType="com.msk.price.bean.SP171196Bean">
+        SELECT COUNT(1) FROM sp_view_set WHERE DEL_FLG=0
+        <if test="lgcsCode!=null and lgcsCode!=''">
+            AND LGCS_CODE = #{lgcsCode}
+        </if>
+        <if test="slCode!=null and slCode!=''">
+            AND SL_CODE =#{slCode}
+        </if>
+        <if test="viewKey!=null and viewKey!=''">
+            AND VIEW_KEY = #{viewKey}
+        </if>
+    </select>
+    <update id="updateView" parameterType="com.msk.price.bean.SP171196Bean">
+        UPDATE sp_view_set
+        SET VIEW_FLG = #{viewFlg}
+        <!--Modify 添加公共属性字段 2016/10/24 Start-->
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        <!--Modify 添加公共属性字段 2016/10/24 End-->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        WHERE LGCS_CODE = #{lgcsCode} AND SL_CODE =#{slCode}
+        AND VIEW_KEY = #{viewKey}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        AND  DEL_FLG='0'
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+    <update id="updateViewInfo" parameterType="com.msk.price.bean.SP171196Bean">
+        UPDATE sp_view_set
+        SET VIEW_FLG = #{viewFlg}
+        <!--Modify 添加公共属性字段 2016/10/24 Start-->
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        <!--Modify 添加公共属性字段 2016/10/24 End-->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        WHERE VIEW_KEY = #{viewKey}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        AND  DEL_FLG='0'
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+    <insert id="save" parameterType="com.msk.price.bean.SP171196Bean">
+        INSERT INTO sp_view_set
+        (VIEW_ID,
+        LGCS_CODE,
+        SL_CODE,
+        VIEW_KEY,
+        VIEW_FLG,
+        SYSTEM_TYPE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{viewId},
+        #{lgcsCode},
+        #{slCode},
+        #{viewKey},
+        #{viewFlg},
+        #{systemType},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+    <select id="findList" parameterType="com.msk.price.bean.SP171196Param" resultType="com.msk.price.bean.SP171196Bean">
+        SELECT VIEW_ID AS viewId,
+        LGCS_CODE AS lgcsCode,
+        SL_CODE AS slCode,
+        VIEW_KEY AS viewKey,
+        VIEW_FLG AS viewFlg
+        FROM SP_VIEW_SET
+        WHERE DEL_FLG = 0
+        <if test="lgcsCode!=null and lgcsCode!=''">
+            AND LGCS_CODE = #{lgcsCode}
+        </if>
+        <if test="slCode!=null and slCode!=''">
+            AND SL_CODE =#{slCode}
+        </if>
+        <if test="viewKey!=null and viewKey!=''">
+            AND VIEW_KEY = #{viewKey}
+        </if>
+    </select>
+    <select id="findConstRatio" parameterType="com.msk.price.bean.SP171196Param" resultType="com.msk.price.bean.SP171196Bean">
+        SELECT
+        RATIO_TYPE_DETAIL AS viewKey
+        ,RATIO_TYPE_DETAIL_VAL AS endTime
+        FROM
+        SP_CONST_RATIO
+        WHERE RATIO_TYPE = #{filterMap.ratioType}
+        AND DEL_FLG = 0
+    </select>
+    <update id="updateDeclare" parameterType="com.msk.price.bean.SP171106Bean">
+        UPDATE sp_const_ratio SET RATIO_TYPE_DETAIL_VAL = #{ratioTypeDetailVal},VER = VER+1 WHERE RATIO_TYPE_DETAIL = #{ratioTypeDetail} AND RATIO_TYPE = 'declareTime'
+    </update>
+    <select id="findPriceList" parameterType="com.msk.price.bean.SP171196Param" resultType="com.msk.price.bean.SP171196Bean">
+       (SELECT
+        sp.PRICE_PERIOD AS pricePeriod
+    FROM
+        sp_seller_pd_priceplate sp
+    WHERE
+      sp.DEL_FLG = 0
+      AND PRICE_PERIOD >= #{pricePeriod}
+    GROUP BY PRICE_PERIOD
+    ORDER BY PRICE_PERIOD DESC) UNION (
+    SELECT sps.PRICECYCLE_CODE AS pricePeriod
+     FROM sp_pricecycle_setting sps
+     WHERE sps.DEL_FLG = 0
+     AND VALIDTIME_START <![CDATA[ <= ]]> #{actTime}
+     AND VALIDTIME_END <![CDATA[ >= ]]> #{actTime}
+     ) ORDER BY pricePeriod DESC
+    </select>
+    <update id="delPrice">
+        UPDATE sp_pricecycle_setting set DEL_FLG = 1 WHERE DEL_FLG = 0
+    </update>
+    <insert id="savePrice" parameterType="com.msk.price.bean.SP171196Param">
+        INSERT INTO sp_pricecycle_setting (
+            SETTING_ID,
+            PRICECYCLE_CODE,
+            VALIDTIME_START,
+            VALIDTIME_END,
+            SYSTEM_TYPE,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUE
+            (
+            #{settingId},
+            #{pricecycleCode},
+            #{validTimeStart},
+            #{validTimeEnd},
+            #{systemType},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+            )
+    </insert>
+    <select id="getPriceCycleCode" parameterType="com.msk.price.bean.SP171196Param" resultType="com.msk.price.bean.SP171196Bean">
+        SELECT PRICECYCLE_CODE AS pricePeriod,
+            VALIDTIME_START AS startDate,
+            VALIDTIME_END AS endDate
+             FROM sp_pricecycle_setting
+             WHERE DEL_FLG = 0 AND VALIDTIME_START <![CDATA[ <= ]]> #{actTime} AND VALIDTIME_END <![CDATA[ >= ]]> #{actTime}
+    </select>
+</mapper>

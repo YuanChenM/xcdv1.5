@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="./resources/js/BY121206.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>基本信息录入</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+			<div style="width:100%;background-color:#F0F2F5;">
+                <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                    <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                        <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                    </div>
+                    <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+                    <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                        <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                    </div>
+                </div>
+			</div>
+            <div id="titleDiv" style="width: 80%;margin-left:20px;" class="divCommon1">新买家注册 - 基础资料</div>
+            <div style="width:100%;">
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000"></span>买家全名</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="buyerName" placeholder="请输入买家证件上登记名称"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000"></span>店铺号</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="storeNo" placeholder="请输入买家店铺名号"/>
+                </div>
+                <!-- 店铺面积去掉-->
+<!--                <div style="width: 80%;margin-left:35px;" class="divCommon2">店铺面积</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="number" value="" id="storeArea" placeholder="请输入店铺面积"/>
+                </div>-->
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000"></span>营业电话</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="busiTel" maxlength="11" placeholder="请输入买家主要营业电话" />
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000"></span>地址</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="buyerAddr" placeholder="请输入买家店铺的街道地址"/>
+                </div>
+                <div id="localPosition" style="width: 76%;margin-left:35px;height:30px;padding-left:10px;line-height:35px;font-size:17px;border:1px #AAD979 solid;color:#AAD979"></div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">类型</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input name="buyerType" id="buyerType" readonly/>
+                </div>
+                <div id="marketName" style="width: 80%;margin-left:35px;" class="divCommon2"></div>
+                <div id="marketTypeDiv" style="width: 80%;margin-left:35px;">
+                    <input name="marketType" id="marketType" readonly/>
+                </div>
+                <div id="marketLevel" style="width: 80%;margin-left:35px;" class="divCommon2"></div>
+                <div id="marketLevelNameDiv" style="width: 80%;margin-left:35px;">
+                    <input name="marketLevelName" id="marketLevelName" readonly/>
+                </div>
+ <!--               <div style="width: 80%;margin-left:35px;" class="divCommon2">支付方式</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <select name="payType" id="payType"></select>
+                </div>-->
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">买家网站</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="buyerWebsite" placeholder="请输入买家网站"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">买家QQ号</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="buyerQq" placeholder="请输入买家QQ号" maxlength="20" />
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">买家微信公众号</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="buyerWechat" placeholder="请输入买家微信公众号"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">买家微信号</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="text" value="" id="buyerSingleWechat" placeholder="请输入买家微信号"/>
+                </div>
+               <!-- <div style="width: 80%;margin-left:35px;" class="divCommon2">员工数量</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="number" value="" id="employeesNum" placeholder="请输入员工数量"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">计划订货间隙</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="number" value="" id="planOrderGap" placeholder="请输入计划订货间隙"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">计划订货量</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="number" value="" id="planOrderNum" placeholder="请输入计划订货量"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">实际订货间隙</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="number" value="" id="actualOrderGap" placeholder="请输入实际订货间隙"/>
+                </div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2">实际订货量</div>
+                <div style="width: 80%;margin-left:35px;">
+                    <input type="number" value="" id="actualOrderNum" placeholder="请输入实际订货量"/>
+                </div>-->
+                <div style="width: 80%;margin-left:35px;" class="divCommon2" id="marketingsStatusDiv">上线状态</div>
+                <div style="width: 80%;margin-left:35px;" id="marketingsStatusNameDiv">
+                    <!--<input name="marketingsStatus" id="marketingsStatus" type="text" readonly="readonly"  style="display:none;" >-->
+                    <input name="marketingsStatusName" id="marketingsStatusName" type="text" readonly="readonly">
+                    <!--<select name="marketingsStatus" id="marketingsStatus"></select>-->
+                </div>
+            </div>
+            <div id="errorMessage" class="errorMessageDiv" style="width: 76%;margin-left:35px;display: none"></div>
+            <br/>
+            <div>
+                <div id="saveButtonDiv" style="margin-left:35px;width:100px;" class="buttonDiv" onclick="buyerBasicInfo()" onmouseover="javascript:this.style.backgroundColor='#4169E1'">下一步 1/8</div>
+            </div>
+            <br/>
+		</div>
+	</body>
+</html>

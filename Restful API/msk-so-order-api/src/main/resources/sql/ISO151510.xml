@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151510.modifyOrderDetailByShipId">
+        UPDATE
+        SO_ORDER_DETAIL sod
+        INNER JOIN SO_ORDER_SHIP_DETAIL sosd
+        ON sod.ORDER_DETAIL_ID = sosd.ORDER_DETAIL_ID
+        SET
+        sod.CANCEL_QTY = sod.ORDER_QTY,
+        sod.SEND_QTY = 0,
+        sod.VER = sod.VER + 1
+    </sql>
+
+    <sql id="ISO151510.modifySoSubOrderDetailByShipId">
+        UPDATE
+        so_sub_order_detail ssod
+        INNER JOIN SO_ORDER_SHIP_DETAIL sosd
+        ON ssod.SUB_ORDER_DETAIL_ID = sosd.SUB_ORDER_DETAIL_ID
+        SET
+        ssod.CANCEL_QTY = ssod.ORDER_QTY,
+        ssod.SEND_QTY = 0,
+        ssod.VER = ssod.VER + 1
+    </sql>
+</sqlList>

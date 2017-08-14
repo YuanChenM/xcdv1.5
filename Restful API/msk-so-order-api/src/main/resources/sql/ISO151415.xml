@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151415.findSubOrderDetailStatusCount">
+        SELECT
+        COUNT(1) AS allCount,
+        A.allCount AS cancelCount,
+        B.allCount AS allReceiptCount,
+        C.allCount AS allShipmentCount,
+        D.allCount AS partialReceiptCount,
+        E.allCount AS partialShipmentCount,
+        F.allCount AS waitSendCount,
+        G.allCount AS waitDisCount
+        FROM
+        SO_SUB_ORDER_DETAIL SSOD
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?0
+        AND DETAIL_STATUS = 99
+        AND DEL_FLG = 0
+        ) A ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?1
+        AND DETAIL_STATUS = 7
+        AND DEL_FLG = 0
+        ) B ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?2
+        AND DETAIL_STATUS = 6
+        AND DEL_FLG = 0
+        ) C ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?3
+        AND DETAIL_STATUS = 5
+        AND DEL_FLG = 0
+        ) D ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?4
+        AND DETAIL_STATUS = 4
+        AND DEL_FLG = 0
+        ) E ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?5
+        AND DETAIL_STATUS = 3
+        AND DEL_FLG = 0
+        ) F ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?6
+        AND DETAIL_STATUS = 1
+        AND DEL_FLG = 0
+        ) G ON 1 = 1
+        WHERE
+        SUB_ORDER_ID = ?7
+        AND DEL_FLG = 0
+    </sql>
+
+    <sql id="ISO151415.getReceiptListAndModifyOrderInfo">
+        SELECT
+        IFNULL(soda.SUPP_QTY, 0) AS suppOrderQty,
+        IFNULL(soda.RECEIVE_QTY, 0) AS suppReceiveQty,
+        IFNULL(soda.CANCEL_QTY, 0) AS suppCancelQty,
+        IFNULL(soda.RETURN_QTY, 0) AS suppReturnQty,
+        IFNULL(soda.REJECTION_QTY, 0) AS suppRejectionQty,
+        soda.DETAIL_STATUS AS suppStatus,
+        sod.DETAIL_STATUS AS detailStatus,
+        sod.ORDER_DETAIL_ID AS orderDetailId,
+        IFNULL(sod.ORDER_QTY, 0) AS orderQty,
+        IFNULL(sod.RECEIVE_QTY, 0) AS detailReceiveQty,
+        IFNULL(sod.CANCEL_QTY, 0) AS detailCancelQty,
+        IFNULL(sod.REJECTION_QTY, 0) AS detailRejectionQty,
+        IFNULL(sod.SEND_QTY, 0) AS detailSendQty,
+        so.ORDER_STATUS AS orderStatus,
+        SHIP_ID AS shipId,
+        soda.SHIP_DETAIL_ID AS detailAvailabilityId,
+        soda.SUPPLIER_CODE AS supplierCode,
+        ssod.SUB_ORDER_DETAIL_ID AS subOrderDetailId,
+        IFNULL(ssod.ORDER_QTY, 0) AS subDetailOrderQty,
+        IFNULL(ssod.SEND_QTY, 0) AS subDetailSendQty,
+        IFNULL(ssod.RECEIVE_QTY, 0) AS subDetailReceiveQty,
+        IFNULL(ssod.CANCEL_QTY, 0) AS subDetailCancelQty,
+        IFNULL(ssod.RETURN_QTY, 0) AS subDetailReturnQty,
+        IFNULL(ssod.REJECTION_QTY, 0) AS subDetailRejectionQty,
+        ssod.DETAIL_STATUS AS subDetailStatus
+        FROM
+        so_order_ship_detail soda
+        LEFT JOIN so_order_detail sod ON soda.ORDER_DETAIL_ID = sod.ORDER_DETAIL_ID
+        LEFT JOIN so_order so ON soda.ORDER_ID = so.ORDER_ID
+        LEFT JOIN so_sub_order_detail ssod ON ssod.SUB_ORDER_DETAIL_ID = soda.SUB_ORDER_DETAIL_ID
+        WHERE
+        soda.SHIP_DETAIL_ID = ?0
+        AND soda.SHIP_ID = ?1
+        AND soda.DEL_FLG = 0
+        AND sod.DEL_FLG = 0
+        AND so.DEL_FLG = 0
+        AND ssod.DEL_FLG = 0
+    </sql>
+
+    <sql id="ISO151415.getDeliverListAndModifyOrderInfo">
+        SELECT
+        IFNULL(sod.PD_CODE, '') AS pdCode,
+        IFNULL(sod.pd_name, '') AS pdName,
+        sod.ORDER_ID AS orderId,
+        sod.ORDER_CODE AS orderCode,
+        sod.ORDER_DETAIL_ID AS orderDetailId,
+        IFNULL(sod.ORDER_QTY, 0) AS detailOrderQty,
+        IFNULL(sod.SEND_QTY, 0) AS detailSendQty,
+        IFNULL(sod.RECEIVE_QTY, 0) AS detailReceiveQty,
+        IFNULL(sod.CANCEL_QTY, 0) AS detailCancelQty,
+        IFNULL(sod.RETURN_QTY, 0) AS detailReturnQty,
+        IFNULL(sod.REJECTION_QTY, 0) AS detailRejectionQty,
+        sod.DETAIL_STATUS AS detailStatus,
+        IFNULL(soda.SUPP_QTY, 0) AS suppOrderQty,
+        IFNULL(soda.SEND_QTY, 0) AS suppSendQty,
+        IFNULL(soda.RECEIVE_QTY, 0) AS suppReceiveQty,
+        IFNULL(soda.CANCEL_QTY, 0) AS suppCancelQty,
+        IFNULL(soda.RETURN_QTY, 0) AS suppReturnQty,
+        IFNULL(soda.REJECTION_QTY, 0) AS suppRejectionQty,
+        soda.DETAIL_STATUS AS suppStatus,
+        IFNULL(ssod.ORDER_QTY, 0) AS subDetailOrderQty,
+        IFNULL(ssod.SEND_QTY, 0) AS subDetailSendQty,
+        IFNULL(ssod.RECEIVE_QTY, 0) AS subDetailReceiveQty,
+        IFNULL(ssod.CANCEL_QTY, 0) AS subDetailCancelQty,
+        IFNULL(ssod.RETURN_QTY, 0) AS subDetailReturnQty,
+        IFNULL(ssod.REJECTION_QTY, 0) AS subDetailRejectionQty,
+        ssod.DETAIL_STATUS AS subDetailStatus,
+        SHIP_ID AS shipId,
+        IFNULL(sod.ORDER_QTY, 0) - IFNULL(sod.SEND_QTY, 0) - IFNULL(sod.CANCEL_QTY, 0) AS detailQty,
+        IFNULL(ssod.ORDER_QTY, 0) - IFNULL(ssod.SEND_QTY, 0) - IFNULL(ssod.CANCEL_QTY, 0) AS subDetailQty,
+        IFNULL(soda.SUPP_QTY, 0) - IFNULL(soda.SEND_QTY, 0) - IFNULL(soda.CANCEL_QTY, 0) AS suppQty,
+        soda.SHIP_DETAIL_ID AS shipDetailId,
+        soda.SUPPLIER_CODE AS supplierCode,
+        soo.order_status AS orderStatus,
+        ssod.SUB_ORDER_DETAIL_ID as subOrderDetailId
+        FROM
+        so_order_ship_detail soda
+        LEFT JOIN so_order_detail sod ON soda.ORDER_DETAIL_ID = sod.ORDER_DETAIL_ID
+        LEFT JOIN so_order soo ON soo.order_id = sod.order_id
+        LEFT JOIN so_sub_order_detail ssod ON ssod.SUB_ORDER_DETAIL_ID = soda.SUB_ORDER_DETAIL_ID
+        WHERE
+        soda.SHIP_DETAIL_ID = ?0
+        AND soda.SHIP_ID = ?1
+        AND sod.ORDER_ID = ?2
+        AND sod.DEL_FLG = 0
+        AND soda.DEL_FLG = 0
+        AND soo.DEL_FLG = 0
+        AND ssod.DEL_FLG = 0
+
+    </sql>
+
+    <sql id="ISO151415.getModifyOrderStatusByDetailStatusParam">
+        SELECT
+        COUNT(1) AS allCount,
+        A.allCount AS cancelCount,
+        B.allCount AS allReceiptCount,
+        C.allCount AS allShipmentCount,
+        D.allCount AS partialReceiptCount,
+        E.allCount AS partialShipmentCount,
+        F.allCount AS waitSendCount,
+        G.allCount AS waitDisCount
+        FROM
+        SO_ORDER_DETAIL SOD
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?0
+        AND DETAIL_STATUS = 99
+        AND DEL_FLG = 0
+        ) A ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?1
+        AND DETAIL_STATUS = 7
+        AND DEL_FLG = 0
+        ) B ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?2
+        AND DETAIL_STATUS = 6
+        AND DEL_FLG = 0
+        ) C ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?3
+        AND DETAIL_STATUS = 5
+        AND DEL_FLG = 0
+        ) D ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?4
+        AND DETAIL_STATUS = 4
+        AND DEL_FLG = 0
+        ) E ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?5
+        AND DETAIL_STATUS = 3
+        AND DEL_FLG = 0
+        ) F ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?6
+        AND DETAIL_STATUS = 1
+        AND DEL_FLG = 0
+        ) G ON 1 = 1
+        WHERE
+        ORDER_ID = ?7
+        AND DEL_FLG = 0
+    </sql>
+
+    <sql id="ISO151415.getModifyShipStatusParam">
+        SELECT
+        COUNT(1) AS allCount,
+        A.allCount AS cancelCount,
+        B.allCount AS allReceiptCount,
+        C.allCount AS allShipmentCount,
+        D.allCount AS partialReceiptCount,
+        E.allCount AS partialShipmentCount
+        FROM
+        SO_ORDER_SHIP_DETAIL SOSD
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_SHIP_DETAIL
+        WHERE
+        SHIP_ID = ?0
+        AND DETAIL_STATUS = 99
+        AND DEL_FLG = 0
+        ) A ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_SHIP_DETAIL
+        WHERE
+        SHIP_ID = ?1
+        AND DETAIL_STATUS = 6
+        AND DEL_FLG = 0
+        ) B ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_SHIP_DETAIL
+        WHERE
+        SHIP_ID = ?2
+        AND DETAIL_STATUS = 5
+        AND DEL_FLG = 0
+        ) C ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_SHIP_DETAIL
+        WHERE
+        SHIP_ID = ?3
+        AND DETAIL_STATUS = 4
+        AND DEL_FLG = 0
+        ) D ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_SHIP_DETAIL
+        WHERE
+        SHIP_ID = ?4
+        AND DETAIL_STATUS = 3
+        AND DEL_FLG = 0
+        ) E ON 1 = 1
+        WHERE
+        SHIP_ID = ?5
+        AND DEL_FLG = 0
+    </sql>
+
+
+
+</sqlList>

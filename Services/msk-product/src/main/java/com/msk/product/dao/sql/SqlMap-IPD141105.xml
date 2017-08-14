@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141105Logic">
+
+    <!-- 条件语句 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND Ast.CLASSES_CODE = #{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND Ast.MACHINING_CODE = #{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND Ast.BREED_CODE = #{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND Ast.FEATURE_CODE = #{filterMap.featureCode}
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                AND Ast.WEIGHT_CODE = #{filterMap.weightCode}
+            </if>
+
+        </where>
+    </sql>
+    <!-- 产品主码查询 Ast: 产品标准表 Bcl: 产品类别表 Cbr: 产品品种表 Dfe: 产品特征表 Egr: 产品等级信息表 -->
+    <select id="findList" parameterType="BaseParam"
+            resultType="com.msk.product.bean.IPD141105RsResult">
+        SELECT
+        IFNULL((CASE
+        WHEN #{filterMap.codeLevel}='0' THEN
+        CONCAT(Bcl.CLASSES_NAME,'/',mac.MACHINING_NAME,'/',Cbr.BREED_NAME,'/',Dfe.FEATURE_NAME,'/',Egr.WEIGHT_NAME)
+        WHEN #{filterMap.codeLevel}='1' THEN CONCAT(Bcl.CLASSES_NAME,'/',mac.MACHINING_NAME,'/',Cbr.BREED_NAME)
+        WHEN #{filterMap.codeLevel}='2' THEN
+        CONCAT(Bcl.CLASSES_NAME,'/',mac.MACHINING_NAME,'/',Cbr.BREED_NAME,'/',Dfe.FEATURE_NAME)
+        WHEN #{filterMap.codeLevel}='3' THEN
+        CONCAT(Bcl.CLASSES_NAME,'/',mac.MACHINING_NAME)
+        END),'') AS pdName
+        ,IFNULL((CASE
+        WHEN #{filterMap.codeLevel}='0' THEN
+        CONCAT(Bcl.CLASSES_CODE,mac.MACHINING_CODE,Cbr.BREED_CODE,Dfe.FEATURE_CODE,Egr.WEIGHT_CODE)
+        WHEN #{filterMap.codeLevel}='1' THEN CONCAT(Bcl.CLASSES_CODE,mac.MACHINING_CODE,Cbr.BREED_CODE)
+        WHEN #{filterMap.codeLevel}='2' THEN CONCAT(Bcl.CLASSES_CODE,mac.MACHINING_CODE,Cbr.BREED_CODE,Dfe.FEATURE_CODE)
+        WHEN #{filterMap.codeLevel}='3' THEN CONCAT(Bcl.CLASSES_CODE,mac.MACHINING_CODE)
+        END),'') AS pdCode
+        ,IFNULL(Ast.STANDARD_ID,'') AS standardId
+        ,IFNULL(Ast.CLASSES_CODE,'') AS classesCode
+        ,IFNULL(Bcl.CLASSES_NAME,'') AS classesName
+        FROM
+        PD_STANDARD AS Ast
+        INNER JOIN PD_CLASSES Bcl ON Ast.CLASSES_CODE = Bcl.CLASSES_CODE
+        INNER JOIN pd_machining mac ON Ast.CLASSES_CODE = mac.CLASSES_CODE AND mac.MACHINING_CODE =
+        Ast.MACHINING_CODE
+        INNER JOIN PD_BREED Cbr ON Ast.CLASSES_CODE = Cbr.CLASSES_CODE AND Cbr.MACHINING_CODE = Ast.MACHINING_CODE AND
+        Ast.BREED_CODE = Cbr.BREED_CODE
+        INNER JOIN PD_FEATURE Dfe ON Ast.FEATURE_CODE = Dfe.FEATURE_CODE AND Ast.CLASSES_CODE = Dfe.CLASSES_CODE AND
+        Dfe.MACHINING_CODE = Ast.MACHINING_CODE AND Ast.BREED_CODE = Dfe.BREED_CODE
+        INNER JOIN pd_weight Egr ON Ast.WEIGHT_CODE =Egr.WEIGHT_CODE AND Ast.FEATURE_CODE = Egr.FEATURE_CODE AND
+        Ast.CLASSES_CODE = Egr.CLASSES_CODE AND Egr.MACHINING_CODE = Ast.MACHINING_CODE
+        AND Ast.BREED_CODE = Egr.BREED_CODE
+        <include refid="whereCondition"/>
+        ORDER BY Ast.CLASSES_CODE,Ast.MACHINING_CODE,Ast.BREED_CODE,Ast.FEATURE_CODE,Ast.WEIGHT_CODE
+    </select>
+
+</mapper>

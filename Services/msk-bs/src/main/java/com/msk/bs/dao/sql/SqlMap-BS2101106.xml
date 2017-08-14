@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2101106Logic">
+
+    <select id="findSlBuyerhop" resultType="java.lang.Integer" parameterType="BaseParam">
+        SELECT COUNT(1) FROM sl_bs_buyershop
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="filterMap.slCode != null and filterMap.slCode != ''">
+                AND SL_CODE = #{filterMap.slCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="findOne" resultType="com.msk.core.entity.SlShopInfo" parameterType="BaseParam">
+        SELECT SHOP_ID as shopId FROM sl_bs_shop_info
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="filterMap.slCode2 != null and filterMap.slCode2 != ''">
+                AND SL_CODE = #{filterMap.slCode2}
+            </if>
+        </where>
+    </select>
+
+    <select id="findSlCode" resultType="com.msk.core.entity.BsBasicInfo" parameterType="BaseParam">
+        SELECT SL_CODE as slCode FROM sl_bs_basic_info
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="filterMap.slAccount2 != null and filterMap.slAccount2 != ''">
+                AND SL_ACCOUNT = #{filterMap.slAccount2}
+            </if>
+        </where>
+    </select>
+
+    <!--买手一级类型-->
+    <select id="findBuyersClass" parameterType="BaseParam" resultType="com.msk.core.entity.SlHouseType">
+        SELECT
+        houseType.TYPE_NAME AS typeName,
+        houseType.TYPE_CODE AS typeCode
+        from  sl_bs_house_type  houseType
+        where houseType.DEL_FLG =0
+        AND houseType.TYPE_LEVER =0
+        AND houseType.ROLE_TYPE=0
+    </select>
+
+    <!--买手二、三级类型-->
+    <select id="findBuyersClassLevel" parameterType="BaseParam" resultType="com.msk.core.entity.SlHouseType">
+        SELECT
+        houseType.TYPE_NAME AS typeName,
+        houseType.TYPE_CODE AS typeCode,
+        houseType.PARENT_TYPE_CODE AS parentTypeCode
+        from sl_bs_house_type houseType
+        where houseType.DEL_FLG =0
+        AND houseType.ROLE_TYPE=0
+        <if test="filterMap.parentTypeCode != null and filterMap.parentTypeCode != ''">
+            AND houseType.PARENT_TYPE_CODE = #{filterMap.parentTypeCode}
+        </if>
+        <if test="filterMap.typeCode != null and filterMap.typeCode != ''">
+            AND houseType.TYPE_CODE = #{filterMap.typeCode}
+        </if>
+        AND houseType.TYPE_LEVER = #{filterMap.typeLever}
+    </select>
+
+    <select id="findBankAccount" resultType="com.msk.core.entity.SlBsBankaccount" parameterType="com.msk.bs.bean.BS2101105Bean">
+      SELECT
+      ACCOUNT_ID AS accountId,
+      SL_CODE AS slCode,
+      ACCOUNT_NAME AS accountName,
+      BANK_NAME AS bankName,
+      BANK_NO AS bankNo,
+      CARD_TYPE AS cardType,
+      BANK_TEL AS bankTel
+      FROM sl_bs_bankaccount
+      WHERE
+      SL_CODE = #{slCode}
+      AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <!--查询买手地区顺序码-->
+    <select id="findBuyerCountByCityCode" parameterType="BaseParam" resultType="Long">
+        SELECT BS_COUNT FROM  sl_bs_city_seqno where CITY_CODE=#{filterMap.cityCode}
+    </select>
+
+    <insert id="saveBsCount" parameterType="com.msk.core.entity.SlBsCitySeqno">
+        INSERT INTO sl_bs_city_seqno (
+        CITY_CODE,
+        BS_COUNT,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES
+        (
+        #{cityCode},
+        #{bsCount},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        0
+        )
+    </insert>
+
+    <!--编辑买手地区顺序码-->
+    <update id="updateBuyerCountByCityCode" parameterType="com.msk.core.entity.SlBsCitySeqno">
+        UPDATE
+        sl_bs_city_seqno
+        SET BS_COUNT =#{bsCount},
+        VER =VER+1
+        where CITY_CODE=#{cityCode}
+    </update>
+
+    <!--Add for Bug#2503 at 2016/09/07 by zhu_kai1 Start-->
+    <select id="findBsCityCode" resultType="com.msk.core.entity.BsBasicInfo" parameterType="BaseParam">
+        SELECT
+        CITY_CODE AS cityCode,
+        MEMO8 AS memo8
+        FROM sl_bs_basic_info
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="filterMap.slAccount != null and filterMap.slAccount != ''">
+                AND SL_ACCOUNT = #{filterMap.slAccount}
+            </if>
+            <if test="filterMap.slCode != null and filterMap.slCode != ''">
+                AND SL_CODE = #{filterMap.slCode}
+            </if>
+        </where>
+    </select>
+    <!--Add for Bug#2503 at 2016/09/07 by zhu_kai1 end-->
+</mapper>

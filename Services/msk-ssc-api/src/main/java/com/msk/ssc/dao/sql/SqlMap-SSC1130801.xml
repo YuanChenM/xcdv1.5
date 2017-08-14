@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC1130801Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        PAYMENT_ID  AS  paymentId,
+        PAYMENT_REQUEST_ID    AS paymentRequestId,
+        PAYMENT_REQUEST_CODE  AS paymentRequestCode,
+        AMOUNT   AS amount,
+        PAYER   AS  payer,
+        PAYER_BANK  AS payerBank,
+        PATER_ACCOUNT   AS paterAccount,
+        RECEIVING AS  receiving,
+        RECEIVING_BANK  AS  receivingBank,
+        RECEIVING_ACCOUNT AS receivingAccount,
+        REMIT_TIME  AS  remitTime,
+        IFNULL(DATE_FORMAT(REMIT_TIME, '%Y-%m-%d %H:%i:%S'),'') AS remitTimeStr,
+        SUBJECT AS subject,
+        PAID_TYPE AS paidType,
+        REMARK  AS    remark,
+        STATUS  AS  status,
+        DEL_FLG AS  delFlg,
+        CRT_ID  AS  crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID  AS  updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER     AS  ver
+  </sql>
+
+    <!--根据主键查询-->
+    <select id="findPaymentInfoById" resultType="com.msk.ssc.bean.SSC1130801RsBean"
+            parameterType="com.msk.ssc.bean.SSC1130801RsParam">
+        SELECT
+        <include refid="selectSql"/>
+        FROM SSC_PAYMENT_INFO WHERE PAYMENT_ID = #{paymemtId}
+        <include refid="whereCondition"/>
+    </select>
+
+
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC1130801RsBean"
+            parameterType="com.msk.ssc.bean.SSC1130801RsParam">
+        SELECT
+        <include refid="selectSql"/>
+        FROM SSC_PAYMENT_INFO
+        <include refid="whereCondition"/>
+        ORDER BY CRT_TIME DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        FROM SSC_PAYMENT_INFO
+        <include refid="whereCondition"/>
+    </select>
+
+
+    <sql id="whereCondition">
+        <where>
+            1=1
+            <if test="paymentRequestId!=null and paymentRequestId!=''">
+                AND PAYMENT_REQUEST_ID = #{paymentRequestId}
+            </if>
+            <if test="status != null and status != ''">
+                AND STATUS = #{status}
+            </if>
+            <if test="subject != null and subject != ''">
+                AND SUBJECT = #{subject}
+            </if>
+            <if test="paymentRequestIds != null and paymentRequestIds.size() > 0">
+                AND PAYMENT_REQUEST_ID IN
+                <foreach collection="paymentRequestIds" item="paymentRequestId" index="index" open="(" separator="," close=")">
+                    #{paymentRequestId}
+                </foreach>
+            </if>
+            AND DEL_FLG =0
+        </where>
+    </sql>
+
+    <!--新增-->
+    <insert id="save" parameterType="com.msk.ssc.bean.SSC1130801RsBean">
+     INSERT  INTO  SSC_PAYMENT_INFO(
+        PAYMENT_ID,
+        PAYMENT_REQUEST_ID,
+        PAYMENT_REQUEST_CODE,
+        AMOUNT,
+        PAYER,
+        PAYER_BANK,
+        PATER_ACCOUNT,
+        RECEIVING,
+        RECEIVING_BANK,
+        RECEIVING_ACCOUNT,
+        REMIT_TIME,
+        REMARK,
+        STATUS,
+        SUBJECT,
+        PAID_TYPE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME ,
+        ACT_ID,
+        ACT_TIME ,
+        VER
+    )VALUES (
+       #{paymentId},
+       #{paymentRequestId},
+       #{paymentRequestCode},
+       #{amount},
+       #{payer},
+        #{payerBank},
+        #{paterAccount},
+        #{receiving},
+        #{receivingBank},
+        #{receivingAccount},
+        #{remitTime},
+        #{remark},
+        #{status},
+        #{subject},
+        #{paidType},
+        0,
+       #{crtId},
+       #{crtTime},
+       #{updId},
+       #{updTime},
+       #{actId},
+       #{actTime},
+       1
+      )
+    </insert>
+
+    <!--修改-->
+    <update id="modify"  parameterType="com.msk.ssc.bean.SSC1130801RsBean">
+        UPDATE
+        SSC_PAYMENT_INFO
+        SET
+        <if test="paymentRequestId != null and  paymentRequestId!=''">
+            PAYMENT_REQUEST_ID=#{paymentRequestId},
+        </if>
+        <if test="paymentRequestCode != null and  paymentRequestCode!=''">
+            PAYMENT_REQUEST_CODE  =#{paymentRequestCode},
+        </if>
+        <if test="amount != null and  amount!=''">
+            AMOUNT    =#{amount},
+        </if>
+        <if test="payer != null and  payer!=''">
+            PAYER    =#{payer},
+        </if>
+        <if test="payerBank != null and  payerBank!=''">
+            PAYER_BANK   =#{payerBank},
+        </if>
+        <if test="paterAccount != null and paterAccount !=''">
+            PATER_ACCOUNT    =#{paterAccount},
+        </if>
+        <if test="receiving != null and  receiving!=''">
+            RECEIVING  =#{receiving},
+        </if>
+        <if test="receivingBank != null and receivingBank !=''">
+            RECEIVING_BANK  =#{receivingBank},
+        </if>
+        <if test="receivingAccount != null and receivingAccount !=''">
+            RECEIVING_ACCOUNT =#{receivingAccount},
+        </if>
+        <if test="remitTime != null and remitTime !=''">
+            REMIT_TIME  =#{remitTime},
+        </if>
+        <if test="remark != null and remark !=''">
+            REMARK  =#{remark},
+        </if>
+        <if test="status != null and status !=''">
+            STATUS  =#{status},
+        </if>
+        <if test="delFlg != null and delFlg !=''">
+            DEL_FLG=#{delFlg},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        PAYMENT_ID = #{paymentId}
+    </update>
+
+</mapper>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231208RsLogic">
+	<!-- 表字段映射 -->
+	<sql id="selectSlPd">
+		A.PROD_EP_ID AS prodEpId,
+		IFNULL(B.EP_NAME,'') AS prodEpName,
+		A.BRAND_ID AS brandId,
+		A.BRAND_EP_ID AS brandEpId,
+		IFNULL(G.BRAND_NAME,'') AS brandName,
+		IFNULL(A.PD_CLASSES_CODE,'') AS pdClassesCode,
+		IFNULL(A.PD_CLASSES_NAME,'') AS pdClassesName,
+		IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+		IFNULL(A.MACHINING_NAME,'') AS machiningName,
+		IFNULL(A.PD_BREED_CODE,'')  AS pdBreedCode,
+		IFNULL(A.PD_BREED_NAME,'') AS pdBreedName,
+		IFNULL(A.PD_FEATURE_CODE,'') AS pdFeatureCode,
+		IFNULL(A.PD_FEATURE_NAME,'') AS pdFeatureName,
+		IFNULL(A.WEIGHT_CODE,'') AS weightCode,
+		IFNULL(A.WEIGHT_NAME,'') AS weightName,
+		IFNULL(A.SL_TNC_GRADE_CODE,'') AS slTncGradeCode,
+		IFNULL(A.STATUS,'') AS status,
+		IFNULL(Z.SL_PD_ARTNO,'') AS slPdArtNo
+	</sql>
+	<!--条件 -->
+	<sql id="whereSql">
+		<where>
+			A.DEL_FLG=0
+			AND A.SL_CODE = #{slCode}
+			<if test="filterMap.slPdArtNo !=null and filterMap.slPdArtNo!=''">
+				AND Z.SL_PD_ARTNO like #{filterMap.slPdArtNo}
+			</if>
+			<if test="filterMap.prodEpName !=null and filterMap.prodEpName!=''">
+				AND B.EP_NAME like #{filterMap.prodEpName}
+			</if>
+			<if test="filterMap.brandName !=null and filterMap.brandName!=''">
+				AND G.BRAND_NAME like #{filterMap.brandName}
+			</if>
+			<if test="filterMap.pdClassesName !=null and filterMap.pdClassesName!=''">
+				AND A.PD_CLASSES_NAME like #{filterMap.pdClassesName}
+			</if>
+			<if test="filterMap.machiningName !=null and filterMap.machiningName!=''">
+				AND A.MACHINING_NAME like #{filterMap.machiningName}
+			</if>
+			<if test="filterMap.pdBreedName !=null and filterMap.pdBreedName!=''">
+				AND A.PD_BREED_NAME like #{filterMap.pdBreedName}
+			</if>
+			<if test="filterMap.pdFeatureName !=null and filterMap.pdFeatureName!=''">
+				AND A.PD_FEATURE_NAME like #{filterMap.pdFeatureName}
+			</if>
+			<if test="filterMap.weightName !=null and filterMap.weightName!=''">
+				AND A.WEIGHT_NAME like #{filterMap.weightName}
+			</if>
+			<if test="filterMap.slTncGradeCodes !=null">
+				AND A.SL_TNC_GRADE_CODE in
+				<foreach collection="filterMap.slTncGradeCodes" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="filterMap.statusNames !=null">
+				AND A.STATUS in
+				<foreach collection="filterMap.statusNames" item="item" separator="," open="(" close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</sql>
+	<sql id="whereSqlNotNull">
+		AND   A.PD_FEATURE_CODE != '00'
+	</sql>
+	<select id="findPageList" parameterType="BaseParam"
+			resultType="com.msk.seller.bean.SL241116Bean">
+		SELECT
+		<include refid="selectSlPd"/>
+		FROM
+		SL_PRODUCT AS A
+		LEFT JOIN sl_enterprise AS B ON A.PROD_EP_ID = B.EP_ID  AND  B.DEL_FLG = 0
+		LEFT JOIN sl_enterprise AS C ON A.BRAND_EP_ID = C.EP_ID  AND  C.DEL_FLG = 0
+		LEFT JOIN sl_pd_brand G ON A.BRAND_EP_ID=G.BRAND_EP_ID
+		                          AND A.BRAND_ID=G.BRAND_ID
+		                          AND G.SL_CODE=A.SL_CODE
+		                          AND G.DEL_FLG = 0
+		LEFT JOIN sl_pd_artno Z
+			ON Z.WEIGHT_CODE = A.WEIGHT_CODE
+			AND Z.CLASSES_CODE = A.PD_CLASSES_CODE
+			AND Z.MACHINING_CODE = A.MACHINING_CODE
+			AND Z.BREED_CODE = A.PD_BREED_CODE
+			AND Z.FEATURE_CODE = A.PD_FEATURE_CODE
+			AND Z.GRADE_CODE = A.SL_TNC_GRADE_CODE
+			AND Z.SL_CODE=A.SL_CODE
+			AND Z.DEL_FLG = 0
+		<include refid="whereSql"/>
+		<include refid="whereSqlNotNull"/>
+		ORDER BY A.SL_PD_ID DESC
+		<if test="paging==true">
+			LIMIT #{startPos},#{pageSize};
+		</if>
+	</select>
+	<select id="getPageCount" resultType="Integer"
+			parameterType="BaseParam">
+		SELECT
+		COUNT(1)
+		FROM
+		sl_product AS A
+		LEFT JOIN sl_enterprise AS B ON A.PROD_EP_ID = B.EP_ID  AND  B.DEL_FLG = 0
+		LEFT JOIN sl_enterprise AS C ON A.BRAND_EP_ID = C.EP_ID  AND  C.DEL_FLG = 0
+		LEFT JOIN sl_pd_brand G ON A.BRAND_EP_ID=G.BRAND_EP_ID
+								AND A.BRAND_ID=G.BRAND_ID
+								AND G.SL_CODE=A.SL_CODE
+								AND G.DEL_FLG = 0
+		LEFT JOIN sl_pd_artno Z
+			ON Z.WEIGHT_CODE = A.WEIGHT_CODE
+			AND Z.CLASSES_CODE = A.PD_CLASSES_CODE
+			AND Z.MACHINING_CODE = A.MACHINING_CODE
+			AND Z.BREED_CODE = A.PD_BREED_CODE
+			AND Z.FEATURE_CODE = A.PD_FEATURE_CODE
+			AND Z.GRADE_CODE = A.SL_TNC_GRADE_CODE
+			AND Z.SL_CODE=A.SL_CODE
+			AND Z.DEL_FLG = 0
+		<include refid="whereSql"/>
+		<include refid="whereSqlNotNull"/>
+	</select>
+</mapper>

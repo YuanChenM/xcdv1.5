@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.InventoryByProdServiceImpl">
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        IV_ID AS ivId,
+        CONCAT(
+		  EXTRACTVALUE(PRODUCT_XML, '/CLS_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/MACH_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/BRE_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/FEAT_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/WEI_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/GRAD_C')
+	    )AS pdCode,
+        PRODUCT_XML AS productXml,
+        BELONE_XML AS beloneXml,
+        OWNER_ID AS ownerId,
+        OWNER_CODE AS ownerCode,
+        IV_STATUS AS ivStatus,
+        IV_TYPE AS ivType,
+        QTY AS qty,
+        ALLOCATED_QTY AS allocatedQty
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where> 1=1
+            <if test="logicCode!=null and logicCode!=''">
+                AND EXTRACTVALUE(BELONE_XML,'/AREA')=#{logicCode}
+            </if>
+            <if test="platform!=null and platform!=''">
+                AND EXTRACTVALUE(BELONE_XML,'/PLT')=#{platform}
+            </if>
+            <if test="slType!=null and slType!=''">
+                AND EXTRACTVALUE(BELONE_XML,'/SLT')=#{slType}
+            </if>
+            <if test="slId!=null and slId!=''">
+                AND EXTRACTVALUE(BELONE_XML,'/SLID')=#{slId}
+            </if>
+            <if test="pdCode!=null and pdCode!=''">
+                AND CONCAT(
+                EXTRACTVALUE(PRODUCT_XML,'/CLS_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/MACH_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/BRE_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/FEAT_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/WEI_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/GRAD_C')
+                ) = #{pdCode}
+            </if>
+            <if test="ownerId!=null">
+                AND OWNER_ID=#{ownerId}
+            </if>
+            <if test="ownerCode!=null">
+                AND OWNER_CODE=#{ownerCode}
+            </if>
+            <if test="ivStatus!=null">
+                AND IV_STATUS=#{ivStatus}
+            </if>
+            <if test="ivType!=null">
+                AND IV_TYPE=#{ivType}
+            </if>
+            <if test="qty!=null">
+                AND QTY=#{qty}
+            </if>
+        <if test="allocatedQty!=null">
+                AND ALLOCATED_QTY=#{allocatedQty}
+            </if>
+        </where>
+    </sql>
+
+    <!--数据插入 -->
+    <insert id="insertInventoryByProd" parameterType="com.msk.inventory.bean.IvmInventoryByProdBean">
+        INSERT INTO ivm_inventory_by_prod
+        (
+            IV_ID,
+            PRODUCT_XML,
+            BELONE_XML,
+            OWNER_ID,
+            OWNER_CODE,
+            IV_STATUS,
+            IV_TYPE,
+            QTY,
+            ALLOCATED_QTY
+        )
+        VALUES
+        (
+            #{ivId},
+            #{productXml},
+            #{beloneXml},
+            #{ownerId},
+            #{ownerCode},
+            #{ivStatus},
+            #{ivType},
+            #{qty},
+            #{allocatedQty}
+        )
+    </insert>
+
+    <!--数据查询-->
+    <select id="queryInventoryByProdList" resultType="com.msk.inventory.bean.IvmInventoryByProdBean">
+        select
+        <include refid="selectSql"/>
+        from ivm_inventory_by_prod
+        <include refid="whereCondition"/>
+    </select>
+
+    <select id="getSumQty" resultType="Decimal" parameterType="com.msk.inventory.bean.IvmInventoryByProdBean">
+        select
+        IFNULL(sum(IFNULL(QTY,0)),0) as qty
+        from ivm_inventory_by_prod
+        <include refid="whereCondition"/>
+    </select>
+
+    <!--查询数据总数-->
+    <select id="countInventoryByProd" resultType="Integer" parameterType="com.msk.inventory.bean.IvmInventoryByProdBean">
+        select count(1)
+        from ivm_inventory_by_prod
+        <include refid="whereCondition"/>
+    </select>
+
+    <!--更改数据-->
+    <update id="updateInventoryByProd" parameterType="com.msk.inventory.bean.IvmInventoryByProdBean">
+        update ivm_inventory_by_prod
+        set
+        QTY=#{qty}
+        where 1=1
+        <if test="ivType!=null">
+            AND IV_TYPE=#{ivType}
+        </if>
+    </update>
+
+    <select id="touchAllIvProd" statementType="CALLABLE">
+        {call PRO_SYN_ALL_IV_PROD()}
+    </select>
+
+    <select id="touchIvProdByInbound" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean" statementType="CALLABLE">
+        {call PRO_SYN_PROD_IV_BY_JOB(#{inboundId}, #{inboundNo})}
+    </select>
+
+    <select id="touchIvProdByOutbound" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean" statementType="CALLABLE">
+        {call PRO_SYN_PROD_IV_BY_JOB(#{outboundId}, #{outboundNo})}
+    </select>
+
+</mapper>

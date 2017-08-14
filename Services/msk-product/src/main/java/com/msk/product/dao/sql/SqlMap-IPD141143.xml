@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141143Logic">
+    <select id="count" resultType="int">
+         SELECT
+            COUNT(DISTINCT A.CLASSES_CODE,
+             A.MACHINING_CODE,
+             A.BREED_CODE,
+             A.FEATURE_CODE,
+             A.WEIGHT_CODE,
+             A.GRADE_CODE,
+             A.LOGIAREA_CODE)
+            FROM PD_LOGIAREA_ORDERLEVEL A
+    </select>
+
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141143OrderLevel">
+        SELECT
+         IFNULL(A.ORDERLEVEL_CODE,'') AS orderLevel
+        ,IFNULL(A.BOX_CNTMIN,'') AS boxMin
+        ,IFNULL(A.BOX_CNTMAX,'') AS boxMax
+        FROM
+        PD_LOGIAREA_ORDERLEVEL AS A
+        WHERE  A.CLASSES_CODE = #{filterMap.classesCode}
+        AND A.MACHINING_CODE = #{filterMap.machiningCode}
+        AND A.BREED_CODE = #{filterMap.breedCode}
+        AND A.FEATURE_CODE = #{filterMap.featureCode}
+        AND A.WEIGHT_CODE = #{filterMap.weightCode}
+        AND A.GRADE_CODE = #{filterMap.gradeCode}
+        AND A.LOGIAREA_CODE = #{filterMap.logiAreaCode}
+        ORDER BY A.CLASSES_CODE,A.MACHINING_CODE,A.BREED_CODE, A.FEATURE_CODE, A.WEIGHT_CODE, A.GRADE_CODE,A.LOGIAREA_CODE
+    </select>
+
+    <select id="getPageCount" resultType="int">
+        SELECT
+            COUNT(DISTINCT A.CLASSES_CODE,
+             A.MACHINING_CODE,
+             A.BREED_CODE,
+             A.FEATURE_CODE,
+             A.WEIGHT_CODE,
+             A.GRADE_CODE,
+             A.LOGIAREA_CODE)
+            FROM PD_LOGIAREA_ORDERLEVEL A
+    </select>
+
+
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141143Orders">
+        SELECT
+        DISTINCT
+        A.CLASSES_CODE AS classesCode,
+        A.MACHINING_CODE  AS machiningCode,
+        A.BREED_CODE  AS breedCode,
+        A.FEATURE_CODE  AS featureCode,
+        A.WEIGHT_CODE  AS weightCode,
+        A.GRADE_CODE AS gradeCode,
+        A.LOGIAREA_CODE AS logiareaCode,
+        CONCAT(A.CLASSES_CODE,
+        A.MACHINING_CODE,
+        A.BREED_CODE,
+        A.FEATURE_CODE,
+        A.WEIGHT_CODE,
+        A.GRADE_CODE) AS productId
+        FROM PD_LOGIAREA_ORDERLEVEL A
+        ORDER BY A.CLASSES_CODE,A.MACHINING_CODE,A.BREED_CODE, A.FEATURE_CODE, A.WEIGHT_CODE,
+        A.GRADE_CODE,A.LOGIAREA_CODE
+        <if test="startPos>=0 and pageCount>0">
+            LIMIT #{startPos}, #{pageCount}
+        </if>
+    </select>
+
+</mapper>
+
+
+
+
+
+
+

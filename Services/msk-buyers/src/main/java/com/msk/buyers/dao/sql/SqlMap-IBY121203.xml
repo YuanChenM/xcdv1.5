@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121203Logic">
+    <select id="findPdClassification" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerPdCla">
+        SELECT
+           ID AS id,
+           BUYER_ID AS buyerId,
+           CLASS_CODE AS classCode,
+           CLASS_NAME AS className,
+           MACHINING_CODE AS machiningCode
+        FROM
+           by_buyer_pd_cla
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+           <if test="filterMap.classCode != null">
+               AND CLASS_CODE = #{filterMap.classCode}
+           </if>
+           <if test="filterMap.className != null">
+              AND CLASS_NAME = #{filterMap.className}
+           </if>
+           <if test="filterMap.machiningCodeU != null">
+              AND MACHINING_CODE = #{filterMap.machiningCodeU}
+           </if>
+           AND DEL_FLG = #{filterMap.delFlg}
+    </select>
+    <update id="buyerPdClassificationModify" parameterType="BaseEntity">
+        UPDATE
+           by_buyer_pd_cla
+        SET
+        <if test="buyerId!=null and buyerId!=''">
+            BUYER_ID=#{buyerId},
+        </if>
+        <if test="classCode!=null and classCode!=''">
+            CLASS_CODE=#{classCode},
+        </if>
+        <if test="className!=null and className!=''">
+            CLASS_NAME=#{className},
+        </if>
+        <if test="machiningCode!=null and machiningCode!=''">
+            MACHINING_CODE=#{machiningCode},
+        </if>
+           UPD_ID = #{updId},
+           UPD_TIME = #{updTime},
+           DEL_FLG = 0
+        WHERE
+           ID = #{id}
+    </update>
+    <insert id="buyerPdClassificationInsert" parameterType="BaseEntity">
+        INSERT INTO
+           by_buyer_pd_cla(
+               ID,
+               BUYER_ID,
+               CLASS_CODE,
+               CLASS_NAME,
+               MACHINING_CODE,
+               DEL_FLG,
+               CRT_ID,
+               CRT_TIME,
+               UPD_ID,
+               UPD_TIME,
+               ACT_ID,
+               ACT_TIME,
+               VER
+           )VALUES (
+               #{id},
+               #{buyerId},
+               #{classCode},
+               #{className},
+               #{machiningCode},
+               0,
+               #{crtId},
+               #{crtTime},
+               #{updId},
+               #{updTime},
+               #{actId},
+               #{actTime},
+               1
+           )
+    </insert>
+    <update id="buyerPdClassificationDelete" parameterType="BaseEntity">
+        UPDATE by_buyer_pd_cla
+        SET DEL_FLG = 1
+
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+
+        WHERE BUYER_ID = #{buyerId}
+    </update>
+
+    <select id="findPdClassList" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerPdCla">
+        SELECT
+        ID AS id,
+        BUYER_ID AS buyerId,
+        CLASS_CODE AS classCode,
+        CLASS_NAME AS className
+        FROM
+        by_buyer_pd_cla
+        WHERE
+         DEL_FLG = 0
+        <if test="buyerIdList !=null and buyerIdList.size()>0">
+            AND BUYER_ID in
+            <foreach item="buyerId" index="index" collection="buyerIdList"
+                     open="(" separator="," close=")">
+                #{buyerId}
+            </foreach>
+        </if>
+        <if test="filterMap.classCode != null">
+            AND CLASS_CODE = #{filterMap.classCode}
+        </if>
+        <if test="filterMap.className != null">
+            AND CLASS_NAME = #{filterMap.className}
+        </if>
+
+    </select>
+
+    <select id="testBuyerId" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        from BY_BUYER_BASIC_INFO
+        WHERE BUYER_ID = #{filterMap.buyerId}
+        AND DEL_FLG=0
+    </select>
+
+</mapper>

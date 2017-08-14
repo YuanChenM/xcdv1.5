@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.BR121402Logic">
+    <!--查询买家产品池配置列表-->
+    <select id="findPageList" resultType="com.msk.core.entity.BrSetting" parameterType="com.msk.br.bean.BR121402Param">
+        SELECT
+        ID AS id
+        ,IFNULL(SETTING_TYPE,'') AS settingType
+        ,IFNULL(SETTING_NAME,'') AS settingName
+        ,IFNULL(SETTING_START_VALUE,'') AS settingStartValue
+        ,IFNULL(SETTING_END_VALUE,'') AS settingEndValue
+        ,IFNULL(SETTING_VALUE,'') AS settingValue
+        FROM BR_SETTING
+        WHERE 1=1
+        <if test="filterMap.settingType!=null and filterMap.settingType!=''">
+            AND SETTING_TYPE= #{filterMap.settingType}
+        </if>
+        AND DEL_FLG = 0
+		ORDER BY id
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.br.bean.BR121402Param">
+        SELECT
+        COUNT(1)
+        FROM BR_SETTING
+        WHERE 1=1
+        <if test="filterMap.settingType!=null and filterMap.settingType!=''">
+            AND SETTING_TYPE= #{filterMap.settingType}
+        </if>
+        AND DEL_FLG = 0
+    </select>
+    <!--查询买家产品池配置列表-->
+    <update id="modify" parameterType="com.msk.br.bean.BR121402Param">
+		UPDATE BR_SETTING
+		SET
+		SETTING_NAME = #{settingName},
+		SETTING_START_VALUE =#{settingStartValue},
+		SETTING_END_VALUE =#{settingEndValue},
+		SETTING_VALUE = #{settingValue}
+	    ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+		WHERE
+		ID= #{id}
+		AND DEL_FLG= 0
+	</update>
+    <!--删除一条数据-->
+    <update id="deleteSettingDate" parameterType="com.msk.br.bean.BR121402Param">
+		UPDATE BR_SETTING
+		SET DEL_FLG = '1'
+	   ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+		WHERE ID = #{id}
+	</update>
+
+    <insert id="save" parameterType="com.msk.br.bean.BR121402Param">
+		INSERT  INTO BR_SETTING
+		(ID,
+		 SETTING_TYPE,
+		 SETTING_NAME,
+		 SETTING_VALUE,
+	 	 SETTING_START_VALUE,
+		 SETTING_END_VALUE,
+
+		 DEL_FLG,
+
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+
+
+         VER
+		 )
+		VALUES
+		(#{id},
+		 #{settingType},
+		 #{settingName},
+		 #{settingValue},
+		 #{settingStartValue},
+		 #{settingEndValue},
+		 0,
+
+		#{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+
+         1
+		)
+	</insert>
+
+    <!--新增判断是否存在该等级-->
+    <select id="isExist" resultType="int" parameterType="com.msk.br.bean.BR121402Param">
+		SELECT
+		COUNT(1)
+		FROM BR_SETTING
+		WHERE
+		SETTING_NAME = #{settingName}
+		AND DEL_FLG = 0
+	</select>
+    <!--根据配置名称查找id-->
+    <select id="findOne" resultType="com.msk.core.entity.BrSetting" parameterType="com.msk.br.bean.BR121402Param">
+		SELECT
+		ID AS  id
+		FROM BR_SETTING
+		WHERE
+		SETTING_NAME = #{settingName}
+		AND DEL_FLG = 0
+	</select>
+    <!-- 数据验证-->
+    <select id="regRange" resultType="int" parameterType="com.msk.br.bean.BR121402Param">
+	 SELECT
+	 COUNT(1)
+ 	 FROM BR_SETTING
+	 WHERE
+	 CONVERT( #{filterMap.settingValue},SIGNED)
+	BETWEEN  CONVERT(SETTING_START_VALUE,SIGNED) AND CONVERT(SETTING_END_VALUE,SIGNED)
+	 AND SETTING_NAME <![CDATA[<> #{settingName}]]>
+	 AND DEL_FLG= 0
+	</select>
+
+</mapper>

@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.br.logic.BBR12140302Logic">
+    <select id="getEmployeeCount" resultType="int" parameterType="BaseParam">
+        SELECT
+            COUNT(1)
+        FROM
+            (
+                SELECT
+                    BUYER_ID,
+                    EMPLOYEE_TYPE,
+                    count(1) AS eCount
+                FROM
+                    by_buyer_employee
+                WHERE EMPLOYEE_TYPE='1'
+                AND DEL_FLG='0'
+                GROUP BY
+                    BUYER_ID,
+                    EMPLOYEE_TYPE
+            ) t
+        WHERE
+            t.eCount > 1
+    </select>
+    <select id="getDeliveryCount" resultType="int" parameterType="BaseParam">
+        SELECT
+            COUNT(1)
+        FROM
+            (
+                SELECT
+                    BUYER_ID,
+                    IS_DEFAULT,
+                    COUNT(1) AS aCount
+                FROM
+                    by_buyer_delivery
+                WHERE
+                    IS_DEFAULT = '1'
+                AND DEL_FLG = '0'
+                GROUP BY
+                    BUYER_ID,
+                    IS_DEFAULT
+            ) a
+        WHERE
+            a.aCount > 1
+    </select>
+    <!-- 清空买家基本信息数据-->
+    <delete id="deleteBuyerInfo" parameterType="BaseParam">
+        DELETE
+          FROM
+	    BR_O_BUYER_INFO
+    </delete>
+
+    <select id="findList" resultType="com.msk.core.entity.BrOBuyerInfo" parameterType="BaseParam">
+          SELECT
+            a.BUYER_ID AS buyerId,
+            a.BUYER_CODE AS buyerCode,
+            a.BUYER_NAME AS buyerName,
+            c.ACCOUNT_NAME AS buyerAccount,
+            c.TEL_NO AS buyerTel,
+            a.BUSI_TEL AS busiTel,
+            a.STORE_NO AS storeNo,
+             /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei Start*/
+            a.BUYER_SINGLE_WECHAT AS buyerWechat,
+            a.BUYER_QQ AS buyerQq,
+            /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei End*/
+            CASE
+        WHEN a.SUPERIOR_TYPE IN ('1', '01') THEN
+            mt.MARKET_CODE
+        WHEN a.SUPERIOR_TYPE IN ('2', '02') THEN
+            mf.MARKET_CODE
+        ELSE
+            ''
+        END AS marketCode,
+         CASE
+        WHEN a.SUPERIOR_TYPE IN ('1', '01') THEN
+            mt.MARKET_NAME
+        WHEN a.SUPERIOR_TYPE IN ('2', '02') THEN
+            mf.MARKET_NAME
+        ELSE
+            ''
+        END AS marketName,
+         CASE
+        WHEN a.SUPERIOR_TYPE IN ('1', '01') THEN
+            mt.MARKET_LEVEL
+        ELSE
+            ''
+        END AS marketLevel,
+         CASE
+        WHEN a.SUPERIOR_TYPE IN ('1', '01') THEN
+            mt.MARKET_LEVEL_NAME
+        ELSE
+            ''
+        END AS marketLevelName,
+         RIGHT (
+            concat('0', a.SUPERIOR_TYPE),
+            2
+        ) AS buyerType,
+         a.SUPERIOR_NAME AS buyerTypeName,
+         a.LGCS_AREA_CODE AS lgcsAreaCode,
+         lgcs.LGCS_AREA_NAME AS lgcsAreaName,
+         a.CITY_CODE AS cityCode,
+         city.CITY_NAME AS cityName,
+         a.DISTRICT_CODE AS districtCode,
+         dist.DISTRICT_NAME AS districtName,
+         a.MARKETINGS_STATUS AS marketingsStatus,
+         a.MARKET_EXCEPTION_STATUS AS marketExceptionStatus,
+         a.MARKET_EXCEPTION_REMARK AS marketExceptionRemark,
+         b.EMPLOYEE_NAME AS bossName,
+         b.EMPLOYEE_TEL AS  bossTel,
+         b.EMPLOYEE_QQ AS bossQq,
+         b.EMPLOYEE_WECHAT AS  bossWechat,
+         d.REC_PER_NAME AS recPerName,
+         d.REC_PER_TEL AS recPerTel,
+         a.HABIT_REC_TIME AS habitRecTime,
+         a.EARLIEST_REC_TIME AS earliestRecTime,
+         a.LATEST_REC_TIME AS latestRecTime,
+         d.DELIVERY_ADDR AS deliveryAddr,
+         d.REFERENCE_ADDR AS referenceAddr,
+         d.MANAGE_ADDR AS manageAddr,
+         a.PAYMENT_TYPE AS  paymentType,
+         GROUP_CONCAT(SALES_TARGET_NAME) AS salesTarget
+        FROM
+            by_buyer_basic_info a
+				LEFT JOIN by_buyer_account c ON c.BUYER_ID = a.BUYER_ID
+        LEFT JOIN by_buyer_employee b ON b.BUYER_ID = a.BUYER_ID
+        AND b.EMPLOYEE_TYPE = '1'
+        LEFT JOIN by_buyer_delivery d ON d.BUYER_ID = a.BUYER_ID
+        AND d.IS_DEFAULT = '1'
+        LEFT JOIN by_buyer_salestarget f ON f.BUYER_ID = a.BUYER_ID
+        LEFT JOIN by_market_terminal mt ON mt.TER_MARKET_ID = a.SUPERIOR_ID
+        LEFT JOIN by_market_food mf ON mf.FOD_MARKET_ID = a.SUPERIOR_ID
+        LEFT JOIN md_logistics_area lgcs ON lgcs.LGCS_AREA_CODE = a.LGCS_AREA_CODE
+        LEFT JOIN md_city city ON city.CITY_CODE = a.CITY_CODE
+        LEFT JOIN md_district dist ON dist.CITY_ID = city.CITY_ID
+        AND dist.DISTRICT_CODE = a.DISTRICT_CODE
+        WHERE a.DEL_FLG = '0'
+        AND NOT EXISTS (
+            SELECT
+               1
+            FROM
+                (
+                    SELECT
+                        BUYER_ID,
+                        EMPLOYEE_TYPE,
+                        count(1) AS t1Count
+                    FROM
+                        by_buyer_employee
+                    WHERE EMPLOYEE_TYPE='1'
+                    AND DEL_FLG='0'
+                    GROUP BY
+                        BUYER_ID,
+                        EMPLOYEE_TYPE
+                ) t1
+            WHERE t1.BUYER_ID = a.BUYER_ID
+              AND  t1.t1Count > 1
+        )
+        AND NOT EXISTS (
+            SELECT
+                1
+            FROM
+                (
+                    SELECT
+                        BUYER_ID,
+                        IS_DEFAULT,
+                        COUNT(1) AS t2Count
+                    FROM
+                        by_buyer_delivery
+                    WHERE
+                        IS_DEFAULT = '1'
+                    AND DEL_FLG = '0'
+                    GROUP BY
+                        BUYER_ID,
+                        IS_DEFAULT
+                ) t2
+             WHERE t2.BUYER_ID = a.BUYER_ID
+              AND  t2.t2Count > 1
+        )
+        AND NOT EXISTS (
+            SELECT
+                1
+            FROM
+                (
+                    SELECT
+                        BUYER_ID,
+                        COUNT(1) AS t3Count
+                    FROM
+                        by_buyer_account
+                    WHERE
+                        DEL_FLG = '0'
+                    GROUP BY
+                        BUYER_ID
+                ) t3
+             WHERE t3.BUYER_ID = a.BUYER_ID
+              AND  t3.t3Count > 1
+        )
+        GROUP BY a.BUYER_ID
+    </select>
+
+    <!-- 同步买家基本信息-->
+    <insert id="save" parameterType="com.msk.core.entity.BrOBuyerInfo">
+      INSERT INTO BR_O_BUYER_INFO (
+            BUYER_ID,
+            BUYER_CODE,
+            BUYER_NAME,
+            BUYER_ACCOUNT,
+            BUYER_TEL,
+            BUSI_TEL,
+            STORE_NO,
+            /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei Start*/
+            BUYER_WECHAT,
+            /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei End*/
+            BUYER_QQ,
+            MARKET_CODE,
+            MARKET_NAME,
+            MARKET_LEVEL,
+            MARKET_LEVEL_NAME,
+            BUYER_TYPE,
+            BUYER_TYPE_NAME,
+            LGCS_AREA_CODE,
+            LGCS_AREA_NAME,
+            CITY_CODE,
+            CITY_NAME,
+            DISTRICT_CODE,
+            DISTRICT_NAME,
+            MARKETINGS_STATUS,
+            MARKETINGS_STATUS_NAME,
+			MARKET_EXCEPTION_STATUS,
+			MARKET_EXCEPTION_REMARK,
+            BOSS_NAME,
+            BOSS_TEL,
+            BOSS_QQ,
+            BOSS_WECHAT,
+            REC_PER_NAME,
+            REC_PER_TEL,
+            HABIT_REC_TIME,
+            EARLIEST_REC_TIME,
+            LATEST_REC_TIME,
+            DELIVERY_ADDR,
+            REFERENCE_ADDR,
+            MANAGE_ADDR,
+            PAYMENT_TYPE,
+            SALES_TARGET,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUES
+            (
+            #{buyerId},
+            #{buyerCode},
+            #{buyerName},
+            #{buyerAccount},
+            #{buyerTel},
+            #{busiTel},
+            #{storeNo},
+            /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei Start*/
+            #{buyerWechat},
+            #{buyerQq},
+            /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei End*/
+            #{marketCode},
+            #{marketName},
+            #{marketLevel},
+            #{marketLevelName},
+            #{buyerType},
+            #{buyerTypeName},
+            #{lgcsAreaCode},
+            #{lgcsAreaName},
+            #{cityCode},
+            #{cityName},
+            #{districtCode},
+            #{districtName},
+            #{marketingsStatus},
+            #{marketingsStatusName},
+            #{marketExceptionStatus},
+            #{marketExceptionRemark},
+            #{bossName},
+            #{bossTel},
+            #{bossQq},
+            #{bossWechat},
+            #{recPerName},
+            #{recPerTel},
+            #{habitRecTime},
+            #{earliestRecTime},
+            #{latestRecTime},
+            #{deliveryAddr},
+            #{referenceAddr},
+            #{manageAddr},
+            #{paymentType},
+            #{salesTarget},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1)
+    </insert>
+
+    <!-- 清空买家经营产品类型数据-->
+    <delete id="deleteBuyerPdCla" parameterType="BaseParam">
+        DELETE
+          FROM
+	    BR_O_BUYER_PD_CLA
+    </delete>
+    <!--同步买家经营产品类型数据-->
+    <insert id="saveBuyerPdCla" parameterType="BaseParam">
+      INSERT INTO BR_O_BUYER_PD_CLA (
+            ID,
+            BUYER_ID,
+            CLASSES_CODE,
+            CLASSES_NAME,
+            /*MACHINING_CODE,
+            MACHINING_NAME,*/
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        ) SELECT
+            @rownum :=@rownum + 1 AS ID,
+            t.BUYER_ID,
+            t.CLASS_CODE,
+            t.CLASS_NAME,
+            /*t.MACHINING_CODE,
+            t.MACHINING_NAME,*/
+            '0',
+
+            #{crtId},
+			#{crtTime},
+			#{updId},
+			#{updTime},
+			#{actId},
+			#{actTime},
+
+            1
+        FROM
+            (
+                SELECT
+                    @rownum := 0,
+                    a.BUYER_ID,
+                    b.CLASS_CODE,
+                    b.CLASS_NAME
+                    /*b.MACHINING_CODE,
+                    b.MACHINING_NAME*/
+                FROM
+                    BR_O_BUYER_INFO a
+                INNER JOIN by_buyer_pd_cla b ON b.BUYER_ID = a.BUYER_ID
+            ) t
+    </insert>
+
+    <!--清空买家需求调研数据-->
+    <delete id="deleteNeedFeaDetail" parameterType="BaseParam">
+        DELETE
+          FROM
+        BR_O_NEED_FEA_DETAIL
+    </delete>
+    <!--同步买家需求调研数据-->
+    <insert id="saveNeedFeaDetail" parameterType="BaseParam">
+        INSERT INTO BR_O_NEED_FEA_DETAIL (
+            ID,
+            BUYER_ID,
+            CLASSES_CODE,
+            MACHINING_CODE,
+            BREED_CODE,
+            FEATURE_CODE,
+            IS_STANDARD,
+            DEMAND_FEATURE,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        ) SELECT
+            @rownum :=@rownum + 1 AS ID,
+            t.BUYER_ID,
+            t.CLASSES_CODE,
+            t.MACHINING_CODE,
+            t.BREED_CODE,
+            t.FEATURE_CODE,
+            t.IS_STANDARD,
+            t.DEMAND_FEATURE,
+            '0',
+
+           #{crtId},
+			#{crtTime},
+			#{updId},
+			#{updTime},
+			#{actId},
+			#{actTime},
+
+            1
+        FROM
+            (
+                SELECT
+                    @rownum := 0,
+                    a.BUYER_ID,
+                    b.CLASSES_CODE,
+                    b.MACHINING_CODE,
+                    b.BREED_CODE,
+                    c.FEATURE_CODE,
+                    c.IS_STANDARD,
+                    c.DEMAND_FEATURE
+                FROM
+                    BR_O_BUYER_INFO a
+                INNER JOIN by_research_category b ON b.BUYER_ID = a.BUYER_ID
+                INNER JOIN by_research_cat_detail c ON c.CATEGORY_ID = b.CATEGORY_ID
+            ) t
+    </insert>
+</mapper>

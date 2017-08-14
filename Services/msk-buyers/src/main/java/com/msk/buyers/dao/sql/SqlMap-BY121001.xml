@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121001Logic">
+    <select id="getBuyerById" parameterType="BaseEntity" resultType="com.msk.core.entity.ByBuyerBasicInfo">
+        SELECT
+        basic.BUYER_ID AS buyerId
+        ,basic.BUYER_CODE AS buyerCode
+        ,basic.BUYER_NAME AS buyerName
+        ,basic.BUYER_ADDR AS buyerAddr
+        ,basic.SUPERIOR_ID AS superiorId
+        ,basic.SUPERIOR_TYPE AS superiorType
+        ,basic.SUPERIOR_NAME AS superiorName
+        ,basic.SUPERIOR_QUA AS superiorQua
+        ,basic.PROVINCE_CODE AS provinceCode
+        ,basic.LGCS_AREA_CODE AS lgcsAreaCode
+        ,basic.CITY_CODE AS cityCode
+        ,basic.DISTRICT_CODE AS districtCode
+        ,basic.BUYER_WEBSITE AS buyerWebsite
+        ,basic.BUYER_WECHAT AS buyerWechat
+        ,basic.STORE_NO AS storeNo
+        ,basic.STORE_AREA AS storeArea
+        ,basic.BUSI_TEL AS busiTel
+        ,basic.EMPLOYEES_NUM AS employeesNum
+        ,basic.PAYMENT_TYPE AS paymentType
+        ,basic.PLAN_ORDER_GAP AS planOrderGap
+        ,basic.PLAN_ORDER_NUM AS planOrderNum
+        ,basic.ACTUAL_ORDER_GAP AS actualOrderGap
+        ,basic.ACTUAL_ORDER_NUM AS actualOrderNum
+        ,basic.MARKETINGS_STATUS AS marketingsStatus
+        ,basic.REGISTER_SOURCE AS registerSource
+        ,basic.IS_MARKET_FLG AS isMarketFlg
+        ,basic.SUPERIOR_SUB_TYPE AS superiorSubType
+        ,account.TEL_NO AS buyerTel
+        FROM by_buyer_basic_info basic
+        LEFT JOIN by_buyer_account account
+        ON basic.buyer_id = account.buyer_id
+        AND basic.DEL_FLG = account.DEL_FLG
+        WHERE basic.BUYER_ID = #{filterMap.buyerId} AND basic.DEL_FLG = 0
+    </select>
+
+    <select id="getMarketTerminalById" resultType="com.msk.core.entity.ByMarketTerminal" parameterType="BaseParam">
+        select
+        MARKET_CODE AS marketCode
+        from by_market_terminal
+        WHERE TER_MARKET_ID = #{filterMap.terminalId}
+        AND DEL_FLG = 0
+    </select>
+    <select id="getMarketFoodById" resultType="com.msk.core.entity.ByMarketFood" parameterType="BaseParam">
+        select
+        MARKET_CODE AS marketCode
+        from by_market_food
+        WHERE  FOD_MARKET_ID = #{filterMap.fodMarketId}
+        AND DEL_FLG = 0
+    </select>
+    <!-- 获取批发市场菜场买家最大顺序-->
+    <select id="findSequenceBySuperiorId" resultType="com.msk.buyers.bean.BY121001Bean" parameterType="BaseParam">
+        SELECT
+        Max(LEFT(RIGHT(BUYER_CODE,#{filterMap.rightPlace}),#{filterMap.leftPlace})) AS maxSequenceCode
+        FROM by_buyer_basic_info
+        WHERE
+        DEL_FLG = 0
+        <if test="filterMap.superiorId != null and filterMap.superiorId != ''">
+            AND SUPERIOR_ID = #{filterMap.superiorId}
+        </if>
+        <if test="filterMap.superiorType != null and filterMap.superiorType != ''">
+            AND SUPERIOR_TYPE = #{filterMap.superiorType}
+        </if>
+    </select>
+    <!-- 获取买家最大顺序-->
+    <select id="findSequenceByArea" resultType="com.msk.buyers.bean.BY121001Bean" parameterType="BaseParam">
+        SELECT
+        Max(LEFT(RIGHT(BUYER_CODE,#{filterMap.rightPlace}),#{filterMap.leftPlace})) AS maxSequenceCode
+        FROM by_buyer_basic_info
+        WHERE
+        DEL_FLG = 0
+        <if test="filterMap.lgcsAreaCode != null and filterMap.lgcsAreaCode != ''">
+            AND LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+        </if>
+        <if test="filterMap.cityCode != null and filterMap.cityCode != ''">
+            AND CITY_CODE = #{filterMap.cityCode}
+        </if>
+        <if test="filterMap.districtCode != null and filterMap.districtCode != ''">
+            AND DISTRICT_CODE = #{filterMap.districtCode}
+        </if>
+        <if test="filterMap.superiorType != null and filterMap.superiorType != ''">
+            AND SUPERIOR_TYPE = #{filterMap.superiorType}
+        </if>
+    </select>
+</mapper>

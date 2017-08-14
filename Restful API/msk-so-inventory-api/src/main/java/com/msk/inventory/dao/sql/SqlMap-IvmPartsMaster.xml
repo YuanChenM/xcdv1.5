@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.PartsMasterServiceImpl">
+    <!-- 表字段 -->
+	<sql id="selectSql">
+        PM_ID AS pmId,
+        PM_CODE AS pmCode,
+        PM_DESC AS pmDesc,
+        PM_NAME AS pmName,
+        CONCAT(
+		  EXTRACTVALUE(PM_EXTERNAL_XML, '/CLS_C'),
+		  EXTRACTVALUE(PM_EXTERNAL_XML, '/MACH_C'),
+		  EXTRACTVALUE(PM_EXTERNAL_XML, '/BRE_C'),
+		  EXTRACTVALUE(PM_EXTERNAL_XML, '/FEAT_C'),
+		  EXTRACTVALUE(PM_EXTERNAL_XML, '/WEI_C'),
+		  EXTRACTVALUE(PM_EXTERNAL_XML, '/GRAD_C')
+	    )AS pdCode,
+	    CONCAT(
+		  EXTRACTVALUE(PM_EXTERNAL_XML, '/SL_C'),
+		  EXTRACTVALUE(PM_EXTERNAL_XML, '/SL_P_C')
+	    )AS skuCode,
+        PM_ATTRIBUTE_XML AS pmAttributeXml,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        DATE_FORMAT(CRT_TIME,'%Y-%m-%d %H:%i:%s') AS crtTime,
+        UPD_ID AS updId,
+        DATE_FORMAT(UPD_TIME,'%Y-%m-%d %H:%i:%s') AS updTime,
+        ACT_ID AS actId,
+        DATE_FORMAT(ACT_TIME,'%Y-%m-%d %H:%i:%s') AS actTime,
+        VER AS ver
+	</sql>
+    <!--条件 -->
+	<sql id="whereCondition">
+		<where>
+            1 = 1
+            <if test="pmId!=null and pmId!=''">
+                  AND PM_ID=#{pmId}
+            </if>
+            <if test="pmCode!=null and pmCode!=''">
+                AND PM_CODE=#{pmCode}
+            </if>
+            <if test="pmDesc!=null and pmDesc!=''">
+                  AND PM_DESC=#{pmDesc}
+            </if> 
+            <if test="pmName!=null and pmName!=''">
+                  AND PM_NAME=#{pmName}
+            </if> 
+            <!-- <if test="pmExternalXml!=null">
+                  AND PM_EXTERNAL_XML=#{pmExternalXml}
+            </if> -->
+            <!-- <if test="pmAttributeXml!=null">
+                  AND PM_ATTRIBUTE_XML=#{pmAttributeXml}
+            </if> -->
+            <if test="pdCode!=null and pdCode!=''">
+                AND CONCAT(
+                      EXTRACTVALUE(PM_EXTERNAL_XML,'/CLS_C'),
+                      EXTRACTVALUE(PM_EXTERNAL_XML,'/MACH_C'),
+                      EXTRACTVALUE(PM_EXTERNAL_XML,'/BRE_C'),
+                      EXTRACTVALUE(PM_EXTERNAL_XML,'/FEAT_C'),
+                      EXTRACTVALUE(PM_EXTERNAL_XML,'/WEI_C'),
+                      EXTRACTVALUE(PM_EXTERNAL_XML,'/GRAD_C')
+                ) = #{pdCode}
+            </if>
+            <if test="skuCode!=null and skuCode!=''">
+                AND CONCAT(
+                      EXTRACTVALUE(PM_EXTERNAL_XML, '/SL_C'),
+                      EXTRACTVALUE(PM_EXTERNAL_XML, '/SL_P_C')
+                ) = #{skuCode}
+            </if>
+        </where>
+	</sql>
+    <!--数据插入 -->
+	<insert id="insertOnePart" parameterType="com.msk.inventory.bean.IvmPartsMasterBean">
+		INSERT INTO ivm_parts_master
+		(
+            <if test="pmCode!=null and pmCode!=''">
+                PM_CODE,
+            </if>
+            <if test="pmDesc!=null and pmDesc!=''">
+                PM_DESC,
+            </if> 
+            <if test="pmName!=null and pmName!=''">
+                PM_NAME,
+            </if> 
+            <if test="pmExternalXml!=null and pmExternalXml!=''">
+                PM_EXTERNAL_XML,
+            </if> 
+            <if test="pmAttributeXml!=null and pmAttributeXml!=''">
+                PM_ATTRIBUTE_XML,
+            </if>
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            VER
+		)
+		VALUES
+		(
+            <if test="pmCode!=null and pmCode!=''">
+                #{pmCode},
+            </if>
+            <if test="pmDesc!=null and pmDesc!=''">
+                #{pmDesc},
+            </if> 
+            <if test="pmName!=null and pmName!=''">
+                #{pmName},
+            </if> 
+            <if test="pmExternalXml!=null and pmExternalXml!=''">
+                #{pmExternalXml},
+            </if> 
+            <if test="pmAttributeXml!=null and pmAttributeXml!=''">
+                #{pmAttributeXml},
+            </if>
+            0,
+            #{crtId},
+            #{crtTime},
+            1
+		)
+	</insert>
+	<update id="updatePartInfo" parameterType="com.msk.inventory.bean.IvmPartsMasterBean">
+		update ivm_parts_master
+		set 
+            PM_DESC=#{pmDesc},
+            PM_NAME=#{pmName},
+            PM_ATTRIBUTE_XML=#{pmAttributeXml},
+            UPD_ID=#{updId},
+            UPD_TIME=#{updTime},
+            VER=VER+1
+        WHERE
+            CONCAT(
+                EXTRACTVALUE(PM_EXTERNAL_XML, '/SL_C'),
+                EXTRACTVALUE(PM_EXTERNAL_XML, '/SL_P_C')
+            ) = #{skuCode}
+	</update>
+	<select id="selectParts" resultType="com.msk.inventory.bean.IvmPartsMasterBean">
+		select 
+		<include refid="selectSql"/>
+		from ivm_parts_master
+        <include refid="whereCondition"/>
+	</select>
+	
+	<select id="countParts" resultType="Integer" parameterType="com.msk.inventory.bean.IvmPartsMasterBean">
+		select count(1) AS pageCount
+		from ivm_parts_master
+		<include refid="whereCondition"/>
+	</select>
+
+    </mapper>

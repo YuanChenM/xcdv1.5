@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141115Logic">
+
+
+    <select id="count" parameterType="BaseParam" resultType="int">
+        SELECT COUNT(1)
+        FROM PD_WEIGHT
+    </select>
+
+    <select id="findPageList" parameterType="com.msk.product.bean.IPD141115RsParam" resultType="com.msk.product.bean.IPD141115PdInfoRsResult">
+        SELECT
+        Ast.CLASSES_CODE AS classesCode
+        ,Ast.BREED_CODE AS breedCode
+        ,Ast.MACHINING_CODE AS machiningCode
+        ,Ast.FEATURE_CODE AS featureCode
+        ,Ast.WEIGHT_CODE AS weightCode
+        ,Dfe.FEATURE_NAME AS productSpec
+        ,E.NORMS_OUT AS pkgSpec
+        ,E.NORMS_CODE AS pkgCode
+        ,E.NETWEIGHT_OUT AS netWeight
+        ,CONCAT(Ast.CLASSES_CODE,Ast.MACHINING_CODE,Ast.BREED_CODE,Ast.FEATURE_CODE,Ast.WEIGHT_CODE) AS
+        productCode
+        ,CONCAT(Bcl.CLASSES_NAME,'/',mac.MACHINING_NAME,'/',Cbr.BREED_NAME,'/',Dfe.FEATURE_NAME,'/',Ast.WEIGHT_NAME)
+        AS productName
+        FROM
+        PD_WEIGHT AS Ast
+        INNER JOIN PD_CLASSES Bcl ON Ast.CLASSES_CODE = Bcl.CLASSES_CODE
+        INNER JOIN pd_machining mac ON Ast.CLASSES_CODE = mac.CLASSES_CODE AND mac.MACHINING_CODE =
+        Ast.MACHINING_CODE
+        INNER JOIN PD_BREED Cbr ON Ast.CLASSES_CODE = Cbr.CLASSES_CODE AND Cbr.MACHINING_CODE = Ast.MACHINING_CODE AND
+        Ast.BREED_CODE = Cbr.BREED_CODE
+        INNER JOIN PD_FEATURE Dfe ON Ast.FEATURE_CODE = Dfe.FEATURE_CODE AND Ast.CLASSES_CODE = Dfe.CLASSES_CODE AND
+        Dfe.MACHINING_CODE = Ast.MACHINING_CODE AND Ast.BREED_CODE = Dfe.BREED_CODE
+        INNER JOIN PD_NORMS_STD E ON (SELECT s.STANDARD_ID FROM pd_standard s WHERE s.CLASSESTREE_CODE =
+        CONCAT(Ast.CLASSES_CODE,Ast.MACHINING_CODE,Ast.BREED_CODE,Ast.FEATURE_CODE,Ast.WEIGHT_CODE)) = E.STANDARD_ID
+        ORDER BY Ast.CLASSES_CODE,Ast.MACHINING_CODE,Ast.BREED_CODE,Ast.FEATURE_CODE,Ast.WEIGHT_CODE,E.NORMS_CODE
+        <if test="startPos>=0 and pageCount>0">
+            LIMIT #{startPos}, #{pageCount}
+        </if>
+    </select>
+
+    <select id="getPageCount" parameterType="com.msk.product.bean.IPD141115RsParam" resultType="int">
+        SELECT COUNT(1)
+        FROM
+        PD_WEIGHT AS Ast
+        INNER JOIN PD_CLASSES Bcl ON Ast.CLASSES_CODE = Bcl.CLASSES_CODE
+        INNER JOIN pd_machining mac ON Ast.CLASSES_CODE = mac.CLASSES_CODE AND mac.MACHINING_CODE =
+        Ast.MACHINING_CODE
+        INNER JOIN PD_BREED Cbr ON Ast.CLASSES_CODE = Cbr.CLASSES_CODE AND Cbr.MACHINING_CODE = Ast.MACHINING_CODE AND
+        Ast.BREED_CODE = Cbr.BREED_CODE
+        INNER JOIN PD_FEATURE Dfe ON Ast.FEATURE_CODE = Dfe.FEATURE_CODE AND Ast.CLASSES_CODE = Dfe.CLASSES_CODE AND
+        Dfe.MACHINING_CODE = Ast.MACHINING_CODE AND Ast.BREED_CODE = Dfe.BREED_CODE
+        INNER JOIN PD_NORMS_STD E ON (SELECT s.STANDARD_ID FROM pd_standard s WHERE s.CLASSESTREE_CODE =
+        CONCAT(Ast.CLASSES_CODE,Ast.MACHINING_CODE,Ast.BREED_CODE,Ast.FEATURE_CODE,Ast.WEIGHT_CODE)) = E.STANDARD_ID
+    </select>
+
+
+
+
+</mapper>

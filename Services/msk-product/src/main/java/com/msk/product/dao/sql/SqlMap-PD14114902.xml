@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD14114902Logic">
+    <!-- 添加结案日期 -->
+    <update id="modify" parameterType="com.msk.product.bean.PDtncProviderBean">
+		UPDATE PD_TNC_STD_DISCUSS_PROVIDER
+			SET
+			 FIX_DATE = #{fixDate},
+			 DISCUSS_STATUS = #{discussStatus},
+			  UPD_ID = #{updId},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+			 UPD_TIME = #{updTime},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+			VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+			WHERE
+			KEY_ID = #{keyId}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+			AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+		;
+	</update>
+
+	<!--获取市场需求时间-->
+	<select id="findListTncProkey" parameterType="BaseParam"  resultType="com.msk.product.bean.PDtncProviderBean">
+		SELECT
+		A.KEY_ID AS keyId
+		,A.TNC_STD_ITEM_ID AS tncStdItemId
+		,A.TNC_STD_VAL AS tncStdVal
+		,A.RAISE_DATE AS raiseDate
+		,A.FIX_DATE AS fixDate
+		,A.SL_PD_ID AS slPdId
+		,A.DISCUSS_STATUS AS discussStatus
+		FROM PD_TNC_STD_DISCUSS_PROVIDER A
+		WHERE A.STANDARD_ID=#{filterMap.standardId}
+		AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+		AND A.DISCUSS_STATUS != #{filterMap.discussStatus}
+		ORDER BY A.DISCUSS_STATUS DESC
+	</select>
+
+
+	<!--获取市场需求禁止时间-->
+	<select id="findListTncProNo" parameterType="BaseParam"  resultType="com.msk.product.bean.PDtncProviderBean">
+		SELECT
+		A.KEY_ID AS keyId
+		,A.TNC_STD_ITEM_ID AS tncStdItemId
+		,A.TNC_STD_VAL AS tncStdVal
+		,A.RAISE_DATE AS raiseDate
+		,A.FIX_DATE AS fixDate
+		,A.SL_PD_ID AS slPdId
+		,A.DISCUSS_STATUS AS discussStatus
+		FROM PD_TNC_STD_DISCUSS_PROVIDER A
+		WHERE A.STANDARD_ID=#{filterMap.standardId}
+		AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+		AND A.DISCUSS_STATUS  = #{filterMap.discussStatus}
+		ORDER BY A.DISCUSS_STATUS DESC
+	</select>
+</mapper>

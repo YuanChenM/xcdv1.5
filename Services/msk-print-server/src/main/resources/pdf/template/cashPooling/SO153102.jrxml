@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SO153102" language="groovy" pageWidth="822" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="782" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8946b5e9-e22a-4da8-8345-5c5aa9b4b491">
+	<property name="ireport.zoom" value="1.4641000000000013"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="order" class="com.msk.print.bean.ISO151416OrderRestResult"/>
+	<parameter name="soBuyerBill" class="com.msk.print.bean.SO153101Bean"/>
+	<parameter name="refundList" class="java.util.List"/>
+	<parameter name="subInputStream" class="java.io.InputStream" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="title" class="java.lang.String"/>
+	<parameter name="address" class="java.lang.String"/>
+	<parameter name="remark" class="java.lang.String"/>
+	<field name="transCode" class="java.lang.String"/>
+	<field name="refundCode" class="java.lang.String"/>
+	<field name="paidSeq" class="java.lang.String"/>
+	<field name="paidAmount" class="java.lang.String"/>
+	<field name="paidTypeStr" class="java.lang.String"/>
+	<field name="paidTimeStr" class="java.lang.String"/>
+	<field name="remark" class="java.lang.String"/>
+	<variable name="totalPaidAmount" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[new BigDecimal($F{paidAmount})]]></variableExpression>
+		<initialValueExpression><![CDATA[0.00]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="243" splitType="Stretch">
+			<textField>
+				<reportElement x="339" y="15" width="230" height="44" uuid="bdefb89c-e775-4122-91bd-e4f383d51851"/>
+				<textElement>
+					<font fontName="Arial Unicode MS" size="24"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{title}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="59" width="802" height="20" uuid="491d00d4-b519-446e-bfa3-baae0894b983"/>
+				<textElement>
+					<font fontName="ArialUnicodeMS" size="14" isBold="false" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[订单交易信息]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="260" y="95" width="522" height="14" uuid="a21f0592-8b1b-4231-b67c-84df6db2eaa0"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{address}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="109" width="68" height="14" uuid="69ba2aec-26a9-418d-90e1-653dff93ae14"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[买家留言:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="68" y="109" width="714" height="14" uuid="78302375-d88f-4c92-84d5-659067bc5c3c"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{remark}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="2" y="126" width="802" height="20" uuid="7298a490-4026-4b4b-abe1-5e5b5321e4b9"/>
+				<textElement>
+					<font fontName="ArialUnicodeMS" size="14" isBold="false" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[买家计费明细]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="95" width="68" height="14" uuid="d1ab1294-f204-42e5-a3fc-834592a48928"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[订单状态:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="68" y="95" width="149" height="14" uuid="8acfb561-55b8-4026-9821-d0fcab82cbbe"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{order}.getOrderStatusStr()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="81" width="68" height="14" uuid="61f9ec29-11b1-479c-a8b3-e7c66a9e2840"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS" pdfEncoding="Cp1252"/>
+				</textElement>
+				<text><![CDATA[订单编码:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="217" y="81" width="43" height="14" uuid="82079ae6-e34b-48b9-b772-926c47d9c0ed"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[订单ID:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="68" y="81" width="149" height="14" uuid="fbf189db-0ee7-4e46-9e25-1ba5188ec12a"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{order}.getOrderCode()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="260" y="81" width="145" height="14" uuid="cbb76b42-0423-47e8-9034-f894decade79"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{order}.getOrderId()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="217" y="95" width="43" height="14" uuid="75085e0b-4cb3-4335-8869-5f69225ec43b"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[收货地址:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="405" y="81" width="43" height="14" uuid="f70f0a4d-6a69-425a-84d4-00e36aa9c24b"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[成交时间:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="448" y="81" width="146" height="14" uuid="36df6829-1666-421a-a704-0424bc9987d2"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{order}.getOrderTimeStr()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="594" y="81" width="43" height="14" uuid="9bda210e-2e5f-49fa-98e5-a62e056643c6"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[完结时间:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="637" y="81" width="145" height="14" uuid="b69e66cc-109c-4746-92ce-4c916f0845c0"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{order}.getFinishTimeStr()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="148" width="68" height="14" uuid="de138225-dcac-4901-8906-22515e5ea665"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[收款方编码:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="162" width="68" height="14" uuid="2a1bb045-fd2a-4643-b4f2-4dd8d0bd13e6"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[应付金额:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="176" width="68" height="14" uuid="8d293e12-6783-456d-b6a2-b11e8e26ce7b"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[冲抵核销标志:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="190" width="68" height="14" uuid="2c86b4c0-3a63-49eb-9050-66e77fd075fd"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[备注:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="68" y="148" width="129" height="14" uuid="204bb1fd-5a5b-4242-a33c-27b16d516e5d"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{soBuyerBill}.getBusinessMainCode()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="197" y="148" width="63" height="14" uuid="fe293515-693b-4342-941e-0537ba4e940e"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[收款方名称:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="260" y="148" width="129" height="14" uuid="30e54b5d-9b2a-4f94-9dc8-a83502a898d4"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{soBuyerBill}.getBusinessMainName()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="390" y="148" width="58" height="14" uuid="bca97da4-f036-4889-8ad1-cfe4b8fd3ab2"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[对账标志:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="448" y="148" width="131" height="14" uuid="9c55d239-1e1d-4e1e-8119-9dfeae4931b4"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{soBuyerBill}.getStatementFlgStr()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="579" y="148" width="58" height="14" uuid="1594bc6e-e84c-49f7-90d8-01b0b64023cd"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[结算状态:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="637" y="148" width="145" height="14" uuid="c0670202-1c25-43af-9d75-543f5504aca4"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{soBuyerBill}.getSettlementStatusStr()]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement x="68" y="162" width="129" height="14" uuid="adf30ce8-d485-4578-b925-32c3f99769b7"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{soBuyerBill}.getDue()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="68" y="176" width="129" height="14" uuid="066dd6b2-285f-497a-91d1-5149ec0cbc63"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{soBuyerBill}.getMatchVerFlgStr()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="197" y="162" width="63" height="14" uuid="0981914e-9c83-4db1-93ee-0013780f5916"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[实付金额:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="197" y="176" width="63" height="14" uuid="6e407405-9015-4575-a3ec-12941271a2b6"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[支付类型:]]></text>
+			</staticText>
+			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement x="260" y="162" width="129" height="14" uuid="bb560cce-b165-4bf1-b527-5208bd1e147e"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{soBuyerBill}.getPaid()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="260" y="176" width="522" height="14" uuid="308c62b2-bb18-4a8d-b163-7e8be9eb75c8"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{soBuyerBill}.getPaymentTypeStr()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="390" y="162" width="58" height="14" uuid="33fb0f3c-a759-48d4-8703-801f659586de"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[应退金额:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="579" y="162" width="58" height="14" uuid="c2191584-7f86-4bb7-a73f-c809b3100d84"/>
+				<textElement textAlignment="Right">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[实退金额:]]></text>
+			</staticText>
+			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement x="637" y="162" width="145" height="14" uuid="f763a45d-bef0-432c-b663-e34308fd9384"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{soBuyerBill}.getRealRefund()]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement x="448" y="162" width="131" height="14" uuid="1088fe8d-8eec-45ba-a9e7-e8c00cad1ce1"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{soBuyerBill}.getRefundable()]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="68" y="190" width="714" height="14" uuid="df0596a2-e964-4993-99c8-f4eb93835e8c"/>
+				<textElement>
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{soBuyerBill}.getRemark()]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="2" y="59" width="780" height="1" uuid="66947833-ffd2-4019-be1b-203e2cc1abb1"/>
+			</line>
+			<line>
+				<reportElement x="0" y="79" width="782" height="1" uuid="1a4c3247-0acb-4901-806e-40b9cba300f2"/>
+			</line>
+			<line>
+				<reportElement x="0" y="126" width="782" height="1" uuid="fda6941d-e8e7-41a8-8b52-f521ff1cecc0"/>
+			</line>
+			<line>
+				<reportElement x="0" y="146" width="782" height="1" uuid="71d9aab7-8017-438d-bad7-2b5c15b16ce6"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="207" width="802" height="20" uuid="1bac3629-86c9-4c7b-bd91-9483259415eb"/>
+				<textElement>
+					<font fontName="ArialUnicodeMS" size="14" isBold="false" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[支付明细]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="206" width="782" height="1" uuid="9e613f7b-b527-499b-b8d2-4d775fdc8821"/>
+			</line>
+			<line>
+				<reportElement x="0" y="226" width="782" height="1" uuid="419eb91a-8146-4ccf-9e9a-874b713be9c7"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="229" width="171" height="14" uuid="41742f16-d3f6-4321-b9f9-efd4ea3b19c1"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[退款编码]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="171" y="229" width="115" height="14" uuid="aab9a926-03ad-464d-9296-686cf5e666b8"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[支付流水号]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="286" y="229" width="104" height="14" uuid="0142a0f4-bc6a-45e2-9e66-cc830cc4386b"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[    支付金额]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="391" y="229" width="90" height="14" uuid="b559aa74-b8ea-4ad6-a777-825b09518c0b"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[支付方式]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="482" y="229" width="94" height="14" uuid="ee5812a4-bbef-44e0-8c4a-8864817d9100"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[支付日期]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="576" y="229" width="206" height="14" uuid="e82bc989-10ed-4190-a158-540105b9197a"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<text><![CDATA[备注]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="171" height="15" uuid="5d7a878c-211b-44f1-84e1-e8dc2101632e"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{refundCode}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="171" y="0" width="115" height="15" uuid="19deae46-ea97-4afa-b0a9-1baaa0db3c15"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paidSeq}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement x="286" y="0" width="77" height="15" uuid="805207ba-3316-4d5e-9ec3-4c385fe44b06"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paidAmount}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="391" y="0" width="91" height="15" uuid="7f81bc5a-15ac-4711-bd02-344a908b3f0a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paidTypeStr}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="482" y="0" width="94" height="15" uuid="c5854946-fc03-44c8-9914-45294622453e"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paidTimeStr}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="576" y="0" width="206" height="15" uuid="e0ef7383-c6aa-4c6e-9f06-57e97c01b4e9"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{remark}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="782" height="1" uuid="911e6815-e5bd-46fa-b39a-26cc48bf15d5"/>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="92" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="0" width="782" height="1" uuid="1d87c3b3-0063-4415-a483-8795f0756d61"/>
+			</line>
+			<staticText>
+				<reportElement x="171" y="0" width="115" height="14" uuid="1ac7dc78-be77-44ad-8eda-3a1ee6fcb2d0"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<text><![CDATA[合计:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="286" y="0" width="77" height="14" uuid="ab154fb8-4f00-44cd-83f1-b40cb09f338b"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalPaidAmount}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="0" y="14" width="782" height="78" uuid="d9cb06c6-87b8-4814-be7c-19bb00022128"/>
+				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{refundList})]]></dataSourceExpression>
+				<subreportExpression><![CDATA[$P{subInputStream}]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>

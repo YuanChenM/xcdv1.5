@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2102103Logic">
+
+    <sql id="insertFiled">
+    MID,SL_CODE,HOUSE_CODE,CREATETIME,LGCS_AREA_CODE,LGCS_AREA_NAME,CITY_CODE,CITY_NAME,HOUSE_CATEGORY_CODE,HOUSE_RECLASSIFY_CODE,PUBLIC_BUYERS,VIP_BUYERS,MARKETING_DAYS,IS_CHANGE_BUYERS,REMARK,DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER
+    </sql>
+
+    <sql id="selectAll">
+        mange.MID AS mid,
+        IFNULL(mange.SL_CODE,'') AS slCode,
+        IFNULL(mange.HOUSE_CODE,'') AS houseCode,
+        IFNULL(mange.CREATETIME,'') AS createtime,
+        IFNULL(mange.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(mange.LGCS_AREA_NAME,'') AS lgcsAreaName,
+        IFNULL(mange.CITY_CODE,'') AS cityCode,
+        IFNULL(mange.CITY_NAME,'') AS cityName,
+        IFNULL(mange.HOUSE_CATEGORY_CODE,'') AS houseCategoryCode,
+        IFNULL(mange.HOUSE_RECLASSIFY_CODE,'') AS houseReclassifyCode,
+        IFNULL(mange.PUBLIC_BUYERS,'') AS publicBuyers,
+        IFNULL(mange.VIP_BUYERS,'') AS vipBuyers,
+        IFNULL(mange.MARKETING_DAYS,'') AS marketingDays,
+        IFNULL(mange.IS_CHANGE_BUYERS,'') AS isChangeBuyers,
+        IFNULL(mange.REMARK,'') AS remark,
+        IFNULL(mange.DEL_FLG,'') AS delFlg,
+        IFNULL(mange.CRT_ID,'') AS crtId,
+        IFNULL(mange.CRT_TIME,'') AS crtTime,
+        IFNULL(mange.UPD_ID,'') AS updId,
+        IFNULL(mange.UPD_TIME,'') AS updTime,
+        IFNULL(mange.ACT_ID,'') AS actId,
+        IFNULL(mange.ACT_TIME,'') AS actTime,
+        IFNULL(mange.VER,'') AS ver
+    </sql>
+
+
+    <sql id="selectAllFiled">
+        mange.MID AS mid,
+        IFNULL(mange.SL_CODE,'') AS slCode,
+        IFNULL(mange.HOUSE_CODE,'') AS houseCode,
+        IFNULL(mange.CREATETIME,'') AS createtime,
+        IFNULL(mange.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(mange.LGCS_AREA_NAME,'') AS lgcsAreaName,
+        IFNULL(mange.CITY_CODE,'') AS cityCode,
+        IFNULL(mange.CITY_NAME,'') AS cityName,
+        IFNULL(mange.HOUSE_CATEGORY_CODE,'') AS houseCategoryCode,
+        IFNULL(mange.HOUSE_RECLASSIFY_CODE,'') AS houseReclassifyCode,
+        IFNULL(type1.TYPE_NAME,'') AS houseCategoryName,
+        IFNULL(type2.TYPE_NAME,'') AS houseReclassifyName,
+        IFNULL(mange.PUBLIC_BUYERS,'') AS publicBuyers,
+        IFNULL(mange.VIP_BUYERS,'') AS vipBuyers,
+        IFNULL(mange.MARKETING_DAYS,'') AS marketingDays,
+        IFNULL(mange.IS_CHANGE_BUYERS,'') AS isChangeBuyers,
+        IFNULL(mange.REMARK,'') AS remark,
+        IFNULL(mange.DEL_FLG,'') AS delFlg,
+        IFNULL(mange.CRT_ID,'') AS crtId,
+        IFNULL(mange.CRT_TIME,'') AS crtTime,
+        IFNULL(mange.UPD_ID,'') AS updId,
+        IFNULL(mange.UPD_TIME,'') AS updTime,
+        IFNULL(mange.ACT_ID,'') AS actId,
+        IFNULL(mange.ACT_TIME,'') AS actTime,
+        IFNULL(mange.VER,'') AS ver,
+        CASE grade.GRADE_CODE
+        WHEN '0' THEN
+            '特级'
+        WHEN '1' THEN
+            '高级'
+        WHEN '2' THEN
+            '中级'
+        WHEN '3' THEN
+            '见习'
+        ELSE
+            ''
+        END AS grade,
+        IFNULL(star.STAR_CODE, '') AS star
+    </sql>
+
+
+
+
+
+    <select id="findExists" resultType="int" parameterType="BaseParam">
+        SELECT count(1) FROM sl_house_manage WHERE
+        SL_CODE = #{slCode}
+        AND
+        HOUSE_CODE = #{houseCode}
+        AND
+        LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND
+        CITY_CODE = #{cityCode}
+        AND
+        HOUSE_CATEGORY_CODE = #{houseCategoryCode}
+        AND
+        HOUSE_RECLASSIFY_CODE = #{houseReclassifyCode}
+        AND
+        (DEL_FLG = '0' OR DEL_FLG IS  NULL )
+    </select>
+
+    <insert id="insertHouseManager" parameterType="BaseParam">
+        INSERT INTO sl_house_manage (
+        <include refid="insertFiled"/>
+        ) VALUES (
+        #{mid},
+        #{slCode},
+        #{houseCode},
+        #{createtime},
+        #{lgcsAreaCode},
+        #{lgcsAreaName},
+        #{cityCode},
+        #{cityName},
+        #{houseCategoryCode},
+        #{houseReclassifyCode},
+        #{publicBuyers},
+        #{vipBuyers},
+        #{marketingDays},
+        #{isChangeBuyers},
+        #{remark},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        #{ver}
+        )
+    </insert>
+
+    <select id="findPageList" resultType="com.msk.bs.bean.BS2102107Bean" parameterType="com.msk.bs.bean.BS2102103Param">
+        SELECT
+        <include refid="selectAllFiled"/>
+        FROM sl_house_manage  mange
+        LEFT JOIN sl_bs_house_type type1
+        ON mange.HOUSE_CATEGORY_CODE =type1.TYPE_CODE AND type1.TYPE_LEVER =0 and type1.ROLE_TYPE = 1
+        LEFT JOIN sl_bs_house_type type2
+        ON mange.HOUSE_RECLASSIFY_CODE =type2.TYPE_CODE AND type2.TYPE_LEVER =1 and type2.ROLE_TYPE = 1
+        LEFT JOIN sl_house_grade grade ON grade.SL_CODE = mange.SL_CODE
+        AND grade.HOUSE_CODE = mange.HOUSE_CODE
+        AND grade.HOUSE_CATEGORY_CODE = mange.HOUSE_CATEGORY_CODE
+        AND grade.HOUSE_RECLASSIFY_CODE = mange.HOUSE_RECLASSIFY_CODE
+        AND grade.LGCS_AREA_CODE = mange.LGCS_AREA_CODE
+        AND (grade.DEL_FLG = '0' OR grade.DEL_FLG IS  NULL )
+        AND grade.`STATUS` != '9'
+        AND grade.VALID_YEAR_MONTH = #{filterMap.validYearMonth}
+        LEFT JOIN sl_house_star star ON star.SL_CODE = mange.SL_CODE
+        AND star.HOUSE_CODE = mange.HOUSE_CODE
+        AND (star.DEL_FLG = '0' OR star.DEL_FLG IS  NULL )
+        AND star.VALID_YEAR_MONTH = #{filterMap.validYearMonth}
+        AND star.`STATUS` != '9'
+        WHERE
+        mange.SL_CODE = #{slCode}
+        AND
+        mange.HOUSE_CODE = #{houseCode}
+        AND
+        mange.LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND
+        mange.LGCS_AREA_NAME = #{lgcsAreaName}
+        AND
+        (mange.DEL_FLG = '0' OR mange.DEL_FLG IS  NULL )
+        GROUP BY mange.MID
+        order by mange.LGCS_AREA_NAME,mange.CITY_NAME,mange.HOUSE_CATEGORY_CODE,mange.HOUSE_RECLASSIFY_CODE ASC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.bs.bean.BS2102103Param">
+        SELECT
+        count(1)
+        FROM sl_house_manage  mange
+        LEFT JOIN sl_bs_house_type type1
+        ON mange.HOUSE_CATEGORY_CODE =type1.TYPE_CODE AND type1.TYPE_LEVER =0 and type1.ROLE_TYPE = 1
+        LEFT JOIN sl_bs_house_type type2
+        ON mange.HOUSE_RECLASSIFY_CODE =type2.TYPE_CODE AND type2.TYPE_LEVER =1 and type2.ROLE_TYPE = 1
+        WHERE
+        mange.SL_CODE = #{slCode}
+        AND
+        mange.HOUSE_CODE = #{houseCode}
+        AND
+        mange.LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND
+        mange.LGCS_AREA_NAME = #{lgcsAreaName}
+        AND
+        (mange.DEL_FLG = '0' OR mange.DEL_FLG IS  NULL )
+    </select>
+
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO sl_house_manage_his(
+        HIS_MID,
+        SL_CODE,
+        HOUSE_CODE,
+        LGCS_AREA_CODE,
+        CITY_NAME,
+        CITY_CODE,
+        LGCS_AREA_NAME,
+        HOUSE_CATEGORY_CODE,
+        HOUSE_RECLASSIFY_CODE,
+        PUBLIC_BUYERS,
+        VIP_BUYERS,
+        MARKETING_DAYS,
+        IS_CHANGE_BUYERS,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER,
+        CREATETIME
+        )VALUES
+        <foreach collection="list" item="slHouseManageHis" index="index" separator=",">
+            (
+            #{slHouseManageHis.hisMid},
+            #{slHouseManageHis.slCode},
+            #{slHouseManageHis.houseCode},
+            #{slHouseManageHis.lgcsAreaCode},
+            #{slHouseManageHis.cityName},
+            #{slHouseManageHis.cityCode},
+            #{slHouseManageHis.lgcsAreaName},
+            #{slHouseManageHis.houseCategoryCode},
+            #{slHouseManageHis.houseReclassifyCode},
+            #{slHouseManageHis.publicBuyers},
+            #{slHouseManageHis.vipBuyers},
+            #{slHouseManageHis.marketingDays},
+            #{slHouseManageHis.isChangeBuyers},
+            #{slHouseManageHis.remark},
+            #{slHouseManageHis.delFlg},
+            #{slHouseManageHis.crtId},
+            #{slHouseManageHis.crtTime},
+            #{slHouseManageHis.updId},
+            #{slHouseManageHis.updTime},
+            #{slHouseManageHis.actId},
+            #{slHouseManageHis.actTime},
+            #{slHouseManageHis.ver},
+            #{slHouseManageHis.createtime}
+            )
+        </foreach>
+
+    </insert>
+
+    <update id="modify" parameterType="com.msk.core.entity.SlHouseManage">
+      UPDATE sl_house_manage SET
+      VER = VER + 1,
+      UPD_ID = #{updId},
+      UPD_TIME =#{updTime},
+      PUBLIC_BUYERS = #{publicBuyers},
+      VIP_BUYERS = #{vipBuyers},
+      MARKETING_DAYS = #{marketingDays},
+      IS_CHANGE_BUYERS = #{isChangeBuyers},
+      REMARK = #{remark}
+      WHERE MID = #{mid}
+      AND
+      SL_CODE = #{slCode}
+      AND
+      HOUSE_CODE = #{houseCode}
+      AND
+      (DEL_FLG = '0' OR DEL_FLG IS  NULL )
+    </update>
+
+
+    <select id="findHouseManageByMid" parameterType="com.msk.bs.bean.BS2102103Param" resultType="com.msk.core.entity.SlHouseManage">
+      SELECT
+      <include refid="selectAll" />
+        FROM sl_house_manage mange
+        WHERE
+        (mange.DEL_FLG = '0' OR mange.DEL_FLG IS  NULL )
+        AND
+        MID IN
+        <foreach collection="slHouseManageList" item="item" index="index" separator="," open="(" close=")">
+            #{item.mid}
+        </foreach>
+    </select>
+
+    <update id="delHouseManageByMid" parameterType="com.msk.core.entity.SlHouseManage">
+      UPDATE sl_house_manage SET
+      VER = VER + 1,
+      UPD_ID = #{updId},
+      UPD_TIME =#{updTime},
+      DEL_FLG = '1'
+      WHERE MID = #{mid}
+      AND
+      SL_CODE = #{slCode}
+      AND
+      HOUSE_CODE = #{houseCode}
+      AND
+      (DEL_FLG = '0' OR DEL_FLG IS  NULL )
+    </update>
+
+    <select id="getGradeCount" parameterType="BaseParam" resultType="int">
+        SELECT
+        count(1)
+        from sl_house_grade
+        where sl_Code = #{slCode}
+         AND house_code = #{houseCode}
+         AND  HOUSE_CATEGORY_CODE = #{houseCategoryCode}
+         AND LGCS_AREA_CODE = #{lgcsAreaCode}
+         AND HOUSE_RECLASSIFY_CODE=#{houseReclassifyCode}
+         AND DEL_FLG = '0'
+    </select>
+
+    <insert id="saveGrade" parameterType="BaseEntity">
+        INSERT INTO
+        sl_house_grade
+        (
+        GRADE_ID,
+        SL_CODE,
+        HOUSE_CODE,LGCS_AREA_CODE,
+        LGCS_AREA_NAME,
+        HOUSE_CATEGORY_CODE,
+        HOUSE_RECLASSIFY_CODE,
+        GRADE_CODE,
+        VALID_YEAR_MONTH,
+        END_TIME,
+        EXTEND_TIME,
+        STATUS,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+            (
+            #{gradeId},
+            #{slCode},
+            #{houseCode},
+            #{lgcsAreaCode},
+            #{lgcsAreaName},
+            #{houseCategoryCode},
+            #{houseReclassifyCode},
+            #{gradeCode},
+            #{validYearMonth},
+            #{endTime},
+            #{extendTime},
+            #{status},
+            #{remark},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            0
+            )
+    </insert>
+</mapper>

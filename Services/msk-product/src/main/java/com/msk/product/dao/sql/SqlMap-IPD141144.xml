@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141144Logic">
+
+    <!-- map返回 -->
+    <resultMap type="com.msk.product.bean.IPD141144RsResult" id="qltMapSl">
+        <result property="sellerCode" column="SL_CODE"/>
+        <result property="sellerCode" column="SUPPLIER_CODE"/>
+        <result property="districtCode" column="LGCS_CODE"/>
+        <collection property="products" ofType="com.msk.product.bean.IPD141144RsProductsResult">
+            <result property="pdCode" column="PD_CODE"/>
+            <result property="stockCnt" column="STOCK_QTY"/>
+        </collection>
+    </resultMap>
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141144RsProductsResult">
+      <!--  SELECT
+         A.SL_CODE AS slCode
+        ,A.LGCS_CODE AS districtCode
+        ,A.PD_CODE AS pdCode
+        ,A.STOCK_QTY AS stockCnt
+        FROM
+        so_stock_sl AS A
+        LEFT JOIN so_order_detail b ON b.ORDER_CODE in (SELECT c.ORDER_CODE FROM so_order c where c.SELLER_CODE = #{sellerCode} AND c.ORDER_STATUS!='99') AND b.PD_CODE = A.PD_CODE
+        WHERE
+        A.SL_CODE = #{sellerCode}
+        AND A.LGCS_CODE = #{districtCode}
+        AND A.SALE_PLATFORM = #{platformType}
+        <if test="pdCode!=null and pdCode!= ''">
+            AND A.PD_CODE = #{pdCode}
+        </if>
+        AND A.DEL_FLG='0'
+        ORDER BY A.SL_CODE-->
+
+
+        SELECT
+        A.SL_CODE AS slCode
+        ,A.LGCS_CODE AS districtCode
+        ,A.PD_CODE AS pdCode
+        ,(A.STOCK_QTY - ifnull((select sum(b.order_qty) FROM
+        so_order_detail b where b.ORDER_CODE IN (
+        SELECT
+        c.ORDER_CODE
+        FROM
+        so_order c
+        WHERE
+        c.SELLER_CODE = #{sellerCode}
+        AND c.ORDER_STATUS != '99'
+        )
+        AND b.PD_CODE = A.PD_CODE),'0')) AS stockCnt
+        FROM
+        so_stock_sl AS A
+        WHERE
+        A.SL_CODE = #{sellerCode}
+        AND A.LGCS_CODE = #{districtCode}
+        AND A.SALE_PLATFORM = #{platformType}
+        <if test="pdCode!=null and pdCode!= ''">
+            AND A.PD_CODE = #{pdCode}
+        </if>
+        AND A.DEL_FLG='0'
+        ORDER BY A.SL_CODE
+       <!-- SELECT
+        A.SL_CODE
+        ,A.LGCS_CODE
+        ,A.PD_CODE
+        ,A.STOCK_QTY
+        FROM
+        so_stock_sl AS A
+        WHERE
+        A.SL_CODE = #{sellerCode}
+        AND A.LGCS_CODE = #{districtCode}
+        AND A.SALE_PLATFORM = #{platformType}
+        <if test="pdCode!=null and pdCode!= ''">
+            AND A.PD_CODE = #{pdCode}
+        </if>
+        ORDER BY A.SL_CODE-->
+    </select>
+
+    <select id="findOneSp" parameterType="BaseParam" resultMap="qltMapSl">
+        SELECT
+        A.SUPPLIER_CODE
+        ,A.LGCS_CODE
+        ,A.PD_CODE
+        ,A.STOCK_QTY
+        FROM
+        so_stock_sp AS A
+        WHERE
+        A.SUPPLIER_CODE = #{sellerCode}
+        AND A.LGCS_CODE = #{districtCode}
+        AND A.SUPPLY_PLATFORM = #{platformType}
+        AND A.DEL_FLG='0'
+        <if test="pdCode!=null and pdCode!= ''">
+            AND A.PD_CODE = #{pdCode}
+        </if>
+        ORDER BY  A.SUPPLIER_CODE
+    </select>
+</mapper>
+
+
+
+
+
+
+

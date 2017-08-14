@@ -1,0 +1,20 @@
+spring:
+  aop:
+    auto: true
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  redis:
+    database: 11
+    host: 10.47.108.37
+    password: 
+    port: 6379
+    pool:
+      max-idle: 1024
+      max-active: 200
+      max-wait: 1000
+server:
+  port: 9091
+  context-path: /msk-favorites/

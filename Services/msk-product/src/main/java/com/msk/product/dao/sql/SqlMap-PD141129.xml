@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141129Logic">
+    <!--
+        添加记录
+    -->
+   <insert parameterType="com.msk.product.bean.PdTcForbidParam" id="findSaveTcForBid">
+      insert into pd_tc_forbid(
+      TC_FORBID_ID
+     ,CLASSES_CODE
+     ,MACHINING_CODE
+     ,BREED_CODE
+     ,LEVEL_CODE
+     ,LEVEL_NAME
+     ,FEATURE_CODE
+     ,FEATURE_NAME
+     ,LOCAL_NAME
+     ,FEATURE_FLG
+     ,TREE_LEVEL
+     ,DEL_FLG
+     ,CRT_ID
+     ,CRT_TIME
+     <!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+     ,UPD_ID
+     ,UPD_TIME
+     ,ACT_ID
+     ,ACT_TIME
+     <!--Modify: 添加公共属性 2016/09/20   BY  任强  End -->
+     ,VER
+      )values(
+      #{tcForbidId}
+     ,#{classesCode}
+     ,#{machiningCode}
+     ,#{breedCode}
+     ,#{levelCode}
+     ,#{levelName}
+     ,#{featureCode}
+     ,#{featureName}
+     ,#{localName}
+     ,#{featureFlg}
+     ,#{treeLevel}
+     ,#{delFlg}
+     ,#{crtId}
+     ,#{crtTime}
+     <!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+     ,#{updId}
+     ,#{updTime}
+     ,#{actId}
+     ,#{actTime}
+     ,0
+     <!--Modify: 添加公共属性 2016/09/20   BY  任强  End -->
+      )
+   </insert>
+
+    <!--
+        查询记录是否存在
+    -->
+    <select id="findQueryTcForBid" parameterType="BaseParam" resultType="int">
+        select count(1)
+        from pd_tc_forbid
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                and CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                and MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                and BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+                and FEATURE_NAME=#{filterMap.featureName}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                and DEL_FLG=#{filterMap.delFlg}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121305Logic">
+    <select id="findTerMarketInfo" parameterType="BaseParam" resultType="com.msk.core.entity.ByMarketTerminal">
+        SELECT
+        TER_MARKET_ID AS terMarketId,
+        MARKET_CODE AS marketCode,
+        IFNULL(MARKET_NAME,'') AS marketName,
+        IFNULL(MARKET_ADDR,'') AS marketAddr,
+        MARKET_LEVEL AS marketLevel,
+        IFNULL(MARKET_LEVEL_NAME,'') AS marketLevelName,
+        LGCS_AREA_CODE AS lgcsAreaCode,
+        CITY_CODE AS cityCode,
+        DISTRICT_CODE AS districtCode
+        FROM
+        by_market_terminal
+        WHERE
+        DEL_FLG = 0
+        AND TER_MARKET_ID = #{filterMap.terMarketId}
+    </select>
+
+    <update id="saveTerMarketInfo" parameterType = "BaseEntity">
+        UPDATE
+        by_market_terminal
+        SET MARKET_CODE = #{marketCode}
+            ,MARKET_NAME = #{marketName}
+            ,MARKET_ADDR = #{marketAddr}
+            ,MARKET_LEVEL = #{marketLevel}
+            ,MARKET_LEVEL_NAME = #{marketLevelName}
+            ,LGCS_AREA_CODE = #{lgcsAreaCode}
+            ,LGCS_AREA_NAME = #{lgcsAreaName}
+            ,CITY_CODE = #{cityCode}
+            ,CITY_NAME = #{cityName}
+            ,UPD_ID = #{updId}
+            ,UPD_TIME = #{updTime}
+        WHERE
+        TER_MARKET_ID = #{terMarketId}
+    </update>
+
+    <!--数据插入 -->
+    <insert id="addTerMarketInfo" parameterType="com.msk.core.entity.ByMarketTerminal">
+        INSERT INTO by_market_terminal(
+        TER_MARKET_ID,
+        MARKET_CODE,
+        MARKET_NAME,
+        MARKET_ADDR,
+        MARKET_LEVEL,
+        MARKET_LEVEL_NAME,
+        LGCS_AREA_CODE,
+        LGCS_AREA_NAME,
+        CITY_CODE,
+        CITY_NAME,
+        DEL_FLG,
+
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+
+        VER
+        
+        )VALUES (
+        #{terMarketId},
+        #{marketCode},
+        #{marketName},
+        #{marketAddr},
+        #{marketLevel},
+        #{marketLevelName},
+        #{lgcsAreaCode},
+        #{lgcsAreaName},
+        #{cityCode},
+        #{cityName},
+        0,
+
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        0
+        )
+    </insert>
+
+    <select id="findTerMarketInfoCount" resultType="int" parameterType="com.msk.core.entity.ByMarketTerminal">
+        select count(1) from by_market_terminal
+        WHERE LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND CITY_CODE = #{cityCode}
+        AND DEL_FLG = 0
+    </select>
+
+
+    <select id="getTerMarketId" resultType="com.msk.core.entity.ByMarketTerminal" parameterType="BaseParam">
+        SELECT  TER_MARKET_ID  AS terMarketId
+        FROM  by_market_terminal
+        WHERE MARKET_CODE =#{filterMap.marketCode}
+        AND DEL_FLG = 0
+    </select>
+</mapper>

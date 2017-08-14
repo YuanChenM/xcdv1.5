@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.SO153151Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        RUNNING_ID AS runningId,
+        AMOUNT_TYPE AS amountType,
+        BACK_TYPE AS backType,
+        BILL_ID AS billId,
+        TRANS_CODE AS transCode,
+        TRANS_TYPE AS transType,
+        IFNULL(REFUND_ID,'') AS refundId,
+        IFNULL(REFUND_CODE,'') AS refundCode,
+        PAID_AMOUNT AS paidAmount,
+        PAID_TYPE AS paidType,
+        PAID_SEQ AS paidSeq,
+        VER_SEQ AS verSeq,
+        PAID_TIME AS paidTime,
+        PAYER_ID AS payerId,
+        PAYEE_ID AS payeeId,
+        IFNULL(REMARK,'') AS remark
+    </sql>
+    <sql id="selectFrom">
+        FROM SO_CP_RUNNING AS SO
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.runningId!=null and filterMap.runningId!=''">
+                AND RUNNING_ID=#{filterMap.runningId}
+            </if>
+            <!--<if test="filterMap.amountType!=null and filterMap.amountType!=''">
+                AND AMOUNT_TYPE=#{filterMap.amountType}
+            </if>-->
+            <if test="filterMap.amountTypes!=null">
+                AND AMOUNT_TYPE IN
+                <foreach collection="filterMap.amountTypes" item="amountType" open="(" separator="," close=")">
+                    #{amountType}
+                </foreach>
+            </if>
+            <if test="filterMap.backType!=null and filterMap.backType!=''">
+                AND BACK_TYPE=#{filterMap.backType}
+            </if>
+            <if test="filterMap.billId!=null and filterMap.billId!=''">
+                AND BILL_ID=#{filterMap.billId}
+            </if>
+            <if test="filterMap.transCode!=null and filterMap.transCode!=''">
+                AND TRANS_CODE like #{filterMap.transCode}
+            </if>
+            <if test="filterMap.transTypes!=null">
+                AND TRANS_TYPE IN
+                <foreach collection="filterMap.transTypes" item="transType" open="(" separator="," close=")">
+                    #{transType}
+                </foreach>
+            </if>
+            <if test="filterMap.refundId!=null and filterMap.refundId!=''">
+                AND REFUND_ID=#{filterMap.refundId}
+            </if>
+            <if test="filterMap.refundCode!=null and filterMap.refundCode!=''">
+                AND REFUND_CODE like #{filterMap.refundCode}
+            </if>
+            <if test="filterMap.paidAmount!=null and filterMap.paidAmount!=''">
+                AND PAID_AMOUNT=#{filterMap.paidAmount}
+            </if>
+            <!--<if test="filterMap.paidType!=null and filterMap.paidType!=''">
+                AND PAID_TYPE=#{filterMap.paidType}
+            </if>-->
+            <if test="filterMap.paidTypes!=null">
+                AND PAID_TYPE IN
+                <foreach collection="filterMap.paidTypes" item="paidType" open="(" separator="," close=")">
+                    #{paidType}
+                </foreach>
+            </if>
+            <if test="filterMap.paidSeq!=null and filterMap.paidSeq!=''">
+                AND PAID_SEQ like #{filterMap.paidSeq}
+            </if>
+            <if test="filterMap.verSeq!=null and filterMap.verSeq!=''">
+                AND VER_SEQ=#{filterMap.verSeq}
+            </if>
+            <if test="filterMap.paidTime!=null and filterMap.paidTime!=''">
+                AND PAID_TIME=#{filterMap.paidTime}
+            </if>
+            <if test="filterMap.paidTimeStart!=null and filterMap.paidTimeStart!=''">
+                <![CDATA[ AND DATE_FORMAT(PAID_TIME,'%Y-%m-%d') >= #{filterMap.paidTimeStart}]]>
+            </if>
+            <if test="filterMap.paidTimeEnd!=null and filterMap.paidTimeEnd!=''">
+                <![CDATA[ AND DATE_FORMAT(PAID_TIME,'%Y-%m-%d') <= #{filterMap.paidTimeEnd}]]>
+            </if>
+            <if test="filterMap.payerId!=null and filterMap.payerId!=''">
+                AND PAYER_ID=#{filterMap.payerId}
+            </if>
+            <if test="filterMap.payeeId!=null and filterMap.payeeId!=''">
+                AND PAYEE_ID=#{filterMap.payeeId}
+            </if>
+            <if test="filterMap.remark!=null and filterMap.remark!=''">
+                AND REMARK like #{filterMap.remark}
+            </if>
+            AND DEL_FLG = 0
+        </where>
+    </sql>
+
+    <select id="findPageList" resultType="com.msk.so.bean.SOCp153151Bean"
+            parameterType="BasePageParam">
+        SELECT
+        <include refid="selectSql" />
+        <include refid="selectFrom" />
+        <include refid="whereCondition" />
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        select count(1)
+        <include refid="selectFrom" />
+        <include refid="whereCondition"/>
+    </select>
+
+    <select id="getTotalInfo" resultType="com.msk.so.bean.SOCp153151Bean" parameterType="BasePageParam">
+        SELECT
+          IFNULL(SUM(so.paidAmount),'') AS totalPaid
+          FROM (
+            SELECT
+              PAID_AMOUNT AS paidAmount
+              <include refid="selectFrom"/>
+              <include refid="whereCondition"/>
+          ) AS so
+    </select>
+
+</mapper>

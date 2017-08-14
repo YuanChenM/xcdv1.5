@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11319Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        A.PAYMENT_ID AS paymentId,
+        A.PAYMENT_REQUEST_ID AS paymentRequestId,
+        A.PAYMENT_REQUEST_CODE AS paymentRequestCode,
+        A.AMOUNT AS amount,
+        A.PAYER AS payer,
+        A.PAYER_BANK AS payerBank,
+        A.PATER_ACCOUNT AS paterAccount,
+        A.RECEIVING AS receiving,
+        A.RECEIVING_BANK AS receivingBank,
+        A.RECEIVING_ACCOUNT AS receivingAccount,
+        DATE_FORMAT(A.REMIT_TIME,'%Y-%m-%d %H:%i:%S') AS remitTime,
+        A.REMARK AS remark,
+        A.STATUS AS paymentStatus,
+        B.PAYMENT_TYPE AS paymentType,
+        B.CONTRACT_TOTAL_AMOUNT AS contractAmount,
+        B.DELIVERY_ID AS deliveryId,
+        B.DELIVERY_CODE AS deliveryCode,
+        B.VERIFICATION_ID AS verificationId,
+        B.VERIFICATION_CODE AS verificationCode,
+        B.CONTRACT_ID AS contractId,
+        /*B.CONTRACT_CODE AS contractCode,*/
+        C.CONTRACT_CODE AS contractCode,
+        C.CONTRACT_NAME AS contractName,
+        A.SUBJECT AS subject,
+        A.PAID_TYPE AS paidType
+    </sql>
+
+    <sql id="selectFrom">
+        FROM ssc_payment_info A
+        LEFT JOIN ssc_payment_request B ON A.PAYMENT_REQUEST_ID = B.PAYMENT_REQUEST_ID
+        LEFT JOIN ssc_contract_basic C ON B.CONTRACT_ID = C.CONTRACT_ID
+    </sql>
+
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            AND (A.DEL_FLG = 0 AND B.DEL_FLG = 0)
+            <if test="filterMap.paymentRequestId != null and filterMap.paymentRequestId != ''">
+                AND A.PAYMENT_REQUEST_ID = #{filterMap.paymentRequestId}
+            </if>
+            <if test="filterMap.paymentRequestCode != null and filterMap.paymentRequestCode != ''">
+                AND A.PAYMENT_REQUEST_CODE LIKE #{filterMap.paymentRequestCode}
+            </if>
+            <if test="filterMap.amount != null and filterMap.amount != ''">
+                AND A.AMOUNT = #{filterMap.amount}
+            </if>
+            <if test="filterMap.payer != null and filterMap.payer != ''">
+                AND A.PAYER LIKE #{filterMap.payer}
+            </if>
+            <if test="filterMap.payerBank != null and filterMap.payerBank != ''">
+                AND A.PAYER_BANK = #{filterMap.payerBank}
+            </if>
+            <if test="filterMap.paterAccount != null and filterMap.paterAccount != ''">
+                AND A.PATER_ACCOUNT = #{filterMap.paterAccount}
+            </if>
+            <if test="filterMap.receiving != null and filterMap.receiving != ''">
+                AND A.RECEIVING LIKE #{filterMap.receiving}
+            </if>
+            <if test="filterMap.receivingBank != null and filterMap.receivingBank != ''">
+                AND A.RECEIVING_BANK = #{filterMap.receivingBank}
+            </if>
+            <if test="filterMap.receivingAccount != null and filterMap.receivingAccount != ''">
+                AND A.RECEIVING_ACCOUNT = #{filterMap.receivingAccount}
+            </if>
+            <if test="filterMap.remitTime != null and filterMap.remitTime != ''">
+                AND A.REMIT_TIME = #{filterMap.remitTime}
+            </if>
+
+            <if test="filterMap.remitTimeStart!=null and filterMap.remitTimeStart!=''">
+                <![CDATA[ AND DATE_FORMAT(A.REMIT_TIME,'%Y-%m-%d') >= #{filterMap.remitTimeStart}]]>
+            </if>
+            <if test="filterMap.remitTimeEnd!=null and filterMap.remitTimeEnd!=''">
+                <![CDATA[ AND DATE_FORMAT(A.REMIT_TIME,'%Y-%m-%d') <= #{filterMap.remitTimeEnd}]]>
+            </if>
+
+            <if test="filterMap.remark != null and filterMap.remark != ''">
+                AND A.REMARK = #{filterMap.remark}
+            </if>
+            <if test="filterMap.status != null and filterMap.status != ''">
+                AND A.STATUS = #{filterMap.status}
+            </if>
+
+            <if test="filterMap.contractCode != null and filterMap.contractCode != ''">
+                AND C.CONTRACT_CODE LIKE #{filterMap.contractCode}
+            </if>
+            <if test="filterMap.contractName != null and filterMap.contractName != ''">
+                AND C.CONTRACT_NAME LIKE #{filterMap.contractName}
+            </if>
+            <if test="filterMap.contractAmountStart!=null and filterMap.contractAmountStart!=''">
+                <![CDATA[ AND B.CONTRACT_TOTAL_AMOUNT >= #{filterMap.contractAmountStart}]]>
+            </if>
+            <if test="filterMap.contractAmountEnd!=null and filterMap.contractAmountEnd!=''">
+                <![CDATA[ AND B.CONTRACT_TOTAL_AMOUNT <= #{filterMap.contractAmountEnd}]]>
+            </if>
+            <if test="filterMap.paymentType != null and filterMap.paymentType != ''">
+                AND B.PAYMENT_TYPE = #{filterMap.paymentType}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11319RsBean" parameterType="BaseParam">
+        select
+        <include refid="selectSql"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        ORDER BY A.REMIT_TIME DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+    </select>
+
+</mapper>

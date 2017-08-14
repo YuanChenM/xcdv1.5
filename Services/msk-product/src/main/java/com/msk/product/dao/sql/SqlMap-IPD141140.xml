@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141140Logic">
+
+    <select id="count" resultType="int">
+        SELECT
+        COUNT(1)
+        FROM PD_CLASSESTREE_MAT
+    </select>
+
+    <select id="getPageCount" resultType="int">
+        SELECT
+        COUNT(1)
+        FROM PD_CLASSESTREE_MAT
+    </select>
+
+    <select id="findPageList" parameterType="com.msk.product.bean.IPD141140RsParam"
+            resultType="com.msk.product.bean.IPD141140RsBean">
+        SELECT
+         A.CLASSESTREE_CODE AS classestreeCode
+        ,B.CLASSES_CODE AS classesCode
+        ,B.MACHINING_CODE AS machiningCode
+        ,ifNull(B.BREED_CODE,'') AS breedCode
+        ,B.FEATURE_CODE AS featureCode
+        ,A.SCIENTIFIC_NAME AS scientificName
+        ,A.LOCAL_NAME AS localName
+        ,A.SALES_NAME AS salesName
+        ,A.PLACE_ORIGIN AS placeOrigin
+        ,A.PLACE_CURRENT AS placeCurrent
+        ,A.SOURCE AS source
+        ,A.CHILD_TYPE AS childType
+        ,A.FEED_TYPE AS feedType
+        ,A.FEED_PERIOD AS feedPeriod
+        FROM PD_CLASSESTREE_MAT A
+        LEFT JOIN PD_STANDARD B ON A.CLASSESTREE_CODE = B.CLASSESTREE_CODE
+        ORDER BY B.CLASSES_CODE,B.MACHINING_CODE,B.BREED_CODE
+        <if test="startPos>=0 and pageCount>0">
+            LIMIT #{startPos}, #{pageCount}
+        </if>
+    </select>
+
+</mapper>

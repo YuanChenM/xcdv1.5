@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101111RsLogic">
+    <resultMap type="com.msk.bs.bean.IBS210111101RsResult" id="resultInfo">
+        <id property="unionId" column="A_UNION_ID"/>
+        <result property="ownerSlCode" column="A_OWNER_SL_CODE"/>
+        <result property="allianceSlCode" column="A_ALLIANCE_SL_CODE"/>
+        <result property="classesCode" column="A_CLASSES_CODE"/>
+        <result property="machiningCode" column="A_MACHINING_CODE"/>
+        <result property="breedCode" column="A_BREED_CODE"/>
+        <result property="featureCode" column="A_FEATURE_CODE"/>
+        <result property="weightCode" column="A_WEIGHT_CODE"/>
+        <result property="gradeCode" column="A_GRADE_CODE"/>
+        <result property="divide" column="A_DIVIDE"/>
+        <result property="sortNum" column="A_SORT_NUM"/>
+        <result property="applyStatus" column="A_APPLY_STATUS"/>
+        <result property="applyTime" column="A_APPLY_TIME"/>
+        <result property="ver" column="A_VER"/>
+        <association property="ownerSlInfo" javaType="com.msk.bs.bean.IBS210111102RsResult">
+            <result property="slTel" column="C1_SL_TEL"/>
+            <result property="slShowName" column="C1_SL_SHOW_NAME"/>
+            <result property="slContact" column="C1_SL_CONTACT"/>
+            <result property="slCodeDis" column="B1_SL_CODE_DIS"/>
+            <result property="slConFlg" column="B1_SL_CON_FLG"/>
+            <result property="areaCode" column="B1_AREA_CODE"/>
+            <result property="lgcsAreaCode" column="B1_LGCS_AREA_CODE"/>
+            <result property="provinceCode" column="B1_PROVINCE_CODE"/>
+            <result property="cityCode" column="B1_CITY_CODE"/>
+            <result property="districtCode" column="B1_DISTRICT_CODE"/>
+            <result property="slIdcard" column="D1_SL_IDCARD"/>
+            <result property="slSort" column="D1_SL_SORT"/>
+            <result property="slAddress" column="D1_SL_ADDRESS"/>
+            <result property="memo1" column="B1_MEMO1"/>
+            <result property="memo2" column="B1_MEMO2"/>
+            <result property="memo3" column="B1_MEMO3"/>
+            <result property="memo4" column="B1_MEMO4"/>
+            <result property="memo5" column="B1_MEMO5"/>
+            <result property="memo6" column="B1_MEMO6"/>
+        </association>
+        <association property="allianceSlInfo" javaType="com.msk.bs.bean.IBS210111102RsResult">
+            <result property="slTel" column="C2_SL_TEL"/>
+            <result property="slShowName" column="C2_SL_SHOW_NAME"/>
+            <result property="slContact" column="C2_SL_CONTACT"/>
+            <result property="slCodeDis" column="B2_SL_CODE_DIS"/>
+            <result property="slConFlg" column="B2_SL_CON_FLG"/>
+            <result property="areaCode" column="B2_AREA_CODE"/>
+            <result property="lgcsAreaCode" column="B2_LGCS_AREA_CODE"/>
+            <result property="provinceCode" column="B2_PROVINCE_CODE"/>
+            <result property="cityCode" column="B2_CITY_CODE"/>
+            <result property="districtCode" column="B2_DISTRICT_CODE"/>
+            <result property="slIdcard" column="D2_SL_IDCARD"/>
+            <result property="slSort" column="D2_SL_SORT"/>
+            <result property="slAddress" column="D2_SL_ADDRESS"/>
+            <result property="memo1" column="B2_MEMO1"/>
+            <result property="memo2" column="B2_MEMO2"/>
+            <result property="memo3" column="B2_MEMO3"/>
+            <result property="memo4" column="B2_MEMO4"/>
+            <result property="memo5" column="B2_MEMO5"/>
+            <result property="memo6" column="B2_MEMO6"/>
+        </association>
+    </resultMap>
+    <sql id="selectFiled">
+        A.UNION_ID AS A_UNION_ID,
+        A.OWNER_SL_CODE AS A_OWNER_SL_CODE,
+        A.ALLIANCE_SL_CODE AS A_ALLIANCE_SL_CODE,
+        A.CLASSES_CODE AS A_CLASSES_CODE,
+        A.MACHINING_CODE AS A_MACHINING_CODE,
+        A.BREED_CODE AS A_BREED_CODE,
+        A.FEATURE_CODE AS A_FEATURE_CODE,
+        A.WEIGHT_CODE AS A_WEIGHT_CODE,
+        A.GRADE_CODE AS A_GRADE_CODE,
+        A.DIVIDE AS A_DIVIDE,
+        A.SORT_NUM AS A_SORT_NUM,
+        A.APPLY_STATUS AS A_APPLY_STATUS,
+        A.APPLY_TIME AS A_APPLY_TIME,
+        A.VER AS A_VER,
+        C1.SL_TEL AS C1_SL_TEL,
+        C2.SL_TEL AS C2_SL_TEL,
+        C1.SL_SHOW_NAME AS C1_SL_SHOW_NAME,
+        C2.SL_SHOW_NAME AS C2_SL_SHOW_NAME,
+        C1.SL_CONTACT AS C1_SL_CONTACT,
+        C2.SL_CONTACT AS C2_SL_CONTACT,
+        B1.SL_CODE_DIS AS B1_SL_CODE_DIS,
+        B2.SL_CODE_DIS AS B2_SL_CODE_DIS,
+        B1.SL_CON_FLG AS B1_SL_CON_FLG,
+        B2.SL_CON_FLG AS B2_SL_CON_FLG,
+        B1.AREA_CODE AS B1_AREA_CODE,
+        B1.LGCS_AREA_CODE AS B1_LGCS_AREA_CODE,
+        B2.AREA_CODE AS B2_AREA_CODE,
+        B2.LGCS_AREA_CODE AS B2_LGCS_AREA_CODE,
+        B1.PROVINCE_CODE AS B1_PROVINCE_CODE,
+        B1.CITY_CODE AS B1_CITY_CODE,
+        B2.PROVINCE_CODE AS B2_PROVINCE_CODE,
+        B2.CITY_CODE AS B2_CITY_CODE,
+        B1.DISTRICT_CODE AS B1_DISTRICT_CODE,
+        B2.DISTRICT_CODE AS B2_DISTRICT_CODE,
+        D1.SL_IDCARD AS D1_SL_IDCARD,
+        D2.SL_IDCARD AS D2_SL_IDCARD,
+        D1.SL_SORT AS D1_SL_SORT,
+        D2.SL_SORT AS D2_SL_SORT,
+        D1.SL_ADDRESS AS D1_SL_ADDRESS,
+        D2.SL_ADDRESS AS D2_SL_ADDRESS,
+        B1.MEMO1 AS B1_MEMO1,
+        B1.MEMO2 AS B1_MEMO2,
+        B1.MEMO3 AS B1_MEMO3,
+        B1.MEMO4 AS B1_MEMO4,
+        B1.MEMO5 AS B1_MEMO5,
+        B1.MEMO6 AS B1_MEMO6,
+        B2.MEMO1 AS B2_MEMO1,
+        B2.MEMO2 AS B2_MEMO2,
+        B2.MEMO3 AS B2_MEMO3,
+        B2.MEMO4 AS B2_MEMO4,
+        B2.MEMO5 AS B2_MEMO5,
+        B2.MEMO6 AS B2_MEMO6
+    </sql>
+    <sql id="selectFrom">
+        FROM
+        sl_bs_buyer_leagues AS A
+        INNER JOIN sl_bs_basic_info AS B1 ON A.OWNER_SL_CODE = B1.SL_CODE
+        INNER JOIN sl_bs_basic_info AS B2 ON A.ALLIANCE_SL_CODE = B2.SL_CODE
+        INNER JOIN sl_bs_account AS C1 ON B1.SL_ACCOUNT = C1.SL_ACCOUNT
+        INNER JOIN sl_bs_account AS C2 ON B2.SL_ACCOUNT = C2.SL_ACCOUNT
+        INNER JOIN sl_bs_buyershop AS D1 ON B1.SL_CODE = D1.SL_CODE
+        INNER JOIN sl_bs_buyershop AS D2 ON B2.SL_CODE = D2.SL_CODE
+    </sql>
+    <sql id="whereCondition">
+      <where>
+          <if test="filterMap.slContact!=null and filterMap.slContact!=''">
+              AND E.SL_CONTACT like #{filterMap.slContact}
+          </if>
+      </where>
+    </sql>
+    <select id="getPageCount" resultType="int" parameterType="BasePageParam">
+        SELECT COUNT(1)
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+    </select>
+    <select id="findPageList" resultMap="resultInfo"
+            parameterType="BasePageParam">
+        SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        order by A.UNION_ID
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241106Logic">
+    <sql id="slPdPkgSql">
+        A.SL_CODE AS slCode,
+        A.SL_PD_ID AS slPdId,
+        A.SL_PD_PKG_ID AS slPdPkgId,
+        A.STANDARD_ID AS standardId,
+        A.PKG_CODE AS pkgCode,
+        I.PROD_EP_ID AS prodEpId,
+        I.BRAND_EP_ID AS brandEpId,
+        I.BRAND_ID AS brandId,
+        I.PD_CLASSES_CODE AS pdClassesCode,
+        I.PD_BREED_CODE AS pdBreedCode,
+        I.PD_FEATURE_CODE AS pdFeatureCode,
+        A.IN_SGL_NW AS inSglNw,
+        A.IN_SGL_NW_RANGE AS inSglNwRange,
+        A.IN_NW AS inNw,
+        A.IN_NUMBER AS inNumber,
+        A.IN_SIZE AS inSize,
+        A.IN_MTS AS inMts,
+        A.OUT_SPEC AS outSpec,
+        A.OUT_NW AS outNw,
+        A.OUT_GW AS outGw,
+        A.OUT_SIZE AS outSize,
+        A.OUT_MTS AS outMts,
+        A.PKG_TEN AS pkgTen,
+        A.OUT_LENGTH AS outLength,
+        A.OUT_WIDTH AS outWidth,
+        A.OUT_HEIGHT AS outHeight,
+        A.OUT_VOLUME AS outVolume,
+        A.AUDIT_STATUS AS auditStatus,
+        IFNULL(A.AUDIT_RESULT,'') AS auditResult,
+        A.AUDIT_RESULT_DESC AS auditResultDesc,
+        A.AUDITOR AS auditor,
+        A.AUDIT_DATE AS auditDate,
+        IFNULL(A.MONITOR_RESULT,'') AS monitorResult,
+        IFNULL(A.MONITOR_AUDITOR,'') AS monitorAuditor,
+        A.MONITOR_DATE AS monitorDate,
+        <!--
+        C.NORMS_SUTTLE AS normsSuttle,
+        C.NORMS_ERROR AS normsError,
+        C.NORMS_NUMBER AS normsNumber,
+        C.NORMS_SIZE AS normsSize,
+        C.NORMS_TEXTURE AS normsTexture,
+        C.NORMS_OUT AS normsOut,
+        C.NORMS_KG AS normsKg,
+        C.NORMS_OUT_SIZE AS normsOutSize,
+        C.NORMS_OUT_TEXTURE AS normsOutTexture,
+        C.NORMS_LENGTH AS normsLength,
+        C.NORMS_WIDTH AS normsWidth,
+        C.NORMS_HEIGHT AS normsHeight,
+        C.NORMS_VOLUME AS normsVolume,
+        -->
+        D.EP_NAME AS epName,
+        E.BRAND_NAME AS brandName,
+        IFNULL(I.PD_CLASSES_NAME,'') AS classesName,
+        IFNULL(I.PD_BREED_NAME,'') AS breedName,
+        IFNULL(I.PD_FEATURE_NAME,'') AS featureName,
+        IFNULL(I.WEIGHT_NAME,'') AS weightName,
+        IFNULL(I.MACHINING_NAME,'') AS machiningName,
+        <!--J.MACHINING_NAME AS machiningName,-->
+        <!--F.CLASSES_NAME AS classesName,-->
+        <!--G.BREED_NAME AS breedName,-->
+        <!--H.FEATURE_NAME AS featureName,-->
+        I.MACHINING_CODE AS machiningCode
+
+    </sql>
+    <sql id="whereSql">
+        <where>
+            A.DEL_FLG = 0
+            <if test="filterMap.epName!=null and filterMap.epName!=''">
+                AND D.EP_NAME like #{filterMap.epName}
+            </if>
+            <if test="filterMap.brandName!=null and filterMap.brandName!=''">
+                AND E.BRAND_NAME like #{filterMap.brandName}
+            </if>
+            <if test="filterMap.classesName!=null and filterMap.classesName!=''">
+                AND I.PD_CLASSES_NAME like #{filterMap.classesName}
+            </if>
+            <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+                AND I.PD_BREED_NAME like #{filterMap.breedName}
+            </if>
+            <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+                AND I.PD_FEATURE_NAME like #{filterMap.featureName}
+            </if>
+            <if test="filterMap.machiningName!=null and filterMap.machiningName!=''">
+                AND I.MACHINING_NAME like #{filterMap.machiningName}
+            </if>
+            <if test="filterMap.auditResults!=null">
+                AND A.AUDIT_RESULT in
+                <foreach collection="filterMap.auditResults" item="auditResult" separator="," open="(" close=")">
+                    #{auditResult}
+                </foreach>
+            </if>
+            <if test="filterMap.monitorResults!=null">
+                AND A.MONITOR_RESULT in
+                <foreach collection="filterMap.monitorResults" item="monitorResult" separator="," open="(" close=")">
+                    #{monitorResult}
+                </foreach>
+            </if>
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND A.SL_CODE = #{filterMap.slCode}
+            </if>
+            <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+                AND A.SL_PD_ID = #{filterMap.slPdId}
+            </if>
+            <if test="filterMap.pkgCode!=null and filterMap.pkgCode!=''">
+                AND A.PKG_CODE = #{filterMap.pkgCode}
+            </if>
+            <if test="filterMap.prodEpId!=null and filterMap.prodEpId!=''">
+                AND I.BRAND_EP_ID = #{filterMap.brandEpId}
+            </if>
+            <if test="filterMap.brandId!=null and filterMap.brandId!=''">
+                AND I.BRAND_ID = #{filterMap.brandId}
+            </if>
+            <if test="filterMap.pdClassesCode!=null and filterMap.pdClassesCode!=''">
+                AND I.PD_CLASSES_CODE = #{filterMap.pdClassesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND I.MACHINING_CODE = #{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.pdBreedCode!=null and filterMap.pdBreedCode!=''">
+                AND I.PD_BREED_CODE = #{filterMap.pdBreedCode}
+            </if>
+        </where>
+    </sql>
+    <sql id="formSql">
+         FROM
+          sl_pd_pkg AS A
+        INNER JOIN SL_PRODUCT I ON A.SL_PD_ID=I.SL_PD_ID AND  I.DEL_FLG = 0
+        <!--INNER JOIN pd_standard B ON B.CLASSES_CODE = I.PD_CLASSES_CODE
+          AND B.MACHINING_CODE = I.MACHINING_CODE
+          AND B.BREED_CODE = I.PD_BREED_CODE
+          AND B.FEATURE_CODE = I.PD_FEATURE_CODE -->
+        <!--LEFT JOIN pd_norms_std C ON B.STANDARD_ID = C.STANDARD_ID
+          AND C.NORMS_CODE = A.PKG_CODE-->
+        LEFT JOIN sl_enterprise D ON D.EP_ID=I.PROD_EP_ID  AND  D.DEL_FLG = 0
+        LEFT JOIN sl_ep_brand E ON E.EP_ID=I.BRAND_EP_ID AND I.BRAND_ID=E.BRAND_ID  AND  E.DEL_FLG = 0
+        <!--
+        LEFT JOIN PD_CLASSES F ON F.CLASSES_CODE=I.PD_CLASSES_CODE
+        LEFT JOIN PD_MACHINING J ON J.CLASSES_CODE=I.PD_CLASSES_CODE AND J.MACHINING_CODE=I.MACHINING_CODE
+        LEFT JOIN PD_BREED G ON G.BREED_CODE=I.PD_BREED_CODE AND G.CLASSES_CODE=I.PD_CLASSES_CODE AND G.MACHINING_CODE=I.MACHINING_CODE
+        LEFT JOIN PD_FEATURE H ON H.BREED_CODE=I.PD_BREED_CODE AND H.CLASSES_CODE=I.PD_CLASSES_CODE  AND H.MACHINING_CODE=I.MACHINING_CODE AND H.FEATURE_CODE=I.PD_FEATURE_CODE
+        -->
+    </sql>
+    <select id="findPageList" parameterType="BasePageParam" resultType="com.msk.seller.bean.SL241106Bean">
+        SELECT
+        <include refid="slPdPkgSql"/>
+        <include refid="formSql"/>
+        <include refid="whereSql"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        select COUNT(1)
+        <include refid="formSql"/>
+        <include refid="whereSql"/>
+    </select>
+    <update id="modifyAuditResult" parameterType="com.msk.core.entity.SlPdPkg">
+        update sl_pd_pkg set
+        AUDIT_RESULT=#{auditResult},
+        UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+        WHERE SL_PD_PKG_ID=#{slPdPkgId}
+    </update>
+    <update id="modifyMonitorResult" parameterType="com.msk.core.entity.SlPdPkg">
+        update sl_pd_pkg set
+        MONITOR_RESULT=#{monitorResult},
+        AUDIT_RESULT=#{auditResult},
+        UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+        WHERE SL_PD_PKG_ID=#{slPdPkgId}
+    </update>
+    <select id="getCount" resultType="Integer" parameterType="BasePageParam">
+        select COUNT(1)
+        FROM sl_pd_pkg AS A
+        <include refid="whereSql"/>
+    </select>
+
+    <sql id="SlPdPkgInfoSql">
+        A.SL_CODE AS slCode,
+        A.SL_PD_ID AS slPdId,
+        A.STANDARD_ID AS standardId,
+        A.SL_PD_PKG_ID AS slPdPkgId,
+        A.PKG_CODE AS pkgCode,
+        A.PROD_EP_ID AS prodEpId,
+        A.BRAND_EP_ID AS brandEpId,
+        A.BRAND_ID AS brandId,
+        A.PD_CLASSES_CODE AS pdClassesCode,
+        A.PD_BREED_CODE AS pdBreedCode,
+        A.PD_FEATURE_CODE AS pdFeatureCode,
+        A.IN_SGL_NW AS inSglNw,
+        A.IN_SGL_NW_RANGE AS inSglNwRange,
+        A.IN_NW AS inNw,
+        A.IN_NUMBER AS inNumber,
+        A.IN_SIZE AS inSize,
+        A.IN_MTS AS inMts,
+        A.OUT_SPEC AS outSpec,
+        A.OUT_NW AS outNw,
+        A.OUT_GW AS outGw,
+        A.OUT_SIZE AS outSize,
+        A.OUT_MTS AS outMts,
+        A.PKG_TEN AS pkgTen,
+        A.OUT_LENGTH AS outLength,
+        A.OUT_WIDTH AS outWidth,
+        A.OUT_HEIGHT AS outHeight,
+        A.OUT_VOLUME AS outVolume,
+        IFNULL(A.AUDIT_STATUS,'') AS auditStatus,
+        IFNULL(A.AUDIT_RESULT,'') AS auditResult,
+        IFNULL(A.AUDIT_RESULT_DESC,'') AS auditResultDesc,
+        IFNULL(A.AUDITOR,'') AS auditor,
+        A.AUDIT_DATE AS auditDate,
+        IFNULL(A.MONITOR_RESULT,'') AS monitorResult,
+        IFNULL(A.MONITOR_AUDITOR,'') AS monitorAuditor,
+        A.MONITOR_DATE AS monitorDate,
+        A.VER AS ver
+    </sql>
+
+    <select id="findSlPdPkgInfo" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231109RsSlPdPkg">
+        SELECT
+        <include refid="SlPdPkgInfoSql"/>
+        FROM
+        sl_pd_pkg AS A
+        <include refid="whereSql"/>
+    </select>
+
+    <select id="findSlPdPkgList" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231109RsSlPdPkg">
+        SELECT
+        <include refid="SlPdPkgInfoSql"/>
+        FROM
+        sl_pd_pkg AS A
+        WHERE
+        A.DEL_FLG = 0
+        <if test="filterMap.slPdPkgList != null and filterMap.slPdPkgList.size() > 0">
+            AND
+            <foreach collection="filterMap.slPdPkgList" item="item" open="(" separator="OR" close=")">
+                A.SL_CODE = #{item.slCode} AND A.SL_PD_ID = #{item.slPdId}
+            </foreach>
+        </if>
+    </select>
+
+    <!-- 校验是否存在 -->
+    <select id="findSlPdPkgCount" resultType="int" parameterType="com.msk.core.entity.SlProduct">
+        SELECT
+			count(1)
+		FROM
+			sl_pd_pkg AS A
+		WHERE
+			A.SL_PD_ID = #{slPdId}
+		AND A.SL_CODE = #{slCode}
+		AND A.DEL_FLG = 0
+    </select>
+</mapper>

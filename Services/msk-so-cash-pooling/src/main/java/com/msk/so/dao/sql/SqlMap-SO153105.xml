@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.SO153105Logic">
+
+
+    <update id="saveSoCpTransaction" parameterType="com.msk.core.entity.SoCpTransaction">
+        UPDATE so_cp_transaction
+        SET TRANS_FLG = #{transFlg},
+        VER = VER + 1,
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        TRANS_ID=#{transId}
+    </update>
+</mapper>

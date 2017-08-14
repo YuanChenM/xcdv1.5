@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141101Logic">
+	<!-- 表字段 -->
+	<sql id="selectSql">
+		DISTINCT(A.CLASSES_CODE) AS classesCode,
+		A.CLASSES_NAME AS classesName,
+		A.DEL_FLG AS delFlg,
+		A.CRT_ID AS crtId,
+		A.CRT_TIME AS crtTime,
+		A.UPD_ID AS updId,
+		A.UPD_TIME AS updTime,
+		A.ACT_ID AS actId,
+		A.ACT_TIME AS actTime,
+		A.VER AS ver
+	</sql>
+	<resultMap type="com.msk.product.bean.ProductClasses" id="productMap">
+		<result property="classesCode" column="CLASSES_CODE" />
+		<result property="classesName" column="CLASSES_NAME" />
+		<result property="delFlg" column="DEL_FLG_1" />
+		<collection property="pdBreedList" ofType="com.msk.product.bean.ProductBreed">
+			<result property="classesCode" column="CLASSES_CODE" />
+			<result property="breedCode" column="BREED_CODE" />
+			<result property="breedName" column="BREED_NAME" />
+			<result property="classestreeCode" column="CLASSESTREE_CODE" />
+			<result property="delFlg" column="DEL_FLG_2" />
+			<collection property="pdFeatureList" ofType="com.msk.core.entity.PdFeature">
+				<result property="classesCode" column="CLASSES_CODE" />
+				<result property="breedCode" column="BREED_CODE" />
+				<result property="featureCode" column="FEATURE_CODE" />
+				<result property="featureName" column="FEATURE_NAME" />
+				<result property="delFlg" column="DEL_FLG_3" />
+			</collection>
+		</collection>
+	</resultMap>
+
+	<select id="findPageList" parameterType="com.hoperun.core.bean.BasePageParam"
+			resultMap="productMap">
+		SELECT
+		<!-- <include refid="selectSql"/> -->
+		A.CLASSES_CODE ,
+		A.CLASSES_NAME,
+		(CASE WHEN A.DEL_FLG='1' THEN '是' ELSE '否' END) AS DEL_FLG_1,
+		B.BREED_CODE,
+		B.BREED_NAME,
+		B.CLASSESTREE_CODE,
+		(CASE WHEN
+		B.DEL_FLG='1' THEN '是' ELSE '否' END) AS DEL_FLG_2,
+		C.FEATURE_CODE,
+		C.FEATURE_NAME,
+		(CASE WHEN C.DEL_FLG='1' THEN '是' ELSE '否' END) AS DEL_FLG_3
+		FROM
+		pd_classes AS A
+		LEFT JOIN pd_breed AS B ON B.CLASSES_CODE = A.CLASSES_CODE
+		LEFT JOIN pd_feature AS C ON C.BREED_CODE = B.BREED_CODE AND C.CLASSES_CODE = A.CLASSES_CODE
+		<where>
+			<if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+				AND (A.CLASSES_CODE LIKE #{filterMap.classesCode}
+				OR
+				A.CLASSES_NAME LIKE #{filterMap.classesCode})
+			</if>
+			<if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+				AND (B.BREED_CODE like #{filterMap.breedCode}
+				OR
+				B.BREED_NAME like #{filterMap.breedCode})
+			</if>
+			<if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+				AND (C.FEATURE_CODE like #{filterMap.featureCode}
+				OR
+				C.FEATURE_NAME like #{filterMap.featureCode})
+			</if>
+		</where>
+		ORDER BY A.CLASSES_CODE,B.BREED_CODE,C.FEATURE_CODE
+
+	</select>
+	<select id="getPageCount" resultType="Integer"
+			parameterType="com.hoperun.core.bean.BasePageParam">
+		SELECT COUNT(1)
+		FROM PD_CLASSES AS A
+	</select>
+	<select id="findList" resultType="com.msk.core.entity.PdClasses">
+		SELECT
+		<include refid="selectSql" />
+		FROM PD_CLASSES AS A
+	</select>
+	<update id="modify" parameterType="com.hoperun.core.bean.BaseParam">
+		UPDATE PD_CLASSES SET
+		DEL_FLG=#{filterMap.delflg},
+		<!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+		UPD_ID = #{updId},
+		UPD_TIME =  #{updTime},
+		VER = VER + 1
+		<!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+		WHERE
+		CLASSES_CODE=#{filterMap.classesCode}
+	</update>
+
+	<delete id="deleteClasses" parameterType="com.hoperun.core.bean.BaseParam">
+		DELETE FROM PD_CLASSES
+		WHERE
+		CLASSES_CODE=#{filterMap.classesCode}
+	</delete>
+
+
+	<!--查询所有产品品种数据-->
+	<select id="findListBreedList" resultType="com.msk.core.entity.PdBreed" parameterType="com.hoperun.core.bean.BaseParam">
+		SELECT
+		A.CLASSES_CODE AS classesCode,
+		A.BREED_CODE AS  breedCode
+		FROM PD_BREED AS A
+		WHERE A.CLASSES_CODE = #{filterMap.classesCode}
+	</select>
+
+	<!-- 获取产品特征所有数据 -->
+	<select id="findListFeature" parameterType="com.hoperun.core.bean.BaseParam"
+			resultType="com.msk.core.entity.PdFeature">
+		SELECT
+		A.CLASSES_CODE AS classesCode,
+		A.BREED_CODE AS breedCode,
+		A.FEATURE_CODE AS featureCode
+		FROM PD_FEATURE AS A
+		WHERE
+		A.CLASSES_CODE=#{filterMap.classesCode} AND
+		A.BREED_CODE=#{filterMap.breedCode}
+	</select>
+
+
+	<!-- 查询标准id  xhy-->
+	<select id="findStandarId" resultType="com.msk.core.entity.PdStandard" parameterType="com.hoperun.core.bean.BaseParam">
+		SELECT A.STANDARD_ID AS standardId
+		FROM PD_STANDARD AS A
+		WHERE
+		A.CLASSES_CODE=#{filterMap.classesCode}
+		AND A.BREED_CODE=#{filterMap.breedCode}
+		AND A.FEATURE_CODE=#{filterMap.featureCode}
+	</select>
+
+	<!--删除产品技术表中数据  xhy-->
+	<delete id="deleteTnc" parameterType="com.msk.core.entity.PdStandard">
+		DELETE FROM PD_TNC_STD
+		WHERE
+		STANDARD_ID=#{standardId}
+	</delete>
+
+	<!--删除产品包装表中数据  xhy-->
+	<delete id="deleteNorms" parameterType="com.msk.core.entity.PdStandard">
+		DELETE FROM PD_NORMS_STD
+		WHERE
+		STANDARD_ID=#{standardId}
+	</delete>
+
+	<!--删除产品质量标准数据  xhy-->
+	<delete id="deleteQlt" parameterType="com.msk.core.entity.PdStandard">
+		DELETE FROM PD_QLT_STD
+		WHERE
+		STANDARD_ID=#{standardId}
+	</delete>
+
+	<!--删除产品标准数据数据  xhy-->
+	<delete id="deleteStd" parameterType="com.msk.core.entity.PdStandard">
+		DELETE FROM PD_STANDARD
+		WHERE
+		STANDARD_ID=#{standardId}
+	</delete>
+	<!-- 删除产品特征数据 -->
+	<delete id="deleteFea" parameterType="com.hoperun.core.bean.BaseParam">
+		DELETE FROM PD_FEATURE
+		WHERE
+		CLASSES_CODE=#{filterMap.classesCode}
+		AND BREED_CODE=#{filterMap.breedCode}
+		AND FEATURE_CODE=#{filterMap.featureCode}
+	</delete>
+	<!-- 删除产品品种数据 -->
+	<delete id="deleteBreed" parameterType="com.hoperun.core.bean.BaseParam">
+		DELETE FROM PD_BREED
+		WHERE
+		CLASSES_CODE=#{filterMap.classesCode}
+		AND BREED_CODE=#{filterMap.breedCode}
+	</delete>
+
+
+</mapper>

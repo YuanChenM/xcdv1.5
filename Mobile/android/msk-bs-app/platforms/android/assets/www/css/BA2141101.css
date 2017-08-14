@@ -1,0 +1,95 @@
+﻿/*.Container{
+  width:100%;
+  margin:0 auto;*//*设置整个容器在浏览器中水平居中*//*
+  background:url("../img/bg.png") repeat;
+}*/
+.Header{
+  text-align: center;
+  height:290px;
+}
+
+.Header img{
+  width: 150px;
+  height: 200px;
+  padding-top:35px;
+}
+/*.logo{
+  padding-left:50px;
+  padding-top:20px;
+  padding-bottom:50px;
+}*/
+
+
+/*.Content{
+   height:1172px;
+  margin-top:5px;
+}*/
+.bsLogin{
+  height: 40px;
+  width: 80%;
+  /*width:340px;*/
+  padding:5px;
+  text-align: center;
+  margin:20px auto;
+  border:0;
+  background: url("../img/Button1.png") repeat;
+
+}
+
+.bs_span{
+  font-family: "Microsoft Yahei", "Microsoft Yahei";
+  color: #fff;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 42px;
+}
+
+.gj_span{
+  font-family: "Microsoft Yahei", "Microsoft Yahei";
+  color: #fff;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 42px;
+}
+
+.gjLogin{
+  height: 40px;
+  width: 80%;
+  /*width:340px;*/
+  padding:5px;
+  text-align: center;
+  margin:20px auto;
+  border:0;
+  background:url("../img/Button2.png") repeat;;
+}
+.register{
+  height: 40px;
+  width: 60%;
+  /*width:680px;*/
+  padding:5px;
+  text-align: center;
+  margin:10px auto;
+  border:1px solid #000;
+  border-image-source:url("../img/Button3.png");
+  border-image-slice:10;
+  border-image-repeat:stretch;
+}
+
+.register_span{
+  font-family: "Microsoft Yahei", "Microsoft Yahei";
+  color: #002E62;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 40px;
+}
+.border-1{border-image-width:20px;}
+.im-com{
+  height:40px;
+  margin:50px;
+  padding:5px;
+  font-size:13px;
+  border:0.5px solid;
+  border-image-source:url("../img/border-1.png");
+  border-image-slice:18;
+  border-image-repeat:stretch;
+}

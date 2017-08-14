@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141108Logic">
+
+
+    <!-- 条件语句 -->
+    <sql id="whereCondition">
+		<where>
+        <if test="filterMap.actTime!=null and filterMap.actTime!=''">
+             A.ACT_TIME > #{filterMap.actTime}
+        </if>
+		</where>
+    </sql>
+    <select id="findList" parameterType="BaseParam"
+            resultType="com.msk.product.bean.IPD141108RsResult">
+		SELECT
+		A.CLASSESTREE_CODE AS pdNormsCode
+		,CONCAT(Bcl.CLASSES_NAME,'/',mac.MACHINING_NAME,'/',Cbr.BREED_NAME,'/',Dfe.FEATURE_NAME,'/',Egr.WEIGHT_NAME) AS pdName
+		,A.NETWEIGHT_OUT AS netWeightOut
+		,A.GROSSWEIGHT_OUT AS grossWeightOut
+		,A.NORMS_LENGTH AS normsLength
+		,A.NORMS_WIDTH AS normsWidth
+		,A.NORMS_HEIGHT AS normsHeight
+		,A.NORMS_VOLUME AS normsVolume
+		FROM
+		PD_NORMS_STD AS A
+		LEFT JOIN PD_STANDARD AS Ast ON Ast.STANDARD_ID = A.STANDARD_ID
+		INNER JOIN PD_CLASSES Bcl ON Ast.CLASSES_CODE = Bcl.CLASSES_CODE
+		INNER JOIN pd_machining mac ON Ast.CLASSES_CODE = mac.CLASSES_CODE AND mac.MACHINING_CODE =
+		Ast.MACHINING_CODE
+		INNER JOIN PD_BREED Cbr ON Ast.CLASSES_CODE = Cbr.CLASSES_CODE AND Cbr.MACHINING_CODE = Ast.MACHINING_CODE AND
+		Ast.BREED_CODE = Cbr.BREED_CODE
+		INNER JOIN PD_FEATURE Dfe ON Ast.FEATURE_CODE = Dfe.FEATURE_CODE AND Ast.CLASSES_CODE = Dfe.CLASSES_CODE AND
+		Dfe.MACHINING_CODE = Ast.MACHINING_CODE AND Ast.BREED_CODE = Dfe.BREED_CODE
+		INNER JOIN pd_weight Egr ON Ast.WEIGHT_CODE =Egr.WEIGHT_CODE AND Ast.FEATURE_CODE = Egr.FEATURE_CODE AND
+		Ast.CLASSES_CODE = Egr.CLASSES_CODE AND Egr.MACHINING_CODE = Ast.MACHINING_CODE
+		AND Ast.BREED_CODE = Egr.BREED_CODE
+		<include refid="whereCondition"/>
+	</select>
+
+</mapper>

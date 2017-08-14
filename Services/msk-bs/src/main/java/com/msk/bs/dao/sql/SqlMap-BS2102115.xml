@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2102115Logic">
+
+    <sql id="selectWork">
+        IFNULL(WORK_ID,'') AS workId,
+        IFNULL(SL_CODE,'') AS slCode,
+        IFNULL(HOUSE_CODE,'') AS houseCode,
+        WORK_START AS workStart,
+        WORK_END AS workEnd,
+        IFNULL(WORK_COMP,'') AS workComp,
+        IFNULL(WORK_POSITION,'') AS workPosition,
+        IFNULL(WORK_STATION,'') AS workStation
+    </sql>
+
+    <select id="findPageList" resultType="com.msk.bs.bean.BS2102116Bean" parameterType="com.msk.bs.bean.BS2102116Param">
+        SELECT
+        <include refid="selectWork"/>
+        FROM sl_house_work
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        <if test="slCode!=null and slCode!=''">
+            AND SL_CODE = #{slCode}
+        </if>
+
+        AND
+        HOUSE_CODE = #{houseCode}
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.bs.bean.BS2102116Param">
+        SELECT
+        count(1)
+        FROM sl_house_work
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        <if test="slCode!=null and slCode!=''">
+            AND SL_CODE = #{slCode}
+        </if>
+        AND
+        HOUSE_CODE = #{houseCode}
+    </select>
+
+    <update id="modify" parameterType="com.msk.bs.bean.BS2102116Bean">
+      UPDATE sl_house_work
+        SET
+        DEL_FLG = 1,
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId},
+        VER = VER+1
+        WHERE
+        <!--买手app调用兼容 ni_shaotang start-->
+        HOUSE_CODE=#{houseCode}
+          AND SL_CODE = #{slCode}
+        <!--买手app调用兼容 ni_shaotang End-->
+        AND
+        WORK_ID = #{workId}
+        AND
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+    </update>
+
+    <update id="updateWorkByID" parameterType="com.msk.core.entity.SlHouseWork">
+        UPDATE sl_house_work
+        SET
+        WORK_START = #{workStart},
+        WORK_END = #{workEnd},
+        WORK_COMP= #{workComp},
+        WORK_POSITION= #{workPosition},
+        WORK_STATION= #{workStation},
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId},
+        VER = VER+1
+        WHERE
+        <!--买手app调用兼容 ni_shaotang start-->
+        HOUSE_CODE=#{houseCode}
+        AND SL_CODE = #{slCode}
+        <!--买手app调用兼容 ni_shaotang End-->
+        AND
+        WORK_ID = #{workId}
+        AND
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+    </update>
+
+
+    <select id="findWorkById" resultType="com.msk.bs.bean.BS2102116Bean" parameterType="com.msk.bs.bean.BS2102116Bean">
+        SELECT
+        <include refid="selectWork"/>
+        FROM sl_house_work
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        AND
+        WORK_ID = #{workId}
+    </select>
+</mapper>
+

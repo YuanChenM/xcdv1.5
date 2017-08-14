@@ -1,0 +1,23 @@
+spring:
+  redis:
+    database: 12
+    host: 10.47.108.37
+    port: 6379
+    password: 
+    pool:
+      max-active: 20
+      max-idle: 10
+      max-wait: 1000
+
+  mvc:
+    static-path-pattern: /static/**
+  datasource:
+    url: jdbc:mysql://10.47.108.36:3306/msk_web
+    username: msk-web
+    password: Msk123
+    driver-class-name: com.mysql.jdbc.Driver
+server:
+  port: 9090
+  context-path: /msk-config-server/
+
+

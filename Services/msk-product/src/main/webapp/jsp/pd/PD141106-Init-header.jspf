@@ -1,0 +1,27 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<form action="${ctx}/PD141106/loadStandard" id="PD141106SearchForm">
+	<table style="width: 100%" class="dataTable no-footer">
+	    <tr>
+             <td colspan="5" align="center"><strong>神农客</strong></td>
+        </tr>
+		<tr>
+			<td width="80px" align="right" style="background:#DBDBDB">类别编码</td>
+			<td width="30%">
+			     <select name="classesCode" <c:if test="${readonly}">onfocus="this.defaultIndex=this.selectedIndex;" onchange="this.selectedIndex=this.defaultIndex;"</c:if> >
+                            <c:forEach items="${classesList}" var="classes">
+                                <option value="${classes.classesCode}"  <c:if test="${classes.classesCode eq classesCode}">selected="selected"</c:if> >${classes.classesName}</option>
+                            </c:forEach>
+                 </select>
+			</td>
+			<td width="80px" align="right" style="background:#DBDBDB">品种编码</td>
+			<td width="30%">
+			     <select name="breedCode" <c:if test="${readonly}">onfocus="this.defaultIndex=this.selectedIndex;" onchange="this.selectedIndex=this.defaultIndex;"</c:if>>
+                            <c:forEach items="${breedList}" var="breed">
+                                <option value="${breed.breedCode}" <c:if test="${classes.breedCode eq breedCode}">selected="selected"</c:if> >${breed.breedName}</option>
+                            </c:forEach>
+                 </select>
+			</td>
+			<td><msk:button buttonValue="选择" buttonId="PD141106.Search" /></td>
+		</tr>
+	</table>
+</form>

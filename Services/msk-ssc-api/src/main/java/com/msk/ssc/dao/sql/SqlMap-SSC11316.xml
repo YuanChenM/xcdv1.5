@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11316Logic">
+    <!-- ssc_delivery_pre_into表字段 -->
+    <sql id="deliveryPreIntoFields">
+        A.DELIVERY_PRE_INTO_ID AS deliveryPreIntoId,
+        A.DELIVERY_PRE_INTO_CODE AS deliveryPreIntoCode,
+        C.DELIVERY_CONFIRM_CODE AS deliveryConfirmCode,
+        D.DELIVERY_CODE AS deliveryCode,
+        ifnull(A.DELIVERY_PRE_INTO_CODE, '') AS intoStoreCode,
+        A.CONTRACT_ID AS contractId,
+        ifnull(A.CONTRACT_CODE, '') AS contractCode,
+        A.DELIVERY_CONFIRM_ID AS deliveryConfirmId,
+        ifnull(A.DELIVERY_CONFIRM_CODE, '') AS DELIVERY_CONFIRM_CODE,
+        A.DELIVERY_BATCH AS deliveryBatch,
+        A.VEHICLE_NUMBER AS vehicleNumber,
+        A.SUPPLIER_ID AS supplierId,
+        ifnull(A.SUPPLIER_NAME, '') AS supplierName,
+        ifnull(A.SUPPLIER_CODE, '') AS supplierCode,
+        A.PURCHASER_ID AS purchaserId,
+        ifnull(A.PURCHASER_NAME, '') AS purchaserName,
+        ifnull(A.PURCHASER_CODE, '') AS purchaserCode,
+        A.ETD AS etd,
+        ifnull(date_format(A.ETD, '%Y-%m-%d'), '') AS expectDeliveryDate,
+        A.ETA AS eta,
+        ifnull(date_format(A.ETA, '%Y-%m-%d'), '') AS expectArriveDate,
+        A.ARRIVE_DATE AS arriveDate,
+        ifnull(date_format(A.ARRIVE_DATE, '%Y-%c-%d %H:%i:%s'), '') AS actualArriveDate,
+        ifnull(A.DELIVERY_WAREHOUSE, '') AS deliveryWarehouse,
+        ifnull(A.DELIVERY_WAREHOUSE_ADDR, '') AS deliveryWarehouseAddr,
+        ifnull(A.ARRIVE_WAREHOUSE, '') AS arriveWarehouse,
+        ifnull(A.ARRIVE_WAREHOUSE_ADDR, '') AS arriveWarehouseAddr,
+        A.MILEAGE AS mileage,
+        ifnull(A.DRIVER_NAME, '') AS driverName,
+        ifnull(A.DRIVER_TEL, '') AS driverTel,
+        ifnull(A.LIC_PLATE_NUMBER, '') AS licPlateNumber,
+        ifnull(A.VEHICLE_TYPE, '') AS vehicleType,
+        ifnull(A.SEND_REMARK, '') AS sendRemark,
+        A.PRODUCT_RECV_STATUS AS productRecvStatus,
+        ifnull(A.REMARK, '') AS remark,
+        REPLACE(A.BUSINESS_FILE_ID,',','/') AS businessFileId,
+        ifnull(A.BUSINESS_FILE_NAME, '') AS businessFileName,
+        REPLACE(A.QUARANTINE_FILE_ID,',','/') AS quarantineFileId,
+        ifnull(A.QUARANTINE_FILE_NAME, '') AS quarantineFileName,
+        REPLACE(A.INVENTORY_FILE_ID,',','/') AS inventoryFileId,
+        ifnull(A.INVENTORY_FILE_NAME, '') AS inventoryFileName,
+        REPLACE(A.REPORT_FILE_ID,',','/') AS reportFileId,
+        ifnull(A.REPORT_FILE_NAME, '') AS reportFileName,
+        ifnull(D.LGCS_AREA_CODE, '') AS lgcsAreaCode,
+        ifnull(D.LGCS_AREA_NAME, '') AS lgcsAreaName,
+        ifnull(A.VER, '') AS ver
+    </sql>
+
+    <!-- ssc_contract_basic表字段 -->
+    <sql id="contractBasicFields">
+        ifnull(B.CONTRACT_NAME, '') AS contractName
+    </sql>
+
+    <!-- ssc_delivery_confirm_basic表字段 -->
+    <sql id="deliveryConfirmBasicFields">
+        ifnull(C.DELIVERY_ID, '') AS deliveryId
+    </sql>
+
+    <!-- 模糊查询条件 -->
+    <sql id="likeCondition">
+        <if test="contractCode != null and contractCode != ''">
+            AND A.CONTRACT_CODE LIKE #{contractCode}
+        </if>
+        <if test="deliveryConfirmCode != null and deliveryConfirmCode != ''">
+            AND A.DELIVERY_CONFIRM_CODE LIKE #{deliveryConfirmCode}
+        </if>
+        <if test="deliveryCode != null and deliveryCode != ''">
+            AND A.DELIVERY_CODE LIKE #{deliveryCode}
+        </if>
+        <if test="contractName != null and contractName != ''">
+            AND B.CONTRACT_NAME LIKE #{contractName}
+        </if>
+        <if test="purchaserName != null and purchaserName != ''">
+            AND A.PURCHASER_NAME LIKE #{purchaserName}
+        </if>
+        <if test="supplierName != null and supplierName != ''">
+            AND A.SUPPLIER_NAME LIKE #{supplierName}
+        </if>
+        <if test="intoStoreCode != null and intoStoreCode != ''">
+            AND A.DELIVERY_PRE_INTO_CODE LIKE #{intoStoreCode}
+        </if>
+        <if test="arriveWarehouse != null and arriveWarehouse != ''">
+            AND A.ARRIVE_WAREHOUSE LIKE #{arriveWarehouse}
+        </if>
+        <if test="licPlateNumber != null and licPlateNumber != ''">
+            AND A.LIC_PLATE_NUMBER LIKE #{licPlateNumber}
+        </if>
+        <if test="driverTel != null and driverTel != ''">
+            AND A.DRIVER_TEL LIKE #{driverTel}
+        </if>
+        <if test="lgcsAreaName!=null and lgcsAreaName!=''">
+            AND D.LGCS_AREA_NAME LIKE #{lgcsAreaName}
+        </if>
+        <if test="expectDeliveryDate!=null and expectDeliveryDate!='' and expectArriveDate!=null and expectArriveDate!=''">
+            <![CDATA[AND A.ETD >= '${expectDeliveryDate} 00:00:00']]>
+            <![CDATA[AND A.ETA <= '${expectArriveDate} 23:59:59' ]]>
+        </if>
+        <if test="(expectDeliveryDate!=null and expectDeliveryDate!='') and (expectArriveDate==null or expectArriveDate=='')">
+            AND DATE_FORMAT(A.ETD,'%Y-%m-%d') = #{expectDeliveryDate}
+        </if>
+        <if test="(expectArriveDate!=null and expectArriveDate!='') and (expectDeliveryDate==null or expectDeliveryDate=='')">
+            AND DATE_FORMAT(A.ETA,'%Y-%m-%d') = #{expectArriveDate}
+        </if>
+        <if test="productRecvStatuses != null and productRecvStatuses.size() > 0">
+            AND A.PRODUCT_RECV_STATUS IN
+            <foreach collection="productRecvStatuses" item="productRecvStatus" index="index" open="(" separator="," close=")">
+                #{productRecvStatus}
+            </foreach>
+        </if>
+        <if test="productRecvStatuses == null">
+            AND A.PRODUCT_RECV_STATUS != '9'
+            AND (A.DEL_FLG = 0 OR A.DEL_FLG IS NULL)
+        </if>
+        <if test="deliveryBatch != null and deliveryBatch != ''">
+            AND A.DELIVERY_BATCH = #{deliveryBatch}
+        </if>
+        <if test="vehicleNumber != null and vehicleNumber != ''">
+            AND A.VEHICLE_NUMBER = #{vehicleNumber}
+        </if>
+        <if test="deliveryPreIntoIds != null and deliveryPreIntoIds != ''">
+            AND DELIVERY_PRE_INTO_ID IN <foreach collection="deliveryPreIntoIds" item="deliveryPreIntoId" index="index" open="(" separator="," close=")">#{deliveryPreIntoId}</foreach>
+        </if>
+    </sql>
+
+    <select id="findPageList" parameterType="com.msk.ssc.bean.SSC11316Param" resultType="com.msk.ssc.bean.SSC11316Bean">
+        SELECT
+            <include refid="deliveryPreIntoFields" />,
+            <include refid="contractBasicFields" />,
+            <include refid="deliveryConfirmBasicFields" />
+        FROM
+            ssc_delivery_pre_into AS A
+        LEFT JOIN ssc_contract_basic B ON A.CONTRACT_ID = B.CONTRACT_ID
+        LEFT JOIN ssc_delivery_confirm_basic C ON A.DELIVERY_CONFIRM_ID = C.DELIVERY_CONFIRM_ID
+        LEFT JOIN ssc_delivery_order_basic D ON D.DELIVERY_ID = C.DELIVERY_ID
+        WHERE
+        1=1
+        <include refid="likeCondition" />
+        <if test="deliveryPreIntoIds == null">
+            ORDER BY A.DELIVERY_PRE_INTO_ID DESC
+        </if>
+        <if test="deliveryPreIntoIds != null">
+            ORDER BY A.DELIVERY_PRE_INTO_ID
+        </if>
+        <if test="paging == true">
+            LIMIT #{startPos}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" parameterType="com.msk.ssc.bean.SSC11316Param" resultType="int">
+        SELECT
+            count(1)
+        FROM
+            ssc_delivery_pre_into AS A
+        LEFT JOIN ssc_contract_basic B ON A.CONTRACT_ID = B.CONTRACT_ID
+        LEFT JOIN ssc_delivery_confirm_basic C ON A.DELIVERY_CONFIRM_ID = C.DELIVERY_CONFIRM_ID
+        LEFT JOIN ssc_delivery_order_basic D ON D.DELIVERY_ID = C.DELIVERY_ID
+        WHERE
+        1=1
+        <include refid="likeCondition" />
+    </select>
+
+    <select id="findList" parameterType="com.msk.ssc.bean.SSC11316Param" resultType="com.msk.ssc.bean.SSC11316Bean">
+        SELECT
+        A.DELIVERY_PRE_INTO_ID AS deliveryPreIntoId,
+        A.DELIVERY_PRE_INTO_CODE AS deliveryPreIntoCode,
+        A.DELIVERY_CONFIRM_CODE AS deliveryConfirmCode,
+        A.DELIVERY_CODE AS deliveryCode,
+        IFNULL(A.DELIVERY_PRE_INTO_CODE, '') AS intoStoreCode,
+        A.CONTRACT_ID AS contractId,
+        IFNULL(A.CONTRACT_CODE, '') AS contractCode,
+        A.DELIVERY_CONFIRM_ID AS deliveryConfirmId,
+        IFNULL(A.DELIVERY_CONFIRM_CODE, '') AS DELIVERY_CONFIRM_CODE,
+        A.PRODUCT_RECV_STATUS AS productRecvStatus
+        FROM
+        ssc_delivery_pre_into AS A
+        WHERE
+        (A.DEL_FLG = 0 OR A.DEL_FLG IS NULL)
+        <if test="deliveryConfirmId != null and deliveryConfirmId != ''">
+            AND A.DELIVERY_CONFIRM_ID = #{deliveryConfirmId}
+        </if>
+        <if test="deliveryCode != null and deliveryCode != ''">
+            AND A.DELIVERY_CODE = #{deliveryCode}
+        </if>
+    </select>
+
+    <update id="deletePreInto" parameterType="com.msk.ssc.bean.SSC11316Param">
+        update ssc_delivery_pre_into
+        set
+        <if test="productRecvStatus != null and productRecvStatus != ''">
+            PRODUCT_RECV_STATUS = #{productRecvStatus},
+        </if>
+        DEL_FLG = #{delFlg},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        DELIVERY_PRE_INTO_ID = #{deliveryPreIntoId}
+    </update>
+
+</mapper>

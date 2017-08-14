@@ -1,0 +1,905 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.ProductInfoLogic">
+
+    <select id="findPdClasses" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="BaseParam">
+        SELECT
+        A.CLASSES_CODE AS classesCode,
+        A.CLASSES_NAME AS classesName
+        FROM PD_CLASSES AS A
+        <where>
+            AND  A.DEL_FLG = 0
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+        </where>
+    </select>
+    <select id="findPdMachining" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="BaseParam">
+        SELECT
+        A.CLASSES_CODE AS classesCode,
+        A.MACHINING_CODE AS machiningCode,
+        A.MACHINING_NAME AS machiningName
+        FROM PD_MACHINING AS A
+        INNER  JOIN PD_CLASSES B ON B.CLASSES_CODE = A.CLASSES_CODE
+        <where>
+            AND B.DEL_FLG = 0 AND A.DEL_FLG = 0
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+        </where>
+        GROUP BY A.CLASSES_CODE,A.MACHINING_CODE
+    </select>
+    <select id="findPdBreed" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="BaseParam">
+        SELECT
+        A.CLASSES_CODE AS classesCode,
+        A.MACHINING_CODE AS machiningCode,
+        A.COUNTRY_CODE AS countryCode,
+        A.BREED_CODE AS breedCode,
+        A.BREED_NAME AS breedName
+        FROM PD_BREED AS A
+        INNER  JOIN PD_CLASSES B ON B.CLASSES_CODE = A.CLASSES_CODE
+        INNER  JOIN PD_MACHINING C ON C.MACHINING_CODE = A.MACHINING_CODE
+        <where>
+             A.DEL_FLG = 0 AND B.DEL_FLG = 0 AND C.DEL_FLG = 0
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+                AND A.BREED_NAME=#{filterMap.breedName}
+            </if>
+        </where>
+        GROUP BY A.CLASSES_CODE,A.MACHINING_CODE,A.BREED_CODE
+    </select>
+    <select id="findPdFeature" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="BaseParam">
+        SELECT
+        A.CLASSES_CODE AS classesCode,
+        A.MACHINING_CODE AS machiningCode,
+        A.BREED_CODE AS breedCode,
+        A.FEATURE_CODE AS featureCode,
+        A.FEATURE_NAME AS featureName
+        FROM PD_FEATURE AS A
+        INNER JOIN PD_CLASSES B ON B.CLASSES_CODE = A.CLASSES_CODE
+        INNER JOIN PD_MACHINING C ON C.MACHINING_CODE = A.MACHINING_CODE
+        INNER JOIN PD_BREED D ON D.BREED_CODE = A.BREED_CODE
+        <where>
+            A.DEL_FLG = 0 AND B.DEL_FLG = 0 AND C.DEL_FLG = 0 AND D.DEL_FLG = 0
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND A.FEATURE_CODE=#{filterMap.featureCode}
+            </if>
+            <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+                AND A.FEATURE_NAME=#{filterMap.featureName}
+            </if>
+        </where>
+        GROUP BY A.CLASSES_CODE,
+        A.MACHINING_CODE,
+        A.BREED_CODE,
+        A.FEATURE_CODE
+    </select>
+    <select id="findPdWeight" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="BaseParam">
+        SELECT
+        A.CLASSES_CODE AS classesCode,
+        A.MACHINING_CODE AS machiningCode,
+        A.BREED_CODE AS breedCode,
+        A.FEATURE_CODE AS featureCode,
+        A.WEIGHT_CODE AS weightCode,
+        A.WEIGHT_NAME AS weightName,
+        A.WEIGHT_VAL AS weightVal
+        FROM PD_WEIGHT AS A
+        INNER JOIN PD_CLASSES B ON B.CLASSES_CODE = A.CLASSES_CODE
+        INNER JOIN PD_MACHINING C ON C.MACHINING_CODE = A.MACHINING_CODE
+        INNER JOIN PD_BREED D ON D.BREED_CODE = A.BREED_CODE
+        INNER JOIN PD_FEATURE E ON E.FEATURE_CODE = A.FEATURE_CODE
+        <where>
+            A.DEL_FLG = 0 AND B.DEL_FLG = 0 AND C.DEL_FLG = 0 AND D.DEL_FLG = 0 AND E.DEL_FLG = 0
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND A.FEATURE_CODE=#{filterMap.featureCode}
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                AND A.WEIGHT_CODE=#{filterMap.weightCode}
+            </if>
+            <if test="filterMap.weightName!=null and filterMap.weightName!=''">
+                AND A.WEIGHT_NAME=#{filterMap.weightName}
+            </if>
+            <if test="filterMap.weightVal!=null and filterMap.weightVal!=''">
+                AND A.WEIGHT_VAL=#{filterMap.weightVal}
+            </if>
+        </where>
+        GROUP BY A.CLASSES_CODE,
+        A.MACHINING_CODE,
+        A.BREED_CODE,
+        A.FEATURE_CODE,
+        A.WEIGHT_CODE
+    </select>
+
+    <select id="findGrade" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="BaseParam">
+        SELECT
+        IFNULL(A.GRADE_CODE,'') AS gradeCode,
+        IFNULL(A.GRADE_NAME,'') AS gradeName
+        FROM PD_GRADE AS A
+        <where>
+            A.DEL_FLG = 0
+            <if test="filterMap.gradeCode!=null and filterMap.gradeCode!=''">
+                AND A.GRADE_CODE=#{filterMap.gradeCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="findPackage" parameterType="BaseParam" resultType="com.msk.product.bean.PDInfoResult">
+        SELECT
+        IFNULL(A.NORMS_CODE,'') AS normsCode
+        ,IFNULL(A.NORMS_OUT,'') AS normsName
+        ,IFNULL(A.NORMS_SUTTLE,'') AS normsSuttle
+        ,IFNULL(A.NORMS_ERROR,'') AS normsError
+        ,IFNULL(A.NORMS_NUMBER,'') AS normsNumber
+        ,IFNULL(A.NORMS_SIZE,'')  AS normsSize
+        ,IFNULL(A.NORMS_TEXTURE,'') AS normsTexture
+        ,IFNULL(A.NORMS_OUT,'') AS normsOut
+        ,IFNULL(A.NORMS_KG,'') AS normsKg
+        ,IFNULL(A.NORMS_OUT_SIZE,'') AS normsOutSize
+        ,IFNULL(A.NORMS_OUT_TEXTURE,'') AS normsOutTexture
+        ,IFNULL(A.NORMS_LENGTH,'') AS normsLength
+        ,IFNULL(A.NORMS_WIDTH,'') AS normsWidth
+        ,IFNULL(A.NORMS_HEIGHT,'') AS normsHeight
+        ,IFNULL(A.NORMS_VOLUME,'') AS normsVolume
+        ,IFNULL(A.NETWEIGHT_OUT,'') AS netweightOut
+        ,IFNULL(A.GROSSWEIGHT_OUT,'') AS grossweightOut
+        FROM PD_NORMS_STD AS A
+        WHERE A.STANDARD_ID IN (SELECT B.STANDARD_ID FROM PD_STANDARD B
+        <where>
+            A.DEL_FLG = 0
+            <if test="classesCode!=null and classesCode!=''">
+                AND B.CLASSES_CODE = #{classesCode}
+            </if>
+            <if test="machiningCode!=null and machiningCode!=''">
+                AND B.MACHINING_CODE=#{machiningCode}
+            </if>
+            <if test="breedCode!=null and breedCode!=''">
+                AND B.BREED_CODE=#{breedCode}
+            </if>
+            <if test="featureCode!=null and featureCode!=''">
+                AND B.FEATURE_CODE=#{featureCode}
+            </if>
+            <if test="weightCode!=null and weightCode!=''">
+                AND B.WEIGHT_CODE = #{weightCode}
+            </if>
+            )
+        </where>
+
+        <if test="null != normCodes and normCodes.size()">
+            AND A.NORMS_CODE IN
+            <foreach collection="normCodes" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+
+    <select id="findPdClassesByCodes" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="java.util.Map">
+        SELECT
+        IFNULL(A.CLASSES_CODE,'') AS classesCode,
+        IFNULL(A.CLASSES_NAME,'') AS classesName
+        FROM PD_CLASSES AS A
+        <where>
+            A.DEL_FLG = 0
+            <if test="list != null and list.size() > 0">
+                AND  A.CLASSES_CODE IN
+                <foreach collection="list" item="item" open="(" separator="," close=")">
+                    #{item.classesCode}
+                </foreach>
+            </if>
+
+        </where>
+    </select>
+    <select id="findPdMachiningByCodes" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="java.util.Map">
+        SELECT
+        IFNULL(A.CLASSES_CODE,'') AS classesCode,
+        IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(A.MACHINING_NAME,'') AS machiningName
+        FROM PD_MACHINING AS A
+            <where>
+                <foreach collection="list" item="item" open="" separator="OR" close="">
+                    <if test="item.classesCode != null and item.classesCode != ''">
+                        A.CLASSES_CODE = CONVERT(#{item.classesCode},SIGNED)
+                    </if>
+                    <if test="item.machiningCode != null and item.machiningCode != ''">
+                        AND A.MACHINING_CODE = CONVERT(#{item.machiningCode},SIGNED)
+                    </if>
+            </foreach>
+                AND A.DEL_FLG = 0
+        </where>
+    </select>
+    <select id="findPdBreedByCodes" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="java.util.Map">
+        SELECT
+        IFNULL(A.CLASSES_CODE,'') AS classesCode,
+        IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(A.COUNTRY_CODE,'') AS countryCode,
+        IFNULL(A.BREED_CODE,'') AS breedCode,
+        IFNULL(A.BREED_NAME,'') AS breedName
+        FROM PD_BREED AS A
+        <where>
+            <foreach collection="list" item="item" open="" separator="OR" close="">
+                <if test="item.classesCode != null and item.classesCode != ''">
+                    A.CLASSES_CODE = CONVERT(#{item.classesCode},SIGNED)
+                </if>
+                <if test="item.machiningCode != null and item.machiningCode != ''">
+                    AND A.MACHINING_CODE = CONVERT(#{item.machiningCode},SIGNED)
+                </if>
+                <if test="item.breedCode != null and item.breedCode != ''">
+                    AND A.BREED_CODE = CONVERT(#{item.breedCode},SIGNED)
+                </if>
+            </foreach>
+            AND A.DEL_FLG = 0
+        </where>
+    </select>
+    <select id="findPdFeatureByCodes" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="java.util.Map">
+        SELECT
+        IFNULL(A.CLASSES_CODE,'') AS classesCode,
+        IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(A.BREED_CODE,'') AS breedCode,
+        IFNULL(A.FEATURE_CODE,'') AS featureCode,
+        IFNULL(A.FEATURE_NAME,'') AS featureName
+        FROM PD_FEATURE AS A
+        <where>
+            <foreach collection="list" item="item" open="" separator="OR" close="">
+                <if test="item.classesCode != null and item.classesCode != ''">
+                    A.CLASSES_CODE = CONVERT(#{item.classesCode},SIGNED)
+                </if>
+                <if test="item.machiningCode != null and item.machiningCode != ''">
+                    AND A.MACHINING_CODE = CONVERT(#{item.machiningCode},SIGNED)
+                </if>
+                <if test="item.breedCode != null and item.breedCode != ''">
+                    AND A.BREED_CODE = CONVERT(#{item.breedCode},SIGNED)
+                </if>
+                <if test="item.featureCode != null and item.featureCode != ''">
+                    AND A.FEATURE_CODE = CONVERT(#{item.featureCode},SIGNED)
+                </if>
+            </foreach>
+            AND A.DEL_FLG = 0
+        </where>
+    </select>
+    <select id="findPdWeightByCodes" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="java.util.Map">
+        SELECT
+        IFNULL(A.CLASSES_CODE,'') AS classesCode,
+        IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(A.BREED_CODE,'') AS breedCode,
+        IFNULL(A.FEATURE_CODE,'') AS featureCode,
+        IFNULL(A.WEIGHT_CODE,'') AS weightCode,
+        IFNULL(A.WEIGHT_NAME,'') AS weightName,
+        IFNULL(A.WEIGHT_VAL,'') AS weightVal
+        FROM PD_WEIGHT AS A
+        <where>
+            <foreach collection="list" item="item" open="" separator="OR" close="">
+                <if test="item.classesCode != null and item.classesCode != ''">
+                    A.CLASSES_CODE = CONVERT(#{item.classesCode},SIGNED)
+                </if>
+                <if test="item.machiningCode != null and item.machiningCode != ''">
+                    AND A.MACHINING_CODE = CONVERT(#{item.machiningCode},SIGNED)
+                </if>
+                <if test="item.breedCode != null and item.breedCode != ''">
+                    AND A.BREED_CODE = CONVERT(#{item.breedCode},SIGNED)
+                </if>
+                <if test="item.featureCode != null and item.featureCode != ''">
+                    AND A.FEATURE_CODE = CONVERT(#{item.featureCode},SIGNED)
+                </if>
+                <if test="item.weightCode != null and item.weightCode != ''">
+                    AND A.WEIGHT_CODE = CONVERT(#{item.weightCode},SIGNED)
+                </if>
+            </foreach>
+            AND A.DEL_FLG = 0
+        </where>
+    </select>
+
+    <select id="findGradeByCodes" resultType="com.msk.product.bean.PDInfoResult"
+            parameterType="java.util.Map">
+        SELECT
+        A.GRADE_CODE AS gradeCode,
+        A.GRADE_NAME AS gradeName
+        FROM PD_GRADE AS A
+        <where>
+            A.GRADE_CODE IN
+            <foreach collection="list" item="item" open="(" separator="," close=")">
+                CONVERT(#{item.gradeCode},SIGNED)
+            </foreach>
+            AND A.DEL_FLG = 0
+        </where>
+    </select>
+
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.PDInfoResult">
+        SELECT
+        B.CLASSES_CODE AS classesCode,
+        B.MACHINING_CODE AS machiningCode,
+        B.BREED_CODE AS breedCode,
+        B.FEATURE_CODE AS featureCode,
+        A.STANDARD_ID AS standardId,
+        A.NORMS_CODE AS normsCode,
+        A.NORMS_SUTTLE AS normsSuttle,
+        A.NORMS_ERROR AS normsError,
+        A.NORMS_NUMBER AS normsNumber,
+        A.NORMS_SIZE AS normsSize,
+        A.NORMS_TEXTURE AS normsTexture,
+        A.NORMS_OUT AS normsOut,
+        A.NORMS_KG AS normsKg,
+        A.NORMS_OUT_SIZE AS normsOutSize,
+        A.NORMS_OUT_TEXTURE AS normsOutTexture,
+        A.NORMS_TEN AS normsTen,
+        A.NORMS_LENGTH AS normsLength,
+        A.NORMS_WIDTH AS normsWidth,
+        A.NORMS_HEIGHT AS normsHeight,
+        A.NORMS_VOLUME AS normsVolume,
+        A.NETWEIGHT_INNER AS netweightInner,
+        A.NETWEIGHT_OUT AS netweightOut,
+        A.GROSSWEIGHT_OUT AS grossweightOut,
+        A.DEL_FLG AS delFlg,
+        A.CRT_ID AS crtId,
+        A.CRT_TIME AS crtTime,
+        A.UPD_ID AS updld,
+        A.UPD_TIME AS updTime,
+        A.ACT_ID AS actId,
+        A.ACT_TIME AS actTime,
+        A.VER AS ver
+        FROM PD_NORMS_STD AS A
+        INNER JOIN  PD_STANDARD B
+        ON A.STANDARD_ID=B.STANDARD_ID
+        <where>
+        <if test="classesCode!=null and classesCode!=''">
+            AND B.CLASSES_CODE = #{classesCode}
+        </if>
+        <if test="machiningCode!=null and machiningCode!=''">
+            AND B.MACHINING_CODE=#{machiningCode}
+        </if>
+        <if test="breedCode!=null and breedCode!=''">
+            AND B.BREED_CODE=#{breedCode}
+        </if>
+        <if test="featureCode!=null and featureCode!=''">
+            AND B.FEATURE_CODE=#{featureCode}
+        </if>
+        <if test="weightCode!=null and weightCode!=''">
+            AND B.WEIGHT_CODE = #{weightCode}
+        </if>
+        <if test="normsCode!=null and normsCode!=''">
+            AND B.WEIGHT_CODE = #{normsCode}
+        </if>
+            AND A.DEL_FLG = 0 AND B.DEL_FLG = 0
+        </where>
+    </select>
+
+    <select id="findPageList" parameterType="BaseParam"
+            resultType="com.msk.product.bean.PDInfoResult">
+        SELECT
+                a.classCode AS classesCode,
+                a.classesName AS classesName,
+                a.machiningCode AS machiningCode,
+                a.machiningName AS machiningName,
+                a.breedCode AS breedCode,
+                a.breedName AS breedName,
+                a.featureCode as featureCode,
+                a.featureName as featureName,
+                a.weightCode as weightCode,
+                a.weightName as weightName,
+            <if test="gradeFlag != null and gradeFlag != ''">
+                a.gradeCode AS gradeCode,
+                a.gradeName AS gradeName,
+            </if>
+        a.scientificName AS scientificName,
+        a.salesName AS salesName,
+        a.localName AS localName,
+        a.lgcsCode AS lgcsCode,
+        a.lgcsName AS lgcsName from (SELECT B.LEVEL_CODE AS classCode,
+        B.LEVEL_NAME AS classesName,
+        A.LEVEL_CODE AS machiningCode,
+        A.LEVEL_NAME AS machiningName,
+        C.LEVEL_CODE AS breedCode,
+        C.LEVEL_NAME AS breedName,
+        D.LEVEL_CODE as featureCode,
+        D.LEVEL_NAME as featureName,
+        E.LEVEL_CODE as weightCode,
+        E.LEVEL_NAME as weightName,
+        G.SCIENTIFIC_NAME AS scientificName,
+        G.SALES_NAME AS salesName,
+        G.LOCAL_NAME AS localName,
+        L.LGCS_CODE AS lgcsCode,
+        L.LGCS_NAME AS lgcsName
+        <if test="gradeFlag != null and gradeFlag != ''">
+            ,L.GRADE_CODE AS gradeCode,
+            L.GRADE_NAME AS gradeName
+        </if>
+        FROM
+        (SELECT LEVEL_CODE,LEVEL_NAME,CLASSESTREE_CODE,PARENT_CODE,DEL_FLG FROM  pd_classestree where TREE_LEVEL = 2
+        AND DEL_FLG = 0) AS A
+        INNER JOIN (
+        SELECT
+        CLASSESTREE_CODE,
+        LEVEL_CODE,
+        LEVEL_NAME,DEL_FLG
+        FROM
+        PD_CLASSESTREE WHERE
+        TREE_LEVEL = 1
+        AND DEL_FLG = 0
+        ) AS B ON B.CLASSESTREE_CODE = A.PARENT_CODE
+        INNER JOIN (SELECT LEVEL_CODE,LEVEL_NAME,CLASSESTREE_CODE,PARENT_CODE,DEL_FLG FROM  pd_classestree WHERE TREE_LEVEL = 3 AND DEL_FLG = 0) C ON C.PARENT_CODE = A.CLASSESTREE_CODE
+        INNER JOIN (SELECT LEVEL_CODE,LEVEL_NAME,CLASSESTREE_CODE,PARENT_CODE,DEL_FLG FROM  pd_classestree WHERE TREE_LEVEL = 4 AND DEL_FLG = 0) D ON D.PARENT_CODE = C.CLASSESTREE_CODE
+        INNER JOIN (SELECT LEVEL_CODE,LEVEL_NAME,CLASSESTREE_CODE,PARENT_CODE,DEL_FLG FROM  pd_classestree WHERE TREE_LEVEL = 5 AND DEL_FLG = 0) E ON E.PARENT_CODE = D.CLASSESTREE_CODE
+        <choose>
+            <when test="gradeFlag!=null and gradeFlag!=''">
+                <!--Modify: 物流区产品查询数据修改 杨春艳 2016/10/10 Start-->
+                INNER JOIN (select b.LGCS_CODE,b.LGCS_NAME,b.CLASSES_CODE,b.MACHINING_CODE,b.BREED_CODE,b.FEATURE_CODE,b.WEIGHT_CODE,b.GRADE_CODE,m.GRADE_NAME,b.DEL_FLG FROM pd_logiarea b LEFT JOIN pd_grade m on b.GRADE_CODE = m.GRADE_CODE WHERE m.DEL_FLG = 0 AND b.DEL_FLG = 0) L ON
+                <!--Modify: 物流区产品查询数据修改 杨春艳 2016/10/10 End-->
+            </when>
+            <otherwise>
+                INNER JOIN (select LGCS_CODE,LGCS_NAME,CLASSES_CODE,MACHINING_CODE,BREED_CODE,FEATURE_CODE,WEIGHT_CODE,GRADE_CODE,DEL_FLG FROM pd_logiarea where DEL_FLG = 0) L ON
+            </otherwise>
+        </choose>
+        B.LEVEL_CODE = L.CLASSES_CODE AND A.LEVEL_CODE = L.MACHINING_CODE AND C.LEVEL_CODE = L.BREED_CODE AND D.LEVEL_CODE = L.FEATURE_CODE and E.LEVEL_CODE = L.WEIGHT_CODE
+        LEFT JOIN (SELECT CLASSESTREE_CODE,SCIENTIFIC_NAME,LOCAL_NAME,SALES_NAME,DEL_FLG FROM pd_classestree_mat) G ON G.CLASSESTREE_CODE = C.CLASSESTREE_CODE
+        )a
+        <where>
+            a.a.lgcsCode IS NOT NULL
+        <if test="lgcsCode!=null and lgcsCode!=''">
+            AND a.lgcsCode =#{lgcsCode}
+        </if>
+        <!--Modify: 横展开修改模糊查询 任强 2016/09/29 Start-->
+        <if test="lgcsName!=null and lgcsName!=''">
+            AND a.lgcsName like #{lgcsName}
+        </if>
+
+        <if test="classesName!=null and classesName!=''">
+            AND a.classesName like #{classesName}
+        </if>
+
+        <if test="machiningName!=null and machiningName!=''">
+            AND a.machiningName like #{machiningName}
+        </if>
+        <if test="breedName!=null and breedName!=''">
+            AND a.breedName like #{breedName}
+        </if>
+        <if test="featureName!=null and featureName!=''">
+            AND a.featureName like #{featureName}
+        </if>
+        <if test="weightsName!=null and weightsName!=''">
+            AND a.weightName like #{weightsName}
+        </if>
+        <if test="pdCode!=null and pdCode!=''">
+            <choose>
+                <when test="gradeFlag != null and gradeFlag != ''">
+                    <!--Modif for 改为后模糊匹配 at 2016/09/08 by ni_shaotang Start -->
+                    AND  CONCAT(a.classCode,a.machiningCode,a.breedCode,a.featureCode,a.weightCode,a.gradeCode) LIKE #{pdCode}
+                    <!--Modif for 改为后模糊匹配 at 2016/09/08 by ni_shaotang End -->
+                </when>
+                <otherwise>
+                    AND  CONCAT(a.classCode,a.machiningCode,a.breedCode,a.featureCode,a.weightCode) LIKE #{pdCode}
+                </otherwise>
+            </choose>
+        </if>
+            <!--Modif for 添加批量的产品编码筛选 at 2016/09/27 by yang_chunyan Start -->
+        <if test="pdCodes != null and pdCodes.size() > 0">
+            <choose>
+                <when test="gradeFlag != null and gradeFlag != ''">
+                    AND
+                    <foreach collection="pdCodes" item="item" open="(" close=")" separator="OR">
+                        CONCAT(a.classCode,a.machiningCode,a.breedCode,a.featureCode,a.weightCode,a.gradeCode) LIKE CONCAT('',#{item},'%')
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND
+                    <foreach collection="pdCodes" item="item" open="(" close=")" separator="OR">
+                        CONCAT(a.classCode,a.machiningCode,a.breedCode,a.featureCode,a.weightCode) LIKE CONCAT('',#{item},'%')
+                    </foreach>
+                </otherwise>
+            </choose>
+        </if>
+        <!--Modif for 添加批量的产品编码筛选 at 2016/09/27 by yang_chunyan End -->
+        <if test="pdName!=null and pdName!=''">
+            AND  CONCAT(a.classesName,'/',a.machiningName,'/',a.breedName,'/',a.featureName,'/',a.weightName) LIKE #{pdName}
+        </if>
+        <!--Modify: 横展开修改模糊查询 任强 2016/09/29 End-->
+    </where>
+        ORDER BY
+        a.lgcsCode desc,a.classCode,
+        a.machiningCode,
+        a.breedCode,
+        a.featureCode,
+        a.weightCode asc
+        <if test="gradeFlag!=null and gradeFlag!=''">
+            ,a.gradeCode
+        </if>
+        <if test="paging==true">
+            LIMIT #{startSize},#{endSize};
+        </if>
+    </select>
+
+
+
+    <select id="getPageCount" parameterType="BaseParam"
+            resultType="int">
+        SELECT COUNT(1) FROM (SELECT
+        a.lgcsCode,
+        a.lgcsName,
+        a.classesName,
+        a.machiningName,
+        a.breedName,
+        a.featureName,
+        a.weightName,
+        a.classCode,a.machiningCode,a.breedCode,a.featureCode,a.weightCode
+        <if test="gradeFlag != null and gradeFlag != ''">
+            ,a.gradeCode
+        </if>
+        FROM
+        (SELECT B.LEVEL_CODE AS classCode,
+        B.LEVEL_NAME AS classesName,
+        A.LEVEL_CODE AS machiningCode,
+        A.LEVEL_NAME AS machiningName,
+        C.LEVEL_CODE AS breedCode,
+        C.LEVEL_NAME AS breedName,
+        D.LEVEL_CODE as featureCode,
+        D.LEVEL_NAME as featureName,
+        E.LEVEL_CODE as weightCode,
+        E.LEVEL_NAME as weightName,
+        L.LGCS_CODE AS lgcsCode,
+        L.LGCS_NAME AS lgcsName
+        <if test="gradeFlag != null and gradeFlag != ''">
+            ,L.GRADE_CODE AS gradeCode
+        </if>
+        FROM
+        (SELECT LEVEL_CODE,LEVEL_NAME,CLASSESTREE_CODE,PARENT_CODE,DEL_FLG FROM  pd_classestree) AS A
+        INNER JOIN (
+        SELECT
+        CLASSESTREE_CODE,
+        LEVEL_CODE,
+        LEVEL_NAME,DEL_FLG
+        FROM
+        PD_CLASSESTREE
+        ) AS B ON B.CLASSESTREE_CODE = A.PARENT_CODE
+        INNER JOIN (SELECT LEVEL_CODE,LEVEL_NAME,CLASSESTREE_CODE,PARENT_CODE,DEL_FLG FROM  pd_classestree) C ON C.PARENT_CODE = A.CLASSESTREE_CODE
+        INNER JOIN (SELECT CLASSESTREE_CODE,SCIENTIFIC_NAME,LOCAL_NAME,SALES_NAME,DEL_FLG FROM pd_classestree_mat) G ON G.CLASSESTREE_CODE = C.CLASSESTREE_CODE
+        INNER JOIN (SELECT LEVEL_CODE,LEVEL_NAME,CLASSESTREE_CODE,PARENT_CODE,DEL_FLG FROM  pd_classestree) D ON D.PARENT_CODE = C.CLASSESTREE_CODE
+        INNER JOIN (SELECT LEVEL_CODE,LEVEL_NAME,CLASSESTREE_CODE,PARENT_CODE,DEL_FLG FROM  pd_classestree) E ON E.PARENT_CODE = D.CLASSESTREE_CODE
+        <choose>
+            <when test="gradeFlag!=null and gradeFlag!=''">
+                INNER JOIN (select b.LGCS_CODE,b.LGCS_NAME,b.CLASSES_CODE,b.MACHINING_CODE,b.BREED_CODE,b.FEATURE_CODE,b.WEIGHT_CODE,b.GRADE_CODE,m.GRADE_NAME,b.DEL_FLG FROM pd_logiarea b LEFT JOIN pd_grade m on b.GRADE_CODE = m.GRADE_CODE WHERE m.DEL_FLG = 0 and b.DEL_FLG = 0) L ON
+            </when>
+            <otherwise>
+                INNER JOIN (select LGCS_CODE,LGCS_NAME,CLASSES_CODE,MACHINING_CODE,BREED_CODE,FEATURE_CODE,WEIGHT_CODE,GRADE_CODE,DEL_FLG FROM pd_logiarea) L ON
+            </otherwise>
+        </choose>
+        B.LEVEL_CODE = L.CLASSES_CODE AND A.LEVEL_CODE = L.MACHINING_CODE AND C.LEVEL_CODE = L.BREED_CODE AND D.LEVEL_CODE = L.FEATURE_CODE and E.LEVEL_CODE = L.WEIGHT_CODE
+        AND A.DEL_FLG = 0 AND B.DEL_FLG = 0 AND C.DEL_FLG = 0 AND D.DEL_FLG = 0 AND E.DEL_FLG = 0 AND G.DEL_FLG = 0 AND L.DEL_FLG = 0
+        )a
+        <where>
+            a.a.lgcsCode IS NOT NULL
+            <if test="lgcsCode!=null and lgcsCode!=''">
+                AND a.lgcsCode =#{lgcsCode}
+            </if>
+            <!--Modify: 横展开修改模糊查询 任强 2016/09/29 Start-->
+            <if test="lgcsName!=null and lgcsName!=''">
+                AND a.lgcsName like #{lgcsName}
+            </if>
+
+            <if test="classesName!=null and classesName!=''">
+                AND a.classesName like #{classesName}
+            </if>
+
+            <if test="machiningName!=null and machiningName!=''">
+                AND a.machiningName like #{machiningName}
+            </if>
+            <if test="breedName!=null and breedName!=''">
+                AND a.breedName like #{breedName}
+            </if>
+            <if test="featureName!=null and featureName!=''">
+                AND a.featureName like #{featureName}
+            </if>
+            <if test="weightsName!=null and weightsName!=''">
+                AND a.weightName like #{weightsName}
+            </if>
+            <if test="pdCode!=null and pdCode!=''">
+                <choose>
+                    <when test="gradeFlag != null and gradeFlag != ''">
+                        AND  CONCAT(a.classCode,a.machiningCode,a.breedCode,a.featureCode,a.weightCode,a.gradeCode) LIKE #{pdCode}
+                    </when>
+                    <otherwise>
+                        AND  CONCAT(a.classCode,a.machiningCode,a.breedCode,a.featureCode,a.weightCode) LIKE #{pdCode}
+                    </otherwise>
+                </choose>
+            </if>
+            <!--Modif for 添加批量的产品编码筛选 at 2016/09/27 by yang_chunyan Start -->
+            <if test="pdCodes != null and pdCodes.size() > 0">
+                <choose>
+                    <when test="gradeFlag != null and gradeFlag != ''">
+                        AND
+                        <foreach collection="pdCodes" item="item" open="(" close=")" separator="OR">
+                            CONCAT(a.classCode,a.machiningCode,a.breedCode,a.featureCode,a.weightCode,a.gradeCode) LIKE CONCAT('',#{item},'%')
+                        </foreach>
+
+                    </when>
+                    <otherwise>
+                        AND
+                        <foreach collection="pdCodes" item="item" open="(" close=")" separator="OR">
+                            CONCAT(a.classCode,a.machiningCode,a.breedCode,a.featureCode,a.weightCode) LIKE CONCAT('',#{item},'%')
+                        </foreach>
+                    </otherwise>
+                </choose>
+            </if>
+            <!--Modif for 添加批量的产品编码筛选 at 2016/09/27 by yang_chunyan End -->
+            <if test="pdName!=null and pdName!=''">
+                AND  CONCAT(a.classesName,'/',a.machiningName,'/',a.breedName,'/',a.featureName,'/',a.weightName) LIKE #{pdName}
+            </if>
+            <!--Modify: 横展开修改模糊查询 任强 2016/09/29 End-->
+        </where>
+        ORDER BY a.classCode,
+        a.machiningCode,
+        a.breedCode,
+        a.featureCode,
+        a.lgcsCode,
+        a.weightCode
+        <if test="gradeFlag!=null and gradeFlag!=''">
+            ,a.gradeCode
+        </if>)b
+    </select>
+
+    <select id="findPricePdInfo" parameterType="BaseParam" resultType="com.msk.product.bean.PDInfoResult">
+        SELECT
+        B.LEVEL_NAME AS classesName,
+        A.LEVEL_NAME AS machiningName,
+        C.LEVEL_NAME AS breedName,
+        D.LEVEL_NAME as featureName,
+        E.LEVEL_NAME as weightName,
+        <if test="gradeCode!=null and gradeCode!=''">
+            M.GRADE_NAME AS gradeName,
+        </if>
+        CONCAT(B.LEVEL_NAME,'/',A.LEVEL_NAME,'/',C.LEVEL_NAME,'/',D.LEVEL_NAME,'/',E.LEVEL_NAME) AS pdName,
+        G.SCIENTIFIC_NAME AS scientificName,
+        G.LOCAL_NAME AS localName
+        FROM
+        pd_classestree AS A
+        INNER JOIN (
+        SELECT
+        CLASSESTREE_CODE,
+        LEVEL_CODE,
+        LEVEL_NAME
+        FROM
+        PD_CLASSESTREE
+        ) AS B ON B.CLASSESTREE_CODE = A.PARENT_CODE
+        INNER JOIN pd_classestree C ON C.PARENT_CODE = A.CLASSESTREE_CODE
+        INNER JOIN pd_classestree_mat G ON G.CLASSESTREE_CODE = C.CLASSESTREE_CODE
+        INNER JOIN pd_classestree D ON D.PARENT_CODE = C.CLASSESTREE_CODE
+        INNER JOIN pd_classestree E ON E.PARENT_CODE = D.CLASSESTREE_CODE
+        <if test="gradeCode!=null and gradeCode!=''">
+            INNER JOIN pd_grade m ON m.GRADE_CODE = CONVERT(#{gradeCode},SIGNED)
+        </if>
+        <where>
+            <if test="classesCode!=null and classesCode!=''">
+                AND B.LEVEL_CODE = CONVERT(#{classesCode},SIGNED)
+            </if>
+            <if test="machiningCode!=null and machiningCode!=''">
+                AND A.LEVEL_CODE = CONVERT(#{machiningCode},SIGNED)
+            </if>
+            <if test="breedCode!=null and breedCode!=''">
+                AND C.LEVEL_CODE = CONVERT(#{breedCode},SIGNED)
+            </if>
+            <if test="featureCode!=null and featureCode!=''">
+                AND D.LEVEL_CODE = CONVERT(#{featureCode},SIGNED)
+            </if>
+            <if test="breedCode!=null and weightCode!=''">
+                AND E.LEVEL_CODE = CONVERT(#{weightCode},SIGNED)
+            </if>
+        </where>
+        GROUP BY B.LEVEL_NAME,
+        A.LEVEL_NAME,
+        C.LEVEL_NAME,
+        D.LEVEL_NAME,
+        E.LEVEL_NAME
+    </select>
+
+
+    <select id="findPdClassesTree" parameterType="BaseParam" resultType="com.msk.product.bean.PDInfoResult">
+        SELECT
+        DISTINCT
+        IFNULL(LEVEL_NAME,'') AS levelName,
+        IFNULL(LEVEL_CODE,'') AS levelCode,
+        IFNULL(CLASSESTREE_CODE,'') AS classestreeCode
+        FROM
+        pd_classestree
+        <where>
+            <if test="treeLevel != null and treeLevel != ''">
+                AND TREE_LEVEL = #{treeLevel}
+            </if>
+            <if test="parentCode!=null and parentCode!=''">
+                AND PARENT_CODE=#{parentCode}
+            </if>
+            <if test="levelCode!=null and levelCode!=''">
+                AND LEVEL_CODE=#{levelCode}
+            </if>
+            AND  DEL_FLG = 0
+        </where>
+    </select>
+
+    <select id="findProductByParams" parameterType="BaseParam" resultType="com.msk.product.bean.PDInfoResult">
+        SELECT
+        c.CLASSES_CODE AS classesCode
+        ,c.CLASSES_NAME AS classesName
+        ,m.MACHINING_CODE AS machiningCode
+        ,m.MACHINING_NAME AS machiningName
+        ,b.BREED_CODE AS breedCode
+        ,b.BREED_NAME AS breedName
+        ,f.FEATURE_CODE AS featureCode
+        ,f.FEATURE_NAME AS featureName
+        ,w.WEIGHT_CODE AS weightCode
+        ,w.WEIGHT_NAME AS weightName
+        ,w.WEIGHT_VAL AS weightVal
+        <if test="gradeFlag!=null and gradeFlag!=''">
+            ,g.GRADE_CODE AS gradeCode
+            ,g.GRADE_NAME AS gradeName
+        </if>
+        <!--add by dai_youcheng start at 2016-6-17-->
+        ,IFNULL(n.NORMS_CODE,'') AS normsCode
+        ,IFNULL(n.NORMS_OUT,'') AS normsName
+        ,IFNULL(n.NORMS_SUTTLE,'') AS normsSuttle
+        ,IFNULL(n.NORMS_ERROR,'') AS normsError
+        ,IFNULL(n.NORMS_NUMBER,'') AS normsNumber
+        ,IFNULL(n.NORMS_SIZE,'') AS normsSize
+        ,IFNULL(n.NORMS_TEXTURE,'') AS normsTexture
+        ,IFNULL(n.NORMS_OUT,'') AS normsOut
+        ,IFNULL(n.NORMS_KG,'') AS normsKg
+        ,IFNULL(n.NORMS_OUT_SIZE,'') AS normsOutSize
+        ,IFNULL(n.NORMS_OUT_TEXTURE,'') AS normsOutTexture
+        ,IFNULL(n.NORMS_LENGTH,'') AS normsLength
+        ,IFNULL(n.NORMS_WIDTH,'') AS normsWidth
+        ,IFNULL(n.NORMS_HEIGHT,'') AS normsHeight
+        ,IFNULL(n.NETWEIGHT_OUT,'') AS netweightOut
+        ,IFNULL(n.GROSSWEIGHT_OUT,'') AS grossweightOut
+        ,IFNULL(n.NETWEIGHT_INNER,'') AS netweightInner
+        ,IFNULL(n.NORMS_VOLUME,'') AS normsVolume
+        <!--add by dai_youcheng start at 2016-6-17-->
+        FROM
+        PD_CLASSES c
+        LEFT JOIN pd_machining m ON c.CLASSES_CODE = m.CLASSES_CODE
+        <!--modify Bug #2722 批量查询产品信息接口，查询出来的品种名称不对 by 杨春艳at 2016/9/18 start -->
+        INNER JOIN PD_BREED b ON c.CLASSES_CODE = b.CLASSES_CODE AND b.MACHINING_CODE = m.MACHINING_CODE
+        <!--modify Bug #2722 批量查询产品信息接口，查询出来的品种名称不对 by 杨春艳at 2016/9/18 end -->
+        LEFT JOIN PD_FEATURE f ON c.CLASSES_CODE = f.CLASSES_CODE AND
+        f.MACHINING_CODE = m.MACHINING_CODE AND b.BREED_CODE = f.BREED_CODE
+        LEFT JOIN pd_weight w ON c.CLASSES_CODE = w.CLASSES_CODE
+        AND m.MACHINING_CODE = w.MACHINING_CODE
+        AND b.BREED_CODE = w.BREED_CODE
+        AND f.FEATURE_CODE = w.FEATURE_CODE
+        <if test="gradeFlag!=null and gradeFlag!=''">
+            LEFT  JOIN  PD_GRADE g ON  1=1
+        </if>
+        <!--add by dai_youcheng start at 2016-6-17-->
+        LEFT JOIN pd_standard s ON s.CLASSES_CODE = c.CLASSES_CODE
+        AND s.MACHINING_CODE = m.MACHINING_CODE
+        <!--modify 关联查询包装信息有误差 by yangchunyan 2016-9-29 start-->
+        AND s.BREED_CODE = b.BREED_CODE  AND s.FEATURE_CODE = f.FEATURE_CODE and w.WEIGHT_CODE = s.WEIGHT_CODE
+        INNER JOIN pd_norms_std n ON n.STANDARD_ID = s.STANDARD_ID
+        <!--modify 关联查询包装信息有误差 by yangchunyan 2016-9-29 end-->
+        <!--add by dai_youcheng start at 2016-6-17-->
+        <where>
+            <if test="pdCodes != null and pdCodes.size() > 0">
+                <!--有的传入的pdCode是没有weightCode的-->
+                <if test="type != null and type != ''">
+                        <if test="type == 3">
+                            CONCAT(c.CLASSES_CODE,m.MACHINING_CODE,b.BREED_CODE)
+                        </if>
+                        <if test="type == 4">
+                            CONCAT(c.CLASSES_CODE,m.MACHINING_CODE,b.BREED_CODE,f.FEATURE_CODE)
+                        </if>
+                        <if test="type == 5">
+                            <choose>
+                                <when test="gradeFlag!=null and gradeFlag!=''">
+                                    CONCAT(c.CLASSES_CODE,m.MACHINING_CODE,b.BREED_CODE,f.FEATURE_CODE,w.WEIGHT_CODE,g.GRADE_CODE)
+                                </when>
+                                <otherwise>
+                                    CONCAT(c.CLASSES_CODE,m.MACHINING_CODE,b.BREED_CODE,f.FEATURE_CODE,w.WEIGHT_CODE)
+                                </otherwise>
+                            </choose>
+
+                        </if>
+                       IN
+                    <foreach collection="pdCodes" item="item" open="(" close=")" separator=",">
+                                #{item}
+                    </foreach>
+                </if>
+            </if>
+            <!--add by dai_youcheng start at 2016-6-17-->
+            <if test="null != normCodes and normCodes.size()">
+                AND n.NORMS_CODE IN
+                <foreach collection="normCodes" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <!--add by dai_youcheng end at 2016-6-17-->
+            <!--Modify: 横展开修改模糊查询 任强 2016/09/29 Start-->
+            <if test="classesName != null and classesName != ''">
+               AND c.CLASSES_Name LIKE #{classesName}
+            </if>
+            <if test="machiningName != null and machiningName != ''">
+                AND  m.MACHINING_NAME LIKE #{machiningName}
+            </if>
+            <if test="breedName != null and breedName != ''">
+                AND b.BREED_NAME LIKE #{breedName}
+            </if>
+            <if test="featureName != null and featureName != ''">
+                AND f.FEATURE_NAME LIKE #{featureName}
+            </if>
+            <if test="weightsName != null and weightsName != ''">
+                AND w.WEIGHT_NAME LIKE #{weightsName}
+            </if>
+            <!--Modify: 横展开修改模糊查询 任强 2016/09/29 Start-->
+                AND b.DEL_FLG = 0 AND c.DEL_FLG = 0 AND f.DEL_FLG = 0 AND m.DEL_FLG = 0
+            AND w.DEL_FLG = 0 AND s.DEL_FLG = 0 AND n.DEL_FLG = 0
+        </where>
+        GROUP BY
+            <if test="type != null and type != ''">
+                <if test="type == 3">
+                    c.CLASSES_CODE,m.MACHINING_CODE,b.BREED_CODE
+                </if>
+                <if test="type == 4">
+                    c.CLASSES_CODE,m.MACHINING_CODE,b.BREED_CODE,f.FEATURE_CODE
+                </if>
+                <if test="type == 5">
+                    <choose>
+                        <when test="gradeFlag!=null and gradeFlag!=''">
+                            c.CLASSES_CODE,m.MACHINING_CODE,b.BREED_CODE,f.FEATURE_CODE,w.WEIGHT_CODE,g.GRADE_CODE
+                        </when>
+                        <otherwise>
+                            c.CLASSES_CODE,m.MACHINING_CODE,b.BREED_CODE,f.FEATURE_CODE,w.WEIGHT_CODE
+                        </otherwise>
+                    </choose>
+                </if>
+            </if>
+        ORDER BY
+        c.CLASSES_CODE,m.MACHINING_CODE,b.BREED_CODE,f.FEATURE_CODE,w.FEATURE_CODE,w.WEIGHT_CODE
+    </select>
+
+    <select id="findPdClassesTreeMat" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestreeMat">
+          select IFNULL(m.PLACE_ORIGIN,'') AS placeOrigin,IFNULL(m.PLACE_CURRENT,'') AS placeCurrent from pd_classestree_mat m
+          <where>
+              <if test="null != classesTreeCodes and classesTreeCodes.size() > 0">
+                    m.CLASSESTREE_CODE IN
+                    <foreach collection="classesTreeCodes" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+              </if>
+              AND m.DEL_FLG = 0
+          </where>
+    </select>
+
+</mapper>

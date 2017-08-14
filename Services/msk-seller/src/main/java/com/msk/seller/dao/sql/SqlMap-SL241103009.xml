@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241103009Logic">
+    <select id="selectteamLeader" parameterType="BaseParam" resultType="com.msk.seller.bean.SL241103070Bean">
+        SELECT
+        A.MEMBER_NAME AS ememberName
+        FROM
+        sl_ec_team AS A
+        WHERE
+         A.LEADER_FLG=#{filterMap.eleaderFlg}
+         AND  A.SL_CODE=#{filterMap.slCode}
+         AND  A.DEL_FLG = 0
+    </select>
+
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.SlSeller">
+        SELECT
+            A.SL_CODE AS slCode
+        FROM
+            sl_seller AS A
+        WHERE
+            A.SL_CODE = #{filterMap.slCode}
+            AND  A.DEL_FLG = 0
+    </select>
+
+    <insert id="save" parameterType="com.msk.seller.bean.SL241103070Bean">
+       INSERT INTO sl_ec_team (
+            SL_CODE,
+            MEMBER_ID,
+            LEADER_FLG,
+            MEMBER_NAME,
+            MEMBER_AGE,
+            MEMBER_EDUC,
+            MEMBER_TEL,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUES
+            (
+                #{eslCode},
+                #{ememberId},
+                #{eleaderFlg},
+                #{ememberName},
+                #{ememberAge},
+                #{ememberEduc},
+                #{ememberTel},
+
+        <!-- Modified by xia_xiaojie on 2016/6/22. Modified start. -->
+                0,
+                #{crtId},
+                #{crtTime},
+                #{crtId},
+                #{crtTime},
+                #{crtId},
+                #{crtTime},
+                1
+        <!-- Modified end. -->
+            )
+    </insert>
+    <!--保存电商团队接口-->
+    <insert id="saveEteamPort" parameterType="com.msk.core.entity.SlEcTeam">
+       INSERT INTO sl_ec_team (
+            SL_CODE,
+            LEADER_FLG,
+            MEMBER_NAME,
+            BIRTHDAY,
+            MEMBER_AGE,
+            MEMBER_EDUC,
+            MEMBER_TEL,
+            MEMBER_ID,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUES
+            (
+                #{slCode},
+                #{leaderFlg},
+                #{memberName},
+                #{birthday},
+                #{memberAge},
+                #{memberEduc},
+                #{memberTel},
+                #{memberId},
+                0,
+                #{crtId},
+                #{crtTime},
+                #{crtId},
+                #{crtTime},
+                #{crtId},
+                #{crtTime},
+                1
+            )
+    </insert>
+    <select id="selectmaxmid" resultType="com.msk.seller.bean.SL241103070Bean"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        SELECT MAX(MEMBER_ID+0) AS ememberId
+        FROM sl_ec_team
+        WHERE SL_CODE = #{filterMap.slCode}
+    </select>
+
+    <!--查询电商团队接口-->
+    <select id="findSlEcTeamAllList" parameterType="BaseParam" resultType="com.msk.core.entity.SlEcTeam">
+        SELECT
+        A.SL_CODE AS slCode,
+        A.MEMBER_ID AS memberId,
+        A.LEADER_FLG AS leaderFlg,
+        A.MEMBER_NAME AS memberName,
+        A.MEMBER_AGE AS memberAge,
+        A.BIRTHDAY AS birthday,
+        A.MEMBER_EDUC AS memberEduc,
+        A.MEMBER_TEL AS memberTel,
+        A.VER AS ver
+        FROM
+        sl_ec_team AS A
+        WHERE
+        A.SL_CODE = #{filterMap.slCode}
+        <if test="filterMap.memberId != null and filterMap.memberId != ''">
+            AND A.MEMBER_ID = #{filterMap.memberId}
+        </if>
+        AND  A.DEL_FLG = 0
+    </select>
+</mapper>

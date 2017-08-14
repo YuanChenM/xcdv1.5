@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171117Logic">
+
+    <!-- 查询价盘详细和价盘等级对应关系表 -->
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.price.bean.SP171110Bean">
+        SELECT
+        swd.WAYGRADE_CODE AS wayGradeCode,
+        swd.WAY_CODE AS wayCode,
+        swd.WAYGRADE_NAME AS wayGradeName,
+        swd.WAYGRADE_PERCENT AS wayGradePercent,
+        swd.WAYGRADE_START AS wayGradeStart,
+        swd.WAYGRADE_END AS wayGradeEnd,
+        swp.MARKETING_NAME AS marketingName
+        FROM  SP_WAYGRADE_PD swp
+        INNER JOIN SP_WAYG_DETAIL swd
+        ON swp.WAY_CODE = swd.WAY_CODE
+        WHERE swp.LGCS_CODE=#{lgcsCode}
+        AND swp.PD_CODE=#{pdCode}
+        AND swp.SYSTEM_TYPE='1'
+        AND swp.DEL_FLG = '0'
+        AND swd.DEL_FLG = '0'
+        ORDER  BY swd.WAYGRADE_CODE
+    </select>
+
+
+    <!-- 查询卖家供应商投标价盘表获取上次价盘信息 -->
+    <select id="getLastPriceInfo" parameterType="BaseParam" resultType="com.msk.price.bean.SP171110Bean">
+        SELECT
+        WAYGRADE_NAME AS wayGradeName,
+        WAYGRADE_PRICE AS wayGradePrice,
+        WAYGRADE_CODE  AS wayGradeCode
+        FROM  sp_seller_pd_priceplate
+        WHERE PD_CODE=#{pdCode}
+        AND LGCS_CODE=#{lgcsCode}
+        AND PRICE_PERIOD = #{filterMap.lastPricePeriod}
+         AND  DEL_FLG = '0'
+        ORDER  BY PRICE_PERIOD DESC, WAYGRADE_CODE ASC
+    </select>
+    <select id="getEffectivePrice" parameterType="BaseParam" resultType="com.msk.price.bean.SP171110Bean">
+        SELECT
+        PRICE_PERIOD AS wayCode
+        FROM  sp_seller_pd_priceplate
+        WHERE PD_CODE=#{pdCode}
+        AND LGCS_CODE=#{lgcsCode}
+        AND PRICE_PERIOD  &lt; #{pricePeriod}
+         AND  DEL_FLG = '0'
+        ORDER  BY PRICE_PERIOD DESC, WAYGRADE_CODE ASC LIMIT 0,1
+    </select>
+
+    <!--获取当前价盘数据-->
+    <select id="getNowPriceInfo" parameterType="BaseParam" resultType="com.msk.price.bean.SP171110Bean">
+        SELECT
+        WAYGRADE_NAME AS wayGradeName,
+        WAYGRADE_PRICE AS wayGradePrice,
+        WAYGRADE_PRICE AS wayGradeTempPrice,
+        WAYGRADE_CODE  AS wayGradeCode,
+        DEL_FLG AS  delFlg
+        FROM  sp_seller_pd_priceplate
+        WHERE PD_CODE=#{pdCode}
+        AND LGCS_CODE=#{lgcsCode}
+        AND PRICE_PERIOD = #{pricePeriod}
+         AND  DEL_FLG = '0'
+        ORDER  BY PRICE_PERIOD DESC, WAYGRADE_CODE ASC
+    </select>
+
+
+    <insert id="insertPricePlate" parameterType="com.msk.price.bean.SP171110Bean">
+        INSERT INTO sp_seller_pd_priceplate(
+        PRICE_ID,
+        PRICE_PERIOD,
+        PRICE_STARTDATE,
+        PRICE_ENDDATE,
+        LGCS_CODE,
+        PD_CODE,
+        MARKETING_NAME,
+        WAY_CODE,
+        WAYGRADE_CODE,
+        WAYGRADE_NAME,
+        WAYGRADE_PRICE,
+        WAYGRADE_PRICE_BOX,
+        DEL_FLG,
+        Crt_Id,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES (
+        #{priceId},
+        #{pricePeriod},
+        #{pricePeriodStart},
+        #{pricePeriodEnd},
+        #{lgcsCode},
+        #{pdCode},
+        #{marketingName},
+        #{wayCode},
+        #{wayGradeCode},
+        #{wayGradeName},
+        #{wayGradePrice},
+        #{wayGradePricefBox},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+
+    <update id="updatePricePlate" parameterType="com.msk.price.bean.SP171110Bean">
+        UPDATE sp_seller_pd_priceplate
+        SET
+        WAYGRADE_PRICE =  #{wayGradePrice},
+        WAYGRADE_PRICE_BOX = #{wayGradePricefBox},
+        WAY_CODE = #{wayCode},
+        MARKETING_NAME = #{marketingName},
+        DEL_FLG = #{delFlg},
+        UPD_ID = #{updId},
+        UPD_TIME =#{updTime},
+        VER =VER + 1
+         WHERE PD_CODE=#{pdCode}
+        AND LGCS_CODE=#{lgcsCode}
+        AND PRICE_PERIOD = #{pricePeriod}
+        AND  WAYGRADE_CODE =#{wayGradeCode}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        AND  DEL_FLG='0'
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+    <select id="countSellerPdPrice" parameterType="BaseParam" resultType="Integer">
+        SELECT
+        COUNT(*)
+        FROM sp_seller_pd_priceplate
+        WHERE PD_CODE=#{pdCode}
+        AND LGCS_CODE=#{lgcsCode}
+        AND PRICE_PERIOD = #{pricePeriod}
+        AND  DEL_FLG = '0'
+    </select>
+</mapper>

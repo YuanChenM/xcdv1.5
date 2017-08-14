@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.stock.logic.ISO151421Logic">
+	<select id="findList" resultType="com.msk.stock.bean.ISO151421ProductsRsResult"
+        parameterType="BaseParam">
+        SELECT
+		 A.PD_CODE AS pdCode
+		,A.PD_NAME AS pdName
+		,A.SUPPLIER_CODE AS supplierCode
+		,A.SUPPLIER_NAME AS supplierName
+		,A.LGCS_CODE AS districtCode
+		,A.STOCK_QTY AS avaQty
+        FROM so_stock_sp AS A
+        <where>
+			<if test="filterMap.districtCode!=null and filterMap.districtCode!=''">
+				AND A.LGCS_CODE=#{filterMap.districtCode}
+			</if>
+			<if test="filterMap.supplierName!=null and filterMap.supplierName!=''">
+				AND A.SUPPLIER_NAME=#{filterMap.supplierName}
+			</if>
+			<if test="filterMap.supplierCode!=null and filterMap.supplierCode!=''">
+				AND A.SUPPLIER_CODE=#{filterMap.supplierCode}
+			</if>
+			<if test="filterMap.supplyPlatform!=null and filterMap.supplyPlatform!=''">
+				AND A.SUPPLY_PLATFORM=#{filterMap.supplyPlatform}
+			</if>
+			<if test="filterMap.stockType!=null and filterMap.stockType!=''">
+				AND A.STOCK_TYPE=#{filterMap.stockType}
+			</if>
+		</where>
+    </select>
+</mapper>

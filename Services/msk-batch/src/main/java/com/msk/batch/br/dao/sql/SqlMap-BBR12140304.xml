@@ -1,0 +1,508 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.br.logic.BBR12140304Logic">
+
+    <!--清空一二级产品原始数据-->
+    <delete id="deleteMachiningInfo" parameterType="BaseParam">
+       DELETE FROM BR_O_CLA_MACHINING_INFO
+    </delete>
+
+    <!--同步一级和二级分类的产品数据-->
+    <insert id="addMachiningInfo" parameterType="BaseParam">
+        INSERT INTO BR_O_CLA_MACHINING_INFO (
+            CLA_ID,
+            CLASSES_CODE,
+            CLASSES_NAME,
+            MACHINING_CODE,
+            MACHINING_NAME,
+            SCIENTIFIC_NAME,
+            LOCAL_NAME,
+            SALES_NAME,
+            PLACE_ORIGIN,
+            PLACE_CURRENT,
+            SOURCE,
+            CHILD_TYPE,
+            FEED_TYPE,
+            FEED_PERIOD,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+       ) SELECT
+            @rownum :=@rownum + 1 AS CLA_ID,
+            t.CLASSES_CODE,
+            t.CLASSES_NAME,
+            t.MACHINING_CODE,
+            t.MACHINING_NAME,
+            t.SCIENTIFIC_NAME,
+            t.LOCAL_NAME,
+            t.SALES_NAME,
+            t.PLACE_ORIGIN,
+            t.PLACE_CURRENT,
+            t.SOURCE,
+            t.CHILD_TYPE,
+            t.FEED_TYPE,
+            t.FEED_PERIOD,
+            '0' AS DEL_FLG,
+            #{crtId} AS CRT_ID,
+            #{crtTime} AS CRT_TIME,
+            #{updId} AS UPD_ID,
+            #{updTime} AS UPD_TIME,
+            #{actId} AS ACT_ID,
+            #{actTime} AS ACT_TIME,
+            1 AS VER
+       FROM
+          (SELECT
+                @rownum := 0,
+                a.CLASSES_CODE,
+                a.CLASSES_NAME,
+                b.MACHINING_CODE,
+                b.MACHINING_NAME,
+                m.SCIENTIFIC_NAME,
+                m.LOCAL_NAME,
+                m.SALES_NAME,
+                m.PLACE_ORIGIN,
+                m.PLACE_CURRENT,
+                m.SOURCE,
+                m.CHILD_TYPE,
+                m.FEED_TYPE,
+                m.FEED_PERIOD
+		   FROM
+		     	PD_CLASSES a
+		   INNER JOIN pd_machining b ON b.CLASSES_CODE = a.CLASSES_CODE
+		   LEFT JOIN pd_classestree_mat m ON m.CLASSESTREE_CODE = b.CLASSESTREE_CODE
+		   /*WHERE
+			EXISTS (
+				SELECT
+					1
+				FROM
+					pd_logiarea l
+				WHERE
+                    l.CLASSES_CODE = a.CLASSES_CODE
+				AND l.MACHINING_CODE = b.MACHINING_CODE
+		        	)*/
+	       ) t
+    </insert>
+
+    <select id="findBrOClaMachiningInfos" resultType="com.msk.core.entity.BrOClaMachiningInfo" parameterType="BaseParam">
+        SELECT
+            IFNULL(CLA_ID,'') AS claId,
+            IFNULL(CLASSES_CODE,'') AS classesCode,
+            IFNULL(CLASSES_NAME,'') AS classesName,
+            IFNULL(MACHINING_CODE,'') AS machiningCode,
+            IFNULL(MACHINING_NAME,'') AS machiningName,
+            IFNULL(SCIENTIFIC_NAME,'') AS scientificName,
+            IFNULL(LOCAL_NAME,'') AS localName,
+            IFNULL(SALES_NAME,'') AS salesName,
+            IFNULL(PLACE_ORIGIN,'') AS placeOrigin,
+            IFNULL(PLACE_CURRENT,'') AS placeCurrent,
+            IFNULL(SOURCE,'') AS source,
+            IFNULL(CHILD_TYPE,'') AS childType,
+            IFNULL(FEED_TYPE,'') AS feedType,
+            IFNULL(FEED_PERIOD,'') AS feedPeriod
+        FROM
+            br_o_cla_machining_info
+        WHERE
+            DEL_FLG = '0'
+    </select>
+
+    <select id="findBrMPdClasses" resultType="com.msk.core.entity.BrMPdClasses" parameterType="BaseParam">
+        SELECT
+            IFNULL(ID,'') AS id,
+            IFNULL(CLASSES_CODE,'') AS classesCode,
+            IFNULL(CLASSES_NAME,'') AS classesName,
+            IFNULL(MACHINING_CODE,'') AS machiningCode,
+            IFNULL(MACHINING_NAME,'') AS machiningName,
+            IFNULL(MACHINING_CODE_U,'') AS machiningCodeU,
+            IFNULL(MACHINING_NAME_U,'') AS machiningNameU,
+            IFNULL(BY_POOL_MACHINING_CODE,'') AS byPoolMachiningCode
+        FROM
+            br_m_pd_classes
+        WHERE
+            DEL_FLG = '0'
+    </select>
+
+    <insert id="updateBrMPdClasses" parameterType="com.msk.core.entity.BrMPdClasses">
+        INSERT INTO br_m_pd_classes(
+                ID,
+                CLASSES_CODE,
+                CLASSES_NAME,
+                MACHINING_CODE,
+                MACHINING_NAME,
+                MACHINING_CODE_U,
+                MACHINING_NAME_U,
+                BY_POOL_MACHINING_CODE,
+                DEL_FLG,
+                CRT_ID,
+                CRT_TIME,
+                UPD_ID,
+                UPD_TIME,
+                ACT_ID,
+                ACT_TIME,
+                VER
+        )
+        VALUES
+            (
+                #{id},
+                #{classesCode},
+                #{classesName},
+                #{machiningCode},
+                #{machiningName},
+                #{machiningCodeU},
+                #{machiningNameU},
+                #{byPoolMachiningCode},
+                0,
+                #{crtId},
+                #{crtTime},
+                #{updId},
+                #{updTime},
+                #{actId},
+                #{actTime},
+                1
+            )
+    </insert>
+
+    <!--清空三四级产品原始数据-->
+    <delete id="deleteBreedFeaInfo" parameterType="BaseParam">
+        DELETE FROM BR_O_BREED_FEA_INFO
+    </delete>
+
+    <!--同步一级和二级分类的产品数据-->
+    <insert id="addBreedFeaInfo" parameterType="BaseParam">
+        INSERT INTO BR_O_BREED_FEA_INFO (
+                ID,
+                CLA_ID,
+                BREED_CODE,
+                BREED_NAME,
+                FEATURE_CODE,
+                FEATURE_NAME,
+                SCIENTIFIC_NAME,
+                LOCAL_NAME,
+                SALES_NAME,
+                GRADE_CODE,
+                GRADE_NAME,
+                DEL_FLG,
+                CRT_ID,
+                CRT_TIME,
+                UPD_ID,
+                UPD_TIME,
+                ACT_ID,
+                ACT_TIME,
+                VER
+        ) SELECT
+                @rownum :=@rownum + 1 AS ID,
+                t.CLA_ID,
+                t.BREED_CODE,
+                t.BREED_NAME,
+                t.FEATURE_CODE,
+                t.FEATURE_NAME,
+                t.SCIENTIFIC_NAME,
+                t.LOCAL_NAME,
+                t.SALES_NAME,
+                t.GRADE_CODE,
+                t.GRADE_NAME,
+                '0' AS DEL_FLG,
+                #{crtId} AS CRT_ID,
+                #{crtTime} AS CRT_TIME,
+                #{updId} AS UPD_ID,
+                 #{updTime} AS UPD_TIME,
+                #{actId} AS ACT_ID,
+                 #{actTime} AS ACT_TIME,
+                1 AS VER
+        FROM(
+              SELECT
+                   @rownum := 0,
+                   a.CLA_ID,
+                   c.BREED_CODE,
+                   c.BREED_NAME,
+                   d.FEATURE_CODE,
+                   d.FEATURE_NAME,
+                   m1.CLASSESTREE_CODE,
+                   m1.SCIENTIFIC_NAME,
+                   m1.LOCAL_NAME,
+                   m1.SALES_NAME,
+                   l.GRADE_CODE,
+                   g.GRADE_NAME
+		       FROM BR_O_CLA_MACHINING_INFO a
+               INNER JOIN pd_breed c ON c.CLASSES_CODE = a.CLASSES_CODE
+               AND c.MACHINING_CODE = a.MACHINING_CODE
+               INNER JOIN pd_feature d ON d.CLASSES_CODE = a.CLASSES_CODE
+               AND d.MACHINING_CODE = a.MACHINING_CODE
+               AND d.BREED_CODE = c.BREED_CODE
+               LEFT JOIN pd_logiarea l ON l.CLASSES_CODE = a.CLASSES_CODE
+               AND l.MACHINING_CODE = a.MACHINING_CODE
+               AND l.BREED_CODE = c.BREED_CODE
+               AND l.FEATURE_CODE = d.FEATURE_CODE
+               LEFT JOIN pd_grade g ON g.GRADE_CODE = l.GRADE_CODE
+               LEFT JOIN pd_classestree_mat m1 ON m1.CLASSESTREE_CODE = c.CLASSESTREE_CODE
+                   ) t
+    </insert>
+
+    <!--清空五六级产品原始数据-->
+    <delete id="deleteWeiNorInfo" parameterType="BaseParam">
+        DELETE FROM BR_O_WEI_NOR_INFO
+    </delete>
+    <!--同步五级和六级分类的产品数据-->
+    <insert id="addWeiNorInfo" parameterType="BaseParam">
+        INSERT INTO BR_O_WEI_NOR_INFO (
+                ID,
+                WEIGHT_CODE,
+                WEIGHT_NAME,
+                WEIGHT_VAL,
+                NORMS_CODE,
+                NORMS_NAME,
+                DEL_FLG,
+                CRT_ID,
+                CRT_TIME,
+                UPD_ID,
+                UPD_TIME,
+                ACT_ID,
+                ACT_TIME,
+                VER
+        ) SELECT
+                b.ID,
+                c.WEIGHT_CODE,
+                c.WEIGHT_NAME,
+                c.WEIGHT_VAL,
+                e.NORMS_CODE,
+                e.NORMS_OUT,
+                '0' AS DEL_FLG,
+
+                #{crtId} AS CRT_ID,
+                #{crtTime} AS CRT_TIME,
+                #{updId} AS UPD_ID,
+                 #{updTime} AS UPD_TIME,
+                #{actId} AS ACT_ID,
+                 #{actTime} AS ACT_TIME,
+
+                1 AS VER
+        FROM BR_O_CLA_MACHINING_INFO a
+        INNER JOIN BR_O_BREED_FEA_INFO b ON a.CLA_ID = b.CLA_ID
+        INNER JOIN pd_weight c ON c.CLASSES_CODE = a.CLASSES_CODE
+        AND c.MACHINING_CODE = a.MACHINING_CODE
+        AND c.BREED_CODE = b.BREED_CODE
+        AND c.FEATURE_CODE = b.FEATURE_CODE
+        INNER JOIN PD_STANDARD d ON d.CLASSES_CODE = a.CLASSES_CODE
+        AND d.MACHINING_CODE = a.MACHINING_CODE
+        AND d.BREED_CODE = b.BREED_CODE
+        AND d.FEATURE_CODE = b.FEATURE_CODE
+        AND d.WEIGHT_CODE = '01'
+        INNER JOIN PD_NORMS_STD e ON e.STANDARD_ID = d.STANDARD_ID
+    </insert>
+
+    <!--清空物流区产品原始数据-->
+    <delete id="deletePdLgcsArea" parameterType="BaseParam">
+        DELETE FROM br_pd_logiarea
+    </delete>
+
+    <!--同步物流区产品数据-->
+    <insert id="addPdLgcsArea" parameterType="BaseParam">
+        INSERT INTO br_pd_logiarea (
+        ID,
+        LGCS_CODE,
+        LGCS_NAME,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        BREED_CODE,
+        FEATURE_CODE,
+        WEIGHT_CODE,
+        PKG_CODE,
+        GRADE_CODE,
+        PD_MARKET_CODE,
+        PD_MARKET_NAME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) SELECT
+        @rownum :=@rownum + 1 AS ID,
+        t.LGCS_CODE,
+        t.LGCS_NAME,
+        t.CLASSES_CODE,
+        t.MACHINING_CODE,
+        t.BREED_CODE,
+        t.FEATURE_CODE,
+        t.WEIGHT_CODE,
+        t.PKG_CODE,
+        t.GRADE_CODE,
+        t.PD_MARKET_CODE,
+        t.PD_MARKET_NAME,
+        '0' AS DEL_FLG,
+
+        #{crtId} AS CRT_ID,
+        #{crtTime} AS CRT_TIME,
+        #{updId} AS UPD_ID,
+        #{updTime} AS UPD_TIME,
+        #{actId} AS ACT_ID,
+        #{actTime} AS ACT_TIME,
+
+        1 AS VER
+        FROM
+        (SELECT
+        @rownum := 0,
+        LGCS_CODE,
+        LGCS_NAME,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        BREED_CODE,
+        FEATURE_CODE,
+        WEIGHT_CODE,
+        PKG_CODE,
+        GRADE_CODE,
+        PD_MARKET_CODE,
+        (CASE WHEN PD_MARKET_CODE ='0' THEN '主力产品'
+              WHEN PD_MARKET_CODE ='1' THEN '标准产品'
+              WHEN PD_MARKET_CODE ='2' THEN '量少产品'
+              ELSE ''
+         END) AS PD_MARKET_NAME
+        FROM
+        pd_logiarea
+        ) t
+    </insert>
+
+    <select id="findBuyerPoolCount" resultType="int" parameterType="BaseParam">
+        SELECT
+          COUNT(1)
+        FROM
+        BR_BUYER_POOL
+        WHERE DEL_FLG = '0'
+        AND CLASSES_CODE = #{filterMap.classesCode}
+        AND MACHINING_CODE_U = #{filterMap.machiningCodeU}
+    </select>
+
+    <insert id="saveBuyerPoolLogisticsAreaRegion" parameterType="BaseParam">
+        INSERT INTO BR_BUYER_POOL(
+            BUYER_POOL_ID,
+            BUYER_POOL_NAME,
+            CLASSES_CODE,
+            CLASSES_NAME,
+            MACHINING_CODE_U,
+            MACHINING_NAME_U,
+            BUYER_TYPE,
+            BUYER_TYPE_NAME,
+            LGCS_AREA_CODE,
+            LGCS_AREA_NAME,
+            CITY_CODE,
+            CITY_NAME,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        select
+         @rownum:=@rownum + 1,
+            concat(LGCS_AREA_NAME,'物流区',CITY_NAME,'地区',MACHINING_NAME_U,'产品','分销买家'),
+            pool.CLASSES_CODE,
+            pool.CLASSES_NAME,
+            pool.MACHINING_CODE_U,
+            pool.MACHINING_NAME_U,
+            '01',
+            '分销买家',
+            pool.LGCS_AREA_CODE,
+            pool.LGCS_AREA_NAME,
+            pool.CITY_CODE,
+            pool.CITY_NAME,
+            '0',
+            'admin',
+            '2016-10-10 10:11:12',
+            'admin',
+            '2016-10-10 10:11:12',
+            'admin',
+            '2016-10-10 10:11:12',
+            '1'
+
+        FROM
+        (SELECT
+            @rownum:=(SELECT IFNULL(MAX(BUYER_POOL_ID), 0) FROM BR_BUYER_POOL) AS rowNum,
+            mpd.CLASSES_CODE,
+            mpd.CLASSES_NAME,
+            mpd.MACHINING_CODE_U,
+            mpd.MACHINING_NAME_U,
+            a.LGCS_AREA_CODE,
+            a.LGCS_AREA_NAME,
+            c.CITY_CODE,
+            c.CITY_NAME
+            FROM
+            BR_M_PD_CLASSES	mpd ,
+            md_logistics_area a LEFT JOIN md_city c ON a.LGCS_AREA_ID = c.LGCS_AREA_ID
+            WHERE
+            CLASSES_CODE = #{filterMap.classesCode}
+            AND MACHINING_CODE_U = #{filterMap.machiningCodeU}
+            AND mpd.DEL_FLG = '0'
+            AND a.DEL_FLG = '0'
+            GROUP BY mpd.CLASSES_CODE,mpd.MACHINING_CODE_U,a.LGCS_AREA_CODE,c.CITY_CODE
+        ) pool
+    </insert>
+
+    <insert id="saveBuyerPoolLogisticsArea" parameterType="BaseParam">
+        INSERT INTO BR_BUYER_POOL(
+            BUYER_POOL_ID,
+            BUYER_POOL_NAME,
+            CLASSES_CODE,
+            CLASSES_NAME,
+            MACHINING_CODE_U,
+            MACHINING_NAME_U,
+            BUYER_TYPE,
+            BUYER_TYPE_NAME,
+            LGCS_AREA_CODE,
+            LGCS_AREA_NAME,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        select
+         @rownum:=@rownum + 1,
+            concat(LGCS_AREA_NAME,'物流区',MACHINING_NAME_U,'产品','分销买家'),
+            pool.CLASSES_CODE,
+            pool.CLASSES_NAME,
+            pool.MACHINING_CODE_U,
+            pool.MACHINING_NAME_U,
+            '01',
+            '分销买家',
+            pool.LGCS_AREA_CODE,
+            pool.LGCS_AREA_NAME,
+            '0',
+            'admin',
+            '2016-10-10 10:11:12',
+            'admin',
+            '2016-10-10 10:11:12',
+            'admin',
+            '2016-10-10 10:11:12',
+            '1'
+        FROM
+        (SELECT
+            @rownum:=(SELECT IFNULL(MAX(BUYER_POOL_ID), 0) FROM BR_BUYER_POOL) AS rowNum,
+            mpd.CLASSES_CODE,
+            mpd.CLASSES_NAME,
+            mpd.MACHINING_CODE_U,
+            mpd.MACHINING_NAME_U,
+            a.LGCS_AREA_CODE,
+            a.LGCS_AREA_NAME
+            FROM
+            md_logistics_area a,BR_M_PD_CLASSES	mpd
+            WHERE
+            CLASSES_CODE = #{filterMap.classesCode}
+            AND MACHINING_CODE_U = #{filterMap.machiningCodeU}
+            AND mpd.DEL_FLG = '0'
+            AND a.DEL_FLG = '0'
+          GROUP BY mpd.CLASSES_CODE,mpd.MACHINING_CODE_U,a.LGCS_AREA_CODE
+        ) pool
+    </insert>
+</mapper>

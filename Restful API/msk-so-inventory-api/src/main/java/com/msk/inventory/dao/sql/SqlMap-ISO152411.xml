@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.ISO152411ServiceImpl">
+            <select id="selectProdOfPlatForm" resultType="com.msk.inventory.bean.IvmInventoryByProdBean" parameterType="com.msk.inventory.bean.IvmInventoryByProdBean">
+        select C.pdCode,max(C.useQty) AS useQty,max(c.allocatedQty) AS allocatedQty,max(c.qty) AS qty from
+        (
+            select
+            CONCAT(
+            EXTRACTVALUE(PRODUCT_XML, '/CLS_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/MACH_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/BRE_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/FEAT_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/WEI_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/GRAD_C')
+            )AS pdCode,
+            sum(QTY) AS qty,
+            sum(ALLOCATED_QTY) AS allocatedQty,
+            sum(QTY)-sum(ALLOCATED_QTY) AS useQty
+            from ivm_inventory_by_prod
+            where 1=1
+            <if test="platform!=null and platform!=''">
+                AND EXTRACTVALUE(BELONE_XML,'/PLT')=#{platform}
+            </if>
+            <if test="logicCode!=null and logicCode!=''">
+                AND EXTRACTVALUE(BELONE_XML,'/AREA')=#{logicCode}
+            </if>
+            <if test="ownerType!=null and ownerType!=''">
+                AND (EXTRACTVALUE(BELONE_XML,'/SLT')=#{ownerType} or EXTRACTVALUE(BELONE_XML,'/SLT')=#{slType})
+            </if>
+            <if test="ownerId!=null and ownerId!=''">
+                AND (EXTRACTVALUE(BELONE_XML,'/SLID')=#{ownerId} or EXTRACTVALUE(BELONE_XML,'/SLID')=#{slId})
+            </if>
+            <if test="pdCode!=null and pdCode!=''">
+                AND CONCAT(
+                EXTRACTVALUE(PRODUCT_XML,'/CLS_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/MACH_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/BRE_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/FEAT_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/WEI_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/GRAD_C')
+                ) = #{pdCode}
+            </if>
+            GROUP BY
+            CONCAT(
+            EXTRACTVALUE(PRODUCT_XML,'/CLS_C'),
+            EXTRACTVALUE(PRODUCT_XML,'/MACH_C'),
+            EXTRACTVALUE(PRODUCT_XML,'/BRE_C'),
+            EXTRACTVALUE(PRODUCT_XML,'/FEAT_C'),
+            EXTRACTVALUE(PRODUCT_XML,'/WEI_C'),
+            EXTRACTVALUE(PRODUCT_XML,'/GRAD_C')
+            ),
+            EXTRACTVALUE(BELONE_XML,'/SLT')
+        )  C
+        group by C.pdCode
+    </select>
+                        <select id="selectProdOfSeller" resultType="com.msk.inventory.bean.IvmInventoryByProdBean" parameterType="com.msk.inventory.bean.IvmInventoryByProdBean">
+        select C.pdCode,max(C.useQty) AS useQty,max(c.allocatedQty) AS allocatedQty,max(c.qty) AS qty from
+        (
+            select
+            CONCAT(
+            EXTRACTVALUE(B.PM_EXTERNAL_XML, '/CLS_C'),
+            EXTRACTVALUE(B.PM_EXTERNAL_XML, '/MACH_C'),
+            EXTRACTVALUE(B.PM_EXTERNAL_XML, '/BRE_C'),
+            EXTRACTVALUE(B.PM_EXTERNAL_XML, '/FEAT_C'),
+            EXTRACTVALUE(B.PM_EXTERNAL_XML, '/WEI_C'),
+            EXTRACTVALUE(B.PM_EXTERNAL_XML, '/GRAD_C')
+            ) AS pdCode,
+            sum(A.QTY) AS qty,
+            sum(A.ALLOCATED_QTY) AS allocatedQty,
+            sum(A.QTY)-sum(A.ALLOCATED_QTY) AS useQty
+            from ivm_inventory_by_owner A
+            inner join ivm_parts_master B on A.pm_id= B.pm_id
+            where 1=1
+            <if test="platform!=null and platform!=''">
+                AND EXTRACTVALUE(A.BELONE_XML,'/PLT')=#{platform}
+            </if>
+            <if test="logicCode!=null and logicCode!=''">
+                AND EXTRACTVALUE(A.BELONE_XML,'/AREA')=#{logicCode}
+            </if>
+            <if test="ownerType!=null and ownerType!=''">
+                AND (EXTRACTVALUE(A.BELONE_XML,'/SLT')=#{ownerType} or EXTRACTVALUE(A.BELONE_XML,'/SLT')=#{slType})
+            </if>
+            <if test="ownerId!=null and ownerId!=''">
+                AND (EXTRACTVALUE(A.BELONE_XML,'/SLID')=#{ownerId} or EXTRACTVALUE(A.BELONE_XML,'/SLID')=#{slId})
+                            </if>
+        <if test="pdCode!=null and pdCode!=''">
+                AND CONCAT(
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/CLS_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/MACH_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/BRE_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/FEAT_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/WEI_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/GRAD_C')
+                ) = #{pdCode}
+        </if>
+        GROUP BY
+        CONCAT(
+            EXTRACTVALUE(B.PM_EXTERNAL_XML, '/CLS_C'),
+            EXTRACTVALUE(B.PM_EXTERNAL_XML, '/MACH_C'),
+            EXTRACTVALUE(B.PM_EXTERNAL_XML, '/BRE_C'),
+            EXTRACTVALUE(B.PM_EXTERNAL_XML, '/FEAT_C'),
+            EXTRACTVALUE(B.PM_EXTERNAL_XML, '/WEI_C'),
+            EXTRACTVALUE(B.PM_EXTERNAL_XML, '/GRAD_C')
+        ),
+            EXTRACTVALUE(A.BELONE_XML,'/SLT')
+        ) C
+        group by C.pdCode
+    </select>
+</mapper>

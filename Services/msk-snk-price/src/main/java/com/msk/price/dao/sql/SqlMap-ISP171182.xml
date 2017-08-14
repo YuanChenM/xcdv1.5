@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.ISP171182Logic">
+
+    <select id="findPageList" resultType="com.msk.price.bean.PricePlateInfoBean"
+            parameterType="com.msk.price.bean.PricePlateInfoParam">
+        SELECT
+        A.PRICE_PERIOD AS pricePeriod,
+        A.LGCS_CODE AS lgcsCode,
+        A.PD_CODE AS pdCode,
+        A.WAYGRADE_PRICE_BOX AS wayGradePriceBox
+        FROM SP_SELLER_PD_PRICEPLATE AS A
+        <include refid="whereCondition"/>
+    </select>
+
+
+    <select id="getPageCount" resultType="Integer" parameterType="com.msk.price.bean.PricePlateInfoParam">
+        select count(1)
+        FROM SP_SELLER_PD_PRICEPLATE AS A
+        <include refid="whereCondition"/>
+    </select>
+
+
+    <sql id="whereCondition">
+        <where>
+            A.LGCS_CODE= #{lgcsCode}
+            AND  A.PRICE_PERIOD=#{pricePeriod}
+            AND  A.DEL_FLG = 0
+            <if test="pdCodes!=null and pdCodes.size()>0">
+                AND A.pd_CODE in
+                <foreach item="pdCode" index="index" collection="pdCodes"
+                         open="(" separator="," close=")">
+                    #{pdCode}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+</mapper>

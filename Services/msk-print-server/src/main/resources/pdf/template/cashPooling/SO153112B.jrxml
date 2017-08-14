@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SO153102B" language="groovy" pageWidth="800" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="760" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="432e4ce0-7cff-4a2d-8c3b-1bc27efe34ee">
+	<property name="ireport.zoom" value="1.4641000000000008"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="so153102Bean" class="com.msk.print.bean.SO153102Bean"/>
+	<field name="refundCode" class="java.lang.String"/>
+	<field name="transCode" class="java.lang.String"/>
+	<field name="refundTypeStr" class="java.lang.String"/>
+	<field name="refundAmount" class="java.lang.String"/>
+	<field name="refundTimeStr" class="java.lang.String"/>
+	<field name="remark" class="java.lang.String"/>
+	<variable name="totalRefundAmount" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[new BigDecimal($F{refundAmount})]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="36" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="802" height="20" uuid="fabcbe96-658d-46c8-85f0-6db5781ff971"/>
+				<textElement>
+					<font fontName="ArialUnicodeMS" size="14" isBold="false" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[应退款明细]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="0" width="782" height="1" uuid="65da6995-283b-4783-bf36-43fe84753d89"/>
+			</line>
+			<line>
+				<reportElement x="0" y="20" width="782" height="1" uuid="2f3a783b-48e0-4557-99f0-21944e2463f8"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="22" width="111" height="14" uuid="cc312a8e-c492-4ec1-944b-d030aa9516d1"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<text><![CDATA[退款编码]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="111" y="22" width="135" height="14" uuid="959d45e2-056e-4e26-b79d-987a10f0b018"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<text><![CDATA[订单号]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="246" y="22" width="114" height="14" uuid="1d267fda-80f8-40da-bd48-bc28f915f4a4"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<text><![CDATA[退款金额]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="360" y="22" width="100" height="14" uuid="79792262-9ddc-4ee6-965c-2d1182279104"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<text><![CDATA[退款日期]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="460" y="22" width="135" height="14" uuid="07e1131e-197a-4868-96ac-25acc59754f8"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<text><![CDATA[退回费用类型]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="595" y="22" width="187" height="14" uuid="241659b2-379b-425f-89eb-a572a2dfb3fe"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<text><![CDATA[备注]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="0" width="782" height="1" uuid="804da10a-b688-4808-9f3f-c5719c0a9566"/>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="111" height="15" uuid="478695f4-5ad9-46bc-8209-7fedf16e8fa0"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{refundCode}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="111" y="0" width="135" height="15" uuid="9557527c-583c-4340-9a89-47f23ec1d38e"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{transCode}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="460" y="0" width="135" height="15" uuid="954d5eb6-e4e5-44f1-8337-68dd82746f62"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{refundTypeStr}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement x="252" y="0" width="114" height="15" uuid="89806eb8-7657-4133-8dc6-0ae04ccd5c6d"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{refundAmount}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="360" y="0" width="100" height="15" uuid="01144d3e-2c2c-42c0-8b0d-da6ed0bd9898"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{refundTimeStr}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="595" y="0" width="187" height="15" uuid="8a08f5ce-b4bb-4249-a893-af5cc0516110"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{remark}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="19" splitType="Stretch">
+			<staticText>
+				<reportElement x="111" y="0" width="135" height="14" uuid="554873d7-384d-4261-9d80-2f7e1d250087"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial Unicode MS"/>
+				</textElement>
+				<text><![CDATA[合计:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="0" width="782" height="1" uuid="313fc2f1-dc4e-4c63-9e5d-589cca6c29ec"/>
+			</line>
+			<textField>
+				<reportElement x="252" y="1" width="114" height="18" uuid="1f131d7b-7aa1-4797-909b-7805d0c7ccfa"/>
+				<textElement textAlignment="Center">
+					<font fontName="ArialUnicodeMS"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalRefundAmount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.SO153141Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        ACCOUNT_BOOK_ID AS accountBookId,
+        IFNULL(ACCOUNT_BOOK_NAME,'') AS accountBookName,
+        USER_ID AS userId,
+        USER_NO AS userNo,
+        USER_ROLE AS userRole,
+        USER_NAME AS userName,
+       <!-- COMM_DATE AS commDate,
+        PERIOD_BEGIN AS periodBegin,
+        PERIOD_END AS periodEnd,-->
+        IFNULL(UNPAID,'') AS unpaid,
+        IFNULL(UNRECIEVED,'') AS unrecieved,
+        IFNULL(FOR_REFUND,'') AS forRefund,
+        IFNULL(BALANCE,'') AS balance,
+        IFNULL(VER,'') AS  ver
+        /*,REMARK AS remark*/
+    </sql>
+    <sql id="selectFrom">
+        FROM SO_CP_ACCOUNT_BOOK AS SO
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            SO.DEL_FLG = 0
+            <if test="filterMap.accountBookId!=null and filterMap.accountBookId!=''">
+                AND ACCOUNT_BOOK_ID=#{filterMap.accountBookId}
+            </if>
+            <if test="filterMap.accountBookName!=null and filterMap.accountBookName!=''">
+                AND ACCOUNT_BOOK_NAME like #{filterMap.accountBookName}
+            </if>
+            <if test="filterMap.userId!=null and filterMap.userId!=''">
+                AND USER_ID=#{filterMap.userId}
+            </if>
+            <if test="filterMap.userNo!=null and filterMap.userNo!=''">
+                AND USER_NO like #{filterMap.userNo}
+            </if>
+            <!--<if test="filterMap.userRole!=null and filterMap.userRole!=''">
+                AND USER_ROLE=#{filterMap.userRole}
+            </if>-->
+            <if test="filterMap.userRoles!=null">
+                AND USER_ROLE IN
+                <foreach collection="filterMap.userRoles" item="userRole" open="(" separator="," close=")">
+                    #{userRole}
+                </foreach>
+            </if>
+            <if test="filterMap.commDateStr!=null and filterMap.commDateStr!=''">
+                AND COMM_DATE=#{filterMap.commDateStr}
+            </if>
+            <if test="filterMap.timeStart!=null and filterMap.timeStart!=''">
+                <![CDATA[ AND DATE_FORMAT(COMM_DATE,'%Y-%m-%d') >= #{filterMap.timeStart}]]>
+            </if>
+            <if test="filterMap.timeEnd!=null and filterMap.timeEnd!=''">
+                <![CDATA[ AND DATE_FORMAT(COMM_DATE,'%Y-%m-%d') <= #{filterMap.timeEnd}]]>
+            </if>
+            <if test="filterMap.periodBegin!=null and filterMap.periodBegin!=''">
+                AND PERIOD_BEGIN=#{filterMap.periodBegin}
+            </if>
+            <if test="filterMap.periodEnd!=null and filterMap.periodEnd!=''">
+                AND PERIOD_END=#{filterMap.periodEnd}
+            </if>
+            <if test="filterMap.unpaid!=null and filterMap.unpaid!=''">
+                AND UNPAID=#{filterMap.unpaid}
+            </if>
+            <if test="filterMap.unrecieved!=null and filterMap.unrecieved!=''">
+                AND UNRECIEVED=#{filterMap.unrecieved}
+            </if>
+            <if test="filterMap.forRefund!=null and filterMap.forRefund!=''">
+                AND FOR_REFUND=#{filterMap.forRefund}
+            </if>
+            <if test="filterMap.balance!=null and filterMap.balance!=''">
+                AND BALANCE=#{filterMap.balance}
+            </if>
+            <!--<if test="filterMap.remark!=null and filterMap.remark!=''">
+                AND REMARK=#{filterMap.remark}
+            </if>-->
+
+        </where>
+    </sql>
+
+    <select id="findPageList" resultType="com.msk.so.bean.SOCp153141Bean"
+            parameterType="BasePageParam">
+        SELECT
+        <include refid="selectSql" />
+        <include refid="selectFrom" />
+        <include refid="whereCondition" />
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        select count(1)
+        <include refid="selectFrom" />
+        <include refid="whereCondition"/>
+    </select>
+
+    <insert id ="save" parameterType="com.msk.so.bean.SOCp153141Bean">
+        INSERT INTO so_cp_account_book
+        (
+            ACCOUNT_BOOK_ID,
+            ACCOUNT_BOOK_NAME,
+            USER_ID,
+            USER_NO,
+            USER_ROLE,
+            USER_NAME,
+            UNPAID,
+            UNRECIEVED,
+            FOR_REFUND,
+            BALANCE,
+
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUES
+        (
+            #{accountBookId},
+            #{accountBookName},
+            #{userId},
+            #{userNo},
+            #{userRole},
+            #{userName},
+            #{unpaid},
+            #{unrecieved},
+            #{forRefund},
+            #{balance},
+
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+        )
+    </insert>
+
+    <select id="checkUserId" resultType="com.msk.so.bean.SOCp153141Bean" parameterType="BaseParam">
+          SELECT
+             USER_ID AS userId
+          FROM
+             SO_CP_ACCOUNT_BOOK
+          WHERE
+             DEL_FLG = 0
+             AND USER_ID IN
+          <foreach item="item" index="index" collection="filterMap.userIdList" open="(" separator="," close=")">
+             #{item}
+          </foreach>
+    </select>
+
+    <select id="findSoCpAccountBook" resultType="com.msk.so.bean.SOCp153141Bean" parameterType="BaseParam">
+        SELECT
+           <include refid="selectSql" />
+        FROM
+        SO_CP_ACCOUNT_BOOK
+        WHERE
+        DEL_FLG = 0
+        AND ACCOUNT_BOOK_ID =  #{filterMap.accountBookId}
+    </select>
+
+    <update id="updateSoCpAccountBook" parameterType="com.msk.core.entity.SoCpAccountBook">
+        UPDATE
+        SO_CP_ACCOUNT_BOOK
+        SET
+         BALANCE =  #{balance},
+         UPD_ID = #{updId},
+         UPD_TIME = #{updTime},
+         VER = VER + 1
+        WHERE
+           ACCOUNT_BOOK_ID  =  #{accountBookId}
+    </update>
+
+
+</mapper>

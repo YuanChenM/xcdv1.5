@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+
+    <sql id="ISO151434.Search">
+        SELECT
+        detail.PD_CODE as pdCode
+        , so.DISTRICT_CODE as lgcsCode
+        , SUM(
+        detail.ORDER_QTY - IFNULL(detail.CANCEL_QTY, 0) - IFNULL(detail.RETURN_QTY, 0) - IFNULL(detail.REJECTION_QTY, 0)
+        ) AS salesCnt
+        FROM
+        SO_ORDER so
+        LEFT JOIN SO_ORDER_DETAIL detail
+        on so.ORDER_ID = detail.ORDER_ID
+        WHERE
+        detail.DEL_FLG = '0'
+        AND so.DEL_FLG = '0'
+    </sql>
+
+    <sq id="ISO151434.GroupBy">
+        GROUP BY
+        so.DISTRICT_CODE
+        ,detail.PD_CODE
+    </sq>
+</sqlList>

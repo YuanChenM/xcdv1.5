@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121411Logic">
+    <insert id="save" parameterType = "com.msk.core.entity.ByMarketFoodBasic">
+        INSERT INTO
+           by_market_food_basic(
+           ID,
+           MARKET_ID,
+           MARKET_NAME,
+           MARKET_ADDR,
+           MARKET_CODE,
+           SECTION_TYPE,
+           SECTION_TYPE_NAME,
+           RADIATION_RANGE,
+           RADIATION_RANGE_TYPE_NAME,
+           MARKET_ASSESS_NATURE,
+           MARKET_ASSESS_NATURE_NAME,
+           BY_AVERAGE_PRICE_TYPE,
+           BY_AVERAGE_PRICE_TYPE_NAME,
+           MARKET_NATURE,
+           MARKET_NATURE_NAME,
+           LGCS_AREA_CODE,
+           LGCS_AREA_NAME,
+           CITY_CODE,
+           CITY_NAME,
+           DISTRICT_CODE,
+           DISTRICT_NAME,
+           MERCHANT_TOTAL_NO,
+           N_TARGET_BUYER,
+           N_TARGET_ANNUAL_TURNOVER,
+           TARGET_BUYER,
+           TARGET_ANNUAL_TURNOVER,
+           IS_PHASE_NEW,
+           IS_MARKET_NEW,
+           RESEARCH_PHASE,
+           RESEARCH_PHASE_NAME,
+           MARKET_STATUS,
+           DEL_FLG,
+
+           CRT_ID,
+           CRT_TIME,
+           UPD_ID,
+           UPD_TIME,
+           ACT_ID,
+           ACT_TIME,
+
+           VER
+           )VALUES (
+           #{id},
+           #{marketId},
+           #{marketName},
+           #{marketAddr},
+           #{marketCode},
+           #{sectionType},
+           #{sectionTypeName},
+           #{radiationRange},
+           #{radiationRangeTypeName},
+           #{marketAssessNature},
+           #{marketAssessNatureName},
+           #{byAveragePriceType},
+           #{byAveragePriceTypeName},
+           #{marketNature},
+           #{marketNatureName},
+           #{lgcsAreaCode},
+           #{lgcsAreaName},
+           #{cityCode},
+           #{cityName},
+           #{districtCode},
+           #{districtName},
+           #{merchantTotalNo},
+           #{ntargetBuyer},
+           #{ntargetAnnualTurnover},
+           #{targetBuyer},
+           #{targetAnnualTurnover},
+           1,
+           1,
+           #{researchPhase},
+           #{researchPhaseName},
+           1,
+           0,
+
+           #{crtId},
+           #{crtTime},
+           #{updId},
+           #{updTime},
+           #{actId},
+           #{actTime},
+
+           1
+           )
+    </insert>
+
+    <update id="modify" parameterType = "com.msk.buyers.bean.BY121409Bean">
+        UPDATE
+        by_market_food_basic
+        SET
+        MARKET_CODE = #{marketCode},
+        MARKET_NATURE = #{marketNature},
+        MARKET_NATURE_NAME = #{marketNatureName},
+        MARKET_STATUS = 1
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+
+        WHERE
+        MARKET_ID = #{marketId}
+        AND IS_MARKET_NEW = 1
+        AND IS_PHASE_NEW = 1
+        AND MARKET_STATUS = 0
+        AND DEL_FLG = 0
+    </update>
+
+    <select id="findList" parameterType = "BaseParam" resultType = "com.msk.buyers.bean.BY121411Bean">
+        SELECT
+           MARKET_ID AS marketId,
+           FILE_SERVER_ID AS fileServerId,
+           FILE_NAME AS fileName,
+           FILE_SUFF AS fileSuff
+        FROM
+          by_market_food_file_info
+        WHERE
+          MARKET_ID = #{filterMap.marketId}
+          AND FILE_TYPE = 0
+          AND DEL_FLG = 0
+    </select>
+    <select id="count" resultType="int" parameterType = "BaseParam">
+        SELECT
+          COUNT(1)
+        FROM
+          by_market_food
+        WHERE
+          FOD_MARKET_ID = #{filterMap.marketId}
+          AND DEL_FLG = 0
+    </select>
+    <update id="modifyFood" parameterType = "com.msk.buyers.bean.BY121409Bean">
+        UPDATE
+          by_market_food
+        SET
+          MARKET_CODE = #{marketCode},
+          MARKET_TYPE = #{marketNature},
+          MARKET_TYPE_NAME = #{marketNatureName}
+
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE
+          FOD_MARKET_ID = #{marketId}
+          AND DEL_FLG = 0
+    </update>
+    <insert id="addFood" parameterType="com.msk.buyers.bean.BY121409Bean">
+        INSERT INTO
+          by_market_food(
+          FOD_MARKET_ID,
+          MARKET_CODE,
+          MARKET_NAME,
+          MARKET_ADDR,
+          MARKET_TYPE,
+          MARKET_TYPE_NAME,
+          SECTION_TYPE,
+          SECTION_TYPE_NAME,
+          LGCS_AREA_CODE,
+          CITY_CODE,
+          DISTRICT_CODE,
+          DEL_FLG,
+
+          CRT_ID,
+          CRT_TIME,
+          UPD_ID,
+          UPD_TIME,
+          ACT_ID,
+          ACT_TIME,
+
+          VER
+          )VALUES (
+          #{marketId},
+          #{marketCode},
+          #{marketName},
+          #{marketAddr},
+          #{marketNature},
+          #{marketNatureName},
+          #{sectionType},
+          #{sectionTypeName},
+          #{lgcsAreaCode},
+          #{cityCode},
+          #{districtCode},
+          0,
+
+         #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+
+          1
+          )
+
+    </insert>
+    <select id="findBuyerByMarketId" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerBasicInfo">
+        SELECT
+          BUYER_ID AS buyerId,
+          BUYER_CODE AS buyerCode,
+          SUPERIOR_ID AS superiorId,
+          SUPERIOR_QUA AS superiorQua,
+          SUPERIOR_TYPE AS superiorType,
+          SUPERIOR_SUB_TYPE AS superiorSubType
+          ,UPD_ID  AS updId
+          ,UPD_TIME ASupdTime
+        FROM
+          by_buyer_basic_info
+        WHERE
+          SUPERIOR_ID = #{filterMap.marketId}
+          AND DEL_FLG = 0
+    </select>
+    <update id="modifyBuyerBasic" parameterType = "com.msk.core.entity.ByBuyerBasicInfo">
+        UPDATE
+        by_buyer_basic_info
+        SET
+        BUYER_CODE = #{buyerCode},
+        SUPERIOR_QUA = #{superiorQua}
+
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE
+        BUYER_ID = #{buyerId}
+        AND DEL_FLG = 0
+    </update>
+
+    <select id="getFodMarketId" resultType="com.msk.core.entity.ByMarketFood" parameterType="BaseParam">
+        SELECT  FOD_MARKET_ID  AS fodMarketId
+        FROM  BY_MARKET_FOOD
+        WHERE MARKET_CODE =#{filterMap.marketCode}
+        AND DEL_FLG = 0
+    </select>
+
+</mapper>

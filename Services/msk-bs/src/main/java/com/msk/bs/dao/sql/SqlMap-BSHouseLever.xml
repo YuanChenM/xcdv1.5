@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BSHouseLeverLogic">
+
+    <sql id="selectFiled">
+        TYPE_CODE AS typeCode,
+        TYPE_NAME AS typeName,
+        PARENT_TYPE_CODE AS parentTypeCode,
+        TYPE_LEVER AS typeLever
+
+    </sql>
+
+    <select id="findSlHouseType" resultType="com.msk.core.entity.SlHouseType" parameterType="BaseParam">
+        SELECT
+        <include refid="selectFiled"/>
+        FROM sl_bs_house_type
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL)
+        AND ROLE_TYPE = 1
+        <if test="filterMap.typeLever != null and filterMap.typeLever !=''">
+            AND TYPE_LEVER = #{filterMap.typeLever}
+        </if>
+        <if test='filterMap.typeLever == "1" '>
+            AND PARENT_TYPE_CODE = #{filterMap.parentTypeCode}
+        </if>
+    </select>
+
+    <select id="findSlBsType" resultType="com.msk.core.entity.SlHouseType" parameterType="BaseParam">
+        SELECT
+        <include refid="selectFiled"/>
+        FROM sl_bs_house_type
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL)
+        AND ROLE_TYPE = 0
+        <if test="filterMap.typeLever != null and filterMap.typeLever !=''">
+            AND TYPE_LEVER = #{filterMap.typeLever}
+        </if>
+        <if test="filterMap.parentTypeCode != null and filterMap.parentTypeCode !=''">
+            AND PARENT_TYPE_CODE = #{filterMap.parentTypeCode}
+        </if>
+    </select>
+</mapper>

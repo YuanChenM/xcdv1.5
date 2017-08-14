@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BSExcelCommLogic">
+     <select id="findPageList" resultType="com.msk.bs.bean.BSExcelCommBean" parameterType="BaseParam">
+         SELECT
+         account.HOUSE_SHOW_NAME AS houseShowName,
+         <!--Modif for Bug#2503 at 2016/09/07 by zhu_kai1 start-->
+         CASE house_mange.GRADE_CODE
+         WHEN '0' THEN
+         '特级'
+         WHEN '1' THEN
+         '高级'
+         WHEN '2' THEN
+         '中级'
+         WHEN '3' THEN
+         '见习'
+         ELSE
+         ''
+         END AS houseGreade,
+         house_mange.STAR_CODE AS houseStar,
+         <!--Modif for Bug#2503 at 2016/09/07 by zhu_kai1 end-->
+         account.V_HOUSE_ADDRESS AS vhouseAddress,
+         house_mange.categoryName,
+         house_mange.reclassifyName,
+         house_mange.publicBuyers,
+         house_mange.vipBuyers,
+         house_mange.marketingDays,
+         house_mange.typeCode,
+         house_mange.cityName,
+         house_mange.subTypeCode,
+         (CASE  house_mange.isChangeBuyers
+         WHEN 0 THEN '否'
+         WHEN 1 THEN '是'
+         ELSE ''END ) AS isChangeBuyers
+         from
+         sl_house_account account
+         LEFT JOIN (
+         SELECT
+         mange.SL_CODE AS slCode,
+         mange.HOUSE_CODE AS houseCode,
+         mange.HOUSE_CATEGORY_CODE AS typeCode,
+         mange.HOUSE_RECLASSIFY_CODE AS subTypeCode,
+         mange.MARKETING_DAYS AS marketingDays,
+         mange.IS_CHANGE_BUYERS AS isChangeBuyers,
+         mange.PUBLIC_BUYERS AS publicBuyers,
+         mange.VIP_BUYERS AS vipBuyers,
+         mange.CREATETIME,
+         mange.LGCS_AREA_CODE AS lgcsCode,
+         mange.CITY_CODE AS cityCode,
+         mange.CITY_NAME AS cityName,
+         cateType.TYPE_NAME AS categoryName,
+         type1.TYPE_NAME AS reclassifyName,
+         star.STAR_CODE,
+         grade.GRADE_CODE
+         FROM
+         sl_house_manage mange
+         INNER JOIN (
+         SELECT
+         A.SL_CODE,
+         A.HOUSE_CODE,
+         A.HOUSE_CATEGORY_CODE,
+         A.HOUSE_RECLASSIFY_CODE,
+         A.LGCS_AREA_CODE,
+         A.CITY_CODE,
+         A.CITY_NAME,
+         Max(A.CREATETIME) AS MAX_TIME
+         FROM
+         (
+         SELECT
+         mangeMax.SL_CODE,
+         mangeMax.HOUSE_CODE,
+         mangeMax.HOUSE_CATEGORY_CODE,
+         mangeMax.HOUSE_RECLASSIFY_CODE,
+         mangeMax.CREATETIME,
+         mangeMax.LGCS_AREA_CODE,
+         mangeMax.CITY_CODE,
+         mangeMax.CITY_NAME
+         FROM
+         sl_house_manage mangeMax
+         WHERE
+         mangeMax.DEL_FLG =0
+         <if test="creationEndTime !=null and creationEndTime !=''">
+           AND  Date(mangeMax.CREATETIME) <![CDATA[<=#{creationEndTime} ]]>
+         </if>
+         UNION ALL
+         SELECT
+         hisMax.SL_CODE,
+         hisMax.HOUSE_CODE,
+         hisMax.HOUSE_CATEGORY_CODE,
+         hisMax.HOUSE_RECLASSIFY_CODE,
+         hisMax.CREATETIME,
+         hisMax.LGCS_AREA_CODE,
+         hisMax.CITY_CODE,
+         hisMax.CITY_NAME
+         FROM
+         sl_house_manage_his hisMax
+         WHERE
+         hisMax.DEL_FLG =0
+         <if test="creationEndTime !=null and creationEndTime !=''">
+            AND Date(hisMax.CREATETIME) <![CDATA[<=#{creationEndTime} ]]>
+         </if>
+         ) A
+         GROUP BY
+         A.SL_CODE,
+         A.HOUSE_CODE,
+         A.HOUSE_CATEGORY_CODE,
+         A.HOUSE_RECLASSIFY_CODE,
+         A.LGCS_AREA_CODE,
+         A.CITY_CODE
+         ) A1 ON mange.SL_CODE = A1.SL_CODE
+         AND mange.HOUSE_CODE = A1.HOUSE_CODE
+         AND mange.HOUSE_CATEGORY_CODE = A1.HOUSE_CATEGORY_CODE
+         AND mange.HOUSE_RECLASSIFY_CODE = A1.HOUSE_RECLASSIFY_CODE
+         AND mange.LGCS_AREA_CODE = A1.LGCS_AREA_CODE
+         AND mange.CITY_CODE = A1.CITY_CODE
+         AND A1.MAX_TIME = mange.CREATETIME
+         <!--Modif for Bug#2503 at 2016/09/07 by zhu_kai1 start-->
+         LEFT JOIN sl_house_grade grade
+         ON  mange.SL_CODE = grade.SL_CODE and mange.HOUSE_CODE = grade.HOUSE_CODE
+         AND mange.HOUSE_CATEGORY_CODE = grade.HOUSE_CATEGORY_CODE
+         AND mange.HOUSE_RECLASSIFY_CODE = grade.HOUSE_RECLASSIFY_CODE
+         AND grade.VALID_YEAR_MONTH =DATE_FORMAT(#{creationEndTime},'%Y%m')
+         LEFT JOIN sl_house_star star
+         ON  mange.SL_CODE = star.SL_CODE and mange.HOUSE_CODE = star.HOUSE_CODE
+         AND star.VALID_YEAR_MONTH =DATE_FORMAT(#{creationEndTime},'%Y%m')
+         <!--Modif for Bug#2503 at 2016/09/07 by zhu_kai1 end-->
+         LEFT JOIN sl_bs_house_type cateType ON mange.HOUSE_CATEGORY_CODE = cateType.TYPE_CODE
+         AND cateType.TYPE_LEVER = 0 and cateType.ROLE_TYPE = 1
+         LEFT JOIN sl_bs_house_type type1 ON mange.HOUSE_RECLASSIFY_CODE = type1.TYPE_CODE
+         AND type1.TYPE_LEVER = 1 and type1.ROLE_TYPE = 1
+         WHERE
+         mange.DEL_FLG = 0
+         <if test="creationEndTime !=null and creationEndTime !=''">
+             AND Date(mange.CREATETIME) <![CDATA[<=#{creationEndTime} ]]>
+         </if>
+         UNION ALL
+         SELECT
+         his.MARKETING_DAYS AS marketingDays,
+         his.SL_CODE AS slCode,
+         his.HOUSE_CATEGORY_CODE AS typeCode,
+         his.HOUSE_RECLASSIFY_CODE AS subTypeCode,
+         his.HOUSE_CODE AS houseCode,
+         his.IS_CHANGE_BUYERS AS isChangeBuyers,
+         his.PUBLIC_BUYERS AS publicBuyers,
+         his.VIP_BUYERS AS vipBuyers,
+         his.CREATETIME,
+         his.LGCS_AREA_CODE AS lgcsCode,
+         his.CITY_CODE AS cityCode,
+         his.CITY_NAME AS cityName,
+         cateType.TYPE_NAME AS categoryName,
+         type1.TYPE_NAME AS reclassifyName,
+         star.STAR_CODE,
+         grade.GRADE_CODE
+         FROM
+         sl_house_manage_his his
+         INNER JOIN (
+         SELECT
+         A.SL_CODE,
+         A.HOUSE_CODE,
+         A.HOUSE_CATEGORY_CODE,
+         A.HOUSE_RECLASSIFY_CODE,
+         A.LGCS_AREA_CODE,
+         A.CITY_CODE,
+         A.CITY_NAME,
+         Max(A.CREATETIME) AS MAX_TIME
+         FROM
+         (
+         SELECT
+         mangeMax.SL_CODE,
+         mangeMax.HOUSE_CODE,
+         mangeMax.HOUSE_CATEGORY_CODE,
+         mangeMax.HOUSE_RECLASSIFY_CODE,
+         mangeMax.CREATETIME,
+         mangeMax.LGCS_AREA_CODE ,
+         mangeMax.CITY_CODE,
+         mangeMax.CITY_NAME
+         FROM
+         sl_house_manage mangeMax
+         WHERE
+         mangeMax.DEL_FLG =0
+         <if test="creationEndTime !=null and creationEndTime !=''">
+             AND  Date(mangeMax.CREATETIME) <![CDATA[<=#{creationEndTime} ]]>
+         </if>
+         UNION ALL
+         SELECT
+         hisMax.SL_CODE,
+         hisMax.HOUSE_CODE,
+         hisMax.HOUSE_CATEGORY_CODE,
+         hisMax.HOUSE_RECLASSIFY_CODE,
+         hisMax.CREATETIME,
+         hisMax.LGCS_AREA_CODE,
+         hisMax.CITY_CODE,
+         hisMax.CITY_NAME
+         FROM
+         sl_house_manage_his hisMax
+         WHERE
+         hisMax.DEL_FLG =0
+         <if test="creationEndTime !=null and creationEndTime !=''">
+             AND Date(hisMax.CREATETIME) <![CDATA[<=#{creationEndTime} ]]>
+         </if>
+         ) A
+         GROUP BY
+         A.SL_CODE,
+         A.HOUSE_CODE,
+         A.HOUSE_CATEGORY_CODE,
+         A.HOUSE_RECLASSIFY_CODE,
+         A.LGCS_AREA_CODE,
+         A.CITY_CODE
+         ) A2 ON his.SL_CODE = A2.SL_CODE
+         AND his.HOUSE_CODE = A2.HOUSE_CODE
+         AND his.HOUSE_CATEGORY_CODE = A2.HOUSE_CATEGORY_CODE
+         AND his.HOUSE_RECLASSIFY_CODE = A2.HOUSE_RECLASSIFY_CODE
+         AND his.LGCS_AREA_CODE = A2.LGCS_AREA_CODE
+         AND his.CITY_CODE = A2.CITY_CODE
+         AND A2.MAX_TIME = his.CREATETIME
+         <!--Modif for Bug#2503 at 2016/09/07 by zhu_kai1 start-->
+         LEFT JOIN sl_house_grade grade
+         ON  his.SL_CODE = grade.SL_CODE and his.HOUSE_CODE = grade.HOUSE_CODE
+         AND his.HOUSE_CATEGORY_CODE = grade.HOUSE_CATEGORY_CODE
+         AND his.HOUSE_RECLASSIFY_CODE = grade.HOUSE_RECLASSIFY_CODE
+         AND grade.VALID_YEAR_MONTH =DATE_FORMAT(#{creationEndTime},'%Y%m')
+         LEFT JOIN sl_house_star star
+         ON  his.SL_CODE = star.SL_CODE and his.HOUSE_CODE = star.HOUSE_CODE
+         AND star.VALID_YEAR_MONTH =DATE_FORMAT(#{creationEndTime},'%Y%m')
+         <!--Modif for Bug#2503 at 2016/09/07 by zhu_kai1 end-->
+         LEFT JOIN sl_bs_house_type cateType ON his.HOUSE_CATEGORY_CODE = cateType.TYPE_CODE
+         AND cateType.TYPE_LEVER = 0 and cateType.ROLE_TYPE = 1
+         LEFT JOIN sl_bs_house_type type1 ON his.HOUSE_RECLASSIFY_CODE = type1.TYPE_CODE
+         AND type1.TYPE_LEVER = 1 and type1.ROLE_TYPE = 1
+         WHERE
+         his.DEL_FLG = 0
+         ) house_mange
+         on account.SL_CODE = house_mange.slCode
+         and account.HOUSE_CODE = house_mange.houseCode
+         AND account.V_LGCS_AREA_CODE = house_mange.lgcsCode
+         <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 start-->
+         where (account.DEL_FLG = 0 OR account.DEL_FLG IS NULL)
+         <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 end-->
+         <if test="creationEndTime !=null and creationEndTime !=''">
+             AND Date(account.CRT_TIME) <![CDATA[<=#{creationEndTime} ]]>
+         </if>
+         <if test="slHouseAccountList !=null and slHouseAccountList.size>0">
+             AND
+             (
+             <foreach collection="slHouseAccountList" item="params" separator="or">
+                 (account.SL_CODE =#{params.slCode}
+                 AND account.HOUSE_CODE = #{params.houseCode}
+                 )
+             </foreach>
+             )
+         </if>
+         <if test="lgcsAreaCode !=null and lgcsAreaCode !=''">
+            AND account.V_LGCS_AREA_CODE =#{lgcsAreaCode}
+         </if>
+        <if test="cityCode !=null and cityCode !=''">
+           AND house_mange.cityCode = #{cityCode}
+        </if>
+         <if test="categoryCode !=null and categoryCode !=''">
+             AND house_mange.typeCode = #{categoryCode}
+         </if>
+
+         <if test="reclassifyCode !=null and reclassifyCode !=''">
+             AND house_mange.subTypeCode = #{reclassifyCode}
+         </if>
+     </select>
+
+</mapper>

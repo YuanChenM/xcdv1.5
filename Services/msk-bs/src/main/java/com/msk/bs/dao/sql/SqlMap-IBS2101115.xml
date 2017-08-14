@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101115RsLogic">
+    <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 start-->
+    <select id="accountCount" resultType="int" parameterType="com.msk.bs.bean.IBS2101115Param">
+    SELECT COUNT(1) FROM sl_bs_account WHERE (DEL_FLG = 0 OR DEL_FLG IS NULL ) AND SL_ACCOUNT = #{slAccount}
+</select>
+    <select id="bsBasicCount" resultType="int" parameterType="com.msk.bs.bean.IBS2101115Param">
+    SELECT COUNT(1) FROM sl_bs_basic_info WHERE (DEL_FLG = 0 OR DEL_FLG IS NULL ) AND SL_CODE = #{bsBasicInfo.slCode}
+        <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 end-->
+</select>
+    <insert id="save" parameterType="com.msk.bs.bean.IBS2101115Param">
+        INSERT INTO sl_bs_account (
+        SL_ACCOUNT,
+        SL_TEL,
+        SL_SHOW_NAME,
+        SL_CONTACT,
+        ACCOUNT_PSD,
+        ACCOUNT_IMG,
+        AUTH_STATUS,
+        FROM_FLG,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{slAccount},
+        #{slTel},
+        #{slShowName},
+        #{slContact},
+        #{accountPsd},
+        #{accountImg},
+        #{authStatus},
+        #{fromFlg},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+    <insert id="saveBsBasicInfo" parameterType="com.msk.bs.bean.IBS2101115Param">
+        INSERT INTO sl_bs_basic_info (
+        SL_CODE,
+        SL_ACCOUNT,
+        SL_CODE_DIS,
+        SL_CODE_MANUFACTURE,
+        SL_CODE_SELF,
+        SL_CODE_AGENT,
+        SL_CODE_OEM,
+        SL_CON_FLG,
+        AREA_CODE,
+        LGCS_AREA_CODE,
+        PROVINCE_CODE,
+        CITY_CODE,
+        DISTRICT_CODE,
+        AREA_NAME,
+        LGCS_AREA_NAME,
+        PROVINCE_NAME,
+        CITY_NAME,
+        DISTRICT_NAME,
+        EP_ID,
+        SL_MAIN_CLASS,
+        SNK_FLG,
+        SELF_FLG,
+        AGENT_FLG,
+        OEM_FLG,
+        BUYER_FLG,
+        SQA_STATUS,
+        DIST_QUA,
+        SHOP_QUA,
+        MEMO1,
+        MEMO2,
+        MEMO3,
+        MEMO4,
+        MEMO5,
+        MEMO6,
+        MEMO7,
+        MEMO8,
+        MEMO9,
+        MEMO10,
+        MEMO11,
+        MEMO12,
+        MEMO13,
+        MEMO14,
+        MEMO15,
+        MEMO16,
+        MEMO17,
+        MEMO18,
+        MEMO19,
+        MEMO20,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{bsBasicInfo.slCode},
+        #{bsBasicInfo.slAccount},
+        #{bsBasicInfo.slCodeDis},
+        #{bsBasicInfo.slCodeManufacture},
+        #{bsBasicInfo.slCodeSelf},
+        #{bsBasicInfo.slCodeAgent},
+        #{bsBasicInfo.slCodeOem},
+        #{bsBasicInfo.slConFlg},
+        #{bsBasicInfo.areaCode},
+        #{bsBasicInfo.lgcsAreaCode},
+        #{bsBasicInfo.provinceCode},
+        #{bsBasicInfo.cityCode},
+        #{bsBasicInfo.districtCode},
+        #{bsBasicInfo.areaName},
+        #{bsBasicInfo.lgcsAreaName},
+        #{bsBasicInfo.provinceName},
+        #{bsBasicInfo.cityName},
+        #{bsBasicInfo.districtName},
+        #{bsBasicInfo.epId},
+        #{bsBasicInfo.slMainClass},
+        #{bsBasicInfo.snkFlg},
+        #{bsBasicInfo.selfFlg},
+        #{bsBasicInfo.agentFlg},
+        #{bsBasicInfo.oemFlg},
+        #{bsBasicInfo.buyerFlg},
+        #{bsBasicInfo.sqaStatus},
+        #{bsBasicInfo.distQua},
+        #{bsBasicInfo.shopQua},
+        #{bsBasicInfo.memo1},
+        #{bsBasicInfo.memo2},
+        #{bsBasicInfo.memo3},
+        #{bsBasicInfo.memo4},
+        #{bsBasicInfo.memo5},
+        #{bsBasicInfo.memo6},
+        #{bsBasicInfo.memo7},
+        #{bsBasicInfo.memo8},
+        #{bsBasicInfo.memo9},
+        #{bsBasicInfo.memo10},
+        #{bsBasicInfo.memo11},
+        #{bsBasicInfo.memo12},
+        #{bsBasicInfo.memo13},
+        #{bsBasicInfo.memo14},
+        #{bsBasicInfo.memo15},
+        #{bsBasicInfo.memo16},
+        #{bsBasicInfo.memo17},
+        #{bsBasicInfo.memo18},
+        #{bsBasicInfo.memo19},
+        #{bsBasicInfo.memo20},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+    <update id="modify" parameterType="com.msk.bs.bean.IBS2101115Param">
+        UPDATE sl_bs_account SET
+        <if test="slTel != null and slTel != ''">
+            SL_TEL = #{slTel},
+        </if>
+        <if test="slShowName != null and slShowName != ''">
+            SL_SHOW_NAME = #{slShowName},
+        </if>
+        <if test="slContact != null and slContact != ''">
+            SL_CONTACT = #{slContact},
+        </if>
+        <if test="accountPsd != null and accountPsd != ''">
+            ACCOUNT_PSD = #{accountPsd},
+        </if>
+        <if test="accountImg != null and accountImg != ''">
+            ACCOUNT_IMG = #{accountImg},
+        </if>
+        <if test="authStatus != null and authStatus != ''">
+            AUTH_STATUS = #{authStatus},
+        </if>
+        <if test="fromFlg != null and fromFlg != ''">
+            FROM_FLG = #{fromFlg},
+        </if>
+        <if test="delFlg != null and delFlg != ''">
+            DEL_FLG = #{delFlg},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        <!--Modify delflag横展开 2016/10/14 任强 Start-->
+        ,VER=VER+1
+        <!--Modify delflag横展开 2016/10/14 任强 End-->
+        WHERE SL_ACCOUNT = #{slAccount}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+    <update id="updateBsBasicInfo" parameterType="com.msk.bs.bean.IBS2101115Param">
+        UPDATE sl_bs_basic_info SET
+        <if test="bsBasicInfo.slAccount != null and bsBasicInfo.slAccount != ''">
+            SL_ACCOUNT = #{bsBasicInfo.slAccount},
+        </if>
+        <if test="bsBasicInfo.slCodeDis != null and bsBasicInfo.slCodeDis != ''">
+            SL_CODE_DIS = #{bsBasicInfo.slCodeDis},
+        </if>
+        <if test="bsBasicInfo.slCodeManufacture != null and bsBasicInfo.slCodeManufacture != ''">
+            SL_CODE_MANUFACTURE = #{bsBasicInfo.slCodeManufacture},
+        </if>
+        <if test="bsBasicInfo.slCodeSelf != null and bsBasicInfo.slCodeSelf != ''">
+            SL_CODE_SELF = #{bsBasicInfo.slCodeSelf},
+        </if>
+        <if test="bsBasicInfo.slCodeAgent != null and bsBasicInfo.slCodeAgent != ''">
+            SL_CODE_AGENT = #{bsBasicInfo.slCodeAgent},
+        </if>
+        <if test="bsBasicInfo.slCodeOem != null and bsBasicInfo.slCodeOem != ''">
+            SL_CODE_OEM = #{bsBasicInfo.slCodeOem},
+        </if>
+        <if test="bsBasicInfo.slConFlg != null and bsBasicInfo.slConFlg != ''">
+            SL_CON_FLG = #{bsBasicInfo.slConFlg},
+        </if>
+        <if test="bsBasicInfo.areaCode != null and bsBasicInfo.areaCode != ''">
+            AREA_CODE = #{bsBasicInfo.areaCode},
+        </if>
+        <if test="bsBasicInfo.lgcsAreaCode != null and bsBasicInfo.lgcsAreaCode != ''">
+            LGCS_AREA_CODE = #{bsBasicInfo.lgcsAreaCode},
+        </if>
+        <if test="bsBasicInfo.provinceCode != null and bsBasicInfo.provinceCode != ''">
+            PROVINCE_CODE = #{bsBasicInfo.provinceCode},
+        </if>
+        <if test="bsBasicInfo.cityCode != null and bsBasicInfo.cityCode != ''">
+            CITY_CODE = #{bsBasicInfo.cityCode},
+        </if>
+        <if test="bsBasicInfo.districtCode != null and bsBasicInfo.districtCode != ''">
+            DISTRICT_CODE = #{bsBasicInfo.districtCode},
+        </if>
+        <if test="bsBasicInfo.areaName != null and bsBasicInfo.areaName != ''">
+            AREA_NAME = #{bsBasicInfo.areaName},
+        </if>
+        <if test="bsBasicInfo.lgcsAreaName != null and bsBasicInfo.lgcsAreaName != ''">
+            LGCS_AREA_NAME = #{bsBasicInfo.lgcsAreaName},
+        </if>
+        <if test="bsBasicInfo.provinceName != null and bsBasicInfo.provinceName != ''">
+            PROVINCE_NAME = #{bsBasicInfo.provinceName},
+        </if>
+        <if test="bsBasicInfo.cityName != null and bsBasicInfo.cityName != ''">
+            CITY_NAME = #{bsBasicInfo.cityName},
+        </if>
+        <if test="bsBasicInfo.districtName != null and bsBasicInfo.districtName != ''">
+            DISTRICT_NAME = #{bsBasicInfo.districtName},
+        </if>
+        <if test="bsBasicInfo.epId != null and bsBasicInfo.epId != ''">
+            EP_ID = #{bsBasicInfo.epId},
+        </if>
+        <if test="bsBasicInfo.slMainClass != null and bsBasicInfo.slMainClass != ''">
+            SL_MAIN_CLASS = #{bsBasicInfo.slMainClass},
+        </if>
+        <if test="bsBasicInfo.snkFlg != null and bsBasicInfo.snkFlg != ''">
+            SNK_FLG = #{bsBasicInfo.snkFlg},
+        </if>
+        <if test="bsBasicInfo.selfFlg != null and bsBasicInfo.selfFlg != ''">
+            SELF_FLG = #{bsBasicInfo.selfFlg},
+        </if>
+        <if test="bsBasicInfo.agentFlg != null and bsBasicInfo.agentFlg != ''">
+            AGENT_FLG = #{bsBasicInfo.agentFlg},
+        </if>
+        <if test="bsBasicInfo.oemFlg != null and bsBasicInfo.oemFlg != ''">
+            OEM_FLG = #{bsBasicInfo.oemFlg},
+        </if>
+        <if test="bsBasicInfo.buyerFlg != null and bsBasicInfo.buyerFlg != ''">
+            BUYER_FLG = #{bsBasicInfo.buyerFlg},
+        </if>
+        <if test="bsBasicInfo.sqaStatus != null and bsBasicInfo.sqaStatus != ''">
+            SQA_STATUS = #{bsBasicInfo.sqaStatus},
+        </if>
+        <if test="bsBasicInfo.distQua != null and bsBasicInfo.distQua != ''">
+            DIST_QUA = #{bsBasicInfo.distQua},
+        </if>
+        <if test="bsBasicInfo.shopQua != null and bsBasicInfo.shopQua != ''">
+            SHOP_QUA = #{bsBasicInfo.shopQua},
+        </if>
+        <if test="bsBasicInfo.shopQua != null and bsBasicInfo.shopQua != ''">
+            SHOP_QUA = #{bsBasicInfo.shopQua},
+        </if>
+        <if test="bsBasicInfo.memo1 != null">
+            MEMO1 = #{bsBasicInfo.memo1},
+        </if>
+        <if test="bsBasicInfo.memo2 != null">
+            MEMO2 = #{bsBasicInfo.memo2},
+        </if>
+        <if test="bsBasicInfo.memo3 != null ">
+            MEMO3 = #{bsBasicInfo.memo3},
+        </if>
+        <if test="bsBasicInfo.memo4 != null ">
+            MEMO4 = #{bsBasicInfo.memo4},
+        </if>
+        <if test="bsBasicInfo.memo5 != null ">
+            MEMO5 = #{bsBasicInfo.memo5},
+        </if>
+        <if test="bsBasicInfo.memo6 != null and bsBasicInfo.memo6 != ''">
+            MEMO6 = #{bsBasicInfo.memo6},
+        </if>
+        <if test="bsBasicInfo.memo7 != null">
+            MEMO7 = #{bsBasicInfo.memo7},
+        </if>
+        <if test="bsBasicInfo.memo8 != null and bsBasicInfo.memo8 != ''">
+            MEMO8 = #{bsBasicInfo.memo8},
+        </if>
+        <if test="bsBasicInfo.memo9 != null and bsBasicInfo.memo9 != ''">
+            MEMO9 = #{bsBasicInfo.memo9},
+        </if>
+        <if test="bsBasicInfo.memo10 != null and bsBasicInfo.memo10 != ''">
+            MEMO10 = #{bsBasicInfo.memo10},
+        </if>
+        <if test="bsBasicInfo.memo11 != null and bsBasicInfo.memo11 != ''">
+            MEMO11 = #{bsBasicInfo.memo11},
+        </if>
+        <if test="bsBasicInfo.memo12 != null and bsBasicInfo.memo12 != ''">
+            MEMO12 = #{bsBasicInfo.memo12},
+        </if>
+        <if test="bsBasicInfo.memo13 != null and bsBasicInfo.memo13 != ''">
+            MEMO13 = #{bsBasicInfo.memo13},
+        </if>
+        <if test="bsBasicInfo.memo14 != null and bsBasicInfo.memo14 != ''">
+            MEMO14 = #{bsBasicInfo.memo14},
+        </if>
+        <if test="bsBasicInfo.memo15 != null and bsBasicInfo.memo15 != ''">
+            MEMO15 = #{bsBasicInfo.memo15},
+        </if>
+        <if test="bsBasicInfo.memo16 != null and bsBasicInfo.memo16 != ''">
+            MEMO16 = #{bsBasicInfo.memo16},
+        </if>
+        <if test="bsBasicInfo.memo17 != null and bsBasicInfo.memo17 != ''">
+            MEMO17 = #{bsBasicInfo.memo17},
+        </if>
+        <if test="bsBasicInfo.memo18 != null and bsBasicInfo.memo18 != ''">
+            MEMO18 = #{bsBasicInfo.memo18},
+        </if>
+        <if test="bsBasicInfo.memo19 != null and bsBasicInfo.memo19 != ''">
+            MEMO19 = #{bsBasicInfo.memo19},
+        </if>
+        <if test="bsBasicInfo.memo20 != null and bsBasicInfo.memo20 != ''">
+            MEMO20 = #{bsBasicInfo.memo20},
+        </if>
+        <if test="bsBasicInfo.delFlg != null and bsBasicInfo.delFlg != ''">
+            DEL_FLG = #{bsBasicInfo.delFlg},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        <!--Modify delflag横展开 2016/10/14 任强 Start-->
+        ,VER=VER+1
+        <!--Modify delflag横展开 2016/10/14 任强 End-->
+        WHERE SL_CODE = #{bsBasicInfo.slCode}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+    <select id="findOne" parameterType="com.msk.bs.bean.IBS2101115Param" resultType="com.msk.bs.bean.IBS2101115RsBean">
+        SELECT
+            SL_CODE AS slCode,
+            SL_ACCOUNT AS slAccount,
+            SL_CODE_DIS AS slCodeDis,
+            SL_CODE_MANUFACTURE AS slCodeManufacture,
+            SL_CODE_SELF AS slCodeSelf,
+            SL_CODE_AGENT AS slCodeAgent,
+            SL_CODE_OEM AS slCodeOem,
+            SL_CON_FLG AS slConFlg,
+            AREA_CODE AS areaCode,
+            LGCS_AREA_CODE AS lgcsAreaCode,
+            PROVINCE_CODE AS provinceCode,
+            CITY_CODE AS cityCode,
+            DISTRICT_CODE AS districtCode,
+            AREA_NAME AS areaName,
+            LGCS_AREA_NAME AS lgcsAreaName,
+            PROVINCE_NAME AS provinceName,
+            CITY_NAME AS cityName,
+            DISTRICT_NAME AS districtName,
+            EP_ID AS epId,
+            SL_MAIN_CLASS AS slMainClass,
+            SNK_FLG AS snkFlg,
+            SELF_FLG AS selfFlg,
+            AGENT_FLG AS agentFlg,
+            OEM_FLG AS oemFlg,
+            BUYER_FLG AS buyerFlg,
+            SQA_STATUS AS sqaStatus,
+            DIST_QUA AS distQua,
+            SHOP_QUA AS shopQua,
+            MEMO1 AS memo1,
+            MEMO2 AS memo2,
+            MEMO3 AS memo3,
+            MEMO4 AS memo4,
+            MEMO5 AS memo5,
+            MEMO6 AS memo6,
+            MEMO7 AS memo7,
+            MEMO8 AS memo8,
+            MEMO9 AS memo9,
+            MEMO10 AS memo10,
+            MEMO11 AS memo11,
+            MEMO12 AS memo12,
+            MEMO13 AS memo13,
+            MEMO14 AS memo14,
+            MEMO15 AS memo15,
+            MEMO16 AS memo16,
+            MEMO17 AS memo17 ,
+            MEMO18 AS memo18,
+            MEMO19 AS memo19 ,
+            MEMO20 AS memo20
+        <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 start-->
+        FROM sl_bs_basic_info WHERE (DEL_FLG = 0 OR DEL_FLG IS NULL ) AND SL_CODE = #{bsBasicInfo.slCode}
+        <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 end-->
+    </select>
+    <insert id="saveBsBasicInfoHis" parameterType="com.msk.bs.bean.IBS2101115RsBean">
+        INSERT INTO sl_bs_basic_info_his (
+        HIS_ID,
+        SL_CODE,
+        SL_ACCOUNT,
+        SL_CODE_DIS,
+        SL_CON_FLG,
+        AREA_CODE,
+        LGCS_AREA_CODE,
+        PROVINCE_CODE,
+        CITY_CODE,
+        DISTRICT_CODE,
+        EP_ID,
+        SL_MAIN_CLASS,
+        SNK_FLG,
+        SELF_FLG,
+        AGENT_FLG,
+        OEM_FLG,
+        BUYER_FLG,
+        SQA_STATUS,
+        DIST_QUA,
+        SHOP_QUA,
+        MEMO1,
+        MEMO2,
+        MEMO3,
+        MEMO4,
+        MEMO5,
+        MEMO6,
+        MEMO7,
+        MEMO8,
+        MEMO9,
+        MEMO10,
+        MEMO11,
+        MEMO12,
+        MEMO13,
+        MEMO14,
+        MEMO15,
+        MEMO16,
+        MEMO17,
+        MEMO18,
+        MEMO19,
+        MEMO20,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{hisId},
+        #{slCode},
+        #{slAccount},
+        #{slCodeDis},
+        #{slConFlg},
+        #{areaCode},
+        #{lgcsAreaCode},
+        #{provinceCode},
+        #{cityCode},
+        #{districtCode},
+        #{epId},
+        #{slMainClass},
+        #{snkFlg},
+        #{selfFlg},
+        #{agentFlg},
+        #{oemFlg},
+        #{buyerFlg},
+        #{sqaStatus},
+        #{distQua},
+        #{shopQua},
+        #{memo1},
+        #{memo2},
+        #{memo3},
+        #{memo4},
+        #{memo5},
+        #{memo6},
+        #{memo7},
+        #{memo8},
+        #{memo9},
+        #{memo10},
+        #{memo11},
+        #{memo12},
+        #{memo13},
+        #{memo14},
+        #{memo15},
+        #{memo16},
+        #{memo17},
+        #{memo18},
+        #{memo19},
+        #{memo20},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+</mapper>
+

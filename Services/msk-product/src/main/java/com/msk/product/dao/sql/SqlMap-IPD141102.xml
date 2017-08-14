@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141102Logic">
+	<!-- 查询产品等级编码数据 -->
+	<select id="findListGrade" resultType="com.msk.product.bean.IPD141102RsParam">
+		SELECT
+		A.GRADE_CODE AS
+		gradeCode
+		,A.GRADE_NAME AS gradeName
+		FROM PD_GRADE AS A
+	</select>
+
+</mapper>

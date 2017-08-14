@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101126RsLogic">
+
+
+    <select id="findList" parameterType="com.msk.bs.bean.IBS2101126RsParam" resultType="com.msk.bs.bean.IBS2101126RsBean">
+        SELECT
+        a.SL_ACCOUNT AS slAcount,
+        b.SL_CODE AS slCode,
+        ifnull(b.SL_CODE_DIS,'') AS slCodeDis,
+        a.SL_TEL AS slTel
+        from sl_bs_account a
+        INNER JOIN sl_bs_basic_info b ON a.SL_ACCOUNT = b.SL_ACCOUNT
+        WHERE a.DEL_FLG='0'
+        AND a.SL_TEL IN
+        <foreach item="item" index="index" collection="userAccountList" open="(" separator="," close=")">
+            #{item.slTel}
+        </foreach>
+    </select>
+
+</mapper>
+

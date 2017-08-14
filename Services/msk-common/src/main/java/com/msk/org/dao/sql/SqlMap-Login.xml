@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.org.logic.LoginLogic">
+    <select id="login" parameterType="java.util.HashMap" resultType="com.msk.common.bean.LoginUser">
+        SELECT
+            EMPL_CODE AS emplNo
+            ,EMPL_NAME AS emplName
+            ,PWD AS loginPwd
+            ,STATUS AS status
+            ,EMPL_ID AS emplId
+        FROM ORG_EMPL
+        WHERE EMPL_CODE = #{loginId}
+        AND STATUS = #{status}
+    </select>
+
+    <select id="findRoleList" parameterType="java.util.HashMap" resultType="com.msk.org.bean.LoginRole">
+        SELECT
+        ROLE_ID AS roleNo
+        ,EMPL_ID AS emplNo
+        FROM ORG_EMPL_ROLE
+        WHERE EMPL_ID = #{emplId}
+    </select>
+
+    <select id="findRoleAuthorityList" parameterType="java.util.HashMap" resultType="com.msk.org.bean.LoginRoleAuthority">
+        SELECT
+            RA.PAGE_CODE AS pageCode
+            ,RA.ACTION_CODE AS actionCode
+            ,PE.PAGE_NAME AS pageName
+            ,PAGE_URL AS pageUrl
+            ,PE.IS_MENU AS isMenu
+            ,AN.ACTION_TYPE AS actionType
+            ,AN.ACTION_NAME AS actionName
+            ,RA.ROLE_ID AS roleId
+            ,PE.SYS_CODE AS sysCode
+            ,AN.PAGE_CODE AS actionPageCode
+        FROM ORG_ROLE_AUTH AS RA
+        INNER JOIN ORG_ROLE AS RE ON RE.ROLE_ID = RA.ROLE_ID AND RE.DEL_FLG = '0'
+        LEFT JOIN ORG_PAGE AS PE ON PE.PAGE_CODE = RA.PAGE_CODE AND PE.DEL_FLG = '0'
+        LEFT JOIN ORG_ACTION AS AN ON RA.ACTION_CODE = AN.ACTION_CODE AND AN.DEL_FLG = '0'
+        WHERE RA.ROLE_ID=#{roleNo}
+        AND RA.IS_AVAILABLE = #{isAvailable}
+        AND RA.DEL_FLG = '0'
+    </select>
+
+
+    <select id="findSystemList" parameterType="BaseParam" resultType="com.msk.org.bean.SystemModel">
+        SELECT
+            SYS.SYS_NAME AS sysName,
+            SYS.SYS_CODE AS sysCode
+        FROM
+            ORG_SYS AS SYS
+        WHERE
+            SYS.SYS_CODE IN (
+                SELECT
+                    org.SYS_CODE
+                FROM
+                    org_page AS org
+                WHERE org.SYS_CODE LIKE #{filterMap.systemCode}
+                  AND org.IS_MENU = 1
+                GROUP BY
+                    org.SYS_CODE
+            )
+        AND SYS.DEL_FLG = '0'
+    </select>
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.core.entity.OrgPage">
+        SELECT
+        PAGE.PAGE_CODE AS pageCode
+        ,PAGE.PAGE_NAME AS pageName
+        ,PAGE.PAGE_URL AS pageUrl
+        ,PAGE.SYS_CODE AS sysCode
+        FROM ORG_PAGE AS PAGE
+        WHERE PAGE.SYS_CODE like concat(#{filterMap.systemCode},'%')
+          AND PAGE.IS_MENU = 1
+          AND PAGE.DEL_FLG = '0'
+        ORDER BY SORT ASC
+    </select>
+</mapper>

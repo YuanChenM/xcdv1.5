@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.SO153101Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        BUYER_BILL_ID AS buyerBillId,
+        IFNULL(SUPPLY_PLATFORM,'') AS supplyPlatform,
+        IFNULL(TRANS_FLG,'') AS transFlg,
+        IFNULL(PAYMENT_TYPE,'') AS paymentType,
+        TRAN_TIME AS tranTime,
+        IFNULL(BUSINESS_MAIN_ID,'') AS businessMainId,
+        IFNULL(BUSINESS_MAIN_CODE,'') AS businessMainCode,
+        IFNULL(BUSINESS_MAIN_NAME,'') AS businessMainName,
+        IFNULL(BUSINESS_MAIN_ROLE,'') AS businessMainRole,
+        IFNULL(BUSINESS_ASSISTANT_ID,'') AS businessAssistantId,
+        IFNULL(BUSINESS_ASSISTANT_CODE,'') AS businessAssistantCode,
+        IFNULL(BUSINESS_ASSISTANT_NAME,'') AS businessAssistantName,
+        IFNULL(BUSINESS_ASSISTANT_ROLE,'') AS businessAssistantRole,
+        IFNULL(bb.TRANS_CODE,'') AS transCode,
+        IFNULL(bb.TRANS_TYPE,'') AS transType,
+        IFNULL(ORDER_AMOUNT,'') AS orderAmount,
+        IFNULL(bb.DUE,0) AS due,
+        IFNULL(RECEIVEABLE,'') AS receiveable,
+        IFNULL(PAID,0) AS paid,
+        IFNULL(REFUNDABLE,0) AS refundable,
+        IFNULL(REFUND_FLG,'') AS refundFlg,
+        (IFNULL(bb.DUE,0)-IFNULL(REFUNDABLE,0)) AS  actualDue,
+        (IFNULL(PAID,0)-IFNULL(REAL_REFUND,0)) AS  actualPaid,
+        (IFNULL(bb.DUE,0)-IFNULL(PAID,0)-IFNULL(REFUNDABLE,0)+IFNULL(REAL_REFUND,0)-IFNULL(RELIEF_AMOUNT,0)) AS  balance,
+        IFNULL(SETTLEMENT_STATUS,'') AS settlementStatus,
+        IFNULL(REAL_REFUND,0) AS realRefund,
+        IFNULL(RELIEF_AMOUNT,0)  AS  reliefAmount,
+        IFNULL(MATCH_VER_FLG,'') AS matchVerFlg,
+        IFNULL(STATEMENT_FLG,'') AS statementFlg,
+        IFNULL(bb.REMARK,'') AS remark,
+        IFNULL(bb.ver,'') AS ver,
+        bb.TRANS_ID AS transId,
+        IFNULL(bb.ORDER_ID,'') AS orderIdStr,
+        IFNULL(st.BS_NAME,'-') AS bsName
+    </sql>
+
+    <sql id="selectSqlLeft">
+            ,IFNULL(crss.PAID_TYPE,'') AS  paidType
+    </sql>
+
+    <sql id="selectFrom">
+        FROM SO_CP_BUYER_BILL bb
+        LEFT JOIN SO_CP_TRANSACTION st ON bb.TRANS_ID = st.TRANS_ID
+        LEFT JOIN
+         ( SELECT
+               crs.PAID_TYPE,crs.BILL_ID  FROM
+                (
+                   SELECT  cr.PAID_TYPE,cr.BILL_ID  FROM so_cp_running  cr
+                   WHERE cr.DEL_FLG = 0
+                   ORDER BY  cr.RUNNING_ID
+                ) crs
+           GROUP BY  crs.BILL_ID
+          ) crss ON  crss.BILL_ID = bb.BUYER_BILL_ID
+    </sql>
+
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.buyerTransId!=null and filterMap.buyerTransId!=''">
+                AND BUYER_BILL_ID=#{filterMap.buyerTransId}
+            </if>
+            <!--<if test="filterMap.supplyPlatform!=null and filterMap.supplyPlatform!='">
+                AND SUPPLY_PLATFORM=#{filterMap.supplyPlatform}
+            </if>-->
+            <if test="filterMap.supplyPlatforms!=null">
+                AND SUPPLY_PLATFORM IN
+                <foreach collection="filterMap.supplyPlatforms" item="supplyPlatform" open="(" separator="," close=")">
+                    #{supplyPlatform}
+                </foreach>
+            </if>
+            <!--<if test="filterMap.transFlg!=null and filterMap.transFlg!='">
+                AND TRANS_FLG=#{filterMap.transFlg}
+            </if>-->
+            <if test="filterMap.transFlgs!=null">
+                AND TRANS_FLG IN
+                <foreach collection="filterMap.transFlgs" item="transFlg" open="(" separator="," close=")">
+                    #{transFlg}
+                </foreach>
+            </if>
+            <!--<if test="filterMap.paymentType!=null and filterMap.paymentType!='">
+                AND PAYMENT_TYPE=#{filterMap.paymentType}
+            </if>-->
+            <if test="filterMap.paymentTypes!=null">
+                AND PAYMENT_TYPE IN
+                <foreach collection="filterMap.paymentTypes" item="paymentType" open="(" separator="," close=")">
+                    #{paymentType}
+                </foreach>
+            </if>
+            <!--<if test="filterMap.tranTime!=null and filterMap.tranTime!=''">
+                AND TRAN_TIME=#{filterMap.tranTime}
+            </if>-->
+            <if test="filterMap.timeStart!=null and filterMap.timeStart!=''">
+                <![CDATA[ AND DATE_FORMAT(TRAN_TIME,'%Y-%m-%d') >= #{filterMap.timeStart}]]>
+            </if>
+            <if test="filterMap.timeEnd!=null and filterMap.timeEnd!=''">
+                <![CDATA[ AND DATE_FORMAT(TRAN_TIME,'%Y-%m-%d') <= #{filterMap.timeEnd}]]>
+            </if>
+            <if test="filterMap.businessAssistantCode!=null and filterMap.businessAssistantCode!=''">
+                AND BUSINESS_ASSISTANT_CODE like #{filterMap.businessAssistantCode}
+            </if>
+            <if test="filterMap.businessAssistantName!=null and filterMap.businessAssistantName!=''">
+                AND BUSINESS_ASSISTANT_NAME like #{filterMap.businessAssistantName}
+            </if>
+            <!--<if test="filterMap.businessAssistantRole!=null and filterMap.businessAssistantRole!=''">-->
+               AND BUSINESS_ASSISTANT_ROLE = 2<!--2买家-->
+           <!--</if>-->
+            <if test="filterMap.transCode!=null and filterMap.transCode!=''">
+                AND bb.TRANS_CODE like #{filterMap.transCode}
+            </if>
+            <if test="filterMap.orderIdStr!=null and filterMap.orderIdStr!=''">
+                AND bb.ORDER_ID like #{filterMap.orderIdStr}
+            </if>
+            <!--<if test="filterMap.transType!=null and filterMap.transType!='">
+                AND bb.TRANS_TYPE=#{filterMap.transType}
+            </if>-->
+            <if test="filterMap.transTypes!=null">
+                AND bb.TRANS_TYPE IN
+                <foreach collection="filterMap.transTypes" item="transType" open="(" separator="," close=")">
+                    #{transType}
+                </foreach>
+            </if>
+            <if test="filterMap.orderAmount!=null and filterMap.orderAmount!=''">
+                AND ORDER_AMOUNT=#{filterMap.orderAmount}
+            </if>
+            <if test="filterMap.due!=null and filterMap.due!=''">
+                AND bb.DUE=#{filterMap.due}
+            </if>
+            <if test="filterMap.refundable!=null and filterMap.refundable!=''">
+                AND REFUNDABLE=#{filterMap.refundable}
+            </if>
+            <!--<if test="filterMap.settlementStatus!=null and filterMap.settlementStatus!='">
+                AND SETTLEMENT_STATUS=#{filterMap.settlementStatus}
+            </if>-->
+            <if test="filterMap.settlementStatuss!=null">
+                AND SETTLEMENT_STATUS IN
+                <foreach collection="filterMap.settlementStatuss" item="settlementStatus" open="(" separator="," close=")">
+                    #{settlementStatus}
+                </foreach>
+            </if>
+            <if test="filterMap.remark!=null and filterMap.remark!=''">
+                AND bb.REMARK like #{filterMap.remark}
+            </if>
+            <if test="filterMap.paidTypes!=null">
+                AND crss.PAID_TYPE IN
+                <foreach collection="filterMap.paidTypes" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="filterMap.bsName!=null and filterMap.bsName!=''">
+                AND st.BS_NAME like #{filterMap.bsName}
+            </if>
+            AND bb.DEL_FLG = 0
+            AND st.DEL_FLG = 0
+        </where>
+    </sql>
+
+    <select id="findPageList" resultType="com.msk.so.bean.SO153101Bean"
+            parameterType="BasePageParam">
+        SELECT
+        <include refid="selectSql" />
+        <include refid="selectSqlLeft" />
+        <include refid="selectFrom" />
+        <include refid="whereCondition" />
+        ORDER  BY  st.TRAN_TIME DESC,bb.TRANS_CODE DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getCurrentInfo" resultType="com.msk.so.bean.SO153101Bean"
+            parameterType="BasePageParam">
+        SELECT
+        IFNULL(SUM(t1.orderAmount),'') AS currentOrder,
+        IFNULL(SUM(t1.actualDue),'') AS currentActual,
+        IFNULL(SUM(t1.actualPaid),'') AS currentPaid,
+        IFNULL(SUM(t1.reliefAmount),'') AS currentRelief,
+        IFNULL(SUM(t1.balance),'') AS currentBalance
+        from
+        (
+        select
+        BUYER_BILL_ID AS buyerBillId,
+        IFNULL(ORDER_AMOUNT, 0) AS orderAmount,
+        (IFNULL(bb.DUE,0)-IFNULL(REFUNDABLE,0)) AS  actualDue,
+        (IFNULL(PAID,0)-IFNULL(REAL_REFUND,0)) AS  actualPaid,
+        IFNULL(RELIEF_AMOUNT,0)  AS  reliefAmount,
+        (IFNULL(bb.DUE,0)-IFNULL(PAID,0)-IFNULL(REFUNDABLE,0)+IFNULL(REAL_REFUND,0)-IFNULL(RELIEF_AMOUNT,0)) AS  balance
+
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        ORDER BY st.TRAN_TIME DESC,bb.TRANS_CODE DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+        ) as t1
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        select count( BUYER_BILL_ID)
+        <include refid="selectFrom" />
+        <include refid="whereCondition"/>
+    </select>
+
+    <select id="findById" parameterType="BaseParam" resultType="com.msk.so.bean.SO153101Bean">
+        SELECT
+        <include refid="selectSql"/>
+        <include refid="selectFrom" />
+        WHERE BUYER_BILL_ID = #{filterMap.buyerBillId}
+    </select>
+
+</mapper>

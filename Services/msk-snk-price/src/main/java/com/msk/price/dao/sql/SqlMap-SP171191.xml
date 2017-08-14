@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171191Logic">
+
+
+
+    <sql id="whereCondition1">
+     WHERE    slp.DEL_FLG = 0
+            <if test="filterMap.lgcsCodes!=null and filterMap.lgcsCodes!=''">
+                AND slp.LGCS_CODE IN
+                <foreach collection="filterMap.lgcsCodes" item="lgcsCode" open="(" separator="," close=")">
+                    #{lgcsCode}
+                </foreach>
+            </if>
+            <if test="filterMap.pdName!=null and filterMap.pdName!=''">
+                AND   slp.PD_NAME like  #{filterMap.pdName}
+            </if>
+            <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+                AND   slp.PD_CODE like #{filterMap.pdCode}
+            </if>
+            <if test="filterMap.marketingName!=null and filterMap.marketingName!=''">
+                AND   swp.MARKETING_NAME like #{filterMap.marketingName}
+            </if>
+            <if test="filterMap.gradeCodes!=null and filterMap.gradeCodes!=''">
+                AND slp.GRADE_CODE IN
+                <foreach collection="filterMap.gradeCodes" item="gradeCode" open="(" separator="," close=")">
+                    #{gradeCode}
+                </foreach>
+            </if>
+            <if test="filterMap.units!=null and filterMap.units!=''">
+                AND swp.UNITS IN
+                <foreach collection="filterMap.units" item="unit" open="(" separator="," close=")">
+                    #{unit}
+                </foreach>
+            </if>
+            <if test="filterMap.wayCode!=null and filterMap.wayCode!=''">
+                AND  swp.WAY_CODE  like #{filterMap.wayCode}
+            </if>
+
+            <if test="filterMap.wayName!=null and filterMap.wayName!=''">
+                AND   sw.WAY_NAME like #{filterMap.wayName}
+            </if>
+    </sql>
+
+
+   <select  id="findPageList"  parameterType="BaseParam"  resultType="com.msk.price.bean.SP171191Bean">
+       SELECT slp.LGCS_CODE as lgcsCode,
+       slp.LGCS_NAME as lgcsName,
+       slp.PD_CODE   as pdCode,
+       slp.PD_NAME   as pdName,
+       CONCAT(slp.LGCS_CODE,slp.PD_CODE) as lgcsCodePdCod,
+       slp.GRADE pdGrage,
+       swp.UNITS unit,
+       ( case  UNITS
+       when 1 then '箱'
+       when 2 then '吨'
+       ELSE '-' END)  as units,
+       swp.WAY_CODE as wayCode,
+       swp.MARKETING_NAME as marketingName,
+       sw.WAY_NAME as wayName,
+       swp.MIN_VAL as minVal,
+       swp.WAGRADE_PD_ID as waygradePdId
+
+       FROM sp_logs_product slp
+       LEFT JOIN SP_WAYGRADE_PD swp on slp.LGCS_CODE = swp.LGCS_CODE AND swp.PD_CODE = slp.PD_CODE AND swp.DEL_FLG = 0
+       LEFT JOIN sp_way sw on sw.WAY_CODE = swp.WAY_CODE AND sw.DEL_FLG = 0
+      <include refid="whereCondition1"/>
+       order by  slp.LGCS_CODE,slp.PD_CODE
+       <if test="paging==true">
+           LIMIT #{startPos},#{pageSize}
+       </if>
+   </select>
+
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        FROM sp_logs_product slp
+        LEFT JOIN SP_WAYGRADE_PD swp on slp.LGCS_CODE = swp.LGCS_CODE AND swp.PD_CODE = slp.PD_CODE AND swp.DEL_FLG = 0
+        LEFT JOIN sp_way sw on sw.WAY_CODE = swp.WAY_CODE AND sw.DEL_FLG = 0
+        <include refid="whereCondition1"/>
+    </select>
+
+
+
+    <update id="UPDATE_SP_LOGS_PRODUCT" parameterType="com.msk.price.bean.SP171191Bean">
+        UPDATE  SP_WAYGRADE_PD
+        <set>
+            <if test="marketingName != null">
+                MARKETING_NAME=#{marketingName},
+            </if>
+            <if test="units != null and units!=''">
+                UNITS=#{units},
+            </if>
+            <if test="wayCode != null and wayCode != ''">
+                WAY_CODE=#{wayCode},
+            </if>
+            <if test="minVal != null and minVal!= ''">
+                MIN_VAL=#{minVal},
+            </if>
+            UPD_TIME=#{updTime}
+            ,VER=VER+1
+        </set>
+        WHERE
+       WAGRADE_PD_ID =#{waygradePdId}
+        AND DEL_FLG=0
+    </update>
+
+
+    <insert id="SAVE_SP_LOGS_PRODUCT" parameterType="com.msk.price.bean.SP171191Bean">
+        INSERT INTO
+        SP_WAYGRADE_PD
+        (
+        WAGRADE_PD_ID,
+        LGCS_CODE,
+        PD_CODE,
+        MIN_VAL,
+        UNITS,
+        MARKETING_NAME,
+        SYSTEM_TYPE,
+        WAY_CODE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES (
+      #{waygradePdId},
+      #{lgcsCode},
+      #{pdCode},
+      #{minVal},
+      #{units},
+      #{marketingName},
+      #{systemType},
+      #{wayCode},
+      0,
+      #{crtId},
+      #{crtTime},
+      #{updId},
+      #{updTime},
+      #{actId},
+      #{actTime},
+      0
+        )
+    </insert>
+
+
+
+</mapper>

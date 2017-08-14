@@ -1,0 +1,701 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.InventoryDetailServiceImpl">
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        A.IV_D_ID AS ivDId,
+        A.LOAD_NO AS loadNo,
+        A.LOAD_SEQ AS loadSeq,
+        A.PM_ID AS pmId,
+        A.PM_CODE AS pmCode,
+        CONCAT(
+		    EXTRACTVALUE(B.PM_EXTERNAL_XML, '/CLS_C'),
+		    EXTRACTVALUE(B.PM_EXTERNAL_XML, '/MACH_C'),
+		    EXTRACTVALUE(B.PM_EXTERNAL_XML, '/BRE_C'),
+		    EXTRACTVALUE(B.PM_EXTERNAL_XML, '/FEAT_C'),
+		    EXTRACTVALUE(B.PM_EXTERNAL_XML, '/WEI_C'),
+		    EXTRACTVALUE(B.PM_EXTERNAL_XML, '/GRAD_C')
+	    )AS pdCode,
+	    CONCAT(
+		    EXTRACTVALUE(B.PM_EXTERNAL_XML, '/SL_C'),
+		    EXTRACTVALUE(B.PM_EXTERNAL_XML, '/SL_P_C')
+	    )AS skuCode,
+	    B.PM_DESC AS pmDesc,
+	    B.PM_NAME AS pmName,
+        A.WH_ID AS whId,
+        A.WH_CODE AS whCode,
+        A.OWNER_ID AS ownerId,
+        A.OWNER_CODE AS ownerCode,
+        EXTRACTVALUE(A.BELONE_XML, '/AREA') AS logicArea,
+        EXTRACTVALUE(A.BELONE_XML, '/PLT') AS platform,
+        EXTRACTVALUE(A.BELONE_XML, '/SLT') AS slType,
+        EXTRACTVALUE(A.BELONE_XML, '/SLID') AS slId,
+        A.SUPPLIER_ID AS supplierId,
+        A.SUPPLIER_CODE AS supplierCode,
+        A.COO AS coo,
+        A.INBOUND_ID AS inboundId,
+        A.INBOUND_NO AS inboundNo,
+        A.INBOUND_DETAIL_ID AS inboundDetailId,
+        A.INBOUND_TYPE AS inboundType,
+        A.PO_ID AS poId,
+        A.PO_NO AS poNo,
+        A.PO_DETAIL_ID AS poDetailId,
+        A.ASN_ID AS asnId,
+        A.ASN_NO AS asnNo,
+        A.ASN_DETAIL_ID AS asnDetailId,
+        A.RI_ID AS riId,
+        A.RI_NO AS riNo,
+        A.RI_DETAIL_ID AS riDetailId,
+        A.PUCHARSE_BATCH AS pucharseBatch,
+        EXTRACTVALUE(IN_EXTERNAL_XML, '/INBAT') AS innerBatch,
+        A.BUY_PRICE AS buyPrice,
+        A.QTY AS qty,
+        A.UOM AS uom,
+        DATE_FORMAT(A.RECV_DATE,'%Y-%m-%d') AS recvDate,
+        DATE_FORMAT(A.RECV_TIME,'%Y-%m-%d %H:%i:%s') AS recvTime,
+        DATE_FORMAT(A.EXPIRATION_DATE,'%Y-%m-%d') AS expirationDate,
+        A.ALLOCATED_XML AS allocatedXml,
+        A.OUTBOUND_ID AS outboundId,
+        A.OUTBOUND_NO AS outboundNo,
+        A.OUTBOUND_DETAIL_ID AS outboundDetailId,
+        A.OUTBOUND_TYPE AS outboundType,
+        A.CO_ID AS coId,
+        A.CO_NO AS coNo,
+        A.CO_DETAIL_ID AS coDetailId,
+        A.SO_ID AS soId,
+        A.SO_NO AS soNo,
+        A.SO_DETAIL_ID AS soDetailId,
+        A.DI_ID AS diId,
+        A.DI_NO AS diNo,
+        A.DI_DETAIL_ID AS diDetailId,
+        A.OUT_EXTERNAL_XML AS outExternalXml,
+        A.SELL_PRICE AS sellPrice,
+        DATE_FORMAT(A.DISPATCHED_DATE,'%Y-%m-%d') AS dispatchedDate,
+        DATE_FORMAT(A.DISPATCHED_TIME,'%Y-%m-%d %H:%i:%s') AS dispatchedTime,
+        DATE_FORMAT(A.DELIVER_TIME,'%Y-%m-%d %H:%i:%s') AS deliverTime,
+        A.IMP AS imp,
+        A.EMP AS emp,
+        A.OMP AS omp,
+        A.IV_FLAG AS ivFlag,
+        A.FLAG_C_TIME AS flagCTime,
+        A.FLAG_C_REASON AS flagCReason,
+        A.IV_STATUS AS ivStatus,
+        A.DEL_FLG AS delFlg,
+        A.CRT_ID AS crtId,
+        DATE_FORMAT(A.CRT_TIME,'%Y-%m-%d %H:%i:%s') AS crtTime,
+        A.UPD_ID AS updId,
+        DATE_FORMAT(A.UPD_TIME,'%Y-%m-%d %H:%i:%s') AS updTime,
+        A.ACT_ID AS actId,
+        DATE_FORMAT(A.ACT_TIME,'%Y-%m-%d %H:%i:%s') AS actTime,
+        A.VER AS ver
+	</sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="ivDId!=null and ivDId!=''">
+                AND A.IV_D_ID=#{ivDId}
+            </if>
+            <if test="pmId!=null and pmId!=''">
+                AND A.PM_ID=#{pmId}
+            </if>
+            <if test="pmCode!=null and pmCode!=''">
+                AND A.PM_CODE=#{pmCode}
+            </if>
+            <if test="loadNo!=null and loadNo!=''">
+                AND A.LOAD_NO=#{loadNo}
+            </if>
+            <if test="loadSeq!=null and loadSeq!=''">
+                AND A.LOAD_SEQ=#{loadSeq}
+            </if>
+            <if test="whId!=null and whId!=''">
+                AND A.WH_ID=#{whId}
+            </if>
+            <if test="whCode!=null and whCode!=''">
+                AND A.WH_CODE=#{whCode}
+            </if>
+            <if test="ownerId!=null and ownerId!=''">
+                AND A.OWNER_ID=#{ownerId}
+            </if>
+            <if test="ownerCode!=null and ownerCode!=''">
+                AND A.OWNER_CODE=#{ownerCode}
+            </if>
+            <if test="logicArea!=null and logicArea!=''">
+                AND EXTRACTVALUE(A.BELONE_XML,'/AREA')=#{logicArea}
+            </if>
+            <if test="platform!=null and platform!=''">
+                AND EXTRACTVALUE(A.BELONE_XML,'/PLT')=#{platform}
+            </if>
+            <if test="slType!=null and slType!=''">
+                  AND EXTRACTVALUE(A.BELONE_XML,'/SLT')=#{slType}
+            </if>
+            <if test="slId!=null and slId!=''">
+                  AND EXTRACTVALUE(A.BELONE_XML,'/SLID')=#{slId}
+            </if>
+            <if test="supplierId!=null and supplierId!=''">
+                AND A.SUPPLIER_ID=#{supplierId}
+            </if>
+            <if test="supplierCode!=null and supplierCode!=''">
+                AND A.SUPPLIER_CODE=#{supplierCode}
+            </if>
+            <if test="coo!=null and coo!=''">
+                AND A.COO=#{coo}
+            </if>
+            <if test="inboundId!=null and inboundId!=''">
+                AND A.INBOUND_ID=#{inboundId}
+            </if>
+            <if test="inboundNo!=null and inboundNo!=''">
+                AND A.INBOUND_NO=#{inboundNo}
+            </if>
+            <if test="inboundDetailId!=null and inboundDetailId!=''">
+                AND A.INBOUND_DETAIL_ID=#{inboundDetailId}
+            </if>
+            <if test="inboundType!=null and inboundType!=''">
+                AND A.INBOUND_TYPE=#{inboundType}
+            </if>
+            <if test="poId!=null and poId!=''">
+                AND A.PO_ID=#{poId}
+            </if>
+            <if test="poNo!=null and poNo!=''">
+                AND A.PO_NO=#{poNo}
+            </if>
+            <if test="poDetailId!=null and poDetailId!=''">
+                AND A.PO_DETAIL_ID=#{poDetailId}
+            </if>
+            <if test="asnId!=null and asnId!=''">
+                AND A.ASN_ID=#{asnId}
+            </if>
+            <if test="asnNo!=null and asnNo!=''">
+                AND A.ASN_NO=#{asnNo}
+            </if>
+            <if test="asnDetailId!=null and asnDetailId!=''">
+                AND A.ASN_DETAIL_ID=#{asnDetailId}
+            </if>
+            <if test="riId!=null and riId!=''">
+                AND A.RI_ID=#{riId}
+            </if>
+            <if test="riNo!=null and riNo!=''">
+                AND A.RI_NO=#{riNo}
+            </if>
+            <if test="riDetailId!=null and riDetailId!=''">
+                AND A.RI_DETAIL_ID=#{riDetailId}
+            </if>
+            <if test="pucharseBatch!=null and pucharseBatch!=''">
+                AND A.PUCHARSE_BATCH=#{pucharseBatch}
+            </if>
+            <if test="innerBatch!=null and innerBatch!=''">
+                AND EXTRACTVALUE(A.IN_EXTERNAL_XML,'/INBAT')=#{innerBatch}
+            </if>
+            <if test="fromRecvDate!=null">
+                <![CDATA[AND DATE_FORMAT(A.RECV_DATE,'%Y-%m-%d')>=DATE_FORMAT(DATE(#{fromRecvDate}),'%Y-%m-%d')]]>
+            </if>
+            <if test="toRecvDate!=null">
+                <![CDATA[AND DATE_FORMAT(A.RECV_DATE,'%Y-%m-%d')<=DATE_FORMAT(DATE(#{toRecvDate}),'%Y-%m-%d')]]>
+            </if>
+            <if test="fromRecvTime!=null">
+                <![CDATA[AND DATE_FORMAT(A.RECV_TIME, '%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(DATE(#{fromRecvTime}),'%Y-%m-%d')+' 00:00:00']]>
+            </if>
+            <if test="toRecvTime!=null">
+                <![CDATA[AND DATE_FORMAT(A.RECV_TIME, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(DATE(#{toRecvTime}),'%Y-%m-%d')+' 23:59:59']]>
+            </if>
+            <if test="fromExpirationDate!=null">
+                <![CDATA[AND DATE_FORMAT(A.EXPIRATION_DATE,'%Y-%m-%d')>=DATE_FORMAT(DATE(#{fromExpirationDate}),'%Y-%m-%d')]]>
+            </if>
+            <if test="toExpirationDate!=null">
+                <![CDATA[AND DATE_FORMAT(A.EXPIRATION_DATE,'%Y-%m-%d')<=DATE_FORMAT(DATE(#{toExpirationDate}),'%Y-%m-%d')]]>
+            </if>
+            <if test="innerBatch!=null and innerBatch!=''">
+                AND EXTRACTVALUE(A.ALLOCATED_XML,'/INBAT')=#{innerBatch}
+            </if>
+            <if test="outboundId!=null and outboundId!=''">
+                AND A.OUTBOUND_ID=#{outboundId}
+            </if>
+            <if test="outboundNo!=null and outboundNo!=''">
+                AND A.OUTBOUND_NO=#{outboundNo}
+            </if>
+            <if test="outboundDetailId!=null and outboundDetailId!=''">
+                AND A.OUTBOUND_DETAIL_ID=#{outboundDetailId}
+            </if>
+            <if test="outboundType!=null and outboundType!=''">
+                AND A.OUTBOUND_TYPE=#{outboundType}
+            </if>
+            <if test="coId!=null and coId!=''">
+                AND A.CO_ID=#{coId}
+            </if>
+            <if test="coNo!=null and coNo!=''">
+                AND A.CO_NO=#{coNo}
+            </if>
+            <if test="coDetailId!=null and coDetailId!=''">
+                AND A.CO_DETAIL_ID=#{coDetailId}
+            </if>
+            <if test="soId!=null and soId!=''">
+                AND A.SO_ID=#{soId}
+            </if>
+            <if test="soNo!=null and soNo!=''">
+                AND A.SO_NO=#{soNo}
+            </if>
+            <if test="soDetailId!=null and soDetailId!=''">
+                AND A.SO_DETAIL_ID=#{soDetailId}
+            </if>
+            <if test="diId!=null and diId!=''">
+                AND A.DI_ID=#{diId}
+            </if>
+            <if test="diNo!=null and diNo!=''">
+                AND A.DI_NO=#{diNo}
+            </if>
+            <if test="diDetailId!=null and diDetailId!=''">
+                AND A.DI_DETAIL_ID=#{diDetailId}
+            </if>
+            <if test="fromDispatchedDate!=null">
+                <![CDATA[AND DATE_FORMAT(A.DISPATCHED_DATE,'%Y-%m-%d')>=DATE_FORMAT(DATE(#{fromDispatchedDate}),'%Y-%m-%d')]]>
+            </if>
+            <if test="toDispatchedDate!=null">
+                <![CDATA[AND DATE_FORMAT(A.DISPATCHED_DATE,'%Y-%m-%d')<=DATE_FORMAT(DATE(#{toDispatchedDate}),'%Y-%m-%d')]]>
+            </if>
+            <if test="fromDispatchedTime!=null">
+                <![CDATA[AND DATE_FORMAT(A.DISPATCHED_TIME, '%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(DATE(#{fromDispatchedTime}),'%Y-%m-%d')+' 00:00:00']]>
+            </if>
+            <if test="toDispatchedTime!=null">
+                <![CDATA[AND DATE_FORMAT(A.DISPATCHED_TIME, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(DATE(#{toDispatchedTime}),'%Y-%m-%d')+' 23:59:59']]>
+            </if>
+            <if test="fromDeliverTime!=null">
+                <![CDATA[AND DATE_FORMAT(A.DELIVER_TIME, '%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(DATE(#{fromDeliverTime}),'%Y-%m-%d')+' 00:00:00']]>
+            </if>
+            <if test="toDeliverTime!=null">
+                <![CDATA[AND DATE_FORMAT(A.DELIVER_TIME, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(DATE(#{toDeliverTime}),'%Y-%m-%d')+' 23:59:59']]>
+            </if>
+            <if test="ivFlag!=null and ivFlag!=''">
+                AND A.IV_FLAG=#{ivFlag}
+            </if>
+            <if test="fromFlagCTime!=null">
+                <![CDATA[AND DATE_FORMAT(A.FLAG_C_TIME, '%Y-%m-%d %H:%i:%s') >= DATE_FORMAT(DATE(#{fromFlagCTime}),'%Y-%m-%d')+' 00:00:00']]>
+            </if>
+            <if test="toFlagCTime!=null">
+                <![CDATA[AND DATE_FORMAT(A.FLAG_C_TIME, '%Y-%m-%d %H:%i:%s') <= DATE_FORMAT(DATE(#{toFlagCTime}),'%Y-%m-%d')+' 23:59:59']]>
+            </if>
+            <if test="flagCReason!=null and flagCReason!=''">
+                AND A.FLAG_C_REASON=#{flagCReason}
+            </if>
+            <if test="ivStatus!=null and ivStatus!=''">
+                AND A.IV_STATUS=#{ivStatus}
+            </if>
+            <if test="pdCode!=null and pdCode!=''">
+                AND CONCAT(
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/CLS_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/MACH_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/BRE_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/FEAT_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/WEI_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/GRAD_C')
+                ) = #{pdCode}
+            </if>
+            <if test="skuCode!=null and skuCode!=''">
+                AND CONCAT(
+                EXTRACTVALUE(B.PM_EXTERNAL_XML, '/SL_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML, '/SL_P_C')
+                ) = #{skuCode}
+            </if>
+        </where>
+    </sql>
+
+<select id="selectIvDetail" resultType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        SELECT
+        <include refid="selectSql"/>
+        from ivm_inventory_detail A
+        inner join ivm_parts_master B on A.pm_id= B.pm_id
+        <include refid="whereCondition"/>
+        ORDER BY
+        PUCHARSE_BATCH,QTY asc
+    </select>
+
+    <select id="getOneSortInventoryDetail" resultType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        SELECT
+        <include refid="selectSql"/>
+        from ivm_inventory_detail A
+        inner join ivm_parts_master B on A.pm_id= B.pm_id
+        <include refid="whereCondition"/>
+        ORDER BY
+        PUCHARSE_BATCH,QTY asc
+        LIMIT 1
+    </select>
+    <!--根据条件查询条数-->
+    <select id="selectIvDetailCount" resultType="Integer"
+            parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        select count(1) AS dataCount
+        from ivm_inventory_detail A
+        inner join ivm_parts_master B on A.pm_id= B.pm_id
+        <include refid="whereCondition"/>
+    </select>
+    <!--根据条件查询QTY总和-->
+    <select id="getSumQtyFromIvDetail" resultType="BigDecimal"
+            parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        select IFNULL(sum(QTY),0) AS qty
+        from ivm_inventory_detail A
+        inner join ivm_parts_master B on A.pm_id= B.pm_id
+        <include refid="whereCondition"/>
+    </select>
+    <!--数据插入 -->
+    <insert id="insertOneIvDetail" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean" useGeneratedKeys="true"
+keyProperty="ivDId">
+        INSERT INTO ivm_inventory_detail
+        (
+        PM_ID,
+        PM_CODE,
+        LOAD_NO,
+        LOAD_SEQ,
+        WH_ID,
+        <if test="whCode!=null and whCode!=''">
+            WH_CODE,
+        </if>
+        OWNER_ID,
+        <if test="ownerCode!=null and ownerCode!=''">
+            OWNER_CODE,
+        </if>
+        BELONE_XML,
+        SUPPLIER_ID,
+        SUPPLIER_CODE,
+        <if test="coo!=null and coo!=''">
+            COO,
+        </if>
+        INBOUND_ID,
+        INBOUND_NO,
+        INBOUND_DETAIL_ID,
+        INBOUND_TYPE,
+        <if test="poId!=null and poId!=''">
+            PO_ID,
+        </if>
+        <if test="poNo!=null and poNo!=''">
+            PO_NO,
+        </if>
+        <if test="poDetailId!=null and poDetailId!=''">
+            PO_DETAIL_ID,
+        </if>
+        <if test="asnId!=null and asnId!=''">
+            ASN_ID,
+        </if>
+        <if test="asnNo!=null and asnNo!=''">
+            ASN_NO,
+        </if>
+        <if test="asnDetailId!=null and asnDetailId!=''">
+            ASN_DETAIL_ID,
+        </if>
+        <if test="riId!=null and riId!=''">
+            RI_ID,
+        </if>
+        <if test="riNo!=null and riNo!=''">
+            RI_NO,
+        </if>
+        <if test="riDetailId!=null and riDetailId!=''">
+            RI_DETAIL_ID,
+        </if>
+        <if test="pucharseBatch!=null and pucharseBatch!=''">
+            PUCHARSE_BATCH,
+        </if>
+        <if test="inExternalXml!=null and inExternalXml!=''">
+            IN_EXTERNAL_XML,
+        </if>
+        BUY_PRICE,
+        QTY,
+        UOM,
+        <if test="recvDate!=null">
+            RECV_DATE,
+        </if>
+        <if test="recvTime!=null">
+            RECV_TIME,
+        </if>
+        <if test="expirationDate!=null">
+            EXPIRATION_DATE,
+        </if>
+        IMP,
+        IV_FLAG,
+        IV_STATUS,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        VER
+        )
+        VALUES
+        (
+        (SELECT PM_ID FROM IVM_PARTS_MASTER WHERE PM_CODE = #{pmCode}),
+        #{pmCode},
+        #{loadNo},
+        #{loadSeq},
+        #{whId},
+        <if test="whCode!=null and whCode!=''">
+            #{whCode},
+        </if>
+        #{ownerId},
+        <if test="ownerCode!=null and ownerCode!=''">
+            #{ownerCode},
+        </if>
+        #{beloneXml},
+        #{supplierId},
+        #{supplierCode},
+        <if test="coo!=null and coo!=''">
+            #{coo},
+        </if>
+        #{inboundId},
+        #{inboundNo},
+        #{inboundDetailId},
+        #{inboundType},
+        <if test="poId!=null and poId!=''">
+            #{poId},
+        </if>
+        <if test="poNo!=null and poNo!=''">
+            #{poNo},
+        </if>
+        <if test="poDetailId!=null and poDetailId!=''">
+            #{poDetailId},
+        </if>
+        <if test="asnId!=null and asnId!=''">
+            #{asnId},
+        </if>
+        <if test="asnNo!=null and asnNo!=''">
+            #{asnNo},
+        </if>
+        <if test="asnDetailId!=null and asnDetailId!=''">
+            #{asnDetailId},
+        </if>
+        <if test="riId!=null and riId!=''">
+            #{riId},
+        </if>
+        <if test="riNo!=null and riNo!=''">
+            #{riNo},
+        </if>
+        <if test="riDetailId!=null and riDetailId!=''">
+            #{riDetailId},
+        </if>
+        <if test="pucharseBatch!=null and pucharseBatch!=''">
+            #{pucharseBatch},
+        </if>
+        <if test="inExternalXml!=null and inExternalXml!=''">
+            #{inExternalXml},
+        </if>
+        #{buyPrice},
+        #{qty},
+        #{uom},
+        <if test="recvDate!=null">
+            #{recvDate},
+        </if>
+        <if test="recvTime!=null">
+            #{recvTime},
+        </if>
+        <if test="expirationDate!=null">
+            #{expirationDate},
+        </if>
+        #{imp},
+        #{ivFlag},
+        #{ivStatus},
+        0,
+        #{crtId},
+        #{crtTime},
+        1
+        )
+    </insert>
+
+    <update id="receiveByInbound" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        UPDATE IVM_INVENTORY_DETAIL
+        SET IV_STATUS = '52',
+        RECV_DATE = #{recvDate},
+        RECV_TIME=#{recvTime},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        INBOUND_ID = #{inboundId}
+    </update>
+
+    <update id="notReceiveByLoad" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        UPDATE IVM_INVENTORY_DETAIL
+        SET IV_STATUS = '519',
+        RECV_DATE = #{recvDate},
+        RECV_TIME=#{recvTime},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        LOAD_NO = #{loadNo}
+        AND LOAD_SEQ = #{loadSeq}
+    </update>
+
+    <update id="receiveByLoad" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        UPDATE IVM_INVENTORY_DETAIL
+        SET IV_STATUS = '52',
+            RECV_DATE = #{recvDate},
+            RECV_TIME=#{recvTime},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            LOAD_NO = #{loadNo}
+        AND LOAD_SEQ = #{loadSeq}
+    </update>
+
+    <update id="putawayByInbound" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        UPDATE IVM_INVENTORY_DETAIL
+        SET IV_STATUS = '53',
+            DELIVER_TIME = #{deliverTime},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            IV_STATUS = '52'
+        AND INBOUND_ID = #{inboundId}
+    </update>
+
+    <delete id="delIvDetailByInboundId" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        delete from ivm_inventory_detail where INBOUND_ID = #{inboundId};
+    </delete>
+
+    <select id="splitIvDetail" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean" statementType="CALLABLE">
+        { call PRO_SPLIT_IV_DETAIL(#{loadNo},#{loadSeq},#{qty},#{ver},#{crtId},#{crtTime} )}
+    </select>
+
+    <update id="updateIvDetailFlag" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+		UPDATE IVM_INVENTORY_DETAIL
+            SET IV_FLAG = #{ivFlag}, FLAG_C_TIME = #{flagCTime}, FLAG_C_REASON = #{flagCReason}
+        WHERE
+            LOAD_NO = #{loadNo}
+            AND LOAD_SEQ = #{loadSeq}
+	<if test="ver!=null">
+            AND VER = #{ver}
+        </if>
+        <if test="requestQty!=null">
+            AND QTY = #{requestQty}
+        </if>
+	</update>
+
+    <update id="outboundIvDetail" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        UPDATE IVM_INVENTORY_DETAIL
+        SET IV_STATUS = '54',
+            OUTBOUND_ID = #{outboundId},
+            OUTBOUND_NO = #{outboundNo},
+            OUTBOUND_DETAIL_ID = #{outboundDetailId},
+            OUTBOUND_TYPE = #{outboundType},
+            CO_ID = #{coId},
+            CO_NO = #{coNo},
+            CO_DETAIL_ID = #{coDetailId},
+            SO_ID = #{soId},
+            SO_NO = #{soNo},
+            SO_DETAIL_ID = #{soDetailId},
+            DI_ID = #{diId},
+            DI_NO = #{diNo},
+            DI_DETAIL_ID = #{diDetailId},
+            SELL_PRICE = #{sellPrice},
+            DISPATCHED_DATE = #{dispatchedDate},
+            DISPATCHED_TIME = #{dispatchedTime},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            LOAD_NO = #{loadNo}
+        AND LOAD_SEQ = #{loadSeq}
+    <if test="ver!=null">
+          AND VER = #{ver}
+        </if>
+        <if test="requestQty!=null">
+          AND QTY = #{requestQty}
+        </if>
+    </update>
+
+    <update id="undoOutboundIvDetail" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        UPDATE IVM_INVENTORY_DETAIL
+        SET IV_STATUS = '53',
+            OUTBOUND_ID = NULL,
+            OUTBOUND_NO = NULL,
+            OUTBOUND_DETAIL_ID = NULL,
+            OUTBOUND_TYPE = NULL,
+            CO_ID = NULL,
+            CO_NO = NULL,
+            CO_DETAIL_ID = NULL,
+            SO_ID = NULL,
+            SO_NO = NULL,
+            SO_DETAIL_ID = NULL,
+            DI_ID = NULL,
+            DI_NO = NULL,
+            DI_DETAIL_ID = NULL,
+            SELL_PRICE = NULL,
+            DISPATCHED_DATE = NULL,
+            DISPATCHED_TIME = NULL,
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            OUTBOUND_ID = #{outboundId}
+            AND OUTBOUND_NO = #{outboundNo}
+    </update>
+
+<update id="dispatchByOutbound" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        UPDATE IVM_INVENTORY_DETAIL
+        SET IV_STATUS = '55',
+            DISPATCHED_DATE = #{dispatchedDate},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            OUTBOUND_ID = #{outboundId}
+            AND OUTBOUND_NO = #{outboundNo}
+    </update>
+
+    <update id="deliverByOutbound" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        UPDATE IVM_INVENTORY_DETAIL
+        SET IV_STATUS = '56',
+            DELIVER_TIME = #{deliverTime},
+            DISPATCHED_TIME = #{dispatchedTime},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            OUTBOUND_ID = #{outboundId}
+            AND OUTBOUND_NO = #{outboundNo}
+    </update>
+
+    <update id="deliverByLoad" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        UPDATE IVM_INVENTORY_DETAIL
+        SET IV_STATUS = '56',
+            DELIVER_TIME = #{deliverTime},
+            DISPATCHED_TIME = #{dispatchedTime},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            LOAD_NO = #{loadNo}
+        AND LOAD_SEQ = #{loadSeq}
+    <if test="ver!=null">
+            AND VER = #{ver}
+        </if>
+        <if test="requestQty!=null">
+            AND QTY = #{requestQty}
+        </if>
+    </update>
+
+    <update id="notDeliverByLoad" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        UPDATE IVM_INVENTORY_DETAIL
+        SET IV_STATUS = '569',
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            LOAD_NO = #{loadNo}
+            AND LOAD_SEQ = #{loadSeq}
+    <if test="ver!=null">
+            AND VER = #{ver}
+        </if>
+        <if test="requestQty!=null">
+            AND QTY = #{requestQty}
+        </if>
+    </update>
+
+    <update id="notDeliverByOutboundDetailAndStatus" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        UPDATE IVM_INVENTORY_DETAIL
+        SET IV_STATUS = '569',
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+          OUTBOUND_ID = #{outboundId}
+        AND OUTBOUND_NO = #{outboundNo}
+        AND OUTBOUND_DETAIL_ID = #{outboundDetailId}
+        AND IV_STATUS = #{ivStatus}
+    </update>
+
+</mapper>

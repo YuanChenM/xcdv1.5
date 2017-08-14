@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.SO153161Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        REFUND_ID AS refundId,
+        TRANS_CODE AS transCode,
+        IFNULL(TRANS_TYPE,'') AS transType,
+        IFNULL(REFUND_CODE,'') AS refundCode,
+        REFUND_AMOUNT AS refundAmount,
+        REFUND_TIME AS refundTime,
+        REFUND_TYPE AS refundType,
+        IFNULL(RE_SHIP_FLG,'') AS reShipFlg,
+        IFNULL(PAYER_ID,'') AS payerId,
+        IFNULL(PAYEE_ID,'') AS payeeId,
+        IFNULL(REMARK,'') AS remark
+    </sql>
+    <sql id="selectFrom">
+        FROM SO_CP_REFUND AS SO
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            SO.DEL_FLG = 0
+            <if test="filterMap.refundId!=null and filterMap.refundId!=''">
+                AND REFUND_ID=#{filterMap.refundId}
+            </if>
+            <if test="filterMap.transCode!=null and filterMap.transCode!=''">
+                AND TRANS_CODE like #{filterMap.transCode}
+            </if>
+            <if test="filterMap.transTypes!=null">
+                AND TRANS_TYPE IN
+                <foreach collection="filterMap.transTypes" item="transType" open="(" separator="," close=")">
+                    #{transType}
+                </foreach>
+            </if>
+            <!--<if test="filterMap.orderTimeStart!=null and filterMap.orderTimeStart!=''">
+                <![CDATA[ AND DATE_FORMAT(PAID_TIME,'%Y-%m-%d') >= #{filterMap.orderTimeStart}]]>
+            </if>
+            <if test="filterMap.orderTimeEnd!=null and filterMap.orderTimeEnd!=''">
+                <![CDATA[ AND DATE_FORMAT(PAID_TIME,'%Y-%m-%d') <= #{filterMap.orderTimeEnd}]]>
+            </if>-->
+            <if test="filterMap.refundCode!=null and filterMap.refundCode!=''">
+                AND REFUND_CODE like #{filterMap.refundCode}
+            </if>
+            <if test="filterMap.refundAmount!=null and filterMap.refundAmount!=''">
+                AND REFUND_AMOUNT=#{filterMap.refundAmount}
+            </if>
+            <if test="filterMap.refundTime!=null and filterMap.refundTime!=''">
+                AND REFUND_TIME=#{filterMap.refundTime}
+            </if>
+            <if test="filterMap.refundTimeStart!=null and filterMap.refundTimeStart!=''">
+                <![CDATA[ AND DATE_FORMAT(REFUND_TIME,'%Y-%m-%d') >= #{filterMap.refundTimeStart}]]>
+            </if>
+            <if test="filterMap.refundTimeEnd!=null and filterMap.refundTimeEnd!=''">
+                <![CDATA[ AND DATE_FORMAT(REFUND_TIME,'%Y-%m-%d') <= #{filterMap.refundTimeEnd}]]>
+            </if>
+            <!--<if test="filterMap.refundType!=null and filterMap.refundType!=''">
+                AND REFUND_TYPE=#{filterMap.refundType}
+            </if>-->
+            <if test="filterMap.refundTypes!=null">
+                AND REFUND_TYPE IN
+                <foreach collection="filterMap.refundTypes" item="refundType" open="(" separator="," close=")">
+                    #{refundType}
+                </foreach>
+            </if>
+            <!--<if test="filterMap.reShipFlg!=null and filterMap.reShipFlg!=''">
+                AND RE_SHIP_FLG=#{filterMap.reShipFlg}
+            </if>-->
+            <if test="filterMap.reShipFlgs!=null">
+                AND RE_SHIP_FLG IN
+                <foreach collection="filterMap.reShipFlgs" item="reShipFlg" open="(" separator="," close=")">
+                    #{reShipFlg}
+                </foreach>
+            </if>
+            <if test="filterMap.payerId!=null and filterMap.payerId!=''">
+                AND PAYER_ID=#{filterMap.payerId}
+            </if>
+            <if test="filterMap.payeeId!=null and filterMap.payeeId!=''">
+                AND PAYEE_ID=#{filterMap.payeeId}
+            </if>
+            <if test="filterMap.remark!=null and filterMap.remark!=''">
+                AND REMARK like #{filterMap.remark}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="findPageList" resultType="com.msk.so.bean.SOCp153161Bean"
+            parameterType="BasePageParam">
+        SELECT
+        <include refid="selectSql" />
+        <include refid="selectFrom" />
+        <include refid="whereCondition" />
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        select count(1)
+        <include refid="selectFrom" />
+        <include refid="whereCondition"/>
+    </select>
+
+    <select id="getTotalInfo" resultType="com.msk.so.bean.SOCp153161Bean"
+            parameterType="BasePageParam">
+        SELECT
+        IFNULL(SUM(so.refundAmount),'') AS totalRefund
+        from
+        (
+        select
+        REFUND_AMOUNT AS refundAmount
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        ) AS so
+    </select>
+
+</mapper>

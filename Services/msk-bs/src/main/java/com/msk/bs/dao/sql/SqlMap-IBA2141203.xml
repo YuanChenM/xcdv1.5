@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBA2141203RsLogic">
+
+    <select id="findList" parameterType="com.hoperun.core.bean.BaseParam"
+            resultType="com.msk.core.entity.SlHouseIntroduce">
+        SELECT
+            INT_ID AS intId,
+            HOUSE_CODE AS houseCode,
+            INTRODUCE AS introduce,
+            SERVICE_COMMIT AS serviceCommit,
+            UPLOAD_URL1 AS uploadUrl1,
+            UPLOAD_URL2 AS uploadUrl2,
+            UPLOAD_URL3 AS uploadUrl3
+        FROM
+            Sl_House_Introduce
+        WHERE
+            DEL_FLG = 0
+        AND HOUSE_CODE = #{filterMap.houseCode}
+    </select>
+    <update id="modify" parameterType="com.msk.core.entity.SlHouseIntroduce">
+        UPDATE sl_house_introduce
+
+        SET UPD_ID = #{updId},UPD_TIME = #{updTime}
+        <if test="introduce!=null and introduce!=''">
+            ,INTRODUCE = #{introduce}
+        </if>
+        <if test="serviceCommit!=null and serviceCommit!=''">
+            ,SERVICE_COMMIT = #{serviceCommit}
+        </if>
+        <if test="uploadUrl1!=null and uploadUrl1!=''">
+            ,UPLOAD_URL1 = #{uploadUrl1}
+        </if>
+        <if test="uploadUrl2!=null and uploadUrl2!=''">
+            ,UPLOAD_URL2 = #{uploadUrl2}
+        </if>
+        <if test="uploadUrl3!=null and uploadUrl3!=''">
+            ,UPLOAD_URL3 = #{uploadUrl3}
+        </if>
+        <if test="uploadUrl1Type!=null and uploadUrl1Type!=''">
+            ,UPLOAD_URL1_TYPE = #{uploadUrl1Type}
+        </if>
+        <if test="uploadUrl2Type!=null and uploadUrl2Type!=''">
+            ,UPLOAD_URL2_TYPE = #{uploadUrl2Type}
+        </if>
+        <if test="uploadUrl3Type!=null and uploadUrl3Type!=''">
+            ,UPLOAD_URL3_TYPE = #{uploadUrl3Type}
+        </if>
+        <if test="delFlg!=null and delFlg!=''">
+            ,DEL_FLG = #{delFlg}
+        </if>
+        WHERE
+        HOUSE_CODE = #{houseCode}
+    </update>
+    <insert id="save" parameterType="com.msk.core.entity.SlHouseIntroduce">
+        INSERT INTO sl_house_introduce (
+            INT_ID,
+            HOUSE_CODE,
+            INTRODUCE,
+            SERVICE_COMMIT,
+            UPLOAD_URL1,
+            UPLOAD_URL2,
+            UPLOAD_URL3,
+            UPLOAD_URL1_TYPE,
+            UPLOAD_URL2_TYPE,
+            UPLOAD_URL3_TYPE,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUES
+            (
+            #{intId},
+            #{houseCode},
+            #{introduce},
+            #{serviceCommit},
+            #{uploadUrl1},
+            #{uploadUrl2},
+            #{uploadUrl3},
+            #{uploadUrl1Type},
+            #{uploadUrl2Type},
+            #{uploadUrl3Type},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+            )
+    </insert>
+    <insert id="saveWork" parameterType="com.msk.core.entity.SlHouseWork">
+        INSERT INTO sl_house_work (
+        WORK_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        WORK_START,
+        WORK_END,
+        WORK_COMP,
+        WORK_POSITION,
+        WORK_STATION,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+            (
+            #{workId},
+            #{slCode},
+            #{houseCode},
+            #{workStart},
+            #{workEnd},
+            #{workComp},
+            #{workPosition},
+            #{workStation},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+            )
+    </insert>
+    <insert id="saveEdu" parameterType="com.msk.core.entity.SlHouseEducation">
+        INSERT INTO sl_house_education (
+        EDU_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        EDU_START,
+        EDU_END,
+        EDU_COMP,
+        EDU_RECORD,
+        EDU_DEGREE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+            (
+            #{eduId},
+            #{slCode},
+            #{houseCode},
+            #{eduStart},
+            #{eduEnd},
+            #{eduComp},
+            #{eduRecord},
+            #{eduDegree},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+            )
+    </insert>
+    <insert id="saveTrain" parameterType="List">
+        INSERT INTO sl_house_training (
+        TRAIN_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        TRAIN_START,
+        TRAIN_END,
+        TRAIN_COMP,
+        TRAIN_CERTIFICATE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+            (
+            #{trainId},
+            #{slCode},
+            #{houseCode},
+            #{trainStart},
+            #{trainEnd},
+            #{trainComp},
+            #{trainCertificate},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+            )
+    </insert>
+</mapper>
+

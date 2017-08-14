@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBA2141110RsLogic">
+
+
+    <select id="findOrderDetail" parameterType="com.msk.bs.bean.IBA2141110Param" resultType="com.msk.bs.bean.IBA2141110Result">
+        SELECT
+        detail.PD_NAME AS pdName,
+        detail.OLD_PRICE AS oldPrice,
+        detail.PD_NUM AS pdNum,
+        detail.PD_CODE AS pdCode,
+        detail.CAR_ID AS carId,
+        detail.CAR_DETAIL_ID AS carDetailId
+        from sl_bs_shoping_car car
+        LEFT JOIN sl_bs_shoping_car_detail detail ON car.CAR_ID = detail.CAR_ID
+        WHERE
+        car.BUYERS_ID = #{buyersId}
+        AND car.BUYERS_TYPE = #{buyersType}
+        AND car.DEL_FLG = 0 AND detail.DEL_FLG = 0
+        <if test="status !=null and status !=''">
+            AND detail.STATUS = #{status}
+        </if>
+    </select>
+
+    <update id="modify" parameterType="com.msk.bs.bean.IBA2141110Param">
+        UPDATE
+        sl_bs_shoping_car_detail
+        <set>
+            <if test="isOrderFlag !=null and isOrderFlag !=''">
+                <if test="modifyStatus != null and modifyStatus != ''">
+                    STATUS =#{modifyStatus},
+                </if>
+                <if test="removeReason !=null and removeReason !=''">
+                    REMOVE_REASON =#{removeReason},
+                    DEL_FLG = 1
+              </if>
+            </if>
+            <if test="isOrderFlag ==null or isOrderFlag ==''">
+                <if test="removeReason !=null and removeReason !=''">
+                        REMOVE_REASON =#{removeReason},
+                        DEL_FLG = 1
+                </if>
+            </if>
+
+        </set>
+        where
+         DEL_FLG=0
+        <if test="carID !=null and carID !=''">
+           AND CAR_ID  =#{carID}
+        </if>
+        <if test="status !=null and status !=''">
+            AND STATUS =#{status}
+        </if>
+        <if test="carDetailID !=null and carDetailID.size()>0">
+            AND CAR_DETAIL_ID IN
+            <foreach collection="carDetailID" item="carId" open="(" separator="," close=")">
+                #{carId}
+            </foreach>
+        </if>
+    </update>
+
+    <update id="updateDetailNum" parameterType="com.msk.bs.bean.IBA2141110RsBean">
+        UPDATE sl_bs_shoping_car_detail
+        SET PD_NUM = #{pdNum}
+         WHERE
+         CAR_ID  =#{carId}
+          AND CAR_DETAIL_ID = #{carDetailId}
+           AND DEL_FLG=0
+    </update>
+
+    <insert id="save" parameterType="com.msk.bs.bean.ShopingCarParam">
+        INSERT INTO sl_bs_shoping_car (
+            CAR_ID,
+            BUYERS_ID,
+            BUYERS_TYPE,
+            SELLER_CODE,
+            SELLER_NAME,
+            ORDER_SOURCE,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUE(
+          #{carId},
+          #{buyersId},
+          #{buyersType},
+          #{sellerCode},
+          #{sellerName},
+          #{orderSource},
+          0,
+          #{crtId},
+          #{crtTime},
+          #{updId},
+          #{updTime},
+          #{actId},
+          #{actTime},
+          1
+        )
+    </insert>
+    <insert id="saveDetail" parameterType="com.msk.bs.bean.ShopingCarParam">
+        INSERT INTO sl_bs_shoping_car_detail (
+            CAR_ID,
+            CAR_DETAIL_ID,
+            PD_CODE,
+            PD_NAME,
+            PD_NUM,
+            OLD_PRICE,
+            SELLER_CODE,
+            SELLER_NAME,
+            STATUS,
+            CAR_SOURCE,
+            REMOVE_REASON,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUE(
+          #{carId},
+          #{carDetailId},
+          #{pdCode},
+          #{pdName},
+          #{pdNum},
+          #{oldPrice},
+          #{sellerCode},
+          #{sellerName},
+          #{status},
+          #{carSource},
+          #{removEeason},
+          0,
+          #{crtId},
+          #{crtTime},
+          #{updId},
+          #{updTime},
+          #{actId},
+          #{actTime},
+          1
+        )
+    </insert>
+    <select id="queryShopCar" parameterType="com.msk.bs.bean.ShopingCarParam" resultType="com.msk.bs.bean.ShopingCarBean">
+        SELECT
+            CAR_ID AS carId,
+            BUYERS_ID AS buyersId,
+            SELLER_CODE AS sellerCode,
+            SELLER_NAME AS sellerName
+        FROM
+            sl_bs_shoping_car
+        WHERE
+            BUYERS_ID = #{buyersId}
+        AND BUYERS_TYPE = #{buyersType}
+    </select>
+    <select id="queryShopCarDetail" parameterType="com.msk.bs.bean.ShopingCarParam" resultType="com.msk.bs.bean.ShopingCarBean">
+        SELECT
+        CAR_DETAIL_ID AS carDetailId,
+        PD_NUM AS pdNum,
+        DEL_FLG AS delFlg
+        FROM
+        sl_bs_shoping_car_detail
+        WHERE
+        PD_CODE = #{pdCode}
+        AND CAR_ID = #{carId}
+        <if test="delFlg != null and delFlg > 0">
+            AND DEL_FLG  = 1
+        </if>
+    </select>
+    <update id="updateDetail" parameterType="com.msk.bs.bean.ShopingCarParam">
+        UPDATE sl_bs_shoping_car_detail
+        SET PD_NUM = #{pdNum},
+        OLD_PRICE = #{oldPrice},
+        STATUS = #{status},
+        REMOVE_REASON = #{removEeason},
+        PD_NAME = #{pdName},
+        DEL_FLG = 0,
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime}
+         WHERE CAR_DETAIL_ID = #{carDetailId}
+    </update>
+
+
+    <select id="getOrderDetailInfo" parameterType="com.msk.bs.bean.IBA2141110Param" resultType="com.msk.bs.bean.IBA2141110Result">
+        SELECT
+        detail.CAR_ID AS carID,
+        detail.CAR_DETAIL_ID AS carDetailId,
+        detail.PD_CODE AS  pdCode,
+        detail.PD_NAME AS  pdName,
+        detail.PD_NUM AS pdNum,
+        detail.SELLER_CODE AS  sellerCode,
+        detail.SELLER_NAME AS  sellerName,
+        detail.STATUS AS  status,
+        detail.CAR_SOURCE AS carSource,
+        detail.REMOVE_REASON AS removeReason
+        FROM sl_bs_shoping_car car
+        LEFT join sl_bs_shoping_car_detail detail ON car.car_id = detail.car_id
+        WHERE
+        car.DEL_FLG = 0 AND detail.DEL_FLG = 0
+        <if test="carID !=null and carID !=''">
+          AND  detail.CAR_ID = #{carID}
+        </if>
+        <if test="buyersId !=null and buyersId !=''">
+          AND  car.BUYERS_ID = #{buyersId}
+        </if>
+        <if test="carDetailID !=null and carDetailID.size()>0">
+            AND detail.CAR_DETAIL_ID IN
+            <foreach collection="carDetailID" item="carId" open="(" separator="," close=")">
+                #{carId}
+            </foreach>
+        </if>
+    </select>
+</mapper>
+

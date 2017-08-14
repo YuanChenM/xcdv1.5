@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:mysql://10.30.10.14:3306/bt_msk_web
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    initial-size: 1
+    max-active: 1
+    max-idle: 1
+    max-wait: 60000
+  jpa:
+    database: MYSQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+  properties:
+    dialect: org.hibernate.dialect.MySQL5Dialect
+###Config Server相关配置###########
+config:
+    server:
+      environment: bt
+      url: http://10.20.16.83/msk-config-server/api
+      configConstantUrl: /load/config/constant
+      sellerModuleName: SELLER
+      sellerLoginServerName: QuerySLAccount

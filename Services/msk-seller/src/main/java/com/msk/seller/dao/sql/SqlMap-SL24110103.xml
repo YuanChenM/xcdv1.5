@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24110103Logic">
+    <delete id="removeSlEpcertItem" parameterType="com.msk.seller.bean.ISL231127CertInfoList">
+        DELETE
+        FROM SL_EP_CERT_ITEM
+        WHERE
+        EP_ID=#{epId}
+        <if test="certSeq!=null">
+            AND
+            CERT_SEQ=#{certSeq}
+        </if>
+        <if test="certId!=null">
+            AND
+            CERT_ID=#{certId}
+        </if>
+    </delete>
+    <delete id="removeSlEpcert" parameterType="com.msk.seller.bean.ISL231127CertInfoList">
+        DELETE
+        FROM SL_EP_CERT
+        WHERE
+        EP_ID=#{epId}
+        <if test="certSeq!=null">
+            AND
+            CERT_SEQ=#{certSeq}
+        </if>
+        <if test="certId!=null">
+            AND
+            CERT_ID=#{certId}
+        </if>
+    </delete>
+
+    <update id="updateSlEpCertItem" parameterType="com.msk.seller.bean.SL24110302_1Bean">
+        UPDATE SL_EP_CERT_ITEM SET
+        CERT_ITEM_VALUE=#{certItemValue},
+        UPD_ID = #{updId},
+		UPD_TIME = #{updTime},
+		VER = VER + 1
+        WHERE
+        EP_ID=#{epId} AND CERT_SEQ=#{certSeq} AND CERT_ITEM_SEQ=#{certItemSeq}
+    </update>
+
+    <update id="updateCertItem" parameterType="com.msk.seller.bean.SL24110302_1Bean">
+        UPDATE SL_EP_CERT_ITEM SET
+        CERT_ITEM_VALUE=#{certItemValue},
+        UPD_TIME=#{updTime},
+        UPD_ID=#{updId},
+        VER=VER + 1
+        WHERE
+        EP_ID=#{epId} AND CERT_SEQ=#{certSeq} AND CERT_ITEM_SEQ=#{certItemSeq}
+    </update>
+    <delete id="deleteSlEpcertItem" parameterType="com.msk.seller.bean.SL24110302_1Bean">
+        DELETE
+        FROM SL_EP_CERT_ITEM
+        WHERE
+        EP_ID=#{epId}
+        AND
+        CERT_SEQ=#{certSeq}
+        AND
+        CERT_ITEM_SEQ=#{certItemSeq}
+    </delete>
+    <delete id="deleteSlEpcert" parameterType="com.msk.core.entity.SlEpCert">
+        DELETE
+        FROM SL_EP_CERT
+        WHERE
+        EP_ID=#{epId}
+        AND
+        CERT_SEQ=#{certSeq}
+    </delete>
+    <select id="findSlEpcertList" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpCert">
+        SELECT
+        slEpCert.EP_ID AS epId,
+        slEpCert.CERT_SEQ AS certSeq,
+        slEpCert.CERT_ID AS certId,
+        slEpCert.CERT_NAME AS certName,
+        slEpCert.VER AS ver
+        FROM
+        SL_EP_CERT AS slEpCert
+        WHERE slEpCert.EP_ID=#{filterMap.epId}
+        AND  slEpCert.DEL_FLG = 0
+    </select>
+
+    <select id="findSlEpcertItemList" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpCertItem">
+        SELECT
+       slEpCertItem.CERT_SEQ AS certSeq,
+       slEpCertItem.CERT_ITEM_SEQ AS certItemSeq,
+       slEpCertItem.CERT_ID AS certId,
+       slEpCertItem.CERT_ITEM_ID AS certItemId,
+       slEpCertItem.CERT_ITEM_NAME AS certItemName,
+       slEpCertItem.CERT_ITEM_VALUE AS certItemValue,
+       slEpCertItem.VER AS ver
+        FROM
+        SL_EP_CERT_ITEM AS slEpCertItem
+        WHERE slEpCertItem.EP_ID=#{filterMap.epId}
+         AND slEpCertItem.CERT_SEQ=#{filterMap.certSeq}
+         AND slEpCertItem.DEL_FLG = 0
+    </select>
+</mapper>

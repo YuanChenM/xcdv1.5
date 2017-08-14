@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141402Logic">
+    <!-- 表字段映射 -->
+    <sql id="selectSql">
+      DISTINCT
+        ifnull(en.EP_NAME,'') AS prodEpName
+       ,ifnull(C.BRAND_NAME,'') AS brandEpName
+       ,ifnull(cla.CLASSES_NAME,'') AS pdClassesName
+       ,IFNULL(mac.MACHINING_NAME,'') AS machiningName
+       ,IFNULL(bre.BREED_NAME,'') AS pdBreedName
+       ,IFNULL(fea.FEATURE_NAME,'') AS pdFeatureName
+       ,IFNULL(wei.WEIGHT_NAME,'') AS weightName
+       ,A.SL_CODE AS slCode
+       ,A.SL_PD_ID AS slPdId
+       ,sta.STANDARD_ID AS standardId
+       ,CONCAT(cla.CLASSES_CODE,mac.MACHINING_CODE,bre.BREED_CODE,fea.FEATURE_CODE,wei.WEIGHT_CODE) AS classestreeCode
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            A.SL_CODE = #{filterMap.slCode}
+            <if test="filterMap.prodEpName!=null and filterMap.prodEpName!=''">
+                AND en.EP_NAME like #{filterMap.prodEpName}
+            </if>
+            <if test="filterMap.brandEpName!=null and filterMap.brandEpName!=''">
+                AND C.BRAND_NAME like #{filterMap.brandEpName}
+            </if>
+            <if test="filterMap.pdClassesName!=null and filterMap.pdClassesName!=''">
+                AND cla.CLASSES_NAME like #{filterMap.pdClassesName}
+            </if>
+            <if test="filterMap.slSelfFlg!=null and filterMap.slSelfFlg!=''">
+                AND B.SELF_FLG = '1'
+            </if>
+            <if test="filterMap.slProxyFlg!=null and filterMap.slProxyFlg!=''">
+                AND B.AGENT_FLG='1'
+            </if>
+            <if test="filterMap.slOemFlg!=null and filterMap.slOemFlg!=''">
+                AND B.OEM_FLG='1'
+            </if>
+            <if test="filterMap.machiningName!=null and filterMap.machiningName!=''">
+                AND mac.MACHINING_NAME like #{filterMap.machiningName}
+            </if>
+            <if test="filterMap.pdBreedName!=null and filterMap.pdBreedName!=''">
+                AND bre.BREED_NAME like #{filterMap.pdBreedName}
+            </if>
+            <if test="filterMap.pdFeatureName!=null and filterMap.pdFeatureName!=''">
+                AND fea.FEATURE_NAME like #{filterMap.pdFeatureName}
+            </if>
+            <if test="filterMap.weightName!=null and filterMap.weightName!=''">
+                AND wei.WEIGHT_NAME like #{filterMap.weightName}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND A.DEL_FLG = #{filterMap.delFlg}
+            </if>
+            and bre.BREED_NAME!=''
+            AND bre.BREED_NAME IS NOT NULL
+            and fea.FEATURE_CODE!=''
+            AND fea.FEATURE_CODE IS NOT NULL
+            AND wei.WEIGHT_NAME!=''
+            AND wei.WEIGHT_NAME IS NOT NULL
+        </where>
+    </sql>
+
+    <select id="findPageList" parameterType="com.hoperun.core.bean.BasePageParam"
+            resultType="com.msk.product.bean.PD141402Bean">
+        SELECT
+        <include refid="selectSql"/>
+        FROM SL_PRODUCT AS A
+        LEFT JOIN sl_seller AS B ON A.SL_CODE = B.SL_CODE
+        LEFT JOIN sl_enterprise AS en ON B.EP_ID = en.EP_ID
+        LEFT JOIN sl_pd_brand AS C ON A.SL_CODE = C.SL_CODE AND B.SL_CODE = C.SL_CODE
+        AND A.BRAND_EP_ID = C.BRAND_EP_ID AND A.BRAND_ID = C.BRAND_ID
+        LEFT JOIN pd_classes AS cla ON A.PD_CLASSES_CODE = cla.CLASSES_CODE
+        LEFT JOIN pd_MACHINING AS mac ON A.PD_CLASSES_CODE = mac.CLASSES_CODE AND A.MACHINING_CODE = mac.MACHINING_CODE
+        LEFT JOIN PD_BREED AS bre ON A.PD_CLASSES_CODE = bre.CLASSES_CODE AND A.MACHINING_CODE = bre.MACHINING_CODE AND
+        A.PD_BREED_CODE = bre.BREED_CODE
+        LEFT JOIN PD_FEATURE AS fea ON A.PD_CLASSES_CODE = fea.CLASSES_CODE AND A.MACHINING_CODE = fea.MACHINING_CODE
+        AND A.PD_BREED_CODE = fea.BREED_CODE
+        AND A.PD_FEATURE_CODE = fea.FEATURE_CODE
+        LEFT JOIN PD_WEIGHT AS wei ON A.PD_CLASSES_CODE = wei.CLASSES_CODE AND A.MACHINING_CODE = wei.MACHINING_CODE AND
+        A.PD_BREED_CODE = wei.BREED_CODE
+        AND A.PD_FEATURE_CODE = wei.FEATURE_CODE AND A.WEIGHT_CODE = wei.WEIGHT_CODE
+        LEFT JOIN Pd_STANDARD AS sta ON A.PD_CLASSES_CODE = sta.CLASSES_CODE
+        AND A.MACHINING_CODE = sta.MACHINING_CODE
+        AND A.PD_BREED_CODE = sta.BREED_CODE
+        AND sta.CLASSESTREE_CODE = CONCAT(A.PD_CLASSES_CODE, A.MACHINING_CODE,A.PD_BREED_CODE)
+        <include refid="whereCondition"/>
+        ORDER BY A.SL_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer"
+            parameterType="com.hoperun.core.bean.BasePageParam">
+        SELECT count(1)
+        FROM SL_PRODUCT AS A
+        LEFT JOIN sl_seller AS B ON A.SL_CODE = B.SL_CODE
+        LEFT JOIN sl_enterprise AS en ON B.EP_ID = en.EP_ID
+        LEFT JOIN sl_pd_brand AS C ON A.SL_CODE = C.SL_CODE AND B.SL_CODE = C.SL_CODE
+        AND A.BRAND_EP_ID = C.BRAND_EP_ID AND A.BRAND_ID = C.BRAND_ID
+        LEFT JOIN pd_classes AS cla ON A.PD_CLASSES_CODE = cla.CLASSES_CODE
+        LEFT JOIN pd_MACHINING AS mac ON A.PD_CLASSES_CODE = mac.CLASSES_CODE AND A.MACHINING_CODE = mac.MACHINING_CODE
+        LEFT JOIN PD_BREED AS bre ON A.PD_CLASSES_CODE = bre.CLASSES_CODE AND A.MACHINING_CODE = bre.MACHINING_CODE AND
+        A.PD_BREED_CODE = bre.BREED_CODE
+        LEFT JOIN PD_FEATURE AS fea ON A.PD_CLASSES_CODE = fea.CLASSES_CODE AND A.MACHINING_CODE = fea.MACHINING_CODE
+        AND A.PD_BREED_CODE = fea.BREED_CODE
+        AND A.PD_FEATURE_CODE = fea.FEATURE_CODE
+        LEFT JOIN PD_WEIGHT AS wei ON A.PD_CLASSES_CODE = wei.CLASSES_CODE AND A.MACHINING_CODE = wei.MACHINING_CODE AND
+        A.PD_BREED_CODE = wei.BREED_CODE
+        AND A.PD_FEATURE_CODE = wei.FEATURE_CODE AND A.WEIGHT_CODE = wei.WEIGHT_CODE
+        LEFT JOIN Pd_STANDARD AS sta ON A.PD_CLASSES_CODE = sta.CLASSES_CODE
+        AND A.MACHINING_CODE = sta.MACHINING_CODE
+        AND A.PD_BREED_CODE = sta.BREED_CODE
+        AND sta.CLASSESTREE_CODE = CONCAT(A.PD_CLASSES_CODE, A.MACHINING_CODE,A.PD_BREED_CODE)
+        <include refid="whereCondition"/>
+    </select>
+</mapper>

@@ -1,0 +1,16 @@
+{
+  "siteCode": "101",
+  "auth": "afd",
+  "loginid": "adf",
+  "param": {
+    "slCode":"1104001",
+    "prodEpId":"",
+    "brandEpId":"10",
+    "brandId":"1",
+    "pdClassesCode":"01",
+    "machiningCode":"1",
+    "pdBreedCode":"01",
+    "pdFeatureCode":"",
+    "weightCode":"01"
+  }
+}

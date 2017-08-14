@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.ProviderPackageLogic">
+       <sql id="selectSql">
+              IFNULL(A.TC_PROVIDER_ID,'') AS tcProviderId,
+              IFNULL(A.PROVIDER_CODE,'') AS providerCode,
+              IFNULL(A.PROVIDER_NAME,'') AS providerName,
+              IFNULL(A.CLASSES_CODE,'') AS classesCode,
+              IFNULL(A.CLASSES_NAME,'') AS classesName,
+              IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+              IFNULL(A.MACHINING_NAME,'') AS machiningName,
+              IFNULL(A.BREED_CODE,'') AS breedCode,
+              IFNULL(A.BREED_NAME,'') AS breedName,
+              IFNULL(A.FEATURE_CODE,'') AS featureCode,
+              IFNULL(A.FEATURE_NAME,'') AS featureName,
+              IFNULL(A.WEIGHT_CODE,'') AS weightCode,
+              IFNULL(A.WEIGHT_NAME,'') AS weightName,
+              IFNULL(A.WEIGHT_VAL,'') AS weightVal,
+              IFNULL(A.NORMS_CODE,'') AS normsCode,
+              IFNULL(A.NORMS_NAME,'') AS normsName,
+              IFNULL(A.NORMS_SUTTLE,'') AS normsSuttle,
+              IFNULL(A.NORMS_ERROR,'') AS normsError,
+              IFNULL(A.NORMS_NUMBER,'') AS normsNumber,
+              IFNULL(A.NORMS_SIZE,'') AS normsSize,
+              IFNULL(A.NORMS_TEXTURE,'') AS normsTexture,
+              IFNULL(A.NORMS_OUT,'') AS normsOut,
+              IFNULL(A.NORMS_KG,'') AS normsKg,
+              IFNULL(A.NORMS_OUT_SIZE,'') AS normsOutSize,
+              IFNULL(A.NORMS_OUT_TEXTURE,'') AS normsOutTexture,
+              IFNULL(A.NORMS_TEN,'') AS normsTen,
+              IFNULL(A.NORMS_LENGTH,'') AS normsLength,
+              IFNULL(A.NORMS_WIDTH,'') AS normsWidth,
+              IFNULL(A.NORMS_HEIGHT,'') AS normsHeight,
+              IFNULL(A.NORMS_VOLUME,'') AS normsVolume,
+              IFNULL(A.NETWEIGHT_INNER,'') AS netweightInner,
+              IFNULL(A.NETWEIGHT_OUT,'') AS netweightOut,
+              IFNULL(A.GROSSWEIGHT_OUT,'') AS grossweightOut,
+              IFNULL(A.FEATURE_FLG,'') AS featureFlg,
+              IFNULL(A.SALES_TARGET,'') AS salesTarget,
+              IFNULL(A.MACHINING_WAY,'') AS machiningWay,
+              IFNULL(date_format(A.APPLY_DATE,'%Y-%c-%d %H:%i:%s'),'') AS applyDateTime,
+              IFNULL(date_format(A.AUDIT_DATE,'%Y-%c-%d %H:%i:%s'),'') AS auditDateTime,
+              (CASE WHEN A.AUDIT_STATUS='0' THEN '申请中' WHEN A.AUDIT_STATUS='1' THEN '审核通过' ELSE '审核拒绝' END) AS status
+       </sql>
+
+       <sql id="whereSql">
+              <where>
+                     <if test="filterMap.providerCode!=null and filterMap.providerCode!=''">
+                            AND A.PROVIDER_CODE = #{filterMap.providerCode}
+                     </if>
+                  <!--Modify: 横展开修改模糊查询条件 2016/09/28   BY  任强  Start -->
+                     <if test="filterMap.providerName!=null and filterMap.providerName!=''">
+                            AND A.PROVIDER_NAME LIKE #{filterMap.providerName}
+                     </if>
+                     <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                            AND A.CLASSES_CODE = #{filterMap.classesCode}
+                     </if>
+                     <if test="filterMap.classesName!=null and filterMap.classesName!=''">
+                            AND A.CLASSES_NAME like #{filterMap.classesName}
+                     </if>
+                     <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                            AND A.MACHINING_CODE = #{filterMap.machiningCode}
+                     </if>
+                     <if test="filterMap.machiningName!=null and filterMap.machiningName!=''">
+                            AND A.MACHINING_NAME like #{filterMap.machiningName}
+                     </if>
+                     <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                            AND A.BREED_CODE = #{filterMap.breedCode}
+                     </if>
+                     <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+                            AND A.BREED_NAME like #{filterMap.breedName}
+                     </if>
+                     <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                            AND A.FEATURE_CODE = #{filterMap.featureCode}
+                     </if>
+                     <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+                            AND A.FEATURE_NAME like #{filterMap.featureName}
+                     </if>
+                     <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                            AND A.WEIGHT_CODE = #{filterMap.weightCode}
+                     </if>
+                     <if test="filterMap.weightsName!=null and filterMap.weightsName!=''">
+                            AND A.WEIGHT_NAME like #{filterMap.weightsName}
+                     </if>
+                     <!--Modify: 横展开修改模糊查询条件 2016/09/28   BY  任强  Start -->
+                     <if test="filterMap.normsSuttle!=null and filterMap.normsSuttle!=''">
+                            AND A.NORMS_SUTTLE=#{filterMap.normsSuttle}
+                     </if>
+                     <if test="filterMap.normsError!=null and filterMap.normsError!=''">
+                            AND A.NORMS_ERROR=#{filterMap.normsError}
+                     </if>
+                     <if test="filterMap.normsNumber!=null and filterMap.normsNumber!=''">
+                            AND A.NORMS_NUMBER=#{filterMap.normsNumber}
+                     </if>
+                     <if test="filterMap.normsSize!=null and filterMap.normsSize!=''">
+                            AND A.NORMS_SIZE=#{filterMap.normsSize}
+                     </if>
+                     <if test="filterMap.normsTexture!=null and filterMap.normsTexture!=''">
+                            AND A.NORMS_TEXTURE=#{filterMap.normsTexture}
+                     </if>
+                     <if test="filterMap.normsOut!=null and filterMap.normsOut!=''">
+                            AND A.NORMS_OUT=#{filterMap.normsOut}
+                     </if>
+                     <if test="filterMap.normsKg!=null and filterMap.normsKg!=''">
+                            AND A.NORMS_KG=#{filterMap.normsKg}
+                     </if>
+                     <if test="filterMap.normsOutSize!=null and filterMap.normsOutSize!=''">
+                            AND A.NORMS_OUT_SIZE=#{filterMap.normsOutSize}
+                     </if>
+                     <if test="filterMap.normsOutTexture!=null and filterMap.normsOutTexture!=''">
+                            AND A.NORMS_OUT_TEXTURE=#{filterMap.normsOutTexture}
+                     </if>
+                     <if test="filterMap.normsTen!=null and filterMap.normsTen!=''">
+                            AND A.NORMS_TEN=#{filterMap.normsTen}
+                     </if>
+                     <if test="filterMap.normsLength!=null and filterMap.normsLength!=''">
+                            AND A.NORMS_LENGTH=#{filterMap.normsLength}
+                     </if>
+                     <if test="filterMap.normsWidth!=null and filterMap.normsWidth!=''">
+                            AND A.NORMS_WIDTH=#{filterMap.normsWidth}
+                     </if>
+                     <if test="filterMap.normsHeight!=null and filterMap.normsHeight!=''">
+                            AND A.NORMS_HEIGHT=#{filterMap.normsHeight}
+                     </if>
+                     <if test="filterMap.normsVolume!=null and filterMap.normsVolume!=''">
+                            AND A.NORMS_VOLUME=#{filterMap.normsVolume}
+                     </if>
+                     <if test="filterMap.netweightInner!=null and filterMap.netweightInner!=''">
+                            AND A.NETWEIGHT_INNER=#{filterMap.netweightInner}
+                     </if>
+                     <if test="filterMap.netweightOut!=null and filterMap.netweightOut!=''">
+                            AND A.NETWEIGHT_OUT=#{filterMap.netweightOut}
+                     </if>
+                     <if test="filterMap.grossweightOut!=null and filterMap.grossweightOut!=''">
+                            AND A.GROSSWEIGHT_OUT=#{filterMap.grossweightOut}
+                     </if>
+              </where>
+       </sql>
+
+       <select id="findPageList" parameterType="BaseParam" resultType="com.msk.product.bean.PDInfoResult">
+              select <include refid="selectSql"/>
+              from pd_tc_provider_package AS A
+              <include refid="whereSql"/>
+              <if test="paging==true">
+                     LIMIT #{startSize},#{endSize};
+              </if>
+       </select>
+       <select id="getPageCount" resultType="Integer"
+               parameterType="com.hoperun.core.bean.BasePageParam">
+              SELECT COUNT(1)
+              FROM pd_tc_provider_package AS A
+              <include refid="whereSql"/>
+       </select>
+
+       <insert id="saveMctProvider" parameterType="com.msk.core.entity.PdMctStdDiscussProvider">
+              INSERT INTO pd_mct_std_discuss_provider (
+                      KEY_ID,
+                      STANDARD_ID,
+                      SL_PD_ID,
+                      MCT_STD_ITEM_ID,
+                      MCT_STD_VAL,
+                      RAISE_DATE,
+                      PROVIDER_CODE,
+                      PROVIDER_NAME,
+                      DISCUSS_STATUS,
+                      DEL_FLG,
+                      CRT_ID,
+                      CRT_TIME,
+                     <!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+                       UPD_ID,
+                       UPD_TIME,
+                       ACT_ID,
+                       ACT_TIME,
+                       <!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+                      VER
+                      )
+                      VALUES
+                      (
+                      #{keyId},
+                      #{standardId},
+                      #{slPdId},
+                      #{mctStdItemId},
+                      #{mctStdVal},
+           <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+                      #{raiseDate},
+           <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+                      #{providerCode},
+                      #{providerName},
+                      #{discussStatus},
+                      #{delFlg},
+                      #{crtId},
+           <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+                      #{crtTime},
+           <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+           <!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+                      #{updId},
+                      #{updTime},
+                      #{actId},
+                      #{actTime},
+           <!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+                      #{ver}
+                      )
+       </insert>
+
+       <insert id="saveProviderPackage" parameterType="com.msk.seller.bean.SL241130Param">
+              INSERT INTO pd_tc_provider_package (
+               TC_PROVIDER_ID,
+               PROVIDER_CODE,
+               PROVIDER_NAME,
+               CLASSES_CODE,
+               CLASSES_NAME,
+               MACHINING_CODE,
+               MACHINING_NAME,
+               <if test="chooseInfo==1">
+                   BREED_NAME,
+               </if>
+               <if test="chooseInfo==2">
+                   BREED_CODE,
+                   BREED_NAME,
+                   FEATURE_NAME,
+               </if>
+               <if test="chooseInfo==3">
+                   BREED_CODE,
+                   BREED_NAME,
+                   FEATURE_CODE,
+                   FEATURE_NAME,
+                   WEIGHT_NAME,
+                   WEIGHT_VAL,
+               </if>
+               FEATURE_FLG,
+               <if test="chooseInfo==4">
+                   BREED_CODE,
+                   BREED_NAME,
+                   FEATURE_CODE,
+                   FEATURE_NAME,
+                   WEIGHT_CODE,
+                   WEIGHT_NAME,
+                   WEIGHT_VAL,
+                   NORMS_CODE,
+                   NORMS_NAME,
+                   NORMS_SUTTLE,
+                   NORMS_ERROR,
+                   NORMS_NUMBER,
+                   NORMS_SIZE,
+                   NORMS_TEXTURE,
+                   NORMS_OUT,
+                   NORMS_KG,
+                   NORMS_OUT_SIZE,
+                   NORMS_OUT_TEXTURE,
+                   NORMS_TEN,
+                   NORMS_LENGTH,
+                   NORMS_WIDTH,
+                   NORMS_HEIGHT,
+                   NORMS_VOLUME,
+                   NETWEIGHT_INNER,
+                   NETWEIGHT_OUT,
+                   GROSSWEIGHT_OUT,
+               </if>
+               APPLY_DATE,
+               DEL_FLG,
+               AUDIT_STATUS,
+               CRT_ID,
+           <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+               CRT_TIME
+           <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+           <!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+               ,UPD_ID,
+               UPD_TIME,
+               ACT_ID,
+               ACT_TIME,
+               VER
+           <!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+               )
+               VALUES
+               (
+               #{tcProviderId},
+               #{providerCode},
+               #{providerName},
+               #{classesCode},
+               #{classesName},
+               #{machiningCode},
+               #{machiningName},
+               <if test="chooseInfo==1">
+                   #{breedName},
+               </if>
+               <if test="chooseInfo==2">
+                   #{breedCode},
+                   #{breedName},
+                   #{featureName},
+               </if>
+               <if test="chooseInfo==3">
+                   #{breedCode},
+                   #{breedName},
+                   #{featureCode},
+                   #{featureName},
+                   #{weightName},
+                   #{weightVal},
+               </if>
+               #{featureFlg},
+               <if test="chooseInfo==4">
+                   #{breedCode},
+                   #{breedName},
+                   #{featureCode},
+                   #{featureName},
+                   #{weightCode},
+                   #{weightName},
+                   #{weightVal},
+                   #{normsCode},
+                   #{normsName},
+                   #{normsSuttle},
+                   #{normsError},
+                   #{normsNumber},
+                   #{normsSize},
+                   #{normsTexture},
+                   #{normsOut},
+                   #{normsKg},
+                   #{normsOutSize},
+                   #{normsOutTexture},
+                   #{normsTen},
+                   #{normsLength},
+                   #{normsWidth},
+                   #{normsHeight},
+                   #{normsVolume},
+                   #{netweightInner},
+                   #{netweightOut},
+                   #{grossweightOut},
+               </if>
+           <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+               #{applyDate},
+           <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+               #{delFlg},
+               #{auditStatus},
+               #{crtId},
+           <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+               #{crtTime}
+           <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+           <!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+               ,#{updId},
+               #{updTime},
+               #{actId},
+               #{actTime},
+               #{ver}
+           <!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+               )
+       </insert>
+
+    <insert id="saveTncProvider" parameterType="com.msk.core.entity.PdTncStdDiscussProvider">
+        INSERT INTO pd_tnc_std_discuss_provider (
+        KEY_ID,
+        STANDARD_ID,
+        SL_PD_ID,
+        TNC_STD_ITEM_ID,
+        TNC_STD_VAL,
+        RAISE_DATE,
+        PROVIDER_CODE,
+        PROVIDER_NAME,
+        DISCUSS_STATUS,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        <!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        <!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+        VER
+        )
+        VALUES
+        (
+        #{keyId},
+        #{standardId},
+        #{slPdId},
+        #{tncStdItemId},
+        #{tncStdVal},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        #{raiseDate},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        #{providerCode},
+        #{providerName},
+        #{discussStatus},
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        '0',
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        #{crtId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        #{crtTime},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        <!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        <!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        0
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        )
+    </insert>
+</mapper>

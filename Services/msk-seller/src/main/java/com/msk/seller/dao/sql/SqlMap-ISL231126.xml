@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231126RsLogic">
+    <select id="findAllSLMstCert" resultType="com.msk.seller.bean.ISL231126RsResult"
+            parameterType="com.msk.seller.bean.ISL231126RsParam">
+        SELECT
+        A.CERT_ID AS certId,
+        A.CERT_NAME AS certName,
+        A.REQ_FLG AS reqFlg,
+        A.SORT AS sort,
+        A.VER AS ver
+        FROM
+        sl_mst_cert AS A
+        <where>
+            A.DEL_FLG = 0
+            <if test="certId != null and certId != ''">
+                AND A.CERT_ID = #{certId}
+            </if>
+            <if test="certName != null and certName != ''">
+                AND A.CERT_NAME LIKE #{certName}
+            </if>
+        </where>
+    </select>
+    <select id="findAllSlMstCertItem" resultType="com.msk.core.entity.SlMstCertItem"
+            parameterType="com.msk.seller.bean.ISL231126RsParam">
+        SELECT
+        A.CERT_ID AS certId,
+        A.CERT_ITEM_ID AS certItem,
+        A.CERT_ITEM_NAME AS certItemName,
+        A.SORT AS sort,
+        A.VER AS ver
+        FROM
+        sl_mst_cert_item AS A
+        WHERE
+          A.CERT_ID = #{certId}
+          AND  A.DEL_FLG = 0
+    </select>
+</mapper>

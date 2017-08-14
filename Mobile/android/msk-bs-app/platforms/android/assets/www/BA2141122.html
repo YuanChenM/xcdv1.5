@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link href="css/common.css" type="text/css" rel="stylesheet"/>
+    <link href="css/css.css" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="js/constantDef.js"></script>
+    <script src="js/commonUtil.js"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+    <title>销售订单信息</title>
+</head>
+
+<body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<!--页眉开始-->
+<div class="wapp-head">销售订单信息
+    <a href="javascript:void(0);" id="fanhui" class="head-back">返回</a>
+</div>
+<!--页眉结束/-->
+<!--列表信息主体开始-->
+<div class="lbxx-list" id="orderList">
+</div>
+<!--列表信息主体结束-->
+    <div id="orderInfo" style="display: none">
+        <ul>
+            <li>订单ID<span class="right">orderId</span></li>
+            <li>订单创建时间<span class="right">orderTime</span></li>
+            <li>订单总金额<span class="right">orderAmount</span></li>
+            <li>冻品管家<span class="right">houseName</span></li>
+            <li>买家名称<span class="right">buyersName</span></li>
+            <li>订单状态 <span class="right">orderStatus</span></li>
+            <div class="wapp-footer" style="position:static" onclick="BA2141122.jumpInfo('orderId','orderCode')"><h4>查看详细信息</h4></div>
+        </ul>
+</div>
+</body>
+<script src="js/BA2141122.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

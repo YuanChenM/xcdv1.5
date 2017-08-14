@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151408.Search">
+        SELECT
+        IFNULL(sod.PD_PRICE, 0) * IFNULL(soda.RECEIVE_QTY, 0) AS returnAmount
+        FROM
+        so_order_ship_detail soda
+        INNER JOIN SO_ORDER_DETAIL sod
+        ON soda.ORDER_DETAIL_ID = sod.ORDER_DETAIL_ID
+        WHERE
+        soda.DETAIL_STATUS != 99
+    </sql>
+
+
+    <sql id="ISO151408.findFundDetail">
+        select IFNULL(sod.RETURN_QTY,0) * IFNULL(ssod.PD_PRICE,0) as fundAmount,
+        case when (sso.ORDER_TYPE = 5 or sso.ORDER_TYPE = 6) THEN sso.SELLER_CODE else sosd.SUPPLIER_CODE end as payeeId,
+        case when (sso.ORDER_TYPE = 5 or sso.ORDER_TYPE = 6) THEN sso.SELLER_NAME else sosd.SUPPLIER_NAME end as payeeName,
+        case when (sso.ORDER_TYPE = 5 or sso.ORDER_TYPE = 6) THEN 4 else 3 end as payeeRole
+        from so_return_detail sod
+        inner join so_order_ship_detail sosd
+        on sod.SHIP_DETAIL_ID = sosd.SHIP_DETAIL_ID
+        and sosd.DEL_FLG = 0
+        inner join so_sub_order_detail ssod
+        on sosd.SUB_ORDER_DETAIL_ID = ssod.SUB_ORDER_DETAIL_ID
+        and ssod.DEL_FLG = 0
+        inner join so_sub_order sso
+        on ssod.SUB_ORDER_ID = sso.SUB_ORDER_ID
+        and sso.DEL_FLG = 0
+        where sod.DEL_FLG = 0
+    </sql>
+
+</sqlList>

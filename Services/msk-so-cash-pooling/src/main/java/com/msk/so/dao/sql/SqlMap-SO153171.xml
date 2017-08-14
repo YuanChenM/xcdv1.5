@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.SO153171Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        PAYMENT_DAYS_ID AS paymentDaysId,
+        USER_ID AS userId,
+        USER_NO AS userNo,
+        USER_ROLE AS userRole,
+        (CASE USER_ROLE  WHEN  '3'  THEN  '卖家'
+           WHEN '4' THEN '买手'
+           ELSE '' END) AS  userRoleName,
+        USER_NAME AS userName,
+        /*IFNULL(COMM_DATE,'') AS commDate,*/
+        IFNULL(DATE_FORMAT(COMM_DATE,'%Y-%m-%d'),'') AS commDate,
+        IFNULL(DATE_FORMAT(LAST_PERIOD_END,'%Y-%m-%d'),'') AS lastPeriodEnd,
+        /*IFNULL(LAST_PERIOD_END,'') AS lastPeriodEnd,*/
+        IFNULL(PERIOD,'') AS period
+    </sql>
+    <sql id="selectFrom">
+        FROM SO_CP_PAYMENT_PERIOD
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.userNo!=null and filterMap.userNo!=''">
+                AND USER_NO  like  #{filterMap.userNo}
+            </if>
+            <if test="filterMap.userRoles!=null">
+                AND USER_ROLE IN
+                <foreach collection="filterMap.userRoles" item="userRole" open="(" separator="," close=")">
+                    #{userRole}
+                </foreach>
+            </if>
+            <if test="filterMap.userName!=null and filterMap.userName!=''">
+                AND USER_NAME like #{filterMap.userName}
+            </if>
+
+            <if test="filterMap.commDateStart!=null and filterMap.commDateStart!=''">
+                <![CDATA[ AND DATE_FORMAT(COMM_DATE,'%Y-%m-%d') >= #{filterMap.commDateStart}]]>
+            </if>
+            <if test="filterMap.commDateEnd!=null and filterMap.commDateEnd!=''">
+                <![CDATA[ AND DATE_FORMAT(COMM_DATE,'%Y-%m-%d') <= #{filterMap.commDateEnd}]]>
+            </if>
+
+
+            <if test="filterMap.lastPeriodEndStart!=null and filterMap.lastPeriodEndStart!=''">
+                <![CDATA[ AND DATE_FORMAT(LAST_PERIOD_END,'%Y-%m-%d') >= #{filterMap.lastPeriodEndStart}]]>
+            </if>
+            <if test="filterMap.lastPeriodEndEnd!=null and filterMap.lastPeriodEndEnd!=''">
+                <![CDATA[ AND DATE_FORMAT(LAST_PERIOD_END,'%Y-%m-%d') <= #{filterMap.lastPeriodEndEnd}]]>
+            </if>
+
+
+            <if test="filterMap.periodStart!=null and filterMap.periodStart!=''">
+                <![CDATA[ AND PERIOD >= #{filterMap.periodStart}]]>
+            </if>
+            <if test="filterMap.periodEnd!=null and filterMap.periodEnd!=''">
+                <![CDATA[ AND PERIOD  <= #{filterMap.periodEnd}]]>
+            </if>
+
+            AND DEL_FLG = 0
+        </where>
+    </sql>
+
+    <select id="findPageList" resultType="com.msk.so.bean.SO153171Bean" parameterType="BasePageParam">
+        SELECT
+        <include refid="selectSql" />
+        <include refid="selectFrom" />
+        <include refid="whereCondition" />
+        ORDER BY PAYMENT_DAYS_ID DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        select count(1)
+        <include refid="selectFrom" />
+        <include refid="whereCondition"/>
+    </select>
+
+
+
+    <insert id ="batchSave" parameterType="List">
+        insert into SO_CP_PAYMENT_PERIOD(
+        PAYMENT_DAYS_ID,
+        USER_ID,
+        USER_NO,
+        USER_ROLE,
+        USER_NAME,
+        COMM_DATE,
+        LAST_PERIOD_END,
+        PERIOD,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        values
+        <foreach collection ="list" item ="paymentPeriodItem" index ="index" separator =",">
+           (
+            #{paymentPeriodItem.paymentDaysId},
+            #{paymentPeriodItem.userId},
+            #{paymentPeriodItem.userNo},
+            #{paymentPeriodItem.userRole},
+            #{paymentPeriodItem.userName},
+            #{paymentPeriodItem.commDate},
+            #{paymentPeriodItem.lastPeriodEnd},
+            #{paymentPeriodItem.period},
+            '0',
+            'admin',
+            #{crtTime},
+           'admin',
+            #{updTime},
+            'admin',
+            #{actTime},
+            '1'
+            )
+        </foreach>
+    </insert>
+
+
+    <update id="batchUpdate"  parameterType="List">
+        <foreach collection="list" item="paymentPeriodItem" separator=";"  open="" close=";" >
+            update SO_CP_PAYMENT_PERIOD
+            SET PERIOD = #{paymentPeriodItem.period},COMM_DATE = #{paymentPeriodItem.commDate}
+            where USER_ID = #{paymentPeriodItem.userId}
+        </foreach>
+    </update>
+
+
+    <update id="modify"  parameterType="com.msk.so.bean.SO153171Bean">
+            update SO_CP_PAYMENT_PERIOD
+            SET PERIOD = #{period},
+                COMM_DATE = #{commDate},
+                VER = VER+1,
+                UPD_ID = #{updId},
+                UPD_TIME = #{updTime}
+              where USER_NO = #{userNo}
+    </update>
+
+    <insert id ="save" parameterType="com.msk.so.bean.SO153171Bean">
+        insert into SO_CP_PAYMENT_PERIOD(
+        PAYMENT_DAYS_ID,
+        USER_ID,
+        USER_NO,
+        USER_ROLE,
+        USER_NAME,
+        COMM_DATE,
+        LAST_PERIOD_END,
+        PERIOD,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        values
+            (
+            #{paymentDaysId},
+            #{userId},
+            #{userNo},
+            #{userRole},
+            #{userName},
+            #{commDate},
+            #{lastPeriodEnd},
+            #{period},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+            )
+    </insert>
+</mapper>

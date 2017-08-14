@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.SO153121Logic">
+
+    <!--买家查询 start -->
+    <sql id="selectBuyerSql">
+        BUYER_BILL_ID AS buyerBillId,
+        '' AS  sellerBillId,
+        IFNUll(BUSINESS_MAIN_CODE,'') AS businessMainCode,
+        IFNUll(BUSINESS_MAIN_NAME,'') AS businessMainName,
+        IFNUll(BUSINESS_MAIN_ROLE,'') AS businessMainRole,
+        IFNUll(BUSINESS_ASSISTANT_CODE,'') AS businessAssistantCode,
+        IFNUll(BUSINESS_ASSISTANT_NAME,'') AS businessAssistantName,
+        IFNUll(BUSINESS_ASSISTANT_ROLE,'') AS businessAssistantRole,
+        bb.TRANS_CODE AS transCode,
+        bb.TRANS_TYPE AS transType,
+        ORDER_AMOUNT AS orderAmount,
+        bb.DUE AS due,
+        RECEIVEABLE AS receiveable,
+        SETTLEMENT_STATUS AS settlementStatus,
+        0 AS roleFlag,
+        '' AS accountDate,
+        IFNULL(st.TRANS_FLG,'') AS transFlg,
+        bb.VER AS  ver,
+        (IFNULL(bb.DUE,0)-IFNULL(REFUNDABLE,0)) AS  actualDue,
+        (IFNULL(PAID,0)-IFNULL(REAL_REFUND,0)) AS  actualPaid,
+        '' AS  actualReceiveable,
+        '' AS  actualReceived,
+        (IFNULL(bb.DUE,0)-IFNULL(PAID,0)-IFNULL(REFUNDABLE,0)+IFNULL(REAL_REFUND,0)-IFNULL(RELIEF_AMOUNT,0)) AS  balance,
+        IFNULL(RELIEF_AMOUNT,'')  AS  reliefAmount,
+        IFNULL(crss.PAID_TYPE,'') AS  paidType,
+        IFNULL(bb.REMARK,'') AS remark
+    </sql>
+
+    <sql id="whereBuyerCondition">
+        <where>
+            <if test="filterMap.businessAssistantCode!=null and filterMap.businessAssistantCode!=''">
+                AND BUSINESS_ASSISTANT_CODE like #{filterMap.businessAssistantCode}
+            </if>
+            <if test="filterMap.businessAssistantName!=null and filterMap.businessAssistantName!=''">
+                AND BUSINESS_ASSISTANT_NAME like #{filterMap.businessAssistantName}
+            </if>
+            <if test="filterMap.businessAssistantRole!=null and filterMap.businessAssistantRole!=''">
+                AND BUSINESS_ASSISTANT_ROLE=#{filterMap.businessAssistantRole}
+            </if>
+
+            <if test="filterMap.businessMainCode!=null and filterMap.businessMainCode!=''">
+                AND BUSINESS_MAIN_CODE like #{filterMap.businessMainCode}
+            </if>
+            <if test="filterMap.businessMainName!=null and filterMap.businessMainName!=''">
+                AND BUSINESS_MAIN_NAME like #{filterMap.businessMainName}
+            </if>
+            <if test="filterMap.businessMainRole!=null and filterMap.businessMainRole!=''">
+                AND BUSINESS_MAIN_ROLE=#{filterMap.businessMainRole}
+            </if>
+
+
+            <if test="filterMap.tranTimeStart!=null and filterMap.tranTimeStart!=''">
+                <![CDATA[ AND DATE_FORMAT(TRAN_TIME,'%Y-%m-%d') >= #{filterMap.tranTimeStart}]]>
+            </if>
+            <if test="filterMap.tranTimeEnd!=null and filterMap.tranTimeEnd!=''">
+                <![CDATA[ AND DATE_FORMAT(TRAN_TIME,'%Y-%m-%d') <= #{filterMap.tranTimeEnd}]]>
+            </if>
+
+
+            <if test="filterMap.orderAmountStart!=null and filterMap.orderAmountStart!=''">
+                <![CDATA[ AND DATE_FORMAT(ORDER_AMOUNT,'%Y-%m-%d') >= #{filterMap.orderAmountStart}]]>
+            </if>
+            <if test="filterMap.orderAmountEnd!=null and filterMap.orderAmountEnd!=''">
+                <![CDATA[ AND DATE_FORMAT(ORDER_AMOUNT,'%Y-%m-%d') <= #{filterMap.orderAmountEnd}]]>
+            </if>
+
+
+            <if test="filterMap.transTypes!=null">
+                AND bb.TRANS_TYPE IN
+                <foreach collection="filterMap.transTypes" item="transType" open="(" separator="," close=")">
+                    #{transType}
+                </foreach>
+            </if>
+
+            <if test="filterMap.settlementStatusArr!=null">
+                AND SETTLEMENT_STATUS IN
+                <foreach collection="filterMap.settlementStatusArr" item="settlementStatus" open="(" separator="," close=")">
+                    #{settlementStatus}
+                </foreach>
+            </if>
+            <if test="filterMap.transFlgs!=null">
+                AND TRANS_FLG IN
+                <foreach collection="filterMap.transFlgs" item="transFlg" open="(" separator="," close=")">
+                    #{transFlg}
+                </foreach>
+            </if>
+            <if test="filterMap.paidTypes!=null">
+                AND crss.PAID_TYPE IN
+                <foreach collection="filterMap.paidTypes" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="filterMap.transCode!=null and filterMap.transCode!=''">
+                AND bb.TRANS_CODE like #{filterMap.transCode}
+            </if>
+            AND bb.DEL_FLG = 0
+            AND st.DEL_FLG = 0
+            AND st.BUSINESS_ASSISTANT_ROLE = 4<!-- 4买手 -->
+        </where>
+    </sql>
+
+    <sql id="buyerSelectFrom">
+        FROM SO_CP_BUYER_BILL bb
+        LEFT JOIN SO_CP_TRANSACTION st ON bb.TRANS_CODE = st.TRANS_CODE
+        LEFT JOIN
+         ( SELECT
+               crs.PAID_TYPE,crs.BILL_ID  FROM
+                (
+                   SELECT  cr.PAID_TYPE,cr.BILL_ID  FROM so_cp_running  cr
+                   WHERE cr.DEL_FLG = 0
+                   ORDER BY  cr.RUNNING_ID
+                ) crs
+           GROUP BY  crs.BILL_ID
+          ) crss ON  crss.BILL_ID = bb.BUYER_BILL_ID
+    </sql>
+
+    <select id="findPageList" parameterType="BasePageParam" resultType="com.msk.so.bean.SO153121Bean">
+        select
+          <include refid="selectSellerSql"/>
+          <include refid="sellerSelectFrom" />
+          <include refid="whereSellerCondition"/>
+        <if test="filterMap.mainflag ==null">
+        UNION ALL
+        (
+            select
+            <include refid="selectBuyerSql"/>
+            <include refid="buyerSelectFrom" />
+            <include refid="whereBuyerCondition" />
+        )
+        </if>
+        ORDER BY   businessMainCode ASC, businessAssistantCode ASC,transCode DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getCurrentInfo" parameterType="BasePageParam" resultType="com.msk.so.bean.SO153121Bean">
+        select
+        IFNULL(SUM(t1.orderAmount),'') AS currentOrderAmount,
+        IFNULL(SUM(t1.actualDue),'') AS currentActualDue,
+        IFNULL(SUM(t1.actualPaid),'') AS currentActualPaid,
+        IFNULL(SUM(t1.reliefAmount),'') AS currentReliefAmount,
+        IFNULL(SUM(t1.balance),'') AS currentBalance,
+        IFNULL(SUM(t1.actualReceived),'') AS currentActualReceived,
+        IFNULL(SUM(t1.actualReceiveable),'') AS currentActualReceiveable
+        from
+        (
+        select
+        <include refid="selectSellerSql"/>
+        <include refid="sellerSelectFrom" />
+        <include refid="whereSellerCondition"/>
+        <if test="filterMap.mainflag ==null">
+            UNION ALL
+            (
+            select
+            <include refid="selectBuyerSql"/>
+            <include refid="buyerSelectFrom" />
+            <include refid="whereBuyerCondition" />
+            )
+        </if>
+        ORDER BY   businessMainCode ASC, businessAssistantCode ASC,transCode DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+        ) as t1
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        SELECT  SUM(counts) FROM (
+            select count(1) AS counts
+            <include refid="sellerSelectFrom" />
+            <include refid="whereSellerCondition"/>
+        <if test="filterMap.mainflag ==null">
+            UNION ALL (
+            select count(BUYER_BILL_ID) AS counts
+            <include refid="buyerSelectFrom" />
+            <include refid="whereBuyerCondition"/>
+            )
+        </if>
+        ) AA
+    </select>
+
+<!--买家查询 end -->
+
+<!--卖家查询 start -->
+    <sql id="sellerSelectFrom">
+        FROM SO_CP_SELLER_BILL SB
+        LEFT JOIN
+        ( SELECT
+            crs.PAID_TYPE,crs.BILL_ID  FROM
+            (
+            SELECT  cr.PAID_TYPE,cr.BILL_ID  FROM so_cp_running  cr
+            WHERE cr.DEL_FLG = 0
+            ORDER BY  cr.RUNNING_ID
+            ) crs
+            GROUP BY  crs.BILL_ID
+        ) crss ON  crss.BILL_ID = SB.SELLER_BILL_ID
+    </sql>
+
+    <sql id="selectSellerSql">
+        '' AS buyerBillId,
+        SELLER_BILL_ID AS  sellerBillId,
+        '-' AS businessMainCode,
+        '-' AS businessMainName,
+        '-' AS businessMainRole,
+        IFNUll(SB.BUSINESS_MAIN_CODE,'') AS businessAssistantCode,
+        IFNUll(SB.BUSINESS_MAIN_NAME,'') AS businessAssistantName,
+        IFNUll(SB.BUSINESS_MAIN_ROLE,'') AS businessAssistantRole,
+        '' AS transCode,
+        '' AS transType,
+        IFNUll(BILL_AMOUNT,'') AS orderAmount,
+        0 AS due,
+        IFNUll(RECEIVEABLE,'') AS receiveable,
+        SETTLEMENT_STATUS AS settlementStatus,
+        1 AS roleFlag,
+        CONCAT(DATE_FORMAT(START_DATE,'%Y%m%d'),'-',DATE_FORMAT(END_DATE,'%Y%m%d'))  AS accountDate,
+        '' AS transFlg,
+        SB.VER AS  ver,
+        '' AS  actualDue,
+        '' AS  actualPaid,
+        (IFNULL(SB.RECEIVEABLE,0)-IFNULL(SB.REFUNDABLE,0)) AS  actualReceiveable,
+        (IFNULL(SB.RECEIVED,0)-IFNULL(SB.REAL_REFUND,0)) AS  actualReceived,
+        (IFNULL(SB.RECEIVEABLE,0)-IFNULL(SB.RECEIVED,0)-IFNULL(SB.REFUNDABLE,0)+IFNULL(SB.REAL_REFUND,0)-IFNUll(SB.AJUST_AMOUNT,0)) AS  balance,
+        IFNUll(SB.AJUST_AMOUNT,0)   AS  reliefAmount,
+        IFNULL(crss.PAID_TYPE,'') AS  paidType,
+        IFNULL(SB.REMARK,'') AS remark
+    </sql>
+
+    <sql id="whereSellerCondition">
+        <where>
+            <if test="filterMap.businessAssistantCode!=null and filterMap.businessAssistantCode!=''">
+                AND SB.BUSINESS_MAIN_CODE like #{filterMap.businessAssistantCode}
+            </if>
+            <if test="filterMap.businessAssistantName!=null and filterMap.businessAssistantName!=''">
+                AND SB.BUSINESS_MAIN_NAME like #{filterMap.businessAssistantName}
+            </if>
+            <if test="filterMap.businessAssistantRole!=null and filterMap.businessAssistantRole!=''">
+                AND SB.BUSINESS_MAIN_ROLE=#{filterMap.businessAssistantRole}
+            </if>
+
+           <if test="filterMap.businessMainCode!=null and filterMap.businessMainCode!=''">
+                AND '-%' = #{filterMap.businessMainCode}
+            </if>
+            <if test="filterMap.businessMainName!=null and filterMap.businessMainName!=''">
+                AND '-%' = #{filterMap.businessMainName}
+            </if>
+
+            <if test="filterMap.transTypes!=null">
+                AND TRANS_TYPE IN
+                <foreach collection="filterMap.transTypes" item="transType" open="(" separator="," close=")">
+                    #{transType}
+                </foreach>
+            </if>
+            <if test="filterMap.createTimeStart!=null and filterMap.createTimeStart!=''">
+                <![CDATA[ AND DATE_FORMAT(END_DATE,'%Y-%m-%d') >= #{filterMap.createTimeStart}]]>
+            </if>
+            <if test="filterMap.createTimeEnd!=null and filterMap.createTimeEnd!=''">
+                <![CDATA[ AND DATE_FORMAT(END_DATE,'%Y-%m-%d') <= #{filterMap.createTimeEnd}]]>
+            </if>
+            <if test="filterMap.settlementStatusArr!=null">
+                AND SETTLEMENT_STATUS IN
+                <foreach collection="filterMap.settlementStatusArr" item="settlementStatus" open="(" separator="," close=")">
+                    #{settlementStatus}
+                </foreach>
+            </if>
+            <if test="filterMap.paidTypes!=null">
+                AND crss.PAID_TYPE IN
+                <foreach collection="filterMap.paidTypes" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="filterMap.transCode!=null and filterMap.transCode!=''">
+                AND '' like #{filterMap.transCode}
+            </if>
+            AND SB.DEL_FLG = 0
+            AND SB.BUSINESS_MAIN_ROLE = 4<!-- 4买手 -->
+        </where>
+    </sql>
+
+
+<!--卖家查询 end -->
+
+</mapper>

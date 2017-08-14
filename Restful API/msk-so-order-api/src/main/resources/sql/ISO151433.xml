@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151433.findStatusCount">
+        SELECT
+        COUNT(1) AS allCount,
+        A.allCount AS cancelCount,
+        B.allCount AS allReceiptCount,
+        C.allCount AS allShipmentCount,
+        D.allCount AS partialReceiptCount,
+        E.allCount AS partialShipmentCount,
+        F.allCount AS waitSendCount,
+        G.allCount AS waitDisCount
+        FROM
+        SO_ORDER_DETAIL SOD
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?0
+        AND DETAIL_STATUS = 99
+        ) A ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?1
+        AND DETAIL_STATUS = 7
+        ) B ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?2
+        AND DETAIL_STATUS = 6
+        ) C ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?3
+        AND DETAIL_STATUS = 5
+        ) D ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?4
+        AND DETAIL_STATUS = 4
+        ) E ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?5
+        AND DETAIL_STATUS = 3
+        ) F ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        ORDER_ID = ?6
+        AND DETAIL_STATUS = 1
+        ) G ON 1 = 1
+        WHERE
+        ORDER_ID = ?7
+
+    </sql>
+
+    <sql id="ISO151433.findSubOrderDetailStatusCount">
+        SELECT
+        COUNT(1) AS allCount,
+        A.allCount AS cancelCount,
+        B.allCount AS allReceiptCount,
+        C.allCount AS allShipmentCount,
+        D.allCount AS partialReceiptCount,
+        E.allCount AS partialShipmentCount,
+        F.allCount AS waitSendCount,
+        G.allCount AS waitDisCount
+        FROM
+        SO_SUB_ORDER_DETAIL SSOD
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?0
+        AND DETAIL_STATUS = 99
+        ) A ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?1
+        AND DETAIL_STATUS = 7
+        ) B ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?2
+        AND DETAIL_STATUS = 6
+        ) C ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?3
+        AND DETAIL_STATUS = 5
+        ) D ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?4
+        AND DETAIL_STATUS = 4
+        ) E ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?5
+        AND DETAIL_STATUS = 3
+        ) F ON 1 = 1
+        INNER JOIN (
+        SELECT
+        COUNT(1) AS allCount
+        FROM
+        SO_SUB_ORDER_DETAIL
+        WHERE
+        SUB_ORDER_ID = ?6
+        AND DETAIL_STATUS = 1
+        ) G ON 1 = 1
+        WHERE
+        SUB_ORDER_ID = ?7
+    </sql>
+
+    <sql id="ISO151433.findSoDetailList">
+        SELECT
+        sod.*
+        FROM
+        SO_ORDER_DETAIL sod
+        INNER JOIN SO_ORDER_SHIP_DETAIL soda ON soda.ORDER_DETAIL_ID = sod.ORDER_DETAIL_ID
+        WHERE
+        sod.DEL_FLG = 0
+        AND soda.DEL_FLG = 0
+        AND soda.SHIP_ID = ?0
+    </sql>
+    <sql id="ISO151433.findSoSubDetailList">
+        SELECT
+        ssod.*
+        FROM
+        so_sub_order_detail ssod
+        INNER JOIN SO_ORDER_SHIP_DETAIL soda ON soda.SUB_ORDER_DETAIL_ID = ssod.SUB_ORDER_DETAIL_ID
+        WHERE
+        ssod.DEL_FLG = 0
+        AND soda.DEL_FLG = 0
+        AND soda.SHIP_ID = ?0
+    </sql>
+</sqlList>

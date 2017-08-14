@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>关于APP</title>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <link href="css/common.css" type="text/css" rel="stylesheet"/>
+    <link href="css/BA2141199.css" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+    <script src="js/constantDef.js"></script>
+</head>
+
+<body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<div>
+    <div class="header">
+        <div class="fanhui"></div>
+        <div class="title">
+            <span class="title_span">关于APP</span>
+        </div>
+    </div>
+    <div class="main" style="text-align: center;">
+        <div>
+            <ul style="padding: 0px">
+                <li>
+                    <div class="divClass">
+                        <div class="content" style="height: 150px; line-height: 232px;">
+                            <img src="img/logo.png" style="height:100%;"/>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="divClass">
+                        <div class="content">
+                            <span>买手APP</span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="divClass">
+                        <div class="content" style="line-height: 10px;">
+                            V <span style="font-size: 1.2rem" id="version"></span>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="divClass">
+                        <div class="content" id="introduce"
+                             style="margin-left: 20px;line-height: 10px;text-align: left">
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="footer">
+            <div class="loginOut_contain" style="background: none;background-color:#002e62;">
+                <span class="bottom_add_words" onclick="BA2141190.checkVersions()">检查版本更新</span>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="js/BA2141190.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!-- properties file -->
+    <bean class="com.msk.common.interceptor.ConfigPropertyLoad" id="configPropertyLoad"/>
+    <bean id="configProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath*:config/*.properties</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="propertyConfigurer" class="com.hoperun.plug.spring.interceptor.PropertyPlaceholderConfigurerEx">
+        <property name="propertiesLoad" ref="configPropertyLoad"></property>
+        <property name="needEncrypt" value="false" />
+        <property name="encryptItems">
+            <list>
+                <value>db.url</value>
+                <value>db.username</value>
+                <value>db.userpwd</value>
+            </list>
+        </property>
+        <property name="properties" ref="configProperties"/>
+    </bean>
+
+    <context:component-scan base-package="com.msk" use-default-filters="false">
+        <context:include-filter type="regex" expression="com.msk.*.logic.*Logic" />
+        <context:include-filter type="regex" expression="com.msk.common.config.ConfigInfo"/>
+        <context:include-filter type="regex" expression="com.msk.common.config.ConfigManager"/>
+    </context:component-scan>
+    <!-- Mongo配置 <mongo:mongo id="mongo" host="127.0.0.1" port="27017"></mongo:mongo> <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate"> 
+        <constructor-arg ref="mongo"/> <constructor-arg name="databaseName" value="dbtest"/> </bean> -->
+
+    <!-- tc: not required, tomcat or other:required, junit: not required -->
+    <!-- <context:load-time-weaver aspectj-weaving="on" /> -->
+    <tx:annotation-driven />
+    <context:annotation-config />
+
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxIdle" value="${redis.maxIdle}" />
+        <property name="maxActive" value="${redis.maxActive}" />
+        <property name="maxWait" value="${redis.maxWait}" />
+        <property name="testOnBorrow" value="${redis.testOnBorrow}" />
+    </bean>
+
+    <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="hostName" value="${redis.host}"/>
+        <property name="port" value="${redis.port}"/>
+        <property name="password" value="${redis.pass}"/>
+        <property name="poolConfig" ref="poolConfig"/>
+        <property name="database" value="0"/>
+    </bean>
+
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+        <property name="connectionFactory" ref="connectionFactory" />
+    </bean>
+
+    <bean id="dynamicDataSource" class="com.hoperun.plug.spring.datasource.DynamicDataSource">
+        <property name="targetDataSources">
+            <map key-type="java.lang.String">
+                <entry value-ref="masterdataSource" key="masterdataSource"></entry>
+                <entry value-ref="slavedataSource" key="slavedataSource"></entry>
+            </map>
+        </property>
+        <property name="defaultTargetDataSource" ref="masterdataSource">
+        </property>
+    </bean>
+
+    <!-- 创建查询SqlSessionFactory，同时指定数据源 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dynamicDataSource" />
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml" />
+        <property name="mapperLocations" value="classpath*:com/msk/**/dao/sql/SqlMap-*.xml" />
+    </bean>
+
+    <!--定义事务处理类，不同的数据访问方式，事务处理类不同 比如：Hibernate操作的HibernateTransactionManager，JDBC操作的使用DataSourceTransactionManager -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dynamicDataSource"></property>
+    </bean>
+    <!-- 声明使用注解式事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    <!-- Base Dao -->
+    <bean class="com.hoperun.jdbc.mybatis.BaseDao" id="baseDao">
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+    </bean>
+
+    <bean class="com.hoperun.jdbc.redis.BaseRedisDao" id="redisDao">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+    <bean class="com.msk.common.dao.RedisExtendsUtils" id="redisExtendsUtils">
+        <property name="redisTemplate" ref="redisTemplate"/>
+    </bean>
+
+    <bean class="com.hoperun.plug.spring.utils.SpringContextUtil" id="springContextUtil"></bean>
+    <import resource="classpath*:spring/application-dataSource.xml"></import>
+    <import resource="classpath*:mq/application-mq.xml"></import>
+    <!-- Data Source Aspect -->
+    <bean class="com.msk.common.aspect.DynamicDataSourceAspect" id="dataSourceAspect"/>
+    <aop:aspectj-autoproxy proxy-target-class="true">
+        <aop:include name="dataSourceAspect"/>
+    </aop:aspectj-autoproxy>
+
+    <bean class="com.msk.common.config.SwaggerConfig"/>
+</beans>

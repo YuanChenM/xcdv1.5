@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.cp.logic.BCP153102Logic">
+
+    <select id="findSoCpAccountBook" resultType="com.msk.core.entity.SoCpAccountBook"
+            parameterType="BaseParam">
+        SELECT
+             IFNULL(USER_ID,'') AS userId,
+             IFNULL(USER_NO,'') AS userNo,
+             IFNULL(USER_ROLE,'') AS userRole,
+             IFNULL(USER_NAME,'') AS userName
+        FROM
+             SO_CP_ACCOUNT_BOOK
+        WHERE
+             DEL_FLG = 0
+    </select>
+
+    <insert id="saveSoCpAccountBookPeriod" parameterType="com.msk.core.entity.SoCpAccountBook">
+        INSERT INTO so_cp_account_book
+        (
+            ACCOUNT_BOOK_ID,
+            ACCOUNT_BOOK_NAME,
+            USER_ID,
+            USER_NO,
+            USER_ROLE,
+            USER_NAME,
+            UNPAID,
+            UNRECIEVED,
+            FOR_REFUND,
+            BALANCE,
+
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUES
+        (
+            #{accountBookId},
+            #{accountBookName},
+            #{userId},
+            #{userNo},
+            #{userRole},
+            #{userName},
+            #{unpaid},
+            #{unrecieved},
+            #{forRefund},
+            #{balance},
+            0,
+            'BCP153102',
+            #{crtTime},
+           'BCP153102',
+            #{crtTime},
+           'BCP153102',
+            #{crtTime},
+            1
+        )
+    </insert>
+
+    <update id="updateSoCpAccountBook" parameterType="com.msk.core.entity.SoCpAccountBook">
+        UPDATE
+        so_cp_account_book
+        SET
+        USER_NO = #{userNo},
+        USER_ROLE = #{userRole},
+        USER_NAME = #{userName},
+        UPD_ID = 'BCP153102',
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        USER_ID = #{userId}
+        AND DEL_FLG = 0
+    </update>
+
+    <select id="findSoCpPaymentPeriod" resultType="com.msk.core.entity.SoCpAccountBook" parameterType="BaseParam">
+        SELECT
+        IFNULL(USER_ID,'') AS userId,
+        IFNULL(USER_NO,'') AS userNo,
+        IFNULL(USER_ROLE,'') AS userRole,
+        IFNULL(USER_NAME,'') AS userName
+        FROM
+        SO_CP_PAYMENT_PERIOD
+        WHERE
+        DEL_FLG = 0
+    </select>
+
+    <insert id="saveSoCpPaymentPeriod" parameterType="com.msk.core.entity.SoCpAccountBook">
+        insert into SO_CP_PAYMENT_PERIOD(
+        PAYMENT_DAYS_ID,
+        USER_ID,
+        USER_NO,
+        USER_ROLE,
+        USER_NAME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        values
+        (
+        #{accountBookId},
+        #{userId},
+        #{userNo},
+        #{userRole},
+        #{userName},
+        0,
+        'BCP153103',
+        #{crtTime},
+        'BCP153103',
+        #{crtTime},
+        'BCP153103',
+        #{crtTime},
+        1
+        )
+    </insert>
+
+    <update id="updateSoCpPaymentPeriod" parameterType="com.msk.core.entity.SoCpAccountBook">
+        UPDATE
+            SO_CP_PAYMENT_PERIOD
+        SET
+            USER_NO = #{userNo},
+            USER_ROLE = #{userRole},
+            USER_NAME = #{userName},
+            UPD_ID = 'BCP153103',
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            USER_ID = #{userId}
+            AND DEL_FLG = 0
+    </update>
+
+</mapper>

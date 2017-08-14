@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SLAccountLogic">
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.SlSeller">
+        SELECT
+        SL_CODE AS  slCode,
+        SL_ACCOUNT AS  slAccount,
+        SL_MAIN_CLASS AS slMainClass
+        FROM SL_SELLER
+        WHERE SL_ACCOUNT=#{filterMap.slAccount}
+        AND DEL_FLG = 0
+    </select>
+
+    <update id="updateSlAccount" parameterType="com.msk.core.entity.SlAccount">
+        update sl_account
+        set
+        <if test="slTel != null and slTel != ''">
+            SL_TEL=#{slTel},
+        </if>
+        <if test="slShowName != null and slShowName != ''">
+            SL_SHOW_NAME=#{slShowName},
+        </if>
+        <if test="slContact != null and slContact != ''">
+            SL_CONTACT=#{slContact},
+        </if>
+        <if test="accountPsd != null and accountPsd != ''">
+            ACCOUNT_PSD=#{accountPsd},
+        </if>
+        <if test="accountImg != null and accountImg != ''">
+            ACCOUNT_IMG=#{accountImg},
+        </if>
+        <if test="authStatus != null and authStatus != ''">
+            AUTH_STATUS=#{authStatus},
+        </if>
+        <if test="fromFlg != null and fromFlg != ''">
+            FROM_FLG=#{fromFlg},
+        </if>
+        <if test="updId != null and updId != ''">
+            UPD_ID = #{updId},
+        </if>
+        <if test="delFlg != null and delFlg != ''">
+            DEL_FLG = #{delFlg},
+        </if>
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        SL_ACCOUNT=#{slAccount}
+    </update>
+
+    <select id="findAccount" parameterType="BaseParam" resultType="com.msk.core.entity.SlAccount">
+        SELECT
+        SL_ACCOUNT AS slAccount,
+        SL_TEL AS slTel,
+        SL_SHOW_NAME AS slShowName,
+        SL_CONTACT AS slContact,
+        ACCOUNT_PSD AS accountPsd,
+        ACCOUNT_IMG ASACCOUNT_IMG,
+        AUTH_STATUS AS authStatus,
+        FROM_FLG AS fromFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime
+        FROM SL_ACCOUNT
+        WHERE SL_ACCOUNT=#{filterMap.slAccount}
+        AND DEL_FLG = 0
+    </select>
+</mapper>

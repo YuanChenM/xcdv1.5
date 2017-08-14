@@ -1,0 +1,12 @@
+spring:
+  mvc:
+    static-path-pattern: /static/**
+
+  datasource:
+    url: jdbc:mysql://10.20.10.104:3306/yd-bms
+    username: bms
+    password: Bms123
+    driver-class-name: com.mysql.jdbc.Driver
+server:
+  port: 9090
+  context-path: /batch-manager/

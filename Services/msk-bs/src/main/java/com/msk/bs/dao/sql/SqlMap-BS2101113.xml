@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2101113Logic">
+
+    <!--解除买手店管家抢单会员关系-->
+    <update id="updateBuyerGet" parameterType="com.msk.bs.bean.BS2101113Param">
+        UPDATE  sl_bs_buyer_get
+        SET DEL_FLG ='1',
+        UPD_ID = #{updId},
+        UPD_TIME =#{filterMap.updateTime},
+        VER =VER + 1
+        where HOUSE_CODE = #{houseCode} AND  DEL_FLG = '0'
+    </update>
+
+    <!--新增买手店管家抢单会员履历表-->
+    <insert id="insertBuyerGetHis" parameterType="com.msk.core.entity.SlBsBuyerGetHis">
+      INSERT  INTO  sl_bs_buyer_get_his
+      (
+        HIS_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        REASON,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+      )VALUES (
+      #{hisId},
+      #{slCode},
+      #{houseCode},
+      #{buyerId},
+      #{startTime},
+      #{endTime},
+      #{reason},
+     '0',
+      #{crtId},
+      #{crtTime},
+       #{updId},
+      #{updTime},
+      #{actId},
+       #{actTime},
+      '0'
+      )
+    </insert>
+
+    <!--新增买手店管家买家关系履历表-->
+    <insert id="insertBuyerHis" parameterType="com.msk.core.entity.SlBsBuyerHis">
+        INSERT  INTO  sl_bs_buyer_his
+        (
+        HIS_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        APPLY_SIDE,
+        APPLY_STATUS,
+        APPLY_TIME,
+        BUYER_REASON,
+        BUYERSHOP_REASON,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES (
+        #{hisId},
+        #{slCode},
+        #{houseCode},
+        #{buyerId},
+        #{startTime},
+         #{endTime},
+        #{applySide},
+        #{applyStatus},
+        #{applyTime},
+        #{buyerReason},
+        #{buyershopReason},
+        '0',
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        '0'
+        )
+    </insert>
+
+    <!--解除买手店管家专属会员关系-->
+    <update id="updateBuyer" parameterType="com.msk.bs.bean.BS2101113Param">
+        UPDATE  sl_bs_buyer
+        SET DEL_FLG ='1',
+        UPD_ID = #{updId},
+        UPD_TIME =#{filterMap.updateTime},
+         VER =VER + 1
+        where HOUSE_CODE = #{houseCode} AND (DEL_FLG IS NULL OR DEL_FLG =0) AND  SL_CODE = #{slCode}
+    </update>
+
+    <!--更新冻品管家账户-->
+    <update id="updateHouseAccount" parameterType="com.msk.bs.bean.BS2101113Param">
+         UPDATE  sl_house_account
+        SET DEL_FLG ='1',
+        UPD_ID = #{updId},
+        UPD_TIME =#{filterMap.updateTime},
+         VER =VER + 1
+        where HOUSE_CODE = #{houseCode} AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </update>
+
+    <select id="findBuyerGet" parameterType="com.msk.bs.bean.BS2101113Param" resultType="com.msk.core.entity.SlBsBuyerGet">
+        SELECT
+        SL_CODE AS slCode,
+        HOUSE_CODE AS houseCode ,
+        BUYER_ID AS buyerId ,
+        START_TIME AS startTime ,
+        END_TIME AS  endTime
+        from  sl_bs_buyer_get WHERE  HOUSE_CODE= #{houseCode} AND  DEL_FLG = '0'
+    </select>
+
+    <select id="findBuyer" parameterType="com.msk.bs.bean.BS2101113Param" resultType="com.msk.core.entity.SlBsBuyer">
+        SELECT
+        SL_CODE AS slCode,
+        HOUSE_CODE AS houseCode,
+        BUYER_ID AS buyerId,
+        START_TIME AS  startTime,
+        END_TIME AS endTime ,
+        APPLY_SIDE AS applySide,
+        APPLY_STATUS AS applyStatus,
+        APPLY_TIME AS  applyTime
+        from  sl_bs_buyer
+         WHERE  HOUSE_CODE= #{houseCode} AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+</mapper>

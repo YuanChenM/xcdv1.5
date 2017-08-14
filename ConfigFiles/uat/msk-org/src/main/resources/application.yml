@@ -1,0 +1,32 @@
+spring:
+  aop:
+    auto: true
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+  datasource:
+    url: jdbc:mysql://10.47.108.36:3306/msk_public
+    username: msk-web
+    password: Msk123
+    driver-class-name: com.mysql.jdbc.Driver
+    initial-size: 10
+    max-active: 100
+    max-idle: 10
+    max-wait: 60000
+  jpa:
+    database: MYSQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+  properties:
+    dialect: org.hibernate.dialect.MySQL5Dialect
+###Config Server相关配置###########
+config:
+    server:
+      environment: uat
+      url: http://10.45.21.248/msk-config-server/api
+      configConstantUrl: /load/config/constant
+      sellerModuleName: SELLER
+      sellerLoginServerName: QuerySLAccount

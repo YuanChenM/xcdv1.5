@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231122RsLogic">
+    <select id="findList" resultType="com.msk.core.entity.SlSeller" parameterType="BaseParam">
+        SELECT
+        a.SL_CODE,
+        a.SL_ACCOUNT,
+        a.AREA_CODE,
+        a.EP_ID,
+        a.SL_MAIN_CLASS,
+        a.SNK_FLG,
+        a.SELF_FLG,
+        a.AGENT_FLG,
+        a.OEM_FLG,
+        a.SQA_STATUS,
+        a.DIST_QUA,
+        a.SHOP_QUA,
+        a.VER
+        FROM
+        sl_seller AS a,
+        sl_account AS b,
+        sl_enterprise AS d
+        where
+        a.DEL_FLG = 0
+        AND  b.DEL_FLG = 0
+        AND  d.DEL_FLG = 0
+        <if test="filterMap.epName!=null and filterMap.epName!=''">
+            AND d.EP_NAME = #{filterMap.epName}
+            AND d.EP_ID = a.EP_ID
+        </if>
+       <if test="filterMap.slTel!=null and filterMap.slTel!=''">
+            AND b.SL_TEL = #{filterMap.slTel}
+            AND b.SL_ACCOUNT = a.SL_ACCOUNT
+        </if>
+        <if test="filterMap.slAccount!=null and filterMap.slAccount!=''">
+            AND a.SL_ACCOUNT = #{filterMap.slAccount}
+        </if>
+        <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+            AND a.SL_CODE = #{filterMap.slCode}
+        </if>
+        <if test="filterMap.slAreaCode!=null and filterMap.slAreaCode!=''">
+            AND a.SL_AREA_CODE = #{filterMap.slAreaCode}
+        </if>
+    </select>
+</mapper>

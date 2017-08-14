@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.br.logic.BBR121401Logic">
+
+    <delete id="deletePdPool" parameterType="BaseParam">
+        DELETE FROM br_pd_pool_info
+    </delete>
+    <select id="findPdPool" parameterType="BaseParam"
+            resultType="com.msk.batch.br.bean.BBR121401Param">
+            SELECT
+            br_cla.CLASSES_CODE AS classesCode,
+            br_cla.CLASSES_NAME AS classesName,
+            br_cla.MACHINING_CODE AS machiningCode,
+            br_cla.MACHINING_NAME AS machiningName,
+            br_breed.BREED_CODE AS breedCode,
+            br_breed.FEATURE_CODE AS featureCode,
+            br_breed.FEATURE_NAME AS featureName,
+            br_breed.GRADE_CODE AS gradeCode,
+            br_breed.GRADE_NAME AS gradeCodeName,
+            br_order.BUYER_ID AS buyerId,
+            br_buyer.LGCS_AREA_CODE AS buyerLgcsAreaCode,
+            br_buyer.LGCS_AREA_NAME AS buyerLgcsAreaName,
+            br_buyer.CITY_CODE AS buyerCityCode,
+            br_buyer.CITY_NAME AS buyerCityName,
+            br_buyer.DISTRICT_CODE AS buyerDistrictCode,
+            br_buyer.DISTRICT_NAME AS buyerDistrictName,
+            br_buyer.BUYER_CODE AS buyerCode,
+            br_buyer.BUYER_NAME AS buyerName,
+            br_buyer.MARKET_CODE AS marketCode,
+            br_buyer.MARKET_NAME AS marketName,
+            br_buyer.MARKET_LEVEL AS marketLevel,
+            br_buyer.MARKET_LEVEL_NAME AS marketLevelName,
+            br_buyer.BUYER_TYPE AS buyerType,
+            br_buyer.BUYER_TYPE_NAME AS buyerTypeName,
+            br_buyer.MARKETINGS_STATUS AS marketingsStatus,
+            br_buyer.MARKETINGS_STATUS_NAME AS marketingsStatusName,
+            br_breed.SCIENTIFIC_NAME AS scientificName,
+            br_breed.LOCAL_NAME AS localName,
+            br_breed.SALES_NAME AS salesName,
+            COUNT(br_order.ORDER_DETAIL_ID) AS orderCount,
+            SUM(IFNULL(br_order.ORDER_QTY,0)) AS sellQty,
+            GROUP_CONCAT(br_pd_cla.CLASSES_CODE,'') AS otherPdCode,
+            br_sl_pd.SL_RECORD AS slRecordFeature,
+            br_sl_pd.DIST_FLG AS oemOnlineFeature,
+            br_sl_pd.STATUS AS slOnlineFeature
+            FROM
+            br_o_cla_machining_info br_cla
+            INNER JOIN br_o_breed_fea_info br_breed ON br_cla.CLA_ID = br_breed.CLA_ID
+            LEFT JOIN br_o_order_info br_order ON br_cla.CLASSES_CODE = br_order.CLASSES_CODE
+            AND br_cla.MACHINING_CODE = br_order.MACHINING_CODE
+            AND br_breed.BREED_CODE = br_order.BREED_CODE
+            AND br_breed.FEATURE_CODE = br_order.FEATURE_CODE
+            AND br_breed.GRADE_CODE = br_order.GRADE_CODE
+            AND br_order.DEL_FLG = 0
+            LEFT JOIN br_o_buyer_info br_buyer ON br_order.BUYER_ID = br_buyer.BUYER_ID
+            LEFT JOIN br_o_buyer_pd_cla br_pd_cla ON br_order.BUYER_ID = br_pd_cla.BUYER_ID
+            LEFT JOIN br_o_sl_product br_sl_pd ON br_cla.CLASSES_CODE = br_sl_pd.CLASSES_CODE
+            AND br_cla.MACHINING_CODE = br_sl_pd.MACHINING_CODE
+            AND br_breed.BREED_CODE = br_sl_pd.BREED_CODE
+            AND br_breed.FEATURE_CODE = br_sl_pd.FEATURE_CODE
+            WHERE
+            br_cla.DEL_FLG = 0
+            AND br_breed.DEL_FLG = 0
+            AND br_order.DETAIL_STATUS = #{filterMap.detailStatus}
+            AND br_order.RECEIVED_TIME BETWEEN #{filterMap.startReceivedTime} AND #{filterMap.endReceivedTime}
+            GROUP BY
+            br_cla.CLASSES_CODE,
+            br_cla.MACHINING_CODE,
+            br_breed.BREED_CODE,
+            br_breed.FEATURE_CODE,
+            br_order.BUYER_ID
+    </select>
+    <insert id="insertPdPoolList" parameterType="List">
+        INSERT INTO br_pd_pool_info
+        (
+        ID,
+        CLASSES_CODE,
+        CLASSES_NAME,
+        MACHINING_CODE,
+        MACHINING_NAME,
+        BREED_CODE,
+        FEATURE_CODE,
+        GRADE_CODE,
+        GRADE_CODE_NAME,
+        BUYER_ID,
+        BUYER_TYPE,
+        BUYER_TYPE_NAME,
+        BUYER_LGCS_AREA_CODE,
+        BUYER_LGCS_AREA_NAME,
+        BUYER_CITY_CODE,
+        BUYER_CITY_NAME,
+        BUYER_DISTRICT_CODE,
+        BUYER_DISTRICT_NAME,
+        SCIENTIFIC_NAME,
+        LOCAL_NAME,
+        SALES_NAME,
+        STANDARD_CODE,
+        DEMAND_FEATURE,
+        SL_RECORD_FEATURE,
+        OEM_ONLINE_FEATURE,
+        SL_ONLINE_FEATURE,
+        ORDER_COUNT,
+        SELL_QTY,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES
+        <foreach collection="list" item="pdPool" index="index" separator=",">
+            (
+            #{pdPool.id},
+            #{pdPool.classesCode},
+            #{pdPool.classesName},
+            #{pdPool.machiningCode},
+            #{pdPool.machiningName},
+            #{pdPool.breedCode},
+            #{pdPool.featureCode},
+            #{pdPool.gradeCode},
+            #{pdPool.gradeCodeName},
+            #{pdPool.buyerId},
+            #{pdPool.buyerType},
+            #{pdPool.buyerTypeName},
+            #{pdPool.buyerLgcsAreaCode},
+            #{pdPool.buyerLgcsAreaName},
+            #{pdPool.buyerCityCode},
+            #{pdPool.buyerCityName},
+            #{pdPool.buyerDistrictCode},
+            #{pdPool.buyerDistrictName},
+            #{pdPool.scientificName},
+            #{pdPool.localName},
+            #{pdPool.salesName},
+            #{pdPool.standardCode},
+            #{pdPool.demandFeature},
+            #{pdPool.slRecordFeature},
+            #{pdPool.oemOnlineFeature},
+            #{pdPool.slOnlineFeature},
+            #{pdPool.orderCount},
+            #{pdPool.sellQty},
+            0,
+            #{pdPool.crtId},
+            #{pdPool.crtTime},
+            #{pdPool.updId},
+            #{pdPool.updTime},
+            #{pdPool.actId},
+            #{pdPool.actTime},
+            1)
+        </foreach>
+    </insert>
+    <insert id="insertPdPoolOne" parameterType="com.msk.core.entity.BrPdPoolInfo">
+      INSERT INTO br_pd_pool_info
+        (
+        ID,
+        CLASSES_CODE,
+        CLASSES_NAME,
+        MACHINING_CODE,
+        MACHINING_NAME,
+        BREED_CODE,
+        FEATURE_CODE,
+        GRADE_CODE,
+        GRADE_CODE_NAME,
+        BUYER_ID,
+        BUYER_LGCS_AREA_CODE,
+        BUYER_LGCS_AREA_NAME,
+        BUYER_CITY_CODE,
+        BUYER_CITY_NAME,
+        BUYER_DISTRICT_CODE,
+        BUYER_DISTRICT_NAME,
+        SCIENTIFIC_NAME,
+        LOCAL_NAME,
+        SALES_NAME,
+        STANDARD_CODE,
+        DEMAND_FEATURE,
+        SL_RECORD_FEATURE,
+        OEM_ONLINE_FEATURE,
+        SL_ONLINE_FEATURE,
+        ORDER_COUNT,
+        SELL_QTY,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES(
+            #{id},
+            #{classesCode},
+            #{classesName},
+            #{machiningCode},
+            #{machiningName},
+            #{breedCode},
+            #{featureCode},
+            #{gradeCode},
+            #{gradeCodeName},
+            #{buyerId},
+            #{buyerLgcsAreaCode},
+            #{buyerLgcsAreaName},
+            #{buyerCityCode},
+            #{buyerCityName},
+            #{buyerDistrictCode},
+            #{buyerDistrictName},
+            #{scientificName},
+            #{localName},
+            #{salesName},
+            #{standardCode},
+            #{demandFeature},
+            #{slRecordFeature},
+            #{oemOnlineFeature},
+            #{slOnlineFeature},
+            #{orderCount},
+            #{sellQty},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+        )
+    </insert>
+    <select id="countBuyerInfo" parameterType="com.msk.batch.br.bean.BBR121401Param" resultType="int">
+        SELECT
+           COUNT(1)
+        FROM
+           br_buyer_pool_info
+        WHERE
+           BUYER_ID = #{buyerId}
+        AND DEL_FLG = 0
+    </select>
+    <select id="findBuyerNeedFea" parameterType="BaseParam" resultType="com.msk.batch.br.bean.BBR121401Param">
+        SELECT
+        br_need_Fea.CLASSES_CODE AS classesCode,
+        br_cla_ma.CLASSES_NAME AS classesName,
+        br_need_Fea.MACHINING_CODE AS machiningCode,
+        br_cla_ma.MACHINING_NAME AS machiningName,
+        br_need_Fea.BREED_CODE AS breedCode,
+        br_need_Fea.FEATURE_CODE AS featureCode,
+        br_breed_fea.FEATURE_NAME AS featureName,
+        br_need_Fea.IS_STANDARD AS isStandard,
+        br_need_Fea.DEMAND_FEATURE AS demandFeature,
+        br_need_Fea.SALE_NAME AS salesName,
+        br_need_Fea.SCIENTIFIC_NAME AS scientificName,
+        br_need_Fea.POPULAR_NAME AS localName,
+        br_breed_fea.GRADE_CODE AS gradeCode,
+        br_breed_fea.GRADE_NAME AS gradeCodeName
+        FROM
+        br_o_need_fea_detail br_need_Fea
+        INNER JOIN br_o_cla_machining_info br_cla_ma ON br_need_Fea.CLASSES_CODE = br_cla_ma.CLASSES_CODE
+        AND br_need_Fea.MACHINING_CODE = br_cla_ma.MACHINING_CODE
+        LEFT JOIN br_o_breed_fea_info br_breed_fea ON br_cla_ma.CLA_ID = br_breed_fea.CLA_ID
+        AND br_need_Fea.BREED_CODE = br_breed_fea.BREED_CODE
+        AND br_need_Fea.FEATURE_CODE = br_breed_fea.FEATURE_CODE
+        GROUP BY
+        br_need_Fea.CLASSES_CODE,
+        br_need_Fea.MACHINING_CODE,
+        br_need_Fea.BREED_CODE,
+        br_need_Fea.IS_STANDARD
+    </select>
+    <insert id="insertBuyerPool" parameterType="com.msk.core.entity.BrPdPoolInfo">
+        INSERT INTO br_buyer_pool_info
+        (
+            BUYER_ID,
+            BUYER_CODE,
+            BUYER_NAME,
+            MARKET_CODE,
+            MARKET_NAME,
+            MARKET_LEVEL,
+            MARKET_LEVEL_NAME,
+            BUYER_TYPE,
+            BUYER_TYPE_NAME,
+            LGCS_AREA_CODE,
+            LGCS_AREA_NAME,
+            CITY_CODE,
+            CITY_NAME,
+            DISTRICT_CODE,
+            DISTRICT_NAME,
+            MARKETINGS_STATUS,
+            MARKETINGS_STATUS_NAME,
+            OTHER_PD_CODE,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )VALUE (
+            #{buyerId},
+            #{buyerCode},
+            #{buyerName},
+            #{marketCode},
+            #{marketName},
+            #{marketLevel},
+            #{marketLevelName},
+            #{buyerType},
+            #{buyerTypeName},
+            #{buyerLgcsAreaCode},
+            #{buyerLgcsAreaName},
+            #{buyerCityCode},
+            #{buyerCityName},
+            #{buyerDistrictCode},
+            #{buyerDistrictName},
+            #{marketingsStatus},
+            #{marketingsStatusName},
+            #{otherPdCode},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+        )
+    </insert>
+    <update id="modifyPdPool" parameterType="com.msk.core.entity.BrONeedFeaDetail">
+        UPDATE
+           br_pd_pool_info
+        SET
+           DEMAND_FEATURE = #{featureName}
+        WHERE
+           CLASSES_CODE = #{classesCode}
+        AND MACHINING_CODE = #{machiningCode}
+        AND BREED_CODE = #{breedCode}
+        AND FEATURE_CODE = #{featureCode}
+        AND DEL_FLG = 0
+    </update>
+</mapper>

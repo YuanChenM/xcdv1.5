@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101137RsLogic">
+
+    <sql id="selectFiled">
+        a.SL_ACCOUNT AS slAccount,
+		a.SL_TEL AS slTel,
+		a.SL_SHOW_NAME AS slShowName,
+		a.SL_CONTACT AS slContact,
+		a.ACCOUNT_PSD AS accountPsd,
+		a.AUTH_STATUS AS authStatus,
+		a.FROM_FLG AS fromFlg,
+		b.SL_CODE AS slCode,
+		b.SL_CODE_DIS AS slCodeDis,
+		b.SL_CON_FLG AS slConFlg,
+		b.AREA_CODE AS areaCode,
+		b.AREA_NAME AS areaName,
+		b.LGCS_AREA_CODE AS lgcsAreaCode,
+		b.LGCS_AREA_NAME AS lgcsAreaName,
+		b.PROVINCE_CODE AS provinceCode,
+		b.PROVINCE_NAME AS provinceName,
+		b.CITY_CODE AS cityCode,
+		b.CITY_NAME AS cityName,
+		b.DISTRICT_CODE AS districtCode,
+		b.DISTRICT_NAME AS districtName,
+		b.MEMO9 AS address,
+		b.MEMO1 AS webChat,
+		b.MEMO2 AS qq,
+		b.MEMO3 AS mail,
+		b.MEMO4 AS tel,
+		b.MEMO5 AS fax,
+		b.MEMO7 AS cardId,
+		c.FLAG1 AS sex,
+		f.TYPE_CODE AS bsTypeCode1,
+		f.TYPE_NAME AS bsTypeName1,
+		e.TYPE_CODE AS bsTypeCode2,
+		e.TYPE_NAME AS bsTypeName2,
+		b.MEMO8 AS bsTypeCode3,
+		d.TYPE_NAME AS bsTypeName3,
+		(
+			SELECT
+				COUNT(1)
+			FROM
+				sl_house_account b1
+			WHERE
+				b1.SL_CODE = b.SL_CODE
+			AND (
+				b1.DEL_FLG IS NULL
+				OR b1.DEL_FLG = 0
+			)
+		) AS stewardNum,
+		(
+			SELECT
+				COUNT(1)
+			FROM
+				sl_bs_buyer b2
+			WHERE
+				b2.HOUSE_CODE IN (
+					SELECT
+						b3.HOUSE_CODE
+					FROM
+						sl_house_account b3
+					WHERE
+						b3.SL_CODE = b.SL_CODE
+					AND (
+						b3.DEL_FLG IS NULL
+						OR b3.DEL_FLG = 0
+					)
+				)
+			AND (
+				b2.DEL_FLG IS NULL
+				OR b2.DEL_FLG = 0
+			)
+		) AS buyerNum,
+		g.SHOP_ID shopId,
+		g.SHOP_NAME shopName,
+		g.SHOP_LOGO shopLogo,
+		g.MANAGING_CHARACT1 managingCharact1,
+		g.MANAGING_CHARACT2 managingCharact2,
+		g.MANAGING_CHARACT3 managingCharact3
+    </sql>
+    <sql id="selectFrom">
+        FROM sl_bs_account a
+        <if test="slCodeFlag!=null and slCodeFlag==1">
+            INNER JOIN sl_bs_basic_info b ON b.SL_ACCOUNT = a.SL_ACCOUNT
+        </if>
+        <if test="slCodeFlag==null or slCodeFlag!=1">
+            LEFT JOIN sl_bs_basic_info b ON b.SL_ACCOUNT = a.SL_ACCOUNT
+        </if>
+        LEFT JOIN sl_bs_buyershop c ON c.SL_CODE = b.SL_CODE
+        LEFT JOIN sl_bs_house_type d ON d.TYPE_CODE = b.MEMO8
+        AND d.TYPE_LEVER = 2
+        AND d.ROLE_TYPE = 0
+        AND d.DEL_FLG = 0
+        LEFT JOIN sl_bs_house_type e ON e.TYPE_CODE = d.PARENT_TYPE_CODE
+        AND e.TYPE_LEVER = 1
+        AND e.ROLE_TYPE = 0
+        AND e.DEL_FLG = 0
+        LEFT JOIN sl_bs_house_type f ON f.TYPE_CODE = e.PARENT_TYPE_CODE
+        AND f.TYPE_LEVER = 0
+        AND f.ROLE_TYPE = 0
+        AND f.DEL_FLG = 0
+        LEFT JOIN sl_bs_shop_info g ON g.SL_CODE = b.SL_CODE
+    </sql>
+    <sql id="whereCondition">
+        <where>
+            (a.DEL_FLG IS NULL OR a.DEL_FLG = 0)
+            <if test="condition!=null and condition.size()!=0">
+                AND
+                <foreach collection="condition" index="index" item="item" open="(" separator="OR" close=")">
+                    (
+                    <if test="item.slCode!=null and item.slCode!=''">
+                        b.SL_CODE = #{item.slCode} AND
+                    </if>
+                    <if test="item.slCodeDis!=null and item.slCodeDis!=''">
+                        b.SL_CODE_DIS = #{item.slCodeDis} AND
+                    </if>
+                    (a.DEL_FLG IS NULL OR a.DEL_FLG = 0)
+                    )
+                </foreach>
+            </if>
+        </where>
+    </sql>
+    <select id="getPageCount" resultType="int" parameterType="com.msk.bs.bean.IBS2101137RsParam">
+        SELECT COUNT(1)
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+    </select>
+    <select id="findPageList" resultType="com.msk.bs.bean.IBS2101137Bean"
+            parameterType="com.msk.bs.bean.IBS2101137RsParam">
+        SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        <!--order by suppDsId, planFlowId, distMonth-->
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageCount};
+        </if>
+    </select>
+    <select id="findList" resultType="com.msk.core.entity.SlBsBankaccount" parameterType="BaseParam">
+        SELECT
+        SL_CODE AS slCode,
+        BANK_NAME AS bankName,
+        BANK_NO AS bankNo,
+        ACCOUNT_NAME AS accountName,
+        CARD_TYPE AS cardType
+        FROM
+        sl_bs_bankaccount
+        WHERE
+        (DEL_FLG IS NULL OR DEL_FLG =0)
+        <if test="filterMap.codeList!=null and filterMap.codeList.size()!=0">
+            AND SL_CODE IN
+            <foreach collection="filterMap.codeList" index="index" item="item" open="(" separator="," close=")">#{item}</foreach>
+        </if>
+    </select>
+</mapper>

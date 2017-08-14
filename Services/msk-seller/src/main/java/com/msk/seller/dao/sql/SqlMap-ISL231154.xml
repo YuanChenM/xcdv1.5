@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231154RsLogic">
+
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpBrand">
+		SELECT
+			EP_ID AS epId
+		FROM
+			sl_ep_brand
+		WHERE
+			EP_ID = #{filterMap.epId}
+		AND BRAND_ID = #{filterMap.brandId}
+		AND DEL_FLG = 0
+	</select>
+
+
+    <insert id="save" parameterType="com.msk.core.entity.SlEpBrandHonor">
+		INSERT INTO sl_ep_brand_honor (
+			EP_ID,
+			BRAND_ID,
+			HONOR_ID,
+			HONOR_DES,
+			HONOR_NO,
+			CERT_DATE,
+			CERT_ISSUER,
+			DEL_FLG,
+			CRT_ID,
+			CRT_TIME,
+			UPD_ID,
+			UPD_TIME,
+			ACT_ID,
+			ACT_TIME,
+			VER
+		)
+		VALUES
+			(
+			  #{epId},
+			  #{brandId},
+			  #{honorId},
+			  #{honorDes},
+			  #{honorNo},
+			  #{certDate},
+			  #{certIssuer},
+			  0,
+		      	  #{crtId},
+			  #{crtTime},
+		          #{crtId},
+			  #{crtTime},
+		          #{crtId},
+			  #{crtTime},
+			  1
+			)
+	</insert>
+
+    <update id="modify" parameterType="com.msk.core.entity.SlEpBrandHonor">
+		UPDATE sl_ep_brand_honor SET
+		EP_ID = #{epId},
+		BRAND_ID = #{brandId},
+		HONOR_ID = #{honorId},
+		HONOR_DES = #{honorDes},
+		HONOR_NO = #{honorNo},
+		CERT_DATE = #{certDate},
+		CERT_ISSUER = #{certIssuer},
+		UPD_ID =  #{updId},
+		UPD_TIME=#{updTime},
+		VER = VER + 1
+		WHERE
+		EP_ID = #{epId}
+		AND BRAND_ID = #{brandId}
+		AND HONOR_ID = #{honorId}
+	</update>
+
+
+    <delete id="remove" parameterType="BaseParam">
+        DELETE FROM sl_ep_brand_honor WHERE
+        EP_ID = #{filterMap.epId}
+        <if test="filterMap.brandId != null and filterMap.brandId != ''">
+            AND BRAND_ID=#{filterMap.brandId}
+        </if>
+        <if test="filterMap.honorId != null and filterMap.honorId != ''">
+            AND HONOR_ID=#{filterMap.honorId}
+        </if>
+
+    </delete>
+
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpBrandHonor">
+        SELECT
+        EP_ID AS epId,
+        BRAND_ID AS brandId,
+        HONOR_ID AS honorId,
+        HONOR_DES AS honorDes,
+        HONOR_NO AS honorNo,
+        CERT_DATE AS certDate,
+        CERT_ISSUER AS certIssuer,
+        VER AS ver
+        FROM
+        sl_ep_brand_honor
+        WHERE
+        EP_ID = #{filterMap.epId}
+		AND  DEL_FLG = 0
+        <if test="filterMap.brandId != null and filterMap.brandId != ''">
+            AND BRAND_ID=#{filterMap.brandId}
+        </if>
+        <if test="filterMap.honorId != null and filterMap.honorId != ''">
+            AND HONOR_ID=#{filterMap.honorId}
+        </if>
+    </select>
+
+</mapper>

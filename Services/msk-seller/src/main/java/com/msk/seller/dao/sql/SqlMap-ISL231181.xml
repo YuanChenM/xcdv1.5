@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231181Logic">
+
+    <!--查询生产商-->
+    <select id="querySlEpAgentAuth" resultType="com.msk.core.entity.SlEpAgentAuth" parameterType="BaseParam">
+      select
+      SL_CODE AS slCode,
+      PRODUCER_EP_ID AS producerEpId,
+      CONTRACT_NO AS contractNo,
+      AUTH_EP_NAME AS authEpName,
+      AUTH_TERM_BEGIN AS authTermBegin,
+      AUTH_TERM_END AS authTermEnd,
+      AUTH_TERM_UNLIIMITED AS authTermUnliimited
+      from sl_ep_agent_auth
+      where SL_CODE=#{filterMap.slCode}
+      AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+    <!--查询企业管理团队-->
+    <select id="querySlEpManager" resultType="com.msk.core.entity.SlEpManager" parameterType="BaseParam">
+        select
+        EP_ID AS epId,
+        MEMBER_ID AS memberId,
+        MEMBER_DUTIES AS memberDuties,
+        MEMBER_NAME AS memberName,
+        MEMBER_AGE AS memberAge,
+        MEMBER_EDUC AS memberEduc,
+        MEMBER_TEL AS memberTel
+        from sl_ep_manager
+        where EP_ID=#{filterMap.epId}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+    <!--查询卖家产品分类-->
+    <select id="querySlPdClasses" resultType="com.msk.core.entity.SlPdClasses" parameterType="BaseParam">
+        select
+        IFNULL(PD_CLASSES_CODE,'') AS pdClassesCode,
+        IFNULL(MACHINING_CODE,'') AS machiningCode
+        from sl_pd_classes
+        where SL_CODE=#{filterMap.slCode}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <!--查询企业产品品牌荣誉-->
+    <select id="queryslEpBrandHonor" resultType="com.msk.core.entity.SlEpBrandHonor" parameterType="BaseParam">
+        select
+        IFNULL(EP_ID,'') AS epId,
+        IFNULL(BRAND_ID,'') AS brandId,
+        IFNULL(HONOR_ID,'') AS honorId,
+        IFNULL(HONOR_DES,'') AS honorDes,
+        IFNULL(HONOR_NO,'') AS honorNo,
+        CERT_DATE AS certDate,
+        IFNULL(CERT_ISSUER,'') AS certIssuer
+        from sl_ep_brand_honor
+        <where>
+            <if test="filterMap.epId!=null and filterMap.epId!=''">
+                AND EP_ID=#{filterMap.epId}
+            </if>
+            <if test="filterMap.brandId!=null and filterMap.brandId!=''">
+                AND BRAND_ID=#{filterMap.brandId}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND DEL_FLG=#{filterMap.delFlg}
+            </if>
+        </where>
+    </select>
+
+    <!--查询企业产品品牌-->
+    <select id="queryslEpBrand" resultType="com.msk.seller.bean.SL2411030033Bean" parameterType="BaseParam">
+        select
+        IFNULL(EP_ID,'') AS epId,
+        IFNULL(BRAND_ID,'') AS brandId,
+        IFNULL(BRAND_NAME,'') AS brandName,
+        IFNULL(BRAND_CLASS,'') AS brandClass,
+        IFNULL(BRAND_NO,'') AS brandNo,
+        BRAND_TERM_BEGIN AS brandTermBegin,
+        BRAND_TERM_END AS brandTermEnd
+        from sl_ep_brand
+        where EP_ID=#{filterMap.epId}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <!--查询卖家产品品牌-->
+    <select id="querySlPdBrand" resultType="com.msk.core.entity.SlPdBrand" parameterType="BaseParam">
+        select
+        IFNULL(SL_CODE,'') AS slCode,
+        IFNULL(BRAND_EP_ID,'') AS brandEpId,
+        IFNULL(BRAND_ID,'') AS brandId,
+        IFNULL(BRAND_NAME,'') AS brandName,
+        IFNULL(BRAND_TYPE,'') AS brandType,
+        IFNULL(BRAND_CLASS,'') AS brandClass,
+        IFNULL(CONTRACT_NO,'') AS contractNo,
+        TERM_BEGIN AS termBegin,
+        TERM_END AS termEnd
+        from sl_pd_brand
+        where SL_CODE=#{filterMap.slCode}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <!--查询卖家电商团队-->
+    <select id="querySlEcTeam" resultType="com.msk.core.entity.SlEcTeam" parameterType="BaseParam">
+        select
+        IFNULL(SL_CODE,'') AS slCode,
+        IFNULL(MEMBER_ID,'') AS memberId,
+        IFNULL(LEADER_FLG,'') AS leaderFlg,
+        IFNULL(MEMBER_NAME,'') AS memberName,
+        IFNULL(MEMBER_AGE,'') AS memberAge,
+        BIRTHDAY AS birthday,
+        IFNULL(MEMBER_EDUC,'') AS memberEduc,
+        IFNULL(MEMBER_TEL,'') AS memberTel
+        from sl_ec_team
+        where SL_CODE=#{filterMap.slCode}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <!--查询企业专业资质-->
+    <select id="querySlEpCert" resultType="com.msk.seller.bean.SlEpCertParam" parameterType="BaseParam">
+        select
+        IFNULL(EP_ID,'') AS epId,
+        IFNULL(CERT_ID,'') AS certId,
+        IFNULL(CERT_NAME,'') AS certName
+        from sl_ep_cert
+         where EP_ID=#{filterMap.epId}
+         AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <!--查询企业专业资质-->
+    <select id="querySlEpCertItem" resultType="com.msk.core.entity.SlEpCertItem" parameterType="BaseParam">
+        select
+        IFNULL(CERT_ID,'') AS certId,
+        IFNULL(CERT_ITEM_ID,'') AS certItemId,
+        IFNULL(CERT_ITEM_NAME,'') AS certItemName,
+        IFNULL(CERT_ITEM_VALUE,'') AS certItemValue
+        from sl_ep_cert_item
+        where EP_ID=#{filterMap.epId}
+        and CERT_ID=#{filterMap.certId}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <!--查询大区名称
+    <select id="queryRegion" resultType="com.msk.seller.bean.ISL231181RegionParam" parameterType="BaseParam">
+        SELECT
+        A.AREA_NAME AS areaName,
+        D.PROVINCE_NAME AS provinceName,
+        B.CITY_NAME AS cityName,
+        C.DISTRICT_NAME AS districtName
+        FROM
+        (md_area AS A ,
+        md_city AS B)
+        INNER JOIN md_district AS C ON C.CITY_ID = B.CITY_ID
+        INNER JOIN md_province AS D ON D.AREA_ID = A.AREA_ID AND B.PROVINCE_ID = D.PROVINCE_ID
+        <where>
+            <if test="filterMap.areaCode!=null and filterMap.areaCode!=''">
+                and A.AREA_CODE =#{filterMap.areaCode}
+            </if>
+            <if test="filterMap.provinceCode!=null and filterMap.provinceCode!=''">
+                and D.PROVINCE_CODE =#{filterMap.provinceCode}
+            </if>
+            <if test="filterMap.cityCode!=null and filterMap.cityCode!=''">
+                and B.CITY_CODE =#{filterMap.cityCode}
+            </if>
+            <if test="filterMap.districtCode!=null and filterMap.districtCode!=''">
+                and C.DISTRICT_CODE =#{filterMap.districtCode}
+            </if>
+        </where>
+    </select>-->
+
+    <!--查询物流区名称
+    <select id="queryMdLogisticsArea" resultType="com.msk.core.entity.MdLogisticsArea" parameterType="BaseParam">
+        select
+        IFNULL(LGCS_AREA_NAME,'') AS lgcsAreaName
+        from md_logistics_area
+        where LGCS_AREA_CODE=#{filterMap.lgcsAreaCode}
+        and AREA_ID=#{filterMap.areaId}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>-->
+</mapper>

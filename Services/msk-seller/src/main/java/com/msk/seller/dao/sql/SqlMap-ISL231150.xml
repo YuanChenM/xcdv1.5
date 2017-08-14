@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231150RsLogic">
+    <insert id="save" parameterType="com.msk.seller.bean.ISlPdBrand">
+			INSERT INTO sl_pd_brand (
+			SL_CODE,
+			BRAND_EP_ID,
+			BRAND_ID,
+			BRAND_NAME,
+			BRAND_TYPE,
+			BRAND_CLASS,
+			CONTRACT_NO,
+			TERM_BEGIN,
+			TERM_END,
+            DEL_FLG,
+			CRT_ID,
+			CRT_TIME,
+			UPD_ID,
+			UPD_TIME,
+			ACT_ID,
+			ACT_TIME,
+			VER
+		)
+		VALUES
+			(
+				#{slCode},
+				#{brandEpId},
+				#{brandId},
+				#{brandName},
+               			#{brandType},
+				#{brandClass},
+              			#{contractNo},
+				#{termBegin},
+				#{termEnd},
+                		0,
+				#{crtId},
+				#{crtTime},
+				#{crtId},
+				#{crtTime},
+				#{crtId},
+				#{crtTime},
+				1
+			)
+    </insert>
+
+
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpBrand">
+		SELECT
+			EP_ID AS epId
+		FROM
+			sl_ep_brand
+		WHERE
+			EP_ID = #{filterMap.brandEpId}
+		AND BRAND_ID = #{filterMap.brandId}
+		AND DEL_FLG = 0
+	</select>
+
+    <update id="modify" parameterType="com.msk.seller.bean.ISlPdBrand">
+        UPDATE sl_pd_brand
+        SET SL_CODE = #{slCode},
+        BRAND_EP_ID = #{brandEpId},
+        BRAND_ID = #{brandId},
+        BRAND_NAME = #{brandName},
+        BRAND_TYPE = #{brandType},
+        CONTRACT_NO = #{contractNo},
+        TERM_BEGIN = #{termBegin},
+        TERM_END = #{termEnd},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER+1
+        WHERE
+        SL_CODE = #{slCode}
+        AND BRAND_EP_ID=#{brandEpId}
+        AND BRAND_ID = #{brandId}
+    </update>
+
+    <delete id="remove" parameterType="com.msk.seller.bean.ISlPdBrand">
+        DELETE FROM sl_pd_brand WHERE
+        SL_CODE=#{slCode}
+        <if test="brandEpId != null and brandEpId != ''">
+            AND BRAND_EP_ID=#{brandEpId}
+        </if>
+        <if test="brandId != null and brandId != ''">
+            AND BRAND_ID=#{brandId}
+        </if>
+
+    </delete>
+
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.seller.bean.ISlPdBrand">
+        SELECT
+        SL_CODE AS slCode,
+        BRAND_EP_ID AS brandEpId,
+        BRAND_ID AS brandId,
+        BRAND_NAME AS brandName,
+        BRAND_TYPE AS brandType,
+        CONTRACT_NO AS contractNo,
+        TERM_BEGIN AS termBegin,
+        TERM_END AS termEnd,
+        VER AS ver
+        FROM
+        sl_pd_brand
+        WHERE
+        SL_CODE = #{filterMap.slCode}
+        AND DEL_FLG = 0
+        <if test="filterMap.brandEpId != null and filterMap.brandEpId != ''">
+            AND BRAND_EP_ID = #{filterMap.brandEpId}
+        </if>
+        <if test="filterMap.brandId != null and filterMap.brandId != ''">
+            AND BRAND_ID = #{filterMap.brandId}
+        </if>
+    </select>
+
+
+</mapper>

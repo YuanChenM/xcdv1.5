@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="./resources/js/BY121202.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>登录</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div style="width: 80%;margin-left:30px;" class="divCommon1">使用账户与密码登录</div>
+            <div style="width:100%;">
+                <div style="width: 70%;margin-left:50px;" class="divCommon2">账号</div>
+                <div style="width: 70%;margin-left:50px;">
+                    <input name="accountName" id="accountName" value="" placeholder="请输入通路人员的账号" data-theme="a" type="text">
+                </div>
+                <div style="width: 70%;margin-left:50px;" class="divCommon2">密码</div>
+                <div style="width: 70%;margin-left:50px;">
+                    <input type="password" name="password" id="password" value="" placeholder="请输入对应账号的密码" data-theme="a">
+                </div>
+            </div>
+            <br/>
+            <div id="message" style="width: 66%;margin-left:50px;display: none;height:30px;padding-left:10px;line-height:35px;font-size:17px;">
+            </div>
+            <br/>
+            <br/>
+                <div id="startDiv" style="margin-left:50px;width:100px;" class="buttonDiv" onclick="loginButtonClick();" onmouseover="javascript:this.style.backgroundColor='#4169E1'">登录</div>
+            <center>
+            <table style="color: #B7DD94;background: #D9DFE7;">
+                <tr><th></th></tr>
+                <tr><th style="padding: 10px;"><Img src='./resources/img/message.png'></th><th style="text-align:left;">&nbsp;&nbsp;您可以通过服务电话获得帮助，<br>&nbsp;&nbsp;或使用账户和密码登录。</th></tr>
+                <br>
+                <tr><th></th><th style="font-size: 30px;text-align:left;">&nbsp;&nbsp;021-86868686</th></th></tr>
+                <tr><th></th></tr>
+            </table>
+            </center>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD142104Logic">
+    <!--二级联动查询-->
+
+    <sql id="selectSql">
+        B.LEVEL_CODE AS 一级分类,
+        B.LEVEL_NAME AS 一级分类,
+        A.LEVEL_CODE AS 二级分类,
+        A.LEVEL_NAME AS machiningName,
+        C.LEVEL_CODE AS 品种分类,
+        C.LEVEL_NAME AS breedName,
+        A1.SALES_NAME AS 销售名,
+        A1.SCIENTIFIC_NAME AS scientificName,
+        A1.LOCAL_NAME AS localName,
+        D.LEVEL_CODE AS 产品特征,
+        D.LEVEL_NAME AS featureName,
+        'A2' AS gradeName,
+        CONCAT(D.CLASSESTREE_CODE, 2) AS attributeCode,
+        E.LEVEL_CODE AS 单箱净重,
+        E.LEVEL_NAME AS weightName,
+        F.LEVEL_CODE AS 包装规格,
+        F.LEVEL_NAME AS normsOut,
+        E.CLASSESTREE_CODE,
+        PD.SL_PD_ID AS 产品id,
+        PKG.SL_PD_PKG_ID AS 包装id,
+        LOT.LOT_ID AS 批次id,
+        (CASE SL.SL_MAIN_CLASS
+		WHEN 0 THEN '生产型'
+		WHEN 1 THEN '自产型'
+		WHEN 2 THEN '代理型'
+		WHEN 3 THEN 'OEM型'
+		ELSE '' END)AS slMainClassName,
+		IFNULL(SL.SL_MAIN_CLASS,'')AS slMainClass,
+        IFNULL(ET.LIC_ADDR,'') AS slLicAddr,
+        IFNULL(ET.EP_NAME,'') AS slName,
+        IFNULL(ET2.LIC_ADDR,'') AS sllfAddr,
+        IFNULL(ET2.EP_NAME,'') AS sllfName,
+        (CASE BD.BRAND_CLASS
+		WHEN 0 THEN '卖家独立品牌'
+		WHEN 1 THEN '神农先生联合品牌'
+		WHEN 2 THEN '神农客联合品牌'
+		WHEN 3 THEN '神农人家联合品牌'
+		ELSE '' END)AS brandClassName,
+		IFNULL(BD.BRAND_CLASS,'')AS brandClass,
+        IFNULL(BD.BRAND_NAME,'') AS brandName,
+        IFNULL(BD.BRAND_ID,'') AS brandId,
+        IFNULL(SUBSTRING(LOT.DATE_CODE,1,2),'') AS lotYear,
+        IFNULL(SUBSTRING(LOT.DATE_CODE,3,2),'') AS lotMonth,
+        IFNULL(SUBSTRING(LOT.DATE_CODE,5),'') AS lotDate,
+        IFNULL(SL.SL_CODE_DIS,'')AS slCodeDis,
+	    IFNULL(LOT.DATE_CODE,'') AS lotCode,
+	    IFNULL(E.LEVEL_CODE,'')AS weightCode,
+	    IFNULL(F.LEVEL_CODE,'')AS normsCode,
+	    IFNULL(SL1.SL_CODE_MANUFACTURE,'')AS slCodeManufacture
+-- 	    IFNULL(CONCAT(CONCAT(D.CLASSESTREE_CODE, 2),E.LEVEL_CODE,F.LEVEL_CODE,LEFT(SL.SL_CODE_DIS,1),BD.BRAND_CLASS,RIGHT(SL.SL_CODE_DIS,6),RIGHT(SL.SL_CODE_DIS,6),BD.BRAND_ID,LOT.DATE_CODE),'') AS lotCode
+    </sql>
+    <sql id="fromSql">
+        FROM
+          pd_classestree AS A
+            INNER JOIN (
+                SELECT
+                CLASSESTREE_CODE,
+                PARENT_CODE,
+                LEVEL_NAME,
+                LEVEL_CODE
+                FROM
+                PD_CLASSESTREE
+                WHERE
+                CLASSESTREE_CODE = #{filterMap.classesCode}
+            ) AS B ON B.CLASSESTREE_CODE = A.PARENT_CODE
+            INNER JOIN pd_classestree C ON C.PARENT_CODE = A.CLASSESTREE_CODE
+            INNER JOIN pd_classestree D ON D.PARENT_CODE = C.CLASSESTREE_CODE
+            INNER JOIN pd_classestree E ON E.PARENT_CODE = D.CLASSESTREE_CODE
+            INNER JOIN pd_classestree F ON F.PARENT_CODE = E.CLASSESTREE_CODE
+            INNER JOIN pd_classestree_mat A1 ON C.CLASSESTREE_CODE = A1.CLASSESTREE_CODE
+            LEFT JOIN sl_product PD ON PD.PD_CLASSES_CODE = B.LEVEL_CODE
+                AND PD.MACHINING_CODE = A.LEVEL_CODE
+                AND PD.PD_BREED_CODE = C.LEVEL_CODE
+                AND PD.PD_FEATURE_CODE = D.LEVEL_CODE
+                AND PD.WEIGHT_CODE = E.LEVEL_CODE
+            LEFT JOIN SL_SELLER SL1 ON SL1.EP_ID=PD.PROD_EP_ID
+            LEFT JOIN sl_pd_pkg PKG ON PKG.SL_PD_ID = PD.SL_PD_ID AND PKG.PKG_CODE=F.LEVEL_CODE
+            LEFT JOIN sl_seller SL ON PD.SL_CODE=SL.SL_CODE
+            LEFT JOIN sl_enterprise ET ON ET.EP_ID=SL.EP_ID
+            LEFT JOIN sl_enterprise ET2 ON ET2.EP_ID=PD.PROD_EP_ID
+            LEFT JOIN sl_ep_brand BD ON BD.EP_ID=PD.BRAND_EP_ID AND BD.BRAND_ID=PD.BRAND_ID
+            LEFT JOIN ds_sl_pd_lot LOT ON LOT.SL_CODE = PD.SL_CODE
+                AND LOT.PD_CODE = CONCAT(B.LEVEL_CODE,A.LEVEL_CODE,C.LEVEL_CODE,D.LEVEL_CODE,E.LEVEL_CODE,2)
+                AND LOT.SL_CODE_MANUFACTURE in
+                (
+                    SELECT SL_CODE_MANUFACTURE FROM sl_seller WHERE EP_ID=PD.PROD_EP_ID
+                )
+    </sql>
+    <sql id="whereSql">
+        <where>
+            <if test="filterMap.machiningName != null and filterMap.machiningName != ''">
+                AND (A.LEVEL_NAME LIKE #{filterMap.machiningName} OR
+                A.LEVEL_CODE LIKE #{filterMap.machiningName})
+            </if>
+            <if test="filterMap.scientificName!=null and filterMap.scientificName!=''">
+                AND A1.SCIENTIFIC_NAME LIKE #{filterMap.scientificName}
+            </if>
+            <if test="filterMap.gradeName!=null and filterMap.gradeName!=''">
+            </if>
+            <if test="filterMap.slMainClass!=null and filterMap.slMainClass!=''">
+                AND SL.SL_MAIN_CLASS = #{filterMap.slMainClass}
+            </if>
+            <if test="filterMap.slLicAddr!=null and filterMap.slLicAddr!=''">
+                AND ET.LIC_ADDR LIKE #{filterMap.slLicAddr}
+            </if>
+            <if test="filterMap.slName!=null and filterMap.slName!=''">
+                AND ET.EP_NAME LIKE #{filterMap.slName}
+            </if>
+            <if test="filterMap.sllfAddr!=null and filterMap.sllfAddr!=''">
+                AND ET2.LIC_ADDR LIKE #{filterMap.sllfAddr}
+            </if>
+            <if test="filterMap.sllfName!=null and filterMap.sllfName!=''">
+                AND ET2.EP_NAME LIKE #{filterMap.sllfName}
+            </if>
+            <if test="filterMap.brandClass!=null and filterMap.brandClass!=''">
+                AND BD.BRAND_CLASS = #{filterMap.brandClass}
+            </if>
+            <if test="filterMap.brandName!=null and filterMap.brandName!=''">
+                AND BD.BRAND_NAME LIKE #{filterMap.brandName}
+            </if>
+            <if test="filterMap.lotYear!=null and filterMap.lotYear!=''">
+                AND SUBSTRING(LOT.DATE_CODE,1,2) = #{filterMap.lotYear}
+            </if>
+            <if test="filterMap.lotMonth!=null and filterMap.lotMonth!=''">
+                AND SUBSTRING(LOT.DATE_CODE,3,2) = #{filterMap.lotMonth}
+            </if>
+            <if test="filterMap.lotDate!=null and filterMap.lotDate!=''">
+                AND SUBSTRING(LOT.DATE_CODE,5) = #{filterMap.lotDate}
+            </if>
+        </where>
+    </sql>
+
+    <!--分页查询-->
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.product.bean.PD142104Bean">
+        SELECT
+        <include refid="selectSql"/>
+        <include refid="fromSql"/>
+        <include refid="whereSql"/>
+        ORDER BY
+            B.CLASSESTREE_CODE,
+            C.CLASSESTREE_CODE,
+            D.CLASSESTREE_CODE,
+            E.CLASSESTREE_CODE,
+            F.CLASSESTREE_CODE,
+            SL.SL_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" parameterType="BaseParam" resultType="Integer">
+        SELECT
+        COUNT(*)
+        <include refid="fromSql"/>
+        <include refid="whereSql"/>
+    </select>
+</mapper>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="./resources/js/BY121213.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>选择产品分类</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div style="width: 80%;margin-left:20px;" class="divCommon1">选择产品分类</div>
+            <div style="width: 80%;margin-left:30px;" class="divCommon1">选择产品分类</div>
+            <div style="width: 80%;margin-left:30px;" class="divCommon2">请选择一种标准产品类别以及一种加工类型</div>
+            <div style="width:100%;margin-top:10px;">
+                <div style="width: 70%;margin-left:50px;" class="divCommon2">产品类别(一级分类)</div>
+                <div style="width: 70%;margin-left:50px;">
+                    <select id="pdClasses"></select>
+                </div>
+                <div style="width: 70%;margin-left:50px;" class="divCommon2">加工类型(二级分类)</div>
+                <div style="width: 70%;margin-left:50px;">
+                    <select id="pdMachining"></select>
+                </div>
+                <div style="width: 80%;margin-left:30px;margin-top:10px;height:90px;background-color: #F5F7F9" class="ui-grid-a">
+                    <div class="ui-block-a" style="width: 30%;height:100%;margin-left:10px;margin-top: 10px;"><img src="./resources/img/message.png" /></div>
+                    <div class="ui-block-b" style="color:#A1D46A;width: 66%;font-size: 17px;margin-top: 10px;height:25px;line-height: 30px;">当前产品分类与加工类型中：</div>
+                    <div id="totalBreed" style="color:#FFCE56;width: 100%;font-size: 25px;">共有0种品种</div>
+                </div>
+            </div>
+
+            <div onclick="breedSelect()" style="width: 100px;margin-left:30px;" class="buttonDiv" onmouseover="javascript:this.style.backgroundColor='#4169E1'">下一步</div>
+        </div>
+	</body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121309Logic">
+
+
+    <select id="findList" resultType="com.msk.br.bean.IBR121309Bean" parameterType="BaseParam">
+        SELECT
+          /** Modif for 改善 #3535 at 2016/11/01 by yuan_zhifei Start*/
+          IFNULL(p.MACHINING_NAME_U,'') AS buyerPoolName,
+          /** Modif for 改善 #3535 at 2016/11/01 by yuan_zhifei End*/
+          r.JOIN_TIME AS endTime
+        FROM
+          BR_BUYER_POOL_RELATIONSHIP r,
+          BR_BUYER_POOL p
+        WHERE r.BUYER_POOL_ID = p.BUYER_POOL_ID
+          AND r.buyer_id = #{filterMap.buyerId}
+          AND r.DEL_FLG = p.DEL_FLG
+          AND r.DEL_FLG = 0
+    </select>
+
+</mapper>

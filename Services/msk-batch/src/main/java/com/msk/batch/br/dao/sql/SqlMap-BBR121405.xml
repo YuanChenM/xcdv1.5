@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.br.logic.BBR121405Logic">
+    <select id="countBuyerPoolRelationShip" resultType="int" parameterType="com.msk.br.bean.IBR121413RsBean">
+        SELECT
+            COUNT(*)
+        FROM
+            br_buyer_pool byPool
+        INNER JOIN br_buyer_pool_relationship byPoolRelationship ON byPool.BUYER_POOL_ID = byPoolRelationship.BUYER_POOL_ID
+        AND byPool.DEL_FLG = 0
+        AND byPoolRelationship.DEL_FLG = 0
+        WHERE
+          byPool.LGCS_AREA_CODE = #{lgcsAreaCode} AND
+          byPool.CITY_CODE = #{cityCode} AND
+          byPool.CLASSES_CODE = #{classesCode} AND
+          byPool.MACHINING_CODE_U = #{machiningCodeU} AND
+          byPoolRelationship.BUYER_ID = #{buyerId}
+    </select>
+    <select id="findBuyerPoolId" resultType="com.msk.br.bean.IBR121413RsBean" parameterType="com.msk.br.bean.IBR121413RsBean">
+        SELECT
+           BUYER_POOL_ID AS buyerPoolId
+        FROM
+           br_buyer_pool
+        WHERE
+           CLASSES_CODE = #{classesCode}
+           AND MACHINING_CODE_U = #{machiningCodeU}
+           AND LGCS_AREA_CODE = #{lgcsAreaCode}
+           AND CITY_CODE = #{cityCode}
+           AND BUYER_TYPE = '01'
+           AND DEL_FLG = 0
+    </select>
+    <insert id="saveBuyerPoolRelationShip" parameterType="com.msk.br.bean.IBR121413RsBean">
+        INSERT INTO br_buyer_pool_relationship (
+            ID,
+            BUYER_ID,
+            BUYER_POOL_ID,
+            POOL_BUYER_CODE,
+            BUYER_POOL_TYPE,
+            IS_DISTRIBUTION,
+            JOIN_TIME,
+            LEAVE_TIME,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )VALUES (
+            #{id},
+            #{buyerId},
+            #{buyerPoolId},
+            #{poolBuyerCode},
+            '0',
+            '0',
+            #{joinTime},
+            null,
+            '0',
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+        )
+    </insert>
+
+
+    <update id="modifyBuyerPrship" parameterType="com.msk.br.bean.IBR121413RsBean">
+        UPDATE
+        br_buyer_pool_relationship
+        SET
+        POOL_BUYER_CODE = #{poolBuyerCode}
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        WHERE
+        BUYER_ID = #{buyerId}
+        AND BUYER_POOL_ID=#{buyerPoolId}
+        AND DEL_FLG = 0
+    </update>
+</mapper>

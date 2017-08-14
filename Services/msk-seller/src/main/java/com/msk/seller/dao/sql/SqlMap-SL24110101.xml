@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24110101Logic">
+    
+    <!-- 替代旧modifyOne。Created by xia_xiaojie on 2016/6/16. -->
+    <update id="modifyOne" parameterType="com.msk.core.entity.SlAccount">
+        UPDATE
+		    SL_ACCOUNT AS A
+		SET
+		    A.SL_TEL = #{slTel},
+		    A.SL_CONTACT = #{slContact},
+		    A.ACCOUNT_PSD = #{accountPsd},
+            A.ACCOUNT_IMG = #{accountImg},
+		    A.UPD_ID = #{updId},
+		    A.UPD_TIME = #{updTime},
+		    A.VER = A.VER + 1
+		WHERE
+		    A.SL_ACCOUNT = #{slAccount}
+    </update>
+</mapper>

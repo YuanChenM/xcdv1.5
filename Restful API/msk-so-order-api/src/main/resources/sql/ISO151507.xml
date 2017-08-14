@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151507.findReturnDetailList">
+        SELECT
+          A.RETURN_ID AS returnId,
+          B.RETURN_CODE AS returnCode,
+          A.DETAIL_ID AS returnDetailId,
+          A.PD_CODE AS pdCode,
+          A.PD_NAME AS pdName,
+          A.BREED_NAME AS breedName,
+          A.FEATURE_NAME AS featureName,
+          A.PACKING_VOLUME AS packingVolume,
+          A.RETURN_QTY AS returnQty,
+          A.WEIGHT AS weight,
+          A.VOLUME AS volume,
+          D.PD_PRICE AS pdPrice
+          FROM
+          so_return_detail A
+          LEFT JOIN so_return B ON A.RETURN_ID = B.RETURN_ID
+          LEFT JOIN so_order_ship_detail C ON A.SHIP_DETAIL_ID=C.SHIP_DETAIL_ID
+          LEFT JOIN so_order_detail D ON C.ORDER_DETAIL_ID=D.ORDER_DETAIL_ID
+          WHERE A.RETURN_ID = ?0
+          AND A.DEL_FLG = 0
+          AND B.DEL_FLG = 0
+          AND C.DEL_FLG = 0
+          AND D.DEL_FLG = 0
+    </sql>
+    <sql id="ISO151507.findBaseReturnInfo">
+        SELECT
+         A.RETURN_CODE AS returnCode,
+         B.ORDER_CODE AS orderCode,
+         A.RETURN_SOURCE AS returnSource,
+         A.RETURN_MODE AS returnMode,
+         A.RETURN_MODE AS refundMode,
+         A.RETURN_AMOUNT AS returnAmount,
+         A.IS_INVOICE AS isInvoice,
+         A.IS_PAID AS isPaid,
+         A.RETURN_ACTOR AS returnActor,
+         A.RETURN_STATUS AS returnStatus,
+         DATE_FORMAT(A.APPLY_TIME,'%Y-%m-%d %T') AS returnTime,
+         A.RETURN_REASON AS returnReasonCode,
+         C.REASON_NAME AS returnReasonDesc,
+         A.APPLY_REMARK AS applyRemark
+         FROM
+         so_return AS A
+         INNER JOIN SO_ORDER AS B ON (A.ORDER_ID = B.ORDER_ID)
+         LEFT JOIN so_return_reason C ON A.RETURN_REASON = C.REASON_ID
+         WHERE A.RETURN_ID = ?0
+         AND A.DEL_FLG = 0
+         AND B.DEL_FLG = 0
+         AND C.DEL_FLG = 0
+    </sql>
+
+</sqlList>

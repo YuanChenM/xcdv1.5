@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24110300402Logic">
+    <insert id="saveSlEpCap" parameterType="com.msk.core.entity.SlEpCap">
+        INSERT INTO SL_EP_CAP
+        (EP_ID,
+        FTY_ASSET,
+        FTY_REG_CAPITAL,
+        FTY_LAND_AREA,
+        FTY_FLOOR_AREA,
+        FTY_EQUIPMENT,
+        FTY_DESIGN_CAP,
+        FTY_ACTUAL_CAP,
+        FTY_FT_RATE,
+        FTY_DS_RATE,
+        FTY_AS_RATE,
+        DEL_FLG,
+        SCAP_MATERIAL,
+        SCAP_PRODUCT,
+        LAB_AREA,
+        LAB_FUNCTION,
+        LAB_INVESTMENT,
+        LAB_MEMBER,
+        DD_EQUIPMENT,
+        CRT_ID,
+        CRT_TIME,
+
+        <!-- Modified by xia_xiaojie on 2016/6/22. Modified start. -->
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        <!-- Modified end. -->
+
+        VER
+        )
+        VALUES
+         (
+         #{epId},
+         #{ftyAsset},
+         #{ftyRegCapital},
+         #{ftyLandArea},
+         #{ftyFloorArea},
+         #{ftyEquipment},
+         #{ftyDesignCap},
+         #{ftyActualCap},
+         #{ftyFtRate},
+         #{ftyDsRate},
+         #{ftyAsRate},
+         0,
+         #{scapMaterial},
+         #{scapProduct},
+         #{labArea},
+         #{labFunction},
+         #{labInvestment},
+         #{labMember},
+         #{ddEquipment},
+         #{crtId},
+         #{crtTime},
+         #{crtId},
+         #{crtTime},
+         #{crtId},
+         #{crtTime},
+         1
+         )
+    </insert>
+    <select id="selectSlEpCapData" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpCap">
+        select
+        EP_ID AS epId
+        from SL_EP_CAP
+        where EP_ID=#{filterMap.epId}
+    </select>
+    <update id="updateSlEpCap" parameterType="com.msk.core.entity.SlEpCap">
+        UPDATE SL_EP_CAP SET
+        FTY_ASSET=#{ftyAsset},
+        FTY_LAND_AREA=#{ftyLandArea},
+        FTY_FLOOR_AREA=#{ftyFloorArea},
+        FTY_EQUIPMENT=#{ftyEquipment},
+        FTY_DESIGN_CAP=#{ftyDesignCap},
+        FTY_ACTUAL_CAP=#{ftyActualCap},
+        FTY_FT_RATE=#{ftyFtRate},
+        FTY_DS_RATE=#{ftyDsRate},
+        FTY_AS_RATE=#{ftyAsRate},
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime},
+        VER = VER + 1
+        WHERE
+        EP_ID=#{epId}
+    </update>
+</mapper>

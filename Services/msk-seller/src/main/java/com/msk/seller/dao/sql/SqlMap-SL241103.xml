@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241103Logic">
+    <select id="querySlEpDd" resultType="com.msk.seller.bean.SlEpDdBean" parameterType="BaseParam">
+        select
+        EP_ID AS epId,
+        DD_ID AS ddId,
+        DD_NAME AS ddName,
+        DD_EQUIPMENT AS ddEquipment
+        from sl_ep_dd
+        <where>
+            <if test="filterMap.epId!=null and filterMap.epId!=''">
+                AND EP_ID=#{filterMap.epId}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND DEL_FLG=#{filterMap.delFlg}
+            </if>
+        </where>
+    </select>
+</mapper>

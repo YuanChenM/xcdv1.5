@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141107Logic">
+	<!-- 表字段 -->
+	<select id="countTechnicalStd" resultType="Integer"
+		parameterType="com.msk.product.bean.PD141107Param">
+		select count(1)
+		from pd_technical_standard
+		where PD_TNC_STD_ID = #{filterMap.pdTncStdId}
+	</select>
+
+	<select id="getTechnicalStd" resultType="com.msk.core.entity.PdTncStd">
+		select
+			ts1.STANDARD_ID AS standardId,
+			ts1.TNC_STD_ITEM_ID AS tncStdItemId,
+			ts1.TNC_STD_VAL1 AS tncStdVal1,
+			ts1.TNC_STD_VAL2 AS tncStdVal2,
+			ts1.TNC_STD_VAL3 AS tncStdVal3,
+			ts1.REMARK AS remark,
+			ts2.CONTENT AS content2,
+			ts2.EFT_DATE AS eftDate2,
+			ts3.CONTENT AS content3,
+			ts3.EFT_DATE AS eftDate3
+		from pd_technical_standard ts1
+		left join pd_technical_standard ts2 on ts1.PD_TNC_STD_ID = ts2.PD_TNC_STD_ID and ts2.GRADE_CODE = '2'
+		left join pd_technical_standard ts3 on ts1.PD_TNC_STD_ID = ts3.PD_TNC_STD_ID and ts3.GRADE_CODE = '3'
+		where ts1.GRADE_CODE = '1'
+	</select>
+	<sql id="PdTncStdSql">
+		A.STANDARD_ID AS standardId,
+		A.TNC_STD_ITEM_ID AS tncStdItemId,
+		A.TNC_STD_VAL1 AS tncStdVal1,
+		A.TNC_STD_VAL2 AS tncStdVal2,
+		A.TNC_STD_VAL3 AS tncStdVal3,
+		(CASE WHEN A.STANDARD_ID IS NOT NULL THEN '1' ELSE '0' END) AS isCheck,
+		A.REMARK AS remark
+	</sql>
+	<sql id="PdTncStdItemSql">
+		B.TNC_STD_ITEM_ID AS tncStdItemId,
+		B.TNC_STD_ITEM_NAME AS tncStdItemName,
+		B.LEVEL_ID AS levelId,
+		B.PARENT_ID AS parentId,
+		B.IS_CATALOG AS isCatalog
+	</sql>
+	<select id="getTncStdInfo" resultType="com.msk.product.bean.PD141107Bean">
+		SELECT
+		<include refid="PdTncStdItemSql" />
+		,
+		<include refid="PdTncStdSql" />
+		FROM PD_TNC_STD_ITEM B
+		LEFT JOIN PD_TNC_STD A ON A.TNC_STD_ITEM_ID=B.TNC_STD_ITEM_ID
+		AND A.STANDARD_ID=#{filterMap.standardId}
+		AND A.DEL_FLG='0'
+		WHERE LEVEL_ID=#{filterMap.levelId} AND PARENT_ID=#{filterMap.parentId}
+	</select>
+	<select id="countPdTncStd" resultType="Integer"
+		parameterType="com.hoperun.core.bean.BaseParam">
+		SELECT COUNT(1)
+		 FROM PD_TNC_STD A
+			WHERE A.STANDARD_ID=#{filterMap.standardId} AND A.TNC_STD_ITEM_ID=#{filterMap.tncStdItemId}
+	</select>
+
+
+	<insert id="insertTncStd" parameterType="com.msk.core.entity.PdTncStd">
+		insert into PD_TNC_STD(
+		STANDARD_ID,
+		TNC_STD_ITEM_ID,
+		TNC_STD_VAL1,
+		TNC_STD_VAL2,
+		TNC_STD_VAL3,
+		<!-- REMARK AS remark, -->
+		DEL_FLG,
+		<!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+		CRT_ID,
+		CRT_TIME
+		,UPD_ID,
+		UPD_TIME,
+		ACT_ID,
+		ACT_TIME,
+		VER
+		<!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+		)
+		VALUES(
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		#{standardId},#{tncStdItemId},#{tncStdVal1},#{tncStdVal2},#{tncStdVal3},'0',
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  Start -->
+		#{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+		#{actId},
+		#{actTime},
+		0
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  End -->
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		)
+	</insert>
+	<update id="updateTncStd" parameterType="com.msk.core.entity.PdTncStd">
+		update PD_TNC_STD
+		set
+		TNC_STD_VAL1=#{tncStdVal1},
+		TNC_STD_VAL2=#{tncStdVal2},
+		TNC_STD_VAL3=#{tncStdVal3},
+		DEL_FLG = #{delFlg},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		UPD_TIME=#{updTime}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		WHERE STANDARD_ID=#{standardId}
+		AND TNC_STD_ITEM_ID=#{tncStdItemId}
+	</update>
+	<update id="updateTncStdFlg" parameterType="com.msk.core.entity.PdTncStd">
+		update PD_TNC_STD
+		set DEL_FLG = #{delFlg}
+		<!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+		,UPD_ID = #{updId},
+		UPD_TIME =  #{updTime},
+		VER = VER + 1
+		<!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+		WHERE STANDARD_ID=#{standardId}
+		AND TNC_STD_ITEM_ID=#{tncStdItemId}
+	</update>
+	<update id="updateTncFlg" parameterType="com.msk.core.entity.PdStandard">
+        update PD_STANDARD
+        set TNC_FLG = #{tncFlg}
+		<!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+		,UPD_ID = #{updId},
+		UPD_TIME =  #{updTime},
+		VER = VER + 1
+		<!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+        WHERE STANDARD_ID=#{standardId}
+    </update>
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.ISO153201Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        BUYER_BILL_ID AS buyerBillId,
+        SUPPLY_PLATFORM AS supplyPlatform,
+        TRANS_FLG AS transFlg,
+        PAYMENT_TYPE AS paymentType,
+        TRAN_TIME AS tranTime,
+        BUSINESS_MAIN_CODE AS businessMainCode,
+        BUSINESS_MAIN_NAME AS businessMainName,
+        BUSINESS_MAIN_ROLE AS businessMainRole,
+        BUSINESS_ASSISTANT_CODE AS businessAssistantCode,
+        BUSINESS_ASSISTANT_NAME AS businessAssistantName,
+        BUSINESS_ASSISTANT_ROLE AS businessAssistantRole,
+        bb.TRANS_CODE AS transCode,
+        bb.TRANS_TYPE AS transType,
+        ORDER_AMOUNT AS orderAmount,
+        bb.DUE AS due,
+        RECEIVEABLE AS receiveable,
+        PAID AS paid,
+        REFUNDABLE AS refundable,
+        REFUND_FLG AS refundFlg,
+        SETTLEMENT_STATUS AS settlementStatus,
+        REAL_REFUND AS realRefund,
+        MATCH_VER_FLG AS matchVerFlg,
+        STATEMENT_FLG AS statementFlg,
+        bb.REMARK AS remark,
+        st.TRANS_ID AS transId
+    </sql>
+    <sql id="selectFrom">
+        FROM SO_CP_BUYER_BILL bb
+        LEFT JOIN SO_CP_TRANSACTION st ON bb.TRANS_CODE = st.TRANS_CODE
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="supplyPlatforms!=null">
+                AND SUPPLY_PLATFORM IN
+                <foreach collection="supplyPlatforms" item="supplyPlatform" open="(" separator="," close=")">
+                    #{supplyPlatform}
+                </foreach>
+            </if>
+            <if test="transFlgs!=null">
+                AND TRANS_FLG IN
+                <foreach collection="transFlgs" item="transFlg" open="(" separator="," close=")">
+                    #{transFlg}
+                </foreach>
+            </if>
+            <if test="paymentTypes!=null">
+                AND PAYMENT_TYPE IN
+                <foreach collection="paymentTypes" item="paymentType" open="(" separator="," close=")">
+                    #{paymentType}
+                </foreach>
+            </if>
+            <if test="startTime!=null and startTime!=''">
+                <![CDATA[ AND DATE_FORMAT(TRAN_TIME,'%Y-%m-%d') >= DATE_FORMAT(#{startTime},'%Y-%m-%d')]]>
+            </if>
+            <if test="endTime!=null and endTime!=''">
+                <![CDATA[ AND DATE_FORMAT(TRAN_TIME,'%Y-%m-%d') <= DATE_FORMAT(#{endTime},'%Y-%m-%d')]]>
+            </if>
+            <if test="businessAssistantCode!=null and businessAssistantCode!=''">
+                AND BUSINESS_ASSISTANT_CODE like concat('%',#{businessAssistantCode})
+            </if>
+            <if test="businessAssistantName!=null and businessAssistantName!=''">
+                AND BUSINESS_ASSISTANT_NAME like concat('%',#{businessAssistantName})
+            </if>
+            <if test="transCode!=null and transCode!=''">
+                AND bb.TRANS_CODE like concat('%',#{transCode})
+            </if>
+            <if test="transTypes!=null">
+                AND bb.TRANS_TYPE IN
+                <foreach collection="transTypes" item="transType" open="(" separator="," close=")">
+                    #{transType}
+                </foreach>
+            </if>
+            <if test="settlementStatuss!=null">
+                AND SETTLEMENT_STATUS IN
+                <foreach collection="settlementStatuss" item="settlementStatus" open="(" separator="," close=")">
+                    #{settlementStatus}
+                </foreach>
+            </if>
+            <if test="remark!=null and remark!=''">
+                AND bb.REMARK like concat('%',#{remark})
+            </if>
+            AND bb.DEL_FLG = 0
+            AND st.DEL_FLG = 0
+        </where>
+    </sql>
+
+    <select id="findPageList" resultType="com.msk.so.bean.SO153101Bean"
+            parameterType="com.msk.so.bean.ISO153201Param">
+        SELECT
+        <include refid="selectSql" />
+        <include refid="selectFrom" />
+        <include refid="whereCondition" />
+        ORDER  BY  bb.TRANS_CODE DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="com.msk.so.bean.ISO153201Param">
+        select count( BUYER_BILL_ID)
+        <include refid="selectFrom" />
+        <include refid="whereCondition"/>
+    </select>
+
+</mapper>

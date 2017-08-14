@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC1131502Logic">
+    <!-- ssc_delivery_confirm_pd_history表字段 -->
+    <sql id="productHistoryFields">
+        A.ID AS id,
+        A.CONFIRM_DETAIL_ID AS confirmDetailId,
+        A.PRODUCT_QUA AS productQua,
+        A.PRODUCT_CONFIRM_BOX AS productConfirmBox,
+        A.SETTKEMENT_STANDARD_PRICE AS settkementStandardPrice,
+        A.PRODUCT_VALUE AS productValue,
+        ifnull(A.CRT_NAME, '') AS crtName,
+        A.CRT_TIME AS crtTime
+    </sql>
+
+    <sql id="productDetailFields">
+        B.PD_DESC AS productName
+    </sql>
+
+    <!-- 查询条件 -->
+    <sql id="condition">
+        <if test="deliveryConfirmId != null">
+            AND CONFIRM_DETAIL_ID IN (
+                SELECT
+                    DETAIL_ID
+                FROM
+                    ssc_delivery_confirm_pr_detail
+                WHERE
+                    DEL_FLG = 0
+                AND DELIVERY_CONFIRM_ID = #{deliveryConfirmId}
+            )
+        </if>
+    </sql>
+
+    <select id="findPageList" parameterType="com.msk.ssc.bean.SSC1131502Param" resultType="com.msk.ssc.bean.SSC1131502Bean">
+        SELECT
+            <include refid="productHistoryFields" />,
+            <include refid="productDetailFields" />
+        FROM
+            ssc_delivery_confirm_pd_history AS A
+        LEFT JOIN ssc_delivery_confirm_pr_detail AS B ON A.CONFIRM_DETAIL_ID = B.DETAIL_ID
+        WHERE
+            A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+        <include refid="condition" />
+        ORDER BY B.PD_CODE, A.CRT_TIME
+        <if test="paging == true">
+            LIMIT #{startPos}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" parameterType="com.msk.ssc.bean.SSC11311Param" resultType="int">
+        SELECT
+            count(1)
+        FROM
+            ssc_delivery_confirm_pd_history AS A
+        LEFT JOIN ssc_delivery_confirm_pr_detail AS B ON A.CONFIRM_DETAIL_ID = B.DETAIL_ID
+        WHERE
+            A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+        <include refid="condition" />
+    </select>
+
+    <insert id="save" parameterType="com.msk.ssc.bean.SSC1131502Bean">
+        INSERT INTO ssc_delivery_confirm_pd_history
+            (ID, CONFIRM_DETAIL_ID, PRODUCT_QUA, PRODUCT_CONFIRM_BOX, SETTKEMENT_STANDARD_PRICE, PRODUCT_VALUE, CRT_NAME, DEL_FLG, CRT_ID, CRT_TIME, ACT_ID, ACT_TIME, VER)
+        VALUES
+            (#{id}, #{confirmDetailId}, #{productQua}, #{productConfirmBox}, #{settkementStandardPrice}, #{productValue}, #{crtName}, '0', #{crtId}, #{crtTime}, #{crtId}, #{crtTime}, 1);
+    </insert>
+</mapper>

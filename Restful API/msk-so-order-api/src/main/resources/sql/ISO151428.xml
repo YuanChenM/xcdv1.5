@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151428.findCount">
+        SELECT
+        COUNT(1) AS count
+        FROM
+        so_order_detail sod
+        LEFT JOIN so_order so ON sod.ORDER_ID = so.ORDER_ID
+        WHERE
+        so.DEL_FLG = 0
+        AND sod.DEL_FLG = 0
+        AND sod.PD_CODE = ?0
+
+    </sql>
+    <sql id="ISO151428.findList">
+        SELECT
+        so.BUYER_ID AS buyerId,
+        so.BUYER_CODE AS buyerCode,
+        so.BUYER_NAME AS buyerName,
+        sod.FEATURE_CODE AS featureCode,
+        sod.FEATURE_NAME AS featureName,
+        ifnull(sod.ORDER_QTY, 0) AS orderQty,
+        ifnull(
+        DATE_FORMAT(sod.CRT_TIME, '%Y-%m-%d %T'),
+        ''
+        ) AS dealTime
+        FROM
+        so_order_detail sod
+        LEFT JOIN so_order so ON sod.ORDER_ID = so.ORDER_ID
+        WHERE
+        so.DEL_FLG = 0
+        AND sod.DEL_FLG = 0
+        AND sod.PD_CODE = ?0
+
+    </sql>
+</sqlList>

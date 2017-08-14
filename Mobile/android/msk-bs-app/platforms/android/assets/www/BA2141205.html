@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <!--<link href="css/common.css" type="text/css" rel="stylesheet"/>-->
+    <link href="css/css.css" type="text/css" rel="stylesheet"/>
+    <link href="css/mobiscroll.custom-2.5.4.min.css" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="jquery/mobiscroll.custom-2.5.4.min.js"></script>
+    <script src="js/constantDef.js"></script>
+    <script src="js/commonUtil.js"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+    <title>教育经历新增</title>
+</head>
+
+<body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<!--页眉开始-->
+<div class="wapp-head">教育经历<span id="titleName">新增</span>
+    <a href="javascript:void(0);" id="fanhui" class="head-back">返回</a>
+</div>
+<!--页眉结束/-->
+<!--详情信息主体开始-->
+<div class="lbxx-list01">
+    <ul>
+        <li>
+            <span class="til">学习时间</span>
+            <span class="con" style="line-height: 40px"><input id="eduStart" type="text" readonly value="" style="height: 40px;text-align: center">至<input id="eduEnd" style="float: right;height: 40px;text-align: center" readonly type="text" value=""></span>
+        </li>
+        <li>
+            <span class="til">教育单位</span>
+            <span class="con"><input id="eduComp" type="text" value="" style="height: 40px;width: 98%;display: inline-block"></span>
+        </li>
+        <li>
+            <span class="til">学历</span>
+            <span class="con"><input id="eduRecord" type="text" value="" style="height: 40px;width: 98%;display: inline-block"></span>
+        </li>
+        <li>
+            <span class="til">学位</span>
+            <span class="con"><input id="eduDegree" type="text" value="" style="height: 40px;width: 98%;display: inline-block"></span>
+        </li>
+    </ul>
+</div>
+<!--列表信息主体结束-->
+<!--页尾开始/-->
+<div class="wapp-footer"><a href="javascript:BA2141205.saveEdu();" class="all">保存</a></div>
+<!--页尾结束/-->
+</body>
+<script src="js/BA2141205.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

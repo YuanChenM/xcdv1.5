@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.order.logic.BSO151401Logic">
+    <select id="getSalesRankingList" resultType="com.msk.core.entity.SoSalesRanking">
+        SELECT
+          LGCS_CODE AS lgcsCode,
+          ORDER_LEVEL AS orderLevel,
+          PD_CODE AS pdCode,
+          SUPPLIER_CODE AS supplierCode,
+          SUPPLIER_NAME AS supplierName,
+          PRICE_CYCLE AS priceCycle,
+          SALES_AMOUNT AS salesAmount,
+          SALES_RANKING AS salesRanking,
+          DIST_QUA AS distQua,
+          WHEEL_FREQUENCY AS wheelFrequency,
+          DEL_FLG AS delFlg,
+          CRT_TIME AS crtTime,
+          VER AS ver
+        FROM
+          so_sales_ranking
+    </select>
+
+    <insert id = "saveSalesRankingHistory" parameterType = "com.msk.core.entity.SoSalesRanking">
+        INSERT INTO so_sales_ranking_history (
+          LGCS_CODE,
+          HISTORY_DATE,
+          ORDER_LEVEL,
+          PD_CODE,
+          SUPPLIER_CODE,
+          SUPPLIER_NAME,
+          PRICE_CYCLE,
+          SALES_AMOUNT,
+          SALES_RANKING,
+          DIST_QUA,
+          WHEEL_FREQUENCY,
+          DEL_FLG,
+          CRT_ID,
+          CRT_TIME,
+          VER
+        )
+        VALUES
+          (
+            #{lgcsCode},
+            #{historyDate},
+            #{orderLevel},
+            #{pdCode},
+            #{supplierCode},
+            #{supplierName},
+            #{priceCycle},
+            #{salesAmount},
+            #{salesRanking},
+            #{distQua},
+            #{wheelFrequency},
+            0,
+            #{crtId},
+            #{crtTime},
+            1
+          )
+    </insert>
+    <select id="getOrderSaleRankingInfo" resultType="com.msk.core.entity.SoSalesRanking" parameterType="com.msk.batch.order.bean.BSO151401Param">
+        SELECT
+          sosd.pd_code AS pdCode,
+          sosd.SUPPLIER_CODE AS supplierCode,
+          sosd.SUPPLIER_NAME AS supplierName,
+          SUM(
+            (
+            IFNULL(sosd.SUPP_QTY, 0) - IFNULL(sosd.RETURN_QTY, 0) - IFNULL(sosd.REJECTION_QTY, 0)
+            ) * IFNULL(ssod.PD_PRICE, 0)
+          ) AS salesAmount,
+          ssod.ORDER_DETAIL_LEVEL AS orderLevel
+        FROM
+          so_order_ship_detail sosd
+          INNER JOIN so_sub_order_detail ssod
+            ON ssod.sub_order_detail_id = sosd.sub_order_detail_id
+        WHERE ssod.PRICE_CYCLE = #{lastOnePriceCycle}
+          AND sosd.del_flg = 0
+          AND ssod.del_flg = 0
+          AND <![CDATA[ sosd.DETAIL_STATUS <> 99 ]]>
+        GROUP BY sosd.SUPPLIER_CODE,
+          sosd.pd_code,
+          orderLevel
+        ORDER BY salesAmount DESC
+    </select>
+
+    <select id="getAllOrderSaleRankingInfo" resultType="com.msk.core.entity.SoSalesRanking" parameterType="com.msk.batch.order.bean.BSO151401Param">
+        SELECT DISTINCT
+          sosd.pd_code AS pdCode,
+          sosd.SUPPLIER_CODE AS supplierCode,
+          sosd.SUPPLIER_NAME AS supplierName
+        FROM
+          so_order_ship_detail sosd
+          INNER JOIN so_sub_order_detail ssod
+            ON ssod.sub_order_detail_id = sosd.sub_order_detail_id
+        WHERE ssod.PRICE_CYCLE = #{lastOnePriceCycle}
+          AND sosd.del_flg = 0
+          AND ssod.del_flg = 0
+          AND <![CDATA[ sosd.DETAIL_STATUS <> 99 ]]>
+    </select>
+
+    <insert id="batchSave"  parameterType="java.util.List">
+        INSERT INTO SO_SALES_RANKING
+        (LGCS_CODE, ORDER_LEVEL, PD_CODE,SUPPLIER_CODE,SUPPLIER_NAME,PRICE_CYCLE,SALES_AMOUNT,SALES_RANKING, DIST_QUA,WHEEL_FREQUENCY,
+        DEL_FLG,CRT_ID,CRT_TIME,VER)
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (#{item.lgcsCode}, #{item.orderLevel}, #{item.pdCode}, #{item.supplierCode},#{item.supplierName},#{item.priceCycle},#{item.salesAmount},#{item.salesRanking},#{item.distQua},#{item.wheelFrequency},
+            #{item.delFlg},#{item.crtId},#{item.crtTime},#{item.ver})
+        </foreach>
+    </insert>
+
+    <delete id = "remove" parameterType = "BaseParam">
+        DELETE
+        FROM
+        so_sales_ranking
+    </delete>
+</mapper>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121320Logic">
+    <select id="findBuyerId" resultType="com.msk.core.entity.ByBuyerBasicInfo" parameterType="com.msk.buyers.bean.IBY121319RsParam">
+        SELECT
+            BUYER_ID AS buyerId,
+            BUYER_CODE AS buyerCode
+        FROM
+            by_buyer_basic_info
+        WHERE
+            DEL_FLG = '0'
+        AND SUPERIOR_TYPE = #{superiorType}
+        AND LEFT (BUYER_CODE,#{subLength}) = #{buyerCode}
+    </select>
+</mapper>

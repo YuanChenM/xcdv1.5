@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141113Logic">
+    <sql id="selectFiled">
+        PDS.STANDARD_ID AS pdStdId
+        ,PDS.CLASSES_CODE AS classesCode
+        ,PDS.BREED_CODE AS breedCode
+        ,PDS.FEATURE_CODE AS featureCode
+        ,PDB.BREED_NAME AS breedName
+        ,PDC.CLASSES_NAME AS classesName
+        ,PDD.FEATURE_NAME AS featureName
+        ,(CASE WHEN PDS.QLT_FLG='1' THEN '有' ELSE '无' END) AS qltFlg
+        ,(CASE WHEN PDS.TNC_FLG='1' THEN '有' ELSE '无' END) AS tncFlg
+        ,(CASE WHEN PDS.NOR_FLG='1' THEN '有' ELSE '无' END) AS norFlg
+    </sql>
+    <sql id="selectFrom">
+        FROM pd_standard PDS
+        INNER JOIN pd_breed AS PDB 
+            ON PDS.BREED_CODE = PDB.BREED_CODE AND PDS.CLASSES_CODE=PDB.CLASSES_CODE
+        INNER JOIN pd_classes AS PDC 
+            ON PDS.CLASSES_CODE = PDC.CLASSES_CODE
+        INNER JOIN pd_feature AS PDD 
+            ON PDS.CLASSES_CODE = PDD.CLASSES_CODE AND PDS.FEATURE_CODE = PDD.FEATURE_CODE AND PDS.BREED_CODE = PDD.BREED_CODE
+    </sql>
+    <sql id="whereCondition">
+        <where>        
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND PDB.BREED_CODE like #{filterMap.breedCode}
+            </if>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND PDC.CLASSES_CODE like #{filterMap.classesCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND PDD.FEATURE_CODE like #{filterMap.featureCode}
+            </if>
+            <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+                AND PDB.BREED_NAME like #{filterMap.breedName}
+            </if>
+            <if test="filterMap.classesName!=null and filterMap.classesName!=''">
+                AND PDC.CLASSES_NAME like #{filterMap.classesName}
+            </if>
+            <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+                AND PDD.FEATURE_NAME like #{filterMap.featureName}
+            </if>
+            <if test="filterMap.quaFlg!=null and filterMap.quaFlg!=''">
+                AND PDC.QUA_FLG = #{filterMap.quaFlg}
+            </if>
+            <if test="filterMap.tncFlg!=null and filterMap.tncFlg!=''">
+                AND PDS.TNC_FLG = #{filterMap.tncFlg}
+            </if>
+            <if test="filterMap.norFlg!=null and filterMap.norFlg!=''">
+                AND PDS.NOR_FLG = #{filterMap.norFlg}
+            </if>
+            <if test="filterMap.qltFlg!=null and filterMap.qltFlg!=''">
+                AND PDS.QLT_FLG = #{filterMap.qltFlg}
+            </if>
+        </where>
+    </sql>
+    <select id="getPageCount" resultType="int" parameterType="BasePageParam">
+        SELECT COUNT(1)
+        <include refid="selectFrom" />
+        <include refid="whereCondition" />
+    </select>
+    <select id="findPageList" resultType="com.msk.product.bean.PD141113Bean"
+        parameterType="BasePageParam">
+        SELECT
+        <include refid="selectFiled" />
+        <include refid="selectFrom" />
+        <include refid="whereCondition" />
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPdStandard" resultType="com.msk.core.entity.PdStandard" parameterType="BaseParam">
+        SELECT 
+	         A.STANDARD_ID AS standardId
+	        ,A.CLASSES_CODE AS classesCode
+	        ,A.BREED_CODE AS breedCode
+	        ,A.FEATURE_CODE AS featureCode
+	        ,A.QLT_FLG AS qltFlg
+	        ,TNC_FLG AS tncFlg
+	        ,NOR_FLG AS norFlg
+	       FROM PD_STANDARD A
+	           WHERE A.STANDARD_ID=#{filterMap.standardId}
+    </select>
+</mapper>

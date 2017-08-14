@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241103001Logic">
+    <select id="findSlSeller" resultType="com.msk.core.entity.SlSeller"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        select
+        SL_CODE AS slCode
+        from sl_seller
+        WHERE
+        SL_ACCOUNT=#{filterMap.slAccount}
+        AND  DEL_FLG = 0
+    </select>
+    <select id="findSlcode" resultType="com.msk.core.entity.SlSeller"
+            parameterType="BaseParam">
+        select
+        max(SL_CODE+0) AS slCode from sl_seller
+        where SL_AREA_CODE=#{filterMap.slAreaCode}
+    </select>
+    <update id="modifyOne" parameterType="com.msk.seller.bean.SL241101Bean">
+        UPDATE sl_account SET
+        ACCOUNT_PSD=#{accountPsd},
+        SL_SHOW_NAME=#{slShowName},
+        SL_CONTACT=#{slContact},
+        AUTH_STATUS=#{authStatus},
+        SL_TEL=#{slTel},
+        UPD_ID=#{updId},
+        VER=VER+1,
+        UPD_TIME=#{updTime}
+        WHERE
+        SL_ACCOUNT=#{slAccount}
+        AND VER=#{ver}
+    </update>
+    <insert id="save" parameterType="com.msk.core.entity.SlAccount">
+        INSERT INTO
+        sl_account(
+        SL_ACCOUNT,
+        SL_TEL,
+        SL_SHOW_NAME,
+        SL_CONTACT,
+        ACCOUNT_PSD,
+        ACCOUNT_IMG,
+        AUTH_STATUS,
+        FROM_FLG,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+
+        <!-- Modified by xia_xiaojie on 2016/6/22. Modified start. -->
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        <!-- Modified end. -->
+
+        VER
+        )
+        VALUES (
+        #{slAccount},
+        #{slTel},
+        #{slShowName},
+        #{slContact},
+        #{accountPsd},
+        #{accountImg},
+        #{authStatus},
+        #{fromFlg},
+        0,
+        #{crtId},
+        #{crtTime},
+        <!-- Modified by xia_xiaojie on 2016/6/22. Modified start. -->
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        <!-- Modified end. -->
+        1
+        )
+    </insert>
+
+    <select id="findOneByAccount" resultType="com.msk.core.entity.SlAccount"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        select
+        SL_ACCOUNT AS slAccount
+        from sl_account
+        WHERE
+        SL_ACCOUNT=#{filterMap.slAccount}
+    </select>
+    <select id="findAccountList" resultType="int"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        SELECT
+        count(1)
+        FROM sl_seller
+        WHERE CITY_CODE=#{filterMap.cityCode}
+        AND SL_MAIN_CLASS=#{filterMap.slMainClass}
+        AND SL_CON_FLG=#{filterMap.slConFlg}
+        AND DEL_FLG = 0
+    </select>
+    <!--卖家生产商编码-->
+    <select id="findSlCodeManufacture" resultType="com.msk.core.entity.SlSeller"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        SELECT IFNULL(max(SL_CODE_MANUFACTURE)+1,'') AS slCodeManufacture
+        FROM sl_seller
+        <where>
+            <if test="filterMap.cityCode!=null and filterMap.cityCode!=''">
+                AND CITY_CODE=#{filterMap.cityCode}
+            </if>
+            <if test="filterMap.slConFlg!=null and filterMap.slConFlg!=''">
+                AND SL_CON_FLG=#{filterMap.slConFlg}
+            </if>
+            <if test="filterMap.isSlCodeManufacture!=null and filterMap.isSlCodeManufacture!=''">
+                AND SL_CODE_MANUFACTURE IS NOT NULL
+            </if>
+        </where>
+    </select>
+    <!--卖家自产型编码-->
+    <select id="findSlCodeOther" resultType="com.msk.core.entity.SlSeller"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        SELECT IFNULL(max(SL_CODE_SELF),'') AS slCodeSelf,
+        IFNULL(max(SL_CODE_AGENT),'') AS slCodeAgent,
+        IFNULL(max(SL_CODE_OEM),'') AS slCodeOem
+        FROM sl_seller
+        <where>
+            <if test="filterMap.cityCode!=null and filterMap.cityCode!=''">
+                AND CITY_CODE=#{filterMap.cityCode}
+            </if>
+            <if test="filterMap.slConFlg!=null and filterMap.slConFlg!=''">
+                AND SL_CON_FLG=#{filterMap.slConFlg}
+            </if>
+            <if test="filterMap.selfFlg==1">
+                AND SELF_FLG = #{filterMap.selfFlg} AND SL_CODE_SELF IS NOT NULL
+            </if>
+            <if test="filterMap.agentFlg==1">
+                AND AGENT_FLG = #{filterMap.agentFlg} AND SL_CODE_AGENT IS NOT NULL
+            </if>
+            <if test="filterMap.oemFlg==1">
+                AND OEM_FLG = #{filterMap.oemFlg} AND SL_CODE_OEM IS NOT NULL
+            </if>
+        </where>
+    </select>
+    <select id="findOneEntity" resultType="com.msk.core.entity.SlAccount"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        select
+        IFNULL(A.SL_ACCOUNT,'') AS slAccount,
+        IFNULL(A.SL_TEL,'') AS slTel,
+        IFNULL(A.SL_SHOW_NAME,'') AS slShowName,
+        IFNULL(A.SL_CONTACT,'') AS slContact,
+        IFNULL(A.ACCOUNT_PSD,'') AS accountPsd,
+        IFNULL(A.ACCOUNT_IMG,'') AS accountImg,
+        IFNULL(A.AUTH_STATUS,'') AS authStatus,
+        IFNULL(A.FROM_FLG,'') AS fromFlg
+        from sl_account AS A
+        WHERE
+        A.SL_ACCOUNT=#{filterMap.slAccount}
+    </select>
+    <select id="maxId" resultType="com.msk.core.entity.SlSeller">
+        SELECT MAX(EP_ID+0) AS epId FROM sl_seller
+    </select>
+    <insert id="saveSeller" parameterType="com.msk.core.entity.SlSeller">
+        INSERT INTO sl_seller
+        (
+        SL_CODE,
+        SL_ACCOUNT,
+        SL_CODE_DIS,
+        SL_CODE_MANUFACTURE,
+        SL_CODE_SELF,
+        SL_CODE_AGENT,
+        SL_CODE_OEM,
+        SL_CON_FLG,
+        AREA_CODE,
+        LGCS_AREA_CODE,
+        PROVINCE_CODE,
+        CITY_CODE,
+        DISTRICT_CODE,
+
+        <!-- Modified by xia_xiaojie on 2016/6/22. Modified start. -->
+        AREA_NAME,
+        LGCS_AREA_NAME,
+        PROVINCE_NAME,
+        CITY_NAME,
+        DISTRICT_NAME,
+        <!-- Modified end. -->
+
+        EP_ID,
+        SL_MAIN_CLASS,
+        SNK_FLG,
+        SELF_FLG,
+        AGENT_FLG,
+        OEM_FLG,
+        BUYER_FLG,
+        SQA_STATUS,
+        DIST_QUA,
+        SHOP_QUA,
+        CRT_ID,
+        CRT_TIME,
+
+        <!-- Modified by xia_xiaojie on 2016/6/22. Modified start. -->
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        <!-- Modified end. -->
+
+        DEL_FLG,
+        VER,
+        MEMO1,
+        MEMO2,
+        MEMO3,
+        MEMO4,
+        MEMO5,
+        MEMO6,
+        MEMO7,
+        MEMO8,
+        MEMO9,
+        MEMO10,
+        MEMO11,
+        MEMO12,
+        MEMO13,
+        MEMO14,
+        MEMO15,
+        MEMO16,
+        MEMO17,
+        MEMO18,
+        MEMO19,
+        MEMO20
+        )
+        <if test="slCodeDis!=null and slCodeDis!=''">
+            select
+            Max(CAST(SL_CODE AS SIGNED))+1,
+            #{slAccount},
+            #{slCodeDis},
+            #{slCodeManufacture},
+            #{slCodeSelf},
+            #{slCodeAgent},
+            #{slCodeOem},
+            #{slConFlg},
+            #{areaCode},
+            #{lgcsAreaCode},
+            #{provinceCode},
+            #{cityCode},
+            #{districtCode},
+            #{areaName},
+            #{lgcsAreaName},
+            #{provinceName},
+            #{cityName},
+            #{districtName},
+            #{epId},
+            #{slMainClass},
+            #{snkFlg},
+            #{selfFlg},
+            #{agentFlg},
+            #{oemFlg},
+            #{buyerFlg},
+            #{sqaStatus},
+            #{distQua},
+            #{shopQua},
+            #{crtId},
+            #{crtTime},
+            #{crtId},
+            #{crtTime},
+            #{crtId},
+            #{crtTime},
+            0,
+            1,
+            #{memo1},
+            #{memo2},
+            #{memo3},
+            #{memo4},
+            #{memo5},
+            #{memo6},
+            #{memo7},
+            #{memo8},
+            #{memo9},
+            #{memo10},
+            #{memo11},
+            #{memo12},
+            #{memo13},
+            #{memo14},
+            #{memo15},
+            #{memo16},
+            #{memo17},
+            #{memo18},
+            #{memo19},
+            #{memo20} from sl_seller
+        </if>
+        <if test="slCodeDis==null or slCodeDis==''">
+            select
+            (select Max(CAST(SL_CODE AS SIGNED))+1 from sl_seller),
+            #{slAccount},
+            -- Max(CAST(SL_CODE_DIS AS SIGNED))+1,
+            CONCAT('${slMainClass}','${cityCode}',LPAD(MAX(CAST(RIGHT(SL_CODE_DIS,3) AS SIGNED))+1,3,0)),
+            #{slCodeManufacture},
+            #{slCodeSelf},
+            #{slCodeAgent},
+            #{slCodeOem},
+            #{slConFlg},
+            #{areaCode},
+            #{lgcsAreaCode},
+            #{provinceCode},
+            #{cityCode},
+            #{districtCode},
+
+            <!-- Modified by xia_xiaojie on 2016/6/22. Modified start. -->
+            #{areaName},
+            #{lgcsAreaName},
+            #{provinceName},
+            #{cityName},
+            #{districtName},
+            <!-- Modified end. -->
+
+            #{epId},
+            #{slMainClass},
+            #{snkFlg},
+            #{selfFlg},
+            #{agentFlg},
+            #{oemFlg},
+            #{buyerFlg},
+            #{sqaStatus},
+            #{distQua},
+            #{shopQua},
+            #{crtId},
+            #{crtTime},
+
+            <!-- Modified by xia_xiaojie on 2016/6/22. Modified start. -->
+            #{crtId},
+            #{crtTime},
+            #{crtId},
+            #{crtTime},
+            <!-- Modified end. -->
+
+            0,
+            1,
+            #{memo1},
+            #{memo2},
+            #{memo3},
+            #{memo4},
+            #{memo5},
+            #{memo6},
+            #{memo7},
+            #{memo8},
+            #{memo9},
+            #{memo10},
+            #{memo11},
+            #{memo12},
+            #{memo13},
+            #{memo14},
+            #{memo15},
+            #{memo16},
+            #{memo17},
+            #{memo18},
+            #{memo19},
+            #{memo20} from sl_seller where  SL_MAIN_CLASS = '${slMainClass}' AND CITY_CODE = '${cityCode}' AND  DEL_FLG = 0 -- SL_CODE_DIS like '${slMainClass}${cityCode}%'
+        </if>
+    </insert>
+
+    <insert id="saveEp" parameterType="com.msk.core.entity.SlEnterprise">
+       INSERT INTO sl_enterprise (
+                EP_ID,
+                EP_NAME,
+                LIC_NAME,
+                LIC_TYPE,
+                LIC_NO,
+                LIC_ADDR,
+                LIC_BUSI_TYPE,
+                LIC_BUSI_SCOPE,
+                LIC_LEGAL_PERSON,
+                LIC_REG_CAPITAL,
+                LIC_PAIDIN_CAPITAL,
+                LIC_CRT_DATE,
+                LIC_TERM_BEGIN,
+                LIC_TERM_END,
+                LIC_TERM_UNLIIMITED,
+                TAX_NO,
+                TAX_VAT_NO,
+                ORG_NO,
+                ORG_TERM_BEGIN,
+                ORG_TERM_END,
+                BAL_LEGAL_PERSON,
+                BAL_BANK,
+                BAL_ACCOUNT,
+                FDL_NO,
+                FDL_TERM_BEGIN,
+                FDL_TERM_END,
+                DEL_FLG,
+                CRT_ID,
+                CRT_TIME,
+
+                <!-- Modified by xia_xiaojie on 2016/6/22. Modified start. -->
+                UPD_ID,
+                UPD_TIME,
+                ACT_ID,
+                ACT_TIME,
+                <!-- Modified end. -->
+
+                VER
+            )
+            VALUES
+                (
+                    #{epId},
+                    #{epName},
+                    #{licName},
+                    #{licType},
+                    #{licNo},
+                    #{licAddr},
+                    #{licBusiType},
+                    #{licBusiScope},
+                    #{licLegalPerson},
+                    #{licRegCapital},
+                    #{licPaidinCapital},
+                    #{licCrtDate},
+                    #{licTermBegin},
+                    #{licTermEnd},
+                    #{licTermUnliimited},
+                    #{taxNo},
+                    #{taxVatNo},
+                    #{orgNo},
+                    #{orgTermBegin},
+                    #{orgTermEnd},
+                    #{balLegalPerson},
+                    #{balBank},
+                    #{balAccount},
+                    #{fdlNo},
+                    #{fdlTermBegin},
+                    #{fdlTermEnd},
+                    0,
+                    #{crtId},
+                    #{crtTime},
+
+                    <!-- Modified by xia_xiaojie on 2016/6/22. Modified start. -->
+                    #{crtId},
+                    #{crtTime},
+                    #{crtId},
+                    #{crtTime},
+                    <!-- Modified end. -->
+
+                    1
+                    )
+    </insert>
+
+
+</mapper>

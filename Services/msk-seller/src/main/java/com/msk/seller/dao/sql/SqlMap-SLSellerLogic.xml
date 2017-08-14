@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SLSellerLogic">
+    <select id="findSeller" parameterType="BaseParam" resultType="com.msk.core.entity.SlSeller">
+		SELECT
+		SL_CODE AS slCode,
+		SL_ACCOUNT AS slAccount,
+		SL_MAIN_CLASS AS slMainClass,
+        SL_CODE_DIS AS slCodeDis
+		FROM
+		sl_seller
+		WHERE
+        DEL_FLG = 0
+        <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+            AND SL_CODE = #{filterMap.slCode}
+        </if>
+        <if test="filterMap.slAccount!=null and filterMap.slAccount!=''">
+            AND SL_ACCOUNT = #{filterMap.slAccount}
+        </if>
+    </select>
+</mapper>

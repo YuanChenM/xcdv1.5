@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISLProductRsLogic">
+    <select id="getSlProInfo" parameterType="com.msk.seller.bean.SlProductRsParam" resultType="com.msk.seller.bean.SlProductRsBean">
+        select
+        IFNULL(PD.PD_CLASSES_CODE,'')AS pdClassesCode,
+        IFNULL(PD.MACHINING_CODE,'')AS machiningCode,
+        IFNULL(PD.PD_BREED_CODE,'')AS pdBreedCode,
+        IFNULL(PD.PD_FEATURE_CODE,'')AS pdFeatureCode,
+        IFNULL(PD.WEIGHT_CODE,'')AS weightCode,
+        PD.BRAND_ID AS brandId,
+        PD.BRAND_EP_ID AS brandEpId,
+        PD.PROD_EP_ID AS prodEpId,
+        PD.SL_PD_ID AS slPdId,
+        PD.SL_CODE AS slCode,
+        PKG.PKG_CODE AS pkgCode,
+        SL.SL_CODE_DIS AS slCodeDis,
+        '' AS slMainClassName,
+        IFNULL(SL.SL_MAIN_CLASS,'') AS slMainClass,
+        IFNULL(SL2.SL_CODE_MANUFACTURE,'')AS slCodeManufacture,
+        IFNULL(ET.LIC_ADDR,'') AS slLicAddr,
+        IFNULL(ET.EP_NAME,'') AS slName,
+        IFNULL(ET2.LIC_ADDR,'') AS sllfAddr,
+        IFNULL(ET2.EP_NAME,'') AS sllfName,
+        '' AS brandClassName,
+        IFNULL(BD.BRAND_CLASS,'')AS brandClass,
+        IFNULL(BD.BRAND_NAME,'') AS brandName,
+        IFNULL(BD.BRAND_ID,'') AS brandId
+        FROM sl_product AS PD
+        LEFT JOIN sl_pd_pkg PKG ON PKG.SL_PD_ID = PD.SL_PD_ID     AND  PKG.DEL_FLG = 0
+        LEFT JOIN sl_seller SL ON PD.SL_CODE = SL.SL_CODE    AND  SL.DEL_FLG = 0
+        LEFT JOIN sl_seller SL2 ON PD.PROD_EP_ID = SL2.EP_ID    AND  SL2.DEL_FLG = 0
+        LEFT JOIN sl_enterprise ET ON ET.EP_ID = SL.EP_ID    AND  ET.DEL_FLG = 0
+        LEFT JOIN sl_enterprise ET2 ON ET2.EP_ID = PD.PROD_EP_ID    AND  ET2.DEL_FLG = 0
+        LEFT JOIN sl_ep_brand BD ON BD.EP_ID = PD.BRAND_EP_ID
+                                   AND  BD.DEL_FLG = 0
+                                   AND BD.BRAND_ID = PD.BRAND_ID
+        WHERE
+        PD.DEL_FLG = 0
+        <if test="slMainClass!=null and slMainClass!=''">
+            AND SL.SL_MAIN_CLASS = #{slMainClass}
+        </if>
+        <if test="slLicAddr!=null and slLicAddr!=''">
+            AND ET.LIC_ADDR like #{slLicAddr}
+        </if>
+        <if test="slName!=null and slName!=''">
+            AND ET.EP_NAME like #{slName}
+        </if>
+        <if test="sllfAddr!=null and sllfAddr!=''">
+            AND ET2.LIC_ADDR like #{sllfAddr}
+        </if>
+        <if test="sllfName!=null and sllfName!=''">
+            AND ET2.EP_NAME like #{sllfName}
+        </if>
+        <if test="brandClass!=null and brandClass!=''">
+            AND BD.BRAND_CLASS = #{brandClass}
+        </if>
+        <if test="brandName!=null and brandName!=''">
+            AND BD.BRAND_NAME like #{brandName}
+        </if>
+        ORDER BY SL.SL_CODE
+    </select>
+
+    <select id="getSlProductInfo" parameterType="BaseParam" resultType="com.msk.seller.bean.SlProductRsBean">
+        SELECT
+        DISTINCT
+        IFNULL(A.PD_CLASSES_CODE, '') AS pdClassesCode,
+        IFNULL(A.MACHINING_CODE, '') AS machiningCode,
+        IFNULL(A.PD_BREED_CODE, '') AS pdBreedCode,
+        IFNULL(A.PD_FEATURE_CODE, '') AS pdFeatureCode,
+        IFNULL(A.WEIGHT_CODE, '') AS weightCode,
+        IFNULL(A.PD_CLASSES_NAME, '') AS pdClassesName,
+        IFNULL(A.MACHINING_NAME, '') AS machiningName,
+        IFNULL(A.PD_BREED_NAME, '') AS pdBreedName,
+        IFNULL(A.PD_FEATURE_NAME, '') AS pdFeatureName,
+        IFNULL(A.WEIGHT_NAME, '') AS weightName,
+        IFNULL(A.SL_TNC_GRADE_CODE, '') AS slTncGradeCode,
+        '' AS slTncGradeName,
+        IFNULL(CONCAT(A.PD_CLASSES_NAME,'/',A.MACHINING_NAME,'/',A.PD_BREED_NAME,'/',A.PD_FEATURE_NAME,'/',A.WEIGHT_NAME),'') AS pdName,
+        IFNULL(CONCAT(A.PD_CLASSES_CODE,A.MACHINING_CODE,A.PD_BREED_CODE,A.PD_FEATURE_CODE,A.WEIGHT_CODE),'') AS pdCode,
+        C.PKG_CODE AS normsCode,
+        C.STANDARD_ID AS standardId
+        <if test="filterMap.prodEpId !=null and filterMap.prodEpId !=''">
+            ,A.BRAND_ID AS brandId,
+            IFNULL(D.BRAND_NAME, '')   AS brandName,
+            A.BRAND_EP_ID AS  brandEpId
+        </if>
+        FROM
+         sl_product  A
+         INNER JOIN sl_seller  B  ON A.SL_CODE = B.SL_CODE
+         INNER JOIN sl_pd_pkg  C  ON A.SL_PD_ID = C.SL_PD_ID
+        <if test="filterMap.prodEpId !=null and filterMap.prodEpId !=''">
+            LEFT JOIN sl_pd_brand D ON A.SL_CODE = D.SL_CODE
+                                    AND A.BRAND_ID = D.BRAND_ID
+                                    AND  A.BRAND_EP_ID = D.BRAND_EP_ID
+                                    AND  D.DEL_FLG = 0
+        </if>
+        WHERE
+        A.`STATUS`  IN  (4,5)
+        AND  A.DEL_FLG = 0
+        AND  B.DEL_FLG = 0
+        AND  C.DEL_FLG = 0
+        AND  B.SL_CODE = #{filterMap.slCode}
+        AND  A.SL_TNC_GRADE_CODE IN  (1,2,3)
+        <if test="filterMap.prodEpId !=null and filterMap.prodEpId !=''">
+            AND   A.PROD_EP_ID = #{filterMap.prodEpId}
+        </if>
+
+    </select>
+
+    <select id="getPdCode" parameterType="com.msk.seller.bean.ISLProductRsParam" resultType="com.msk.core.entity.SlPdArtno">
+        <foreach item="item" index="index" collection="slList">
+            <if test="index!=0">
+                UNION
+            </if>
+            (
+            SELECT
+            IFNULL(artno.SL_CODE_DIS, '') AS slCodeDis,
+            IFNULL(artno.SL_PD_ARTNO, '') AS slPdArtno,
+            IFNULL(artno.CLASSES_CODE, '') AS classesCode,
+            IFNULL(artno.MACHINING_CODE, '') AS machiningCode,
+            IFNULL(artno.BREED_CODE, '') AS breedCode,
+            IFNULL(artno.FEATURE_CODE, '') AS featureCode,
+            IFNULL(artno.WEIGHT_CODE, '') AS weightCode,
+            IFNULL(artno.NORMS_CODE, '') AS normsCode,
+            IFNULL(artno.GRADE_CODE, '') AS gradeCode
+            FROM
+            sl_pd_artno AS artno
+            WHERE
+            artno.DEL_FLG = 0
+            AND artno.SALE_PLATFORM = #{salePlatform}
+            AND artno.SL_CODE_DIS = #{item.slCodeDis}
+            AND artno.SL_PD_ARTNO = #{item.slPdArtno}
+            )
+        </foreach>
+    </select>
+
+    <select id="getProductList" parameterType="com.msk.seller.bean.ISLProductRsParam" resultType="com.msk.core.entity.SlProduct">
+        <foreach item="item" index="index" collection="products" separator="UNION">
+            SELECT
+            SL_CODE  AS slCode,
+            SL_PD_ID  AS slPdId,
+            PROD_EP_ID  AS prodEpId,
+            BRAND_EP_ID  AS brandEpId,
+            BRAND_ID  AS brandId,
+            PD_CLASSES_CODE  AS pdClassesCode,
+            MACHINING_CODE  AS machiningCode,
+            PD_BREED_CODE  AS pdBreedCode,
+            PD_FEATURE_CODE  AS pdFeatureCode,
+            WEIGHT_CODE  AS weightCode,
+            DIST_FLG  AS distFlg,
+            DISTMSK_FLG  AS distmskFlg,
+            DISTMSK_RATE  AS distmskRate,
+            SL_TNC_STD  AS slTncStd,
+            SL_TNC_GRADE_CODE  AS slTncGradeCode,
+            TNC_NG_REASON  AS tncNgReason,
+            TNC_AUDIT_STATUS  AS tncAuditStatus,
+            TNC_AUDITOR  AS tncAuditor,
+            TNC_AUDIT_DATE  AS tncAuditDate,
+            TNC_MONITOR_RESULT  AS tncMonitorResult,
+            TNC_MONITOR_AUDITOR  AS tncMonitorAuditor,
+            TNC_MONITOR_DATE  AS tncMonitorDate,
+            SL_QLT_STD  AS slQltStd,
+            SL_QLT_GRADE_CODE  AS slQltGradeCode,
+            QLT_NG_REASON  AS qltNgReason,
+            QLT_AUDIT_STATUS  AS qltAuditStatus,
+            QLT_AUDITOR  AS qltAuditor,
+            QLT_AUDIT_DATE  AS qltAuditDate,
+            QLT_MONITOR_RESULT  AS qltMonitorResult,
+            QLT_MONITOR_AUDITOR  AS qltMonitorAuditor,
+            QLT_MONITOR_DATE  AS qltMonztorDate,
+            STATUS  AS status,
+            STATUS_MONITOR_RESULT  AS statusMonitorResult,
+            STATUS_MONITOR_AUDITOR  AS statusMonitorAuditor,
+            STATUS_MONITOR_DATE  AS statusMonitorDate,
+            DEL_FLG  AS delFlg,
+            CRT_ID  AS crtId,
+            CRT_TIME  AS crtTime,
+            UPD_ID  AS updId,
+            UPD_TIME  AS updTime,
+            ACT_ID  AS actId,
+            ACT_TIME  AS actTime,
+            VER  AS ver,
+            PD_CLASSES_NAME  AS pdClassesName,
+            MACHINING_NAME  AS machiningName,
+            PD_BREED_NAME  AS pdBreedName,
+            PD_FEATURE_NAME  AS pdFeatureName,
+            WEIGHT_NAME  AS weightName
+            FROM sl_product
+            WHERE SL_CODE = #{item.slCode}
+            AND SL_PD_ID = #{item.slPdId}
+            AND DEL_FLG = 0
+        </foreach>
+    </select>
+
+    <insert id ="batchSave" parameterType="java.util.List">
+        INSERT INTO sl_product_status_his(
+        HIS_ID,
+        SL_CODE,
+        SL_PD_ID,
+        PROD_EP_ID,
+        BRAND_EP_ID,
+        BRAND_ID,
+        PD_CLASSES_CODE,
+        MACHINING_CODE,
+        PD_BREED_CODE,
+        PD_FEATURE_CODE,
+        WEIGHT_CODE,
+        DIST_FLG,
+        DISTMSK_FLG,
+        DISTMSK_RATE,
+        SL_TNC_STD,
+        SL_TNC_GRADE_CODE,
+        TNC_NG_REASON,
+        TNC_AUDIT_STATUS,
+        TNC_AUDITOR,
+        TNC_AUDIT_DATE,
+        TNC_MONITOR_RESULT,
+        TNC_MONITOR_AUDITOR,
+        TNC_MONITOR_DATE,
+        SL_QLT_STD,
+        SL_QLT_GRADE_CODE,
+        QLT_NG_REASON,
+        QLT_AUDIT_STATUS,
+        QLT_AUDITOR,
+        QLT_AUDIT_DATE,
+        QLT_MONITOR_RESULT,
+        QLT_MONITOR_AUDITOR,
+        QLT_MONITOR_DATE,
+        STATUS,
+        STATUS_MONITOR_RESULT,
+        STATUS_MONITOR_AUDITOR,
+        STATUS_MONITOR_DATE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (
+            #{item.hisId},
+            #{item.slCode},
+            #{item.slPdId},
+            #{item.prodEpId},
+            #{item.brandEpId},
+            #{item.brandId},
+            #{item.pdClassesCode},
+            #{item.machiningCode},
+            #{item.pdBreedCode},
+            #{item.pdFeatureCode},
+            #{item.weightCode},
+            #{item.distFlg},
+            #{item.distmskFlg},
+            #{item.distmskRate},
+            #{item.slTncStd},
+            #{item.slTncGradeCode},
+            #{item.tncNgReason},
+            #{item.tncAuditStatus},
+            #{item.tncAuditor},
+            #{item.tncAuditDate,jdbcType=DATE},
+            #{item.tncMonitorResult},
+            #{item.tncMonitorAuditor},
+            #{item.tncMonitorDate,jdbcType=DATE},
+            #{item.slQltStd},
+            #{item.slQltGradeCode},
+            #{item.qltNgReason},
+            #{item.qltAuditStatus},
+            #{item.qltAuditor},
+            #{item.qltAuditDate,jdbcType=DATE},
+            #{item.qltMonitorResult},
+            #{item.qltMonitorAuditor},
+            #{item.qltMonitorDate,jdbcType=DATE},
+            #{item.status},
+            #{item.statusMonitorResult},
+            #{item.statusMonitorAuditor},
+            #{item.statusMonitorDate,jdbcType=DATE},
+            0,
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.crtId},
+            #{item.crtTime},
+            1
+            )
+        </foreach>
+    </insert>
+
+</mapper>

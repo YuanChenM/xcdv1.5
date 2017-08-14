@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231119Logic">
+    <select id="count" parameterType="BaseParam" resultType="int">
+        SELECT count(1)
+        FROM sl_pd_lgcs a
+        <include refid="whereCondition"/>
+    </select>
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.seller.bean.SlLogiAreaPdBean">
+        SELECT
+            a.SL_CODE AS slCode,
+            ifnull(se.EP_NAME, a.SL_CODE) AS slName,
+            a.LGCS_CODE AS logiAreaCode,
+            ifnull(s.LGCS_AREA_NAME, a.LGCS_CODE) AS logiAreaName,
+            concat(a.CLASSES_CODE, a.BREED_CODE, a.FEATURE_CODE) AS pdCode,
+            a.CLASSES_CODE AS classesCode,
+            a.BREED_CODE AS breedCode,
+            a.FEATURE_CODE AS featureCode,
+            a.GRADE_CODE AS gradeCode,
+            a.PKG_CODE AS pkgCode
+        FROM sl_pd_lgcs a
+        LEFT JOIN sl_seller s  ON  s.SL_CODE = a.SL_CODE
+                               AND  s.LGCS_AREA_CODE = a.LGCS_CODE
+                               AND  s.DEL_FLG = 0
+        LEFT JOIN sl_enterprise se  ON  se.EP_ID = s.EP_ID
+                                    AND se.DEL_FLG = 0
+        <include refid="whereCondition"/>
+        ORDER BY a.LGCS_CODE,
+        a.CLASSES_CODE,
+        a.BREED_CODE,
+        a.FEATURE_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <sql id="whereCondition">
+        <where>
+            a.DEL_FLG = 0
+            <if test="filterMap.lgcsCodes!=null and filterMap.lgcsCodes!=''">
+                a.LGCS_CODE IN
+                <foreach collection="filterMap.lgcsCodes" item="lgcsCode" open="(" separator="," close=")">
+                    #{lgcsCode}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+</mapper>

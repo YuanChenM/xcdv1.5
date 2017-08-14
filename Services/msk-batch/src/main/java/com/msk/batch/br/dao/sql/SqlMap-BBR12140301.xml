@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.br.logic.BBR12140301Logic">
+    <!--更新已同步的订单数据（订单状态或订单明细状态发生变化的数据）-->
+    <update id="modify" parameterType="BaseParam">
+        UPDATE br_o_order_info o
+        INNER JOIN so_order a ON a.ORDER_ID = o.ORDER_ID
+        INNER JOIN so_order_detail b ON b.ORDER_ID = o.ORDER_ID
+        AND b.ORDER_DETAIL_ID = o.ORDER_DETAIL_ID
+        SET o.BUYER_ID = a.BUYERS_ID,
+        o.BUYER_CODE = a.BUYERS_CODE,
+        o.BUYER_NAME = a.BUYERS_NAME,
+        o.BUYER_TYPE = a.BUYERS_TYPE,
+        o.PD_CODE = b.PD_CODE,
+        o.CLASSES_CODE = b.CLASSES_CODE,
+        o.MACHINING_CODE = RIGHT (LEFT(b.PD_CODE, 3), 1),
+        o.BREED_CODE = b.BREED_CODE,
+        o.FEATURE_CODE = b.FEATURE_CODE,
+        o.GRADE_CODE = b.PD_GRADE_CODE,
+        o.PD_PRICE = b.PD_PRICE,
+        o.UNIT = b.UNIT,
+        o.PACKING_VOLUME = b.PACKING_VOLUME,
+        o.WEIGHT = b.WEIGHT,
+        o.VOLUME = b.VOLUME,
+        o.ORDER_AMOUNT = a.ORDER_AMOUNT,
+        o.ORDER_QTY = b.ORDER_QTY,
+        o.ORDER_TIME = a.ORDER_TIME,
+        o.RECEIVE_QTY = b.RECEIVE_QTY,
+        o.RETURN_QTY = b.RETURN_QTY,
+        o.RECEIVED_TIME = if(b.DETAIL_STATUS = 7,ifnull(b.RECEIVED_TIME,b.UPD_TIME),b.RECEIVED_TIME),
+        o.ORDER_STATUS = a.ORDER_STATUS,
+        o.DETAIL_STATUS = b.DETAIL_STATUS,
+        o.UPD_ID = #{crtId},
+        o.UPD_TIME = #{updTime},
+        o.VER = o.VER + 1
+        WHERE
+        <![CDATA[a.ORDER_STATUS <> o.ORDER_STATUS]]>
+        OR <![CDATA[b.DETAIL_STATUS <> o.DETAIL_STATUS]]>
+    </update>
+
+    <!--插入新的订单数据-->
+    <insert id="save" parameterType="BaseParam">
+        INSERT INTO br_o_order_info (
+            ORDER_ID,
+            ORDER_CODE,
+            ORDER_DETAIL_ID,
+            BUYER_ID,
+            BUYER_CODE,
+            BUYER_NAME,
+            BUYER_TYPE,
+            PD_CODE,
+            CLASSES_CODE,
+            MACHINING_CODE,
+            BREED_CODE,
+            FEATURE_CODE,
+            GRADE_CODE,
+            PD_PRICE,
+            UNIT,
+            PACKING_VOLUME,
+            WEIGHT,
+            VOLUME,
+            ORDER_AMOUNT,
+            ORDER_QTY,
+            ORDER_TIME,
+            RECEIVE_QTY,
+            RETURN_QTY,
+            RECEIVED_TIME,
+            ORDER_STATUS,
+            DETAIL_STATUS,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        ) SELECT
+            a.ORDER_ID,
+            a.ORDER_CODE,
+            b.ORDER_DETAIL_ID,
+            a.BUYERS_ID,
+            a.BUYERS_CODE,
+            a.BUYERS_NAME,
+            a.BUYERS_TYPE,
+            b.PD_CODE,
+            b.CLASSES_CODE,
+            RIGHT (LEFT(b.PD_CODE, 3), 1) AS MACHINING_CODE,
+            b.BREED_CODE,
+            b.FEATURE_CODE,
+            b.PD_GRADE_CODE,
+            b.PD_PRICE,
+            b.UNIT,
+            b.PACKING_VOLUME,
+            b.WEIGHT,
+            b.VOLUME,
+            a.ORDER_AMOUNT,
+            b.ORDER_QTY,
+            a.ORDER_TIME,
+            b.RECEIVE_QTY,
+            b.RETURN_QTY,
+            if(b.DETAIL_STATUS = 7,ifnull(b.RECEIVED_TIME,b.UPD_TIME),b.RECEIVED_TIME),
+            a.ORDER_STATUS,
+            b.DETAIL_STATUS,
+            '0',
+
+            #{crtId},
+			#{crtTime},
+			#{updId},
+			#{updTime},
+			#{actId},
+			#{actTime},
+
+            1
+        FROM
+            so_order a
+        INNER JOIN so_order_detail b ON a.order_id = b.order_id
+        WHERE NOT EXISTS (
+        SELECT 1 FROM br_o_order_info o WHERE o.ORDER_ID = a.ORDER_ID
+        )
+    </insert>
+</mapper>

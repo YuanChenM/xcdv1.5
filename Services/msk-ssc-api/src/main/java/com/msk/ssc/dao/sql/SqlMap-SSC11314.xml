@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11314Logic">
+    <!--查询发货确认单列表-->
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11314RsResult" parameterType="com.msk.ssc.bean.SSC11314RsParam">
+
+        SELECT * FROM (SELECT
+        ssdcb.CONTRACT_CODE AS contractCode,
+        sscb.CONTRACT_NAME AS contractName,
+        ssdcb.SUPPLIER_NAME AS supplierName,
+        ssdcb.DELIVERY_CODE AS deliveryCode,
+        ssdcb.DELIVERY_ID AS deliveryId,
+        ssdcb.DELIVERY_CONFIRM_CODE AS deliveryConfirmCode,
+        ssdcb.PURCHASER_NAME AS purchaserName,
+        ssdcb.ARRIVE_WAREHOUSE AS arriveWarehouse,
+        ssdcb.ARRIVE_WAREHOUSE_ADDR AS arriveWarehouseAddr,
+        ssdcb.DELIVERY_CONFIRM_STATUS AS deliveryConfirmStatus,
+        ssdcb.DELIVERY_CONFIRM_ID as deliveryConfirmId,
+        ssdcb.DELIVERY_BATCH as deliveryBatch,
+        sdob.LGCS_AREA_NAME as lgcsAreaName,
+        ssdcb.VER AS ver
+        FROM
+        ssc_delivery_confirm_basic ssdcb
+        LEFT JOIN ssc_contract_basic sscb ON ssdcb.CONTRACT_ID = sscb.CONTRACT_ID
+        LEFT JOIN ssc_delivery_order_basic sdob ON  ssdcb.DELIVERY_CODE=sdob.DELIVERY_CODE
+        WHERE
+        <if test="delFlg!=null and delFlg!=''">
+            ssdcb.DEL_FLG = #{delFlg} AND
+        </if>
+        sscb.DEL_FLG = 0
+        UNION
+        SELECT
+        sdcb.CONTRACT_CODE AS contractCode,
+        '' AS contractName,
+        sdcb.SUPPLIER_NAME AS supplierName,
+        sdcb.DELIVERY_CODE AS deliveryCode,
+        sdcb.DELIVERY_ID AS deliveryId,
+        sdcb.DELIVERY_CONFIRM_CODE AS deliveryConfirmCode,
+        sdcb.PURCHASER_NAME AS purchaserName,
+		sdcb.ARRIVE_WAREHOUSE AS arriveWarehouse,
+        sdcb.ARRIVE_WAREHOUSE_ADDR AS arriveWarehouseAddr,
+        sdcb.DELIVERY_CONFIRM_STATUS AS deliveryConfirmStatus,
+        sdcb.DELIVERY_CONFIRM_ID as deliveryConfirmId,
+        sdcb.DELIVERY_BATCH as deliveryBatch,
+        sdob.LGCS_AREA_NAME as lgcsAreaName,
+        sdcb.VER AS ver
+        FROM
+        ssc_delivery_confirm_basic sdcb
+        LEFT JOIN ssc_delivery_order_basic sdob ON  sdcb.DELIVERY_CODE=sdob.DELIVERY_CODE where
+        <if test="delFlg!=null and delFlg!=''">
+            sdcb.DEL_FLG = #{delFlg} AND
+        </if>
+        (sdcb.CONTRACT_ID IS NULL or sdcb.CONTRACT_ID='')) t
+        <include refid="whereCondition"/>
+        ORDER BY t.deliveryConfirmId DESC
+        <if test="paging == true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+
+    </select>
+    <select id="count" resultType="Integer" parameterType="com.msk.ssc.bean.SSC11314RsParam">
+
+        SELECT COUNT(1) FROM (SELECT
+        ssdcb.CONTRACT_CODE AS contractCode,
+        sscb.CONTRACT_NAME AS contractName,
+        ssdcb.SUPPLIER_NAME AS supplierName,
+        ssdcb.DELIVERY_CODE AS deliveryCode,
+        ssdcb.DELIVERY_CONFIRM_CODE AS deliveryConfirmCode,
+        ssdcb.PURCHASER_NAME AS purchaserName,
+        ssdcb.ARRIVE_WAREHOUSE AS arriveWarehouse,
+        ssdcb.ARRIVE_WAREHOUSE_ADDR AS arriveWarehouseAddr,
+        ssdcb.DELIVERY_CONFIRM_STATUS AS deliveryConfirmStatus,
+        ssdcb.DELIVERY_CONFIRM_ID as deliveryConfirmId,
+        ssdcb.DELIVERY_BATCH as deliveryBatch,
+        sdob.LGCS_AREA_NAME as lgcsAreaName
+        FROM
+        ssc_delivery_confirm_basic ssdcb
+        LEFT JOIN ssc_contract_basic sscb ON ssdcb.CONTRACT_ID = sscb.CONTRACT_ID
+        LEFT JOIN ssc_delivery_order_basic sdob ON  ssdcb.DELIVERY_CODE=sdob.DELIVERY_CODE
+        WHERE
+        <if test="delFlg!=null and delFlg!=''">
+            ssdcb.DEL_FLG = #{delFlg} AND
+        </if>
+        sscb.DEL_FLG = 0
+        UNION
+        SELECT
+        sdcb.CONTRACT_CODE AS contractCode,
+        '' AS contractName,
+        sdcb.SUPPLIER_NAME AS supplierName,
+        sdcb.DELIVERY_CODE AS deliveryCode,
+        sdcb.DELIVERY_CONFIRM_CODE AS deliveryConfirmCode,
+        sdcb.PURCHASER_NAME AS purchaserName,
+		sdcb.ARRIVE_WAREHOUSE AS arriveWarehouse,
+        sdcb.ARRIVE_WAREHOUSE_ADDR AS arriveWarehouseAddr,
+        sdcb.DELIVERY_CONFIRM_STATUS AS deliveryConfirmStatus,
+        sdcb.DELIVERY_CONFIRM_ID as deliveryConfirmId,
+        sdcb.DELIVERY_BATCH as deliveryBatch,
+        sdob.LGCS_AREA_NAME as lgcsAreaName
+        FROM
+        ssc_delivery_confirm_basic sdcb
+        LEFT JOIN ssc_delivery_order_basic sdob ON  sdcb.DELIVERY_CODE=sdob.DELIVERY_CODE where
+        <if test="delFlg!=null and delFlg!=''">
+            sdcb.DEL_FLG = #{delFlg} AND
+        </if>
+        (sdcb.CONTRACT_ID IS NULL or sdcb.CONTRACT_ID='')) t
+        <include refid="whereCondition"/>
+    </select>
+
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="deliveryConfirmCode!=null and deliveryConfirmCode!=''">
+                AND t.deliveryConfirmCode LIKE #{deliveryConfirmCode}
+            </if>
+            <if test="contractCode!=null and contractCode!=''">
+                AND t.contractCode LIKE #{contractCode}
+            </if>
+            <if test="contractName!=null and contractName!=''">
+                AND t.contractName LIKE #{contractName}
+            </if>
+            <if test="purchaserName!=null and purchaserName!=''">
+                AND t.purchaserName LIKE #{purchaserName}
+            </if>
+            <if test="supplierName!=null and supplierName!=''">
+                AND t.supplierName LIKE #{supplierName}
+            </if>
+            <if test="deliveryCode!=null and deliveryCode!=''">
+                AND t.deliveryCode LIKE #{deliveryCode}
+            </if>
+            <if test="arriveWarehouse!=null and arriveWarehouse!=''">
+                AND t.arriveWarehouse LIKE #{arriveWarehouse}
+            </if>
+            <if test="arriveWarehouseAddr!=null and arriveWarehouseAddr!=''">
+                AND t.arriveWarehouseAddr LIKE #{arriveWarehouseAddr}
+            </if>
+            <!--<if test="deliveryConfirmStatus!=null and deliveryConfirmStatus!=''">-->
+            <!--AND ssdcb.DELIVERY_CONFIRM_STATUS = #{deliveryConfirmStatus}-->
+            <!--</if>-->
+            <if test="delConfirmStatuses !=null and delConfirmStatuses.length>0">
+                AND t.deliveryConfirmStatus in
+                <foreach item="delConfirmStatusItem" index="index" collection="delConfirmStatuses"
+                         open="(" separator="," close=")">
+                    #{delConfirmStatusItem}
+                </foreach>
+            </if>
+            <if test="deliveryBatch!=null and deliveryBatch!=''">
+                AND t.deliveryBatch = #{deliveryBatch}
+            </if>
+            <if test="lgcsAreaName!=null and lgcsAreaName!=''">
+                AND t.lgcsAreaName LIKE #{lgcsAreaName}
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="findChooseContract" resultType="com.msk.ssc.bean.SSC11314RsResult" parameterType="com.msk.ssc.bean.SSC11314RsParam">
+        SELECT
+            sscb.CONTRACT_CODE AS contractCode,
+            sscb.CONTRACT_NAME AS contractName
+        FROM
+            ssc_contract_basic sscb
+        WHERE
+            sscb.DEL_FLG = 0
+        <if test="contractStatusList != null and contractStatusList.size() > 0">
+            AND sscb.CONTRACT_STATUS in
+            <foreach collection="contractStatusList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+           AND sscb.CONTRACT_CODE is NOT null AND sscb.CONTRACT_CODE != ''
+           ORDER BY sscb.CONTRACT_ID DESC
+    </select>
+
+    <select id="findChooseDelivery" resultType="com.msk.ssc.bean.SSC11314RsResult" parameterType="com.msk.ssc.bean.SSC11314RsParam">
+        SELECT
+            ssdob.DELIVERY_CODE AS deliveryCode,
+            ssdob.CONTRACT_CODE AS contractCode,
+            sscb.CONTRACT_NAME AS contractName
+        FROM
+            ssc_delivery_order_basic ssdob
+        LEFT JOIN ssc_contract_basic sscb
+        ON sscb.CONTRACT_CODE = ssdob.CONTRACT_CODE
+        AND sscb.DEL_FLG = 0
+        WHERE
+            ssdob.DEL_FLG = 0
+        <if test="contractCode!=null and contractCode!=''">
+            AND ssdob.CONTRACT_CODE = #{contractCode}
+        </if>
+        AND ssdob.DELIVERY_ID NOT IN (select DELIVERY_ID from ssc_delivery_confirm_basic WHERE DEL_FLG = 0)
+        AND ssdob.DELIVERY_STATUS = #{deliveryStatus}
+        order by ssdob.DELIVERY_CODE desc
+    </select>
+
+    <!--验证发货确认表是否已经存在要添加的数据-->
+    <select id="checkDeliveryConfirm" resultType="com.msk.ssc.bean.SSC11314RsResult" parameterType="com.msk.ssc.bean.SSC11314RsParam">
+        SELECT
+            ssdcb.DELIVERY_CODE AS deliveryCode,
+            ssdcb.CONTRACT_CODE AS contractCode
+        FROM
+            ssc_delivery_confirm_basic ssdcb
+        WHERE
+            ssdcb.DEL_FLG = 0
+        <if test="contractCode!=null and contractCode!=''">
+        AND ssdcb.CONTRACT_CODE = #{contractCode}
+        </if>
+        AND ssdcb.DELIVERY_CODE = #{deliveryCode}
+    </select>
+
+    <select id="findDeliveryBasicInfo" resultType="com.msk.ssc.bean.SSC11314DeliveryConfirmParam" parameterType="com.msk.ssc.bean.SSC11314RsParam">
+          SELECT
+            ssdob.DELIVERY_ID as deliveryId,
+            ssdob.DELIVERY_CODE as deliveryCode,
+            ssdob.CONTRACT_ID as contractId,
+            ssdob.CONTRACT_CODE as contractCode,
+            ssdob.DELIVERY_BATCH as deliveryBatch,
+            ssdob.SUPPLIER_ID as supplierId,
+            ssdob.SUPPLIER_NAME as supplierName,
+            ssdob.SUPPLIER_CODE as supplierCode,
+            ssdob.PURCHASER_ID as purchaserId,
+            ssdob.PURCHASER_NAME as purchaserName,
+            ssdob.PURCHASER_CODE as purchaserCode,
+            ssdob.ETD as etd,
+            ssdob.ETA as eta,
+            ssdob.DELIVERY_WAREHOUSE as deliveryWarehouse,
+            ssdob.DELIVERY_WAREHOUSE_ADDR as deliveryWarehouseAddr,
+            ssdob.ARRIVE_WAREHOUSE_ADDR as arriveWarehouseAddr,
+            ssdob.ARRIVE_WAREHOUSE as arriveWarehouse,
+            ssdob.DELIVERY_STATUS as deliveryStatus,
+            ssdob.FREIGHT_SETTLE_METHOD as freightSettleMethod,
+            ssdob.FREIGHT_UNIT as freightUnit,
+            ssdob.MILEAGE as mileage,
+            ssdob.TRANSPORT_UNIT as transportUnit,
+            ssdob.TRANSPORT_COST as transportCost,
+            ssdob.REMARK as remark,
+            ssdob.ARRIVE_WAREHOUSE as arriveWarehouse
+            FROM
+                ssc_delivery_order_basic ssdob
+            WHERE
+                ssdob.DEL_FLG = 0
+            <if test="contractCode!=null and contractCode!=''">
+                AND ssdob.CONTRACT_CODE = #{contractCode}
+            </if>
+            AND ssdob.DELIVERY_CODE = #{deliveryCode}
+    </select>
+    <select id="findDeliveryPdInfo" resultType="com.msk.ssc.bean.SSC11314DeliveryConfirmPdParam" parameterType="com.msk.ssc.bean.SSC11314RsParam">
+
+        SELECT
+            ssdop.DETAIL_ID as detailId,
+            ssdop.DELIVERY_ID as deliveryId,
+            ssdop.DELIVERY_CODE as deliveryCode,
+            ssdop.PD_CODE as pdCode,
+            ssdop.PD_DESC as pdDesc,
+            ssdop.CLASSES_CODE as classesCode,
+            ssdop.CLASSES_NAME as classesName,
+            ssdop.MACHINING_CODE as machiningCode,
+            ssdop.MACHINING_NAME as machiningName,
+            ssdop.BREED_CODE as breedCode,
+            ssdop.BREED_NAME as breedName,
+            ssdop.FEATURE_CODE as featureCode,
+            ssdop.FEATURE_NAME as featureName,
+            ssdop.WEIGHT_CODE as weightCode,
+            ssdop.WEIGHT_NAME as weightName,
+            ssdop.WEIGHT_VAL as weightVal,
+            ssdop.NORMS_CODE as normsCode,
+            ssdop.NORMS_NAME as normsName,
+            ssdop.GRADE_CODE as gradeCode,
+            ssdop.GRADE_NAME as gradeName,
+            ssdop.PRODUCT_QUALITY_STANDARD as productQualityStandard,
+            ssdop.PRODUCT_QUA as productQua,
+            ssdop.PRODUCT_BOX as productBox,
+            ssdop.FOB_FREE_PACKAGE as fobFreePackage,
+            ssdop.PACKAGE_COST as packageCost,
+            ssdop.FOB_INCLUDE_PACKAGE as fobIncludePackage,
+            ssdop.TRUNK_FREIGHT as trunkFreight,
+            ssdop.CIF as cif,
+            ssdop.SETTKEMENT_STANDARD_PRICE as settkementStandardPrice,
+            ssdop.STANDARD_PRICE as standardPrice,
+            ssdop.PRODUCT_VALUE as productValue,
+            ssdop.REMARK as remark
+            FROM
+                ssc_delivery_order_pd ssdop
+            WHERE
+                ssdop.DEL_FLG = 0
+            AND ssdop.DELIVERY_CODE = #{deliveryCode}
+    </select>
+    <insert id="insertDeliveryConfirmBasic" parameterType="com.msk.ssc.bean.SSC11314DeliveryConfirmParam">
+        INSERT INTO ssc_delivery_confirm_basic (
+                DELIVERY_CONFIRM_ID,
+                DELIVERY_CONFIRM_CODE,
+                CONTRACT_ID,
+                CONTRACT_CODE,
+                DELIVERY_ID,
+                DELIVERY_CODE,
+                DELIVERY_BATCH,
+                SUPPLIER_ID,
+                SUPPLIER_NAME,
+                SUPPLIER_CODE,
+                PURCHASER_ID,
+                PURCHASER_NAME,
+                PURCHASER_CODE,
+                ETD,
+                ETA,
+                DELIVERY_WAREHOUSE,
+                DELIVERY_WAREHOUSE_ADDR,
+                ARRIVE_WAREHOUSE_ADDR,
+                ARRIVE_WAREHOUSE,
+                FREIGHT_SETTLE_METHOD,
+                FREIGHT_UNIT,
+                MILEAGE,
+                TRANSPORT_UNIT,
+                FREIGHT,
+                BY_CONFIRM_STATUS,
+                WH_CONFIRM_STATUS,
+                PD_CONFIRM_STATUS,
+                DELIVERY_CONFIRM_STATUS,
+                REMARK,
+                DEL_FLG,
+                CRT_ID,
+                CRT_TIME,
+                UPD_ID,
+                UPD_TIME,
+                VER
+            )
+            VALUES
+                (
+                    #{deliveryConfirmId},
+                    #{deliveryConfirmCode},
+                    #{contractId},
+                    #{contractCode},
+                    #{deliveryId},
+                    #{deliveryCode},
+                    #{deliveryBatch},
+                    #{supplierId},
+                    #{supplierName},
+                    #{supplierCode},
+                    #{purchaserId},
+                    #{purchaserName},
+                    #{purchaserCode},
+                    #{etd},
+                    #{eta},
+                    #{deliveryWarehouse},
+                    #{deliveryWarehouseAddr},
+                    #{arriveWarehouseAddr},
+                    #{arriveWarehouse},
+                    #{freightSettleMethod},
+                    #{freightUnit},
+                    #{mileage},
+                    #{transportUnit},
+                    #{transportCost},
+                    0,
+                    0,
+                    0,
+                    1,
+                    #{remark},
+                    0,
+                    #{crtId},
+                    #{crtTime},
+                    #{updId},
+                    #{updTime},
+                    1
+                )
+
+    </insert>
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO ssc_delivery_confirm_pr_detail (
+                    DETAIL_ID,
+                    DELIVERY_CONFIRM_ID,
+                    DELIVERY_CONFIRM_CODE,
+                    PD_CODE,
+                    PD_DESC,
+                    CLASSES_CODE,
+                    CLASSES_NAME,
+                    MACHINING_CODE,
+                    MACHINING_NAME,
+                    BREED_CODE,
+                    BREED_NAME,
+                    FEATURE_CODE,
+                    FEATURE_NAME,
+                    WEIGHT_CODE,
+                    WEIGHT_NAME,
+                    WEIGHT_VAL,
+                    NORMS_CODE,
+                    NORMS_NAME,
+                    GRADE_CODE,
+                    GRADE_NAME,
+                    PRODUCT_QUALITY_STANDARD,
+                    PRODUCT_QUA,
+                    PRODUCT_CONFIRM_BOX,
+                    FOB_FREE_PACKAGE,
+                    PACKAGE_COST,
+                    FOB_INCLUDE_PACKAGE,
+                    TRUNK_FREIGHT,
+                    CIF,
+                    SETTKEMENT_STANDARD_PRICE,
+                    PRODUCT_VALUE,
+                    REMARK,
+                    DEL_FLG,
+                    CRT_ID,
+                    CRT_TIME,
+                    UPD_ID,
+                    UPD_TIME,
+                    VER
+
+                )
+                    VALUES
+                <foreach collection ="list" item ="item" index ="index" separator =",">
+                (
+                    #{item.detailId},
+                    #{item.deliveryConfirmId},
+                    #{item.deliveryConfirmCode},
+                    #{item.pdCode},
+                    #{item.pdDesc},
+                    #{item.classesCode},
+                    #{item.classesName},
+                    #{item.machiningCode},
+                    #{item.machiningName},
+                    #{item.breedCode},
+                    #{item.breedName},
+                    #{item.featureCode},
+                    #{item.featureName},
+                    #{item.weightCode},
+                    #{item.weightName},
+                    #{item.weightVal},
+                    #{item.normsCode},
+                    #{item.normsName},
+                    #{item.gradeCode},
+                    #{item.gradeName},
+                    #{item.productQualityStandard},
+                    #{item.productQua},
+                    #{item.productBox},
+                    #{item.fobFreePackage},
+                    #{item.packageCost},
+                    #{item.fobIncludePackage},
+                    #{item.trunkFreight},
+                    #{item.cif},
+                    #{item.settkementStandardPrice},
+                    #{item.productValue},
+                    #{item.remark},
+                    0,
+                    #{item.crtId},
+                    #{item.crtTime},
+                    #{item.updId},
+                    #{item.updTime},
+                    1
+                )
+        </foreach>
+    </insert>
+
+    <update id="deleteConfirmBasic" parameterType="com.msk.ssc.bean.SSC11314RsParam">
+        update ssc_delivery_confirm_basic
+        set
+        DELIVERY_CONFIRM_STATUS = #{deliveryConfirmStatus},
+        DEL_FLG = 1,
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        DELIVERY_CONFIRM_CODE = #{deliveryConfirmCode}
+        AND DEL_FLG = 0
+    </update>
+
+</mapper>

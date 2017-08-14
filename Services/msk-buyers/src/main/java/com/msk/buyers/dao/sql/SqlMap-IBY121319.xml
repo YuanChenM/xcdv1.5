@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121319Logic">
+    <select id="findBuyerCode" resultType="com.msk.core.entity.ByBuyerBasicInfo" parameterType="com.msk.buyers.bean.IBY121319RsParam">
+        SELECT
+            a.BUYER_ID,
+            a.BUYER_CODE AS buyerCode,
+            a.PROVINCE_CODE,
+            a.PROVINCE_NAME,
+            a.CITY_CODE,
+            a.CITY_NAME,
+            a.DISTRICT_CODE,
+            a.DISTRICT_NAME
+        FROM
+            by_buyer_basic_info a
+        WHERE a.DEL_FLG = '0'
+        AND a.BUYER_ID = #{buyerId}
+    </select>
+
+    <select id="findShOdDeliveryArea" resultType="com.msk.core.entity.ByBuyerDelivery" parameterType="com.msk.buyers.bean.IBY121319RsParam">
+         SELECT
+            b.SH_OD_DELIVERY_AREA AS shOdDeliveryArea
+        FROM
+            by_buyer_basic_info a
+        INNER JOIN by_buyer_delivery b ON b.BUYER_ID = a.BUYER_ID
+        WHERE a.DEL_FLG = '0'
+        AND b.DEL_FLG = '0'
+        AND a.BUYER_ID = #{buyerId}
+        AND b.PROVINCE_NAME = #{provinceName}
+        AND b.CITY_NAME = #{cityName}
+        AND b.DISTRICT_NAME = #{districtName}
+        AND b.DELIVERY_ADDR = #{deliveryAddr}
+        GROUP BY a.BUYER_ID
+    </select>
+</mapper>

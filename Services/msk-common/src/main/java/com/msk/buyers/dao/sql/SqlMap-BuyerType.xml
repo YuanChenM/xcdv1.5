@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BuyerTypeLogic">
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerType">
+        SELECT
+            BUYER_TYPE_FULL_CODE AS buyerTypeFullCode,
+            BUYER_TYPE AS buyerType,
+            BUYER_TYPE_NAME AS buyerTypeName,
+            BUYER_SUB_TYPE AS buyerSubType,
+            BUYER_SUB_TYPE_NAME AS buyerSubTypeName
+        FROM
+            by_buyer_type
+        WHERE
+            DEL_FLG = 0
+        ORDER BY
+            BUYER_TYPE,
+            BUYER_SUB_TYPE
+    </select>
+</mapper>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231199RsLogic">
+	<select id="getCodeName"  resultType="com.msk.seller.bean.ISL231199RsBean">
+		SELECT
+     		DISTINCT
+     		B.LGCS_AREA_CODE AS lgcsCode,
+     		IFNULL(B.LGCS_AREA_NAME,'') AS lgcsName
+		FROM
+		sl_product AS A
+		INNER JOIN  sl_seller  B ON  A.SL_CODE =  B.SL_CODE
+		WHERE
+		A.STATUS in  (4,5)
+		AND A.DEL_FLG = 0
+		AND B.DEL_FLG = 0
+		ORDER BY B.LGCS_AREA_CODE
+     </select>
+
+
+	<select id="getCodeShowName" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231199RsBean">
+		SELECT
+		DISTINCT
+		A.SL_CODE AS suppCode,
+		IFNULL(c.EP_NAME,'') AS suppName
+		FROM
+		sl_product AS A
+		INNER JOIN  sl_seller  B ON  A.SL_CODE =  B.SL_CODE
+		LEFT JOIN sl_enterprise C ON B.EP_ID = C.EP_ID  AND  C.DEL_FLG = 0
+		WHERE
+		A.STATUS in  (4,5)
+		AND A.DEL_FLG = 0
+		AND B.DEL_FLG = 0
+		<if test="lgcsCode!=null and lgcsCode!=''">
+			AND B.LGCS_AREA_CODE=#{lgcsCode}
+		</if>
+		ORDER BY A.SL_CODE
+	</select>		
+
+
+	<select id="findPageList" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231199RsBean">
+		select
+		A.SL_QLT_GRADE_CODE AS slQltGradeCode,
+		A.SL_CODE AS suppCode,
+		C.EP_NAME AS suppName,
+		A.PD_CLASSES_CODE AS pdClassesCode,
+		A.MACHINING_CODE AS pdMachiningCode,
+		A.PD_BREED_CODE AS pdBreedCode,
+		A.PD_FEATURE_CODE AS pdFeatureCode,
+		A.WEIGHT_CODE AS pdWeightCode,
+		A.SL_TNC_GRADE_CODE AS slTncGradeCode,
+		CONCAT(IFNULL(A.PD_CLASSES_CODE,''),IFNULL(A.MACHINING_CODE,''),IFNULL(A.PD_BREED_CODE,''),
+		IFNULL(A.PD_FEATURE_CODE,''),IFNULL(A.WEIGHT_CODE,''),IFNULL(A.SL_TNC_GRADE_CODE,'')) AS pdCode,
+		B.LGCS_AREA_CODE AS lgcsCode,
+		B.LGCS_AREA_NAME AS lgcsName,
+		B.SL_MAIN_CLASS AS slmainClass
+		FROM
+		sl_product AS A
+		INNER JOIN  sl_seller  B ON  A.SL_CODE =  B.SL_CODE
+		LEFT JOIN sl_enterprise C ON B.EP_ID = C.EP_ID AND  C.DEL_FLG = 0
+		<include refid="whereSql"/>
+		group by A.PD_CLASSES_CODE,
+		A.MACHINING_CODE,
+		A.PD_BREED_CODE,
+		A.PD_FEATURE_CODE,
+		A.WEIGHT_CODE,
+		A.SL_TNC_GRADE_CODE
+		ORDER BY B.LGCS_AREA_CODE,B.SL_CODE
+		<if test="paging==true">
+			LIMIT #{startPos},#{pageCount};
+		</if>
+	</select>
+
+	<select id="getPageCount" parameterType="BaseParam" resultType="int">
+		SELECT  count(1)  FROM (
+		SELECT
+		A.SL_CODE
+		FROM
+		sl_product AS A
+		INNER JOIN  sl_seller  B ON  A.SL_CODE =  B.SL_CODE
+		LEFT JOIN sl_enterprise C ON B.EP_ID = C.EP_ID AND  C.DEL_FLG = 0
+		<include refid="whereSql"/>
+		group by A.PD_CLASSES_CODE,
+		A.MACHINING_CODE,
+		A.PD_BREED_CODE,
+		A.PD_FEATURE_CODE,
+		A.WEIGHT_CODE,
+		A.SL_TNC_GRADE_CODE ) aa
+	</select>
+
+
+	<sql id="whereSql">
+		<where>
+			A.STATUS in  (4,5)
+			AND A.DEL_FLG = 0
+			AND B.DEL_FLG = 0
+			<if test="slCode != null and slCode != ''">
+				AND A.SL_CODE   = #{slCode}
+			</if>
+			<if test="lgcsCode != null and lgcsCode != ''">
+				AND B.LGCS_AREA_CODE  = #{lgcsCode}
+			</if>
+			<if test="filterMap.brandTypes!=null and filterMap.brandTypes!='' ">
+				AND  A.SL_QLT_GRADE_CODE IN
+				<foreach collection="filterMap.brandTypes" item="brandType" open="(" separator="," close=")">
+				#{brandType}
+				</foreach>
+			</if>
+			<if test="filterMap.breedName!=null and filterMap.breedName!=''">
+				AND  A.PD_BREED_NAME LIKE #{filterMap.breedName}
+			</if>
+			<if test="filterMap.featureName!=null and filterMap.featureName!=''">
+				AND  A.PD_FEATURE_NAME LIKE #{filterMap.featureName}
+			</if>
+		</where>
+	</sql>
+
+</mapper>

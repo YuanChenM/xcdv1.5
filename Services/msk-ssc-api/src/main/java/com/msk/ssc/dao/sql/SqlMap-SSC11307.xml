@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11307Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        A.CONTRACT_ID as contractId,
+        A.CONTRACT_CODE as contractCode,
+        A.CONTRACT_NAME as contractName,
+        A.CONTRACT_STATUS as contractStatus,
+        A.CONTRACT_AMOUNT as contractAmount,
+        B.PAYMENT_REQUEST_ID as paymentRequestId,
+        B.PAYMENT_REQUEST_CODE as paymentRequestCode,
+        B.PAYMENT_REQUEST_NAME as paymentRequestName,
+        B.APPLICANT as applicant,
+        IFNUll(B.DELIVERY_ID,'') as deliveryId,
+        IFNUll(B.DELIVERY_CODE,'') as deliveryCode,
+        B.SUPPLIER_ID as supplierId,
+        B.SUPPLIER_NAME as supplierName,
+        B.SUPPLIER_CODE as supplierCode,
+        B.DELIVERY_BATCH as deliveryBatch,
+        B.SUPPLIER_BANK as supplierBank,
+        B.SUPPLIER_ACCOUNT as supplierAccount,
+        B.PURCHASER_ID as purchaserId,
+        B.PURCHASER_NAME as purchaserName,
+        B.PURCHASER_CODE as purchaserCode,
+        B.PAYMENT_TYPE as paymentType,
+        B.PAYMENT_TERM as paymentTerm,
+        B.PAYMENT_METHOD as paymentMethod,
+        DATE_FORMAT(B.ACCOUNTING_DATE,'%Y-%m-%d') AS accountingDateSrr,
+        DATE_FORMAT(B.PAYMENT_DEADLINE,'%Y-%m-%d') AS paymentDeadline,
+        B.AMOUNT as amount,
+        B.REMARK as remark,
+        B.APPROVAL_FLAG as approvalFlag,
+        B.APPROVAL_REMARK as approvalRemark,
+        B.APPROVAL_PERSON as approvalPerson,
+        DATE_FORMAT(B.APPROVAL_DATE,'%Y-%m-%d') AS approvalDate,
+        B.AUDITING_FLAG as auditingFlag,
+        B.AUDITING_REMARK as auditingRemark,
+        B.AUDITING_PERSON as auditingPerson,
+        B.AUDITING_STATUS as auditingStatus,
+        DATE_FORMAT(B.AUDITING_DATE,'%Y-%m-%d') AS auditingDate,
+        B.PAYED_STATUS as payedStatus,
+        A.CONTRACT_AMOUNT as contractTotalAmount,
+        B.DELIVER_TOTAL_AMOUNT as deliverTotalAmount,
+        B.TRANSPORT_AMOUNT as transportAmount,
+        B.PACKAGE_AMOUNT as packageAmount,
+        IFNUll( B.PAID_AMOUNT,'') as paidAmount,
+        IFNUll( B.PAID_DOWN_PAYMENT_PERCENTAGE,'') as paidDownPaymentPercentage,
+        IFNUll( B.VERIFICATION_AMOUNT,'') as verificationAmount,
+        B.DEL_FLG AS delFlg,
+        B.VER AS ver
+    </sql>
+
+    <!--条件 -->
+    <sql id="whereCondition1">
+        <where>
+            <if test="paymentRequestCode!=null and paymentRequestCode!=''">
+                AND B.PAYMENT_REQUEST_CODE LIKE  #{paymentRequestCode}
+            </if>
+            <if test="paymentRequestName!=null and paymentRequestName!=''">
+                AND B.PAYMENT_REQUEST_NAME LIKE #{paymentRequestName}
+            </if>
+            <if test="supplierName!=null and supplierName!=''">
+                AND B.SUPPLIER_NAME LIKE #{supplierName}
+            </if>
+            <if test="contractCode!=null and contractCode!=''">
+                AND A.CONTRACT_CODE LIKE #{contractCode}
+            </if>
+            <if test="contractName!=null and contractName!=''">
+                AND A.CONTRACT_NAME LIKE #{contractName}
+            </if>
+            <if test="deliveryCode!=null and deliveryCode!=''">
+                AND B.DELIVERY_CODE LIKE  #{deliveryCode}
+            </if>
+            <if test="deliveryId!=null and deliveryId!=''">
+                AND B.DELIVERY_ID =  #{deliveryId}
+            </if>
+            <if test="paymentTypeArr !=null and paymentTypeArr.length>0">
+                AND B.PAYMENT_TYPE in
+                <foreach item="paymentTypeArrItem" index="index" collection="paymentTypeArr"
+                         open="(" separator="," close=")">
+                    #{paymentTypeArrItem}
+                </foreach>
+            </if>
+            <if test="paymentStatusArr !=null and paymentStatusArr.length>0">
+                AND B.PAYED_STATUS in
+                <foreach item="paymentStatusArrItem" index="index" collection="paymentStatusArr"
+                         open="(" separator="," close=")">
+                    #{paymentStatusArrItem}
+                </foreach>
+            </if>
+            <if test="auditingStatusArr !=null and auditingStatusArr.length>0">
+                AND B.AUDITING_STATUS in
+                <foreach item="auditingStatusArrItem" index="index" collection="auditingStatusArr"
+                         open="(" separator="," close=")">
+                    #{auditingStatusArrItem}
+                </foreach>
+            </if>
+            <if test="contractStatusArr !=null and contractStatusArr.length>0">
+                AND A.CONTRACT_STATUS in
+                <foreach item="contractStatusArrItem" index="index" collection="contractStatusArr"
+                         open="(" separator="," close=")">
+                    #{contractStatusArrItem}
+                </foreach>
+            </if>
+
+            <if test="paymentStatusArr==null and contractStatusArr==null">
+                <if test="contractCode!=null and contractCode!=''">
+                    AND A.DEL_FLG=0
+                    AND A.CONTRACT_STATUS !='9'
+                </if>
+                AND B.DEL_FLG=0
+                AND B.PAYED_STATUS !='9'
+            </if>
+        </where>
+    </sql>
+
+    <!--Modif for Bug#2559 at 2016/09/09 by peng_hao Start-->
+    <sql id="whereConditionTotalPaidAmount">
+        <where>
+            <if test="contractId!=null and contractId!=''">
+                AND CONTRACT_ID ='#{contractId}'
+            </if>
+            AND DEL_FLG=0
+        </where>
+    </sql>
+    <!--Modif for Bug#2559 at 2016/09/09 by peng_hao End-->
+
+    <sql id="whereConditionMaxRemitTime">
+        <where>
+            <if test="filterMap.remitTimeStr!=null and filterMap.remitTimeStr!=''">
+                AND DATE_FORMAT(REMIT_TIME,'%Y-%m-%d') LIKE #{remitTimeStr}
+            </if>
+            AND STATUS=2
+            AND DEL_FLG=0
+        </where>
+
+    </sql>
+
+    <!--查询付款申请列表-->
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11307RsBean"
+            parameterType="com.msk.ssc.bean.SSC11307RsParam">
+        SELECT
+        <include refid="selectSql"/>
+        FROM
+        SSC_PAYMENT_REQUEST AS B
+        LEFT JOIN SSC_CONTRACT_BASIC AS A
+        ON  A.CONTRACT_ID =B.CONTRACT_ID
+        <include refid="whereCondition1"/>
+        ORDER BY PAYMENT_REQUEST_ID DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        FROM
+        SSC_PAYMENT_REQUEST AS B
+        LEFT JOIN SSC_CONTRACT_BASIC AS A
+        ON  A.CONTRACT_ID =B.CONTRACT_ID
+        <include refid="whereCondition1"/>
+    </select>
+
+
+    <update id="deletePaymentRequest" parameterType="com.msk.ssc.bean.SSC11307RsParam">
+        UPDATE SSC_PAYMENT_REQUEST
+        SET DEL_FLG = #{delFlg},
+            PAYED_STATUS = #{payedStatus},
+            UPD_ID = #{updId},
+           UPD_TIME = #{updTime},
+           VER = VER + 1
+        WHERE PAYMENT_REQUEST_ID = #{paymentRequestId}
+    </update>
+
+    <!--Modif for Bug#2559 at 2016/09/09 by peng_hao Start-->
+    <select id="getTotalPaidAmount" resultType="com.msk.ssc.bean.SSC11307RsBean" parameterType="com.msk.ssc.bean.SSC11307RsParam">
+        select
+            sum(IF(PAYMENT_TYPE=2 AND VERIFICATION_AMOUNT &lt; 0, -1*PAID_AMOUNT, PAID_AMOUNT)) AS totalPaidAmount,
+                CONTRACT_ID AS contractId
+        FROM  SSC_PAYMENT_REQUEST
+        <include refid="whereConditionTotalPaidAmount"/>
+        GROUP by CONTRACT_ID
+    
+
+    </select>
+    <!--Modif for Bug#2559 at 2016/09/09 by peng_hao End-->
+
+    <select id="getMaxRemitTime" resultType="com.msk.ssc.bean.SSC11307RsBean" parameterType="com.msk.ssc.bean.SSC11307RsParam">
+        select MAX(DATE_FORMAT(REMIT_TIME,'%Y-%m-%d %H:%i:%S')) as remitTimeStr
+               ,PAYMENT_REQUEST_CODE as paymentRequestCode
+               ,STATUS as status
+        FROM  SSC_PAYMENT_INFO
+        <include refid="whereConditionMaxRemitTime"/>
+        GROUP BY PAYMENT_REQUEST_CODE
+   </select>
+
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171111Logic">
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.price.bean.SP171111Bean">
+        SELECT
+             A.PRICE_ID AS priceId
+            ,A.PD_CODE AS pdCode
+            ,IFNULL(C.MACHINING, '') AS machiningName
+            ,IFNULL(C.CLASSES, '') AS classesName
+            ,IFNULL(C.BREED, '') AS breedName
+            ,IFNULL(C.FEATURE, '') AS featureName
+            ,IFNULL(C.WEIGHT, '') AS weightName
+            ,IFNULL(C.PD_NAME, '') AS pdName
+            ,IFNULL(C.GRADE, '') AS gradeName
+            ,IFNULL(A.SL_ID,'') AS slId
+            ,IFNULL(A.EP_NAME,'') AS epName
+            ,B.WAYGRADE_PRICE AS wayGradePrice
+        FROM SP_SELLER_PD_PRICE A
+        INNER JOIN  SP_SELLER_PD_PRICE_DETAIL B ON
+            A.PRICE_ID = B.PRICE_ID
+        INNER JOIN  SP_LOGS_PRODUCT C ON
+            A.PD_CODE = C.PD_CODE
+            AND A.LGCS_CODE = C.LGCS_CODE
+            AND B.WAYGRADE_CODE = 5
+            AND A.DEL_FLG = 0
+            AND B.DEL_FLG = 0
+            AND C.DEL_FLG = 0
+        <include refid="whereCondition1"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        FROM SP_SELLER_PD_PRICE A
+        INNER JOIN  SP_SELLER_PD_PRICE_DETAIL B ON
+        A.PRICE_ID = B.PRICE_ID
+        AND B.WAYGRADE_CODE = 5
+        AND A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+        <include refid="whereCondition1"/>
+    </select>
+
+    <sql id="whereCondition1">
+        <where>
+            <if test="filterMap.pricePeriod!=null and filterMap.pricePeriod!=''">
+            AND A.PRICE_PERIOD = #{filterMap.pricePeriod}
+        </if>
+            <if test="filterMap.lgcsCode!=null and filterMap.lgcsCode!=''">
+                AND A.LGCS_CODE = #{filterMap.lgcsCode}
+            </if>
+            <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+                AND A.PD_CODE = #{filterMap.pdCode}
+            </if>
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND A.SL_CODE != #{filterMap.slCode}
+            </if>
+        </where>
+    </sql>
+</mapper>

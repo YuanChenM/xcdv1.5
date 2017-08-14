@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD14112406Logic">
+
+
+    <!--一级类目classes-->
+    <select id="findListClassesList" parameterType="com.hoperun.core.bean.BaseParam"
+            resultType="com.msk.product.bean.PD141124Bean">
+    SELECT
+    CLASSESTREE_CODE AS classestreeCode
+   ,A.LEVEL_NAME AS levelName
+   ,A.LEVEL_CODE AS levelCode
+    FROM PD_CLASSESTREE A
+    WHERE A.TREE_LEVEL = #{filterMap.level} AND A.CLASSESTREE_CODE = #{filterMap.classestreeCode} AND A.DEL_FLG = 0
+    ORDER BY A.LEVEL_CODE
+    </select>
+
+    <!--二级类目mac-->
+    <select id="findListLevel2List" parameterType="com.hoperun.core.bean.BaseParam"
+            resultType="com.msk.product.bean.PD141124Level2Bean">
+    SELECT
+    CLASSESTREE_CODE AS classestreeCode
+    ,A.LEVEL_NAME AS level2Name
+    ,A.PARENT_CODE AS parentCode
+    ,A.LEVEL_CODE AS level2Code
+    FROM PD_CLASSESTREE A
+    WHERE A.PARENT_CODE = #{filterMap.parentCode} AND A.DEL_FLG = 0
+    <if test="filterMap.classestreeCode != '' and filterMap.classestreeCode != null">
+        AND A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+    </if>
+    ORDER BY A.LEVEL_CODE
+    </select>
+
+    <!--三级类目breed-->
+    <select id="findListLevel3List" parameterType="com.hoperun.core.bean.BaseParam"
+            resultType="com.msk.product.bean.PD141124Level3Bean">
+        SELECT
+        CLASSESTREE_CODE AS classestreeCode
+        ,A.LEVEL_NAME AS level3Name
+        ,A.LEVEL_CODE AS level3Code
+        ,A.PARENT_CODE AS parentCode
+        FROM PD_CLASSESTREE A
+        WHERE A.PARENT_CODE = #{filterMap.parentCode} AND A.DEL_FLG = 0
+        <if test="filterMap.classestreeCode != '' and filterMap.classestreeCode != null">
+            AND A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+        </if>
+        ORDER BY A.LEVEL_CODE
+    </select>
+
+    <!--四级类目feature-->
+    <select id="findListLevel4List" parameterType="com.hoperun.core.bean.BaseParam"
+            resultType="com.msk.product.bean.PD141124Level4Bean">
+        SELECT
+        CLASSESTREE_CODE AS classestreeCode
+        ,A.LEVEL_NAME AS level4Name
+        ,A.LEVEL_CODE AS level4Code
+        ,A.PARENT_CODE AS parentCode
+        FROM PD_CLASSESTREE A
+        WHERE A.PARENT_CODE = #{filterMap.parentCode} AND A.DEL_FLG = 0
+        <if test="filterMap.classestreeCode != '' and filterMap.classestreeCode != null">
+            AND A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+        </if>
+        ORDER BY A.LEVEL_CODE
+    </select>
+
+    <!--五级类目-->
+    <select id="findListLevel5List" parameterType="com.hoperun.core.bean.BaseParam"
+            resultType="com.msk.product.bean.PD141124Level5Bean">
+        SELECT
+        CLASSESTREE_CODE AS classestreeCode
+        ,A.LEVEL_NAME AS level5Name
+        ,A.PARENT_CODE AS parentCode
+        ,A.LEVEL_CODE AS level5Code
+        FROM PD_CLASSESTREE A
+        WHERE A.PARENT_CODE = #{filterMap.parentCode} AND A.DEL_FLG = 0
+        <if test="filterMap.classestreeCode != '' and filterMap.classestreeCode != null">
+            AND A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+        </if>
+        ORDER BY A.LEVEL_CODE
+    </select>
+
+    <!--6级类目-->
+    <select id="findListLevel6List" parameterType="com.hoperun.core.bean.BaseParam"
+            resultType="com.msk.product.bean.PD141124Level6Bean">
+        SELECT
+        CLASSESTREE_CODE AS classestreeCode
+        ,A.LEVEL_NAME AS level6Name
+        ,A.PARENT_CODE AS parentCode
+        ,A.LEVEL_CODE AS level6Code
+        FROM PD_CLASSESTREE A
+        WHERE A.PARENT_CODE = #{filterMap.parentCode} AND A.DEL_FLG = 0
+        ORDER BY A.LEVEL_CODE
+    </select>
+
+    <!--查询产品类别信息-->
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestree">
+        SELECT CLASSESTREE_CODE
+        FROM PD_CLASSESTREE
+        WHERE PARENT_CODE = #{filterMap.classestreeCode}
+    </select>
+
+    <!-- 删除classes产品类别信息表中数据-->
+    <delete id="removePdClasses" parameterType="BaseParam">
+        DELETE FROM PD_CLASSES
+        WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+    </delete>
+
+    <!-- 删除产品分类信息表中数据-->
+    <delete id="remove" parameterType="BaseParam">
+        DELETE FROM PD_CLASSESTREE
+        WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+    </delete>
+</mapper>

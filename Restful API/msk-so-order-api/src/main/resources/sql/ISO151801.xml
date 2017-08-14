@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151801.check">
+        SELECT COUNT(1) AS count
+        FROM  so_order_ship_detail soda
+        INNER JOIN so_sub_order_detail sod
+        ON soda.ORDER_DETAIL_ID = sod.ORDER_DETAIL_ID
+        AND sod.DEL_FLG = 0
+        WHERE sod.ORDER_QTY = sod.SEND_QTY
+        AND (sod.RECEIVE_QTY IS NULL OR sod.RECEIVE_QTY = 0)
+        AND (sod.CANCEL_QTY IS NULL OR sod.CANCEL_QTY = 0)
+        AND (sod.RETURN_QTY IS NULL OR sod.RETURN_QTY = 0)
+        AND (sod.REJECTION_QTY IS NULL OR sod.REJECTION_QTY = 0)
+        AND sod.RECEIVED_TIME IS NULL
+        AND soda.SUPP_QTY = soda.SEND_QTY
+        AND (soda.RECEIVE_QTY IS NULL OR soda.RECEIVE_QTY = 0)
+        AND (soda.CANCEL_QTY IS NULL OR soda.CANCEL_QTY = 0 )
+        AND (soda.RETURN_QTY IS NULL OR soda.RETURN_QTY = 0)
+        AND (soda.REJECTION_QTY IS NULL OR soda.REJECTION_QTY = 0)
+        AND soda.DEL_FLG = 0
+    </sql>
+
+    <sql id="ISO151801.getReturnAmount">
+        SELECT SUM(IFNULL(soda.SEND_QTY, 0) * IFNULL(sod.pd_price, 0)) as amount
+        FROM so_order_ship_detail soda
+        INNER JOIN so_sub_order_detail sod
+        ON sod.SUB_ORDER_DETAIL_ID = soda.SUB_ORDER_DETAIL_ID
+        AND sod.DEL_FLG = 0
+        WHERE soda.DEL_FLG = 0
+    </sql>
+</sqlList>

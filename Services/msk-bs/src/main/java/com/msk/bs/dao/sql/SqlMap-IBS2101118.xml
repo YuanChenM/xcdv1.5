@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101118RsLogic">
+
+    <select id="findPageList" parameterType="com.msk.bs.bean.IBS2101118Param"
+            resultType="com.msk.bs.bean.IBS2101118Bean">
+        SELECT
+        bs.SL_CODE AS slCode,
+        bs.HOUSE_CODE AS  houseCode,
+        bs.BUYER_ID AS buyerId,
+        bs.START_TIME AS startTime,
+        bs.END_TIME AS endTime,
+        ifnull(bs.APPLY_SIDE,'') AS developmentWay,
+        ifnull(bs.APPLY_STATUS,'') AS applyStatus,
+        bs.APPLY_TIME AS applyTime,
+        ifnull(house.HOUSE_SHOW_NAME,'')AS  houseShowName,
+        '' AS changeReason,
+        house.LGCS_AREA_CODE AS lgcsAreaCode,
+        house.CITY_CODE AS cityCode,
+        house.DISTRICT_CODE AS districtCode
+        FROM  sl_bs_buyer bs
+        LEFT JOIN  sl_house_account house
+        on bs.HOUSE_CODE = house.HOUSE_CODE
+        and bs.SL_CODE = house.SL_CODE
+        and house.DEL_FLG =0
+        WHERE
+        bs.DEL_FLG = 0
+        and  bs.BUYER_ID =#{buyerId}
+        <include refid="whereBuyerCondition"/>
+        <if test="startTime !=null and startTime !='' and endTime !=null and endTime !=''" >
+            Union All
+            SELECT
+            his.SL_CODE AS slCode,
+            his.HOUSE_CODE AS  houseCode,
+            his.BUYER_ID AS buyerId,
+            his.START_TIME AS startTime,
+            his.END_TIME AS endTime,
+            ifnull(his.APPLY_SIDE,'') AS developmentWay,
+            ifnull(his.APPLY_STATUS,'') AS applyStatus,
+            his.APPLY_TIME AS applyTime,
+            ifnull(house.HOUSE_SHOW_NAME,'') AS  houseShowName,
+            ifnull(his.BUYER_REASON,'') AS changeReason,
+            house.LGCS_AREA_CODE AS lgcsAreaCode,
+            house.CITY_CODE AS cityCode,
+            house.DISTRICT_CODE AS districtCode
+            FROM  sl_bs_buyer_his his
+            LEFT JOIN  sl_house_account house
+            on his.HOUSE_CODE = house.HOUSE_CODE
+            and his.SL_CODE = house.SL_CODE
+            and house.DEL_FLG =0
+            where
+            his.DEL_FLG = 0
+            and his.BUYER_ID = #{buyerId}
+            <include refid="whereBuyerHisCondition"/>
+        </if>
+        ORDER BY  buyerId,startTime
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <sql id="whereBuyerCondition">
+        <if test="searchType ==1">
+            AND bs.APPLY_STATUS = 2
+        </if>
+        <if test="searchType==0">
+            AND bs.APPLY_STATUS = 1
+        </if>
+        <if test="startTime !=null and startTime !='' and endTime !=null and endTime !=''">
+            AND (bs.START_TIME BETWEEN #{startTime} AND  #{endTime} OR  bs.END_TIME BETWEEN #{startTime} AND  #{endTime})
+        </if>
+        <if test="startTime ==null and endTime ==null" >
+            AND bs.START_TIME =(
+            SELECT  max(START_TIME) FROM  sl_bs_buyer WHERE
+                  DEL_FLG = 0
+                <if test="searchType ==1">
+                    AND  APPLY_STATUS = 2
+                </if>
+                <if test="searchType==0">
+                    AND  APPLY_STATUS = 1
+                </if>
+                AND BUYER_ID =#{buyerId}
+            )
+        </if>
+        <if test="lgcsAreaCode !=null and lgcsAreaCode !=''">
+            AND  house.LGCS_AREA_CODE =#{lgcsAreaCode}
+        </if>
+        <if test="cityCode !=null and cityCode !=''">
+            AND house.CITY_CODE =#{cityCode}
+        </if>
+        <if test="districtCode !=null and districtCode !='' ">
+            AND house.DISTRICT_CODE= #{districtCode}
+        </if>
+    </sql>
+
+    <sql id="whereBuyerHisCondition">
+        <if test="searchType ==1">
+            AND his.APPLY_STATUS = 2
+        </if>
+        <if test="searchType==0">
+            AND his.APPLY_STATUS = 1
+        </if>
+        <if test="startTime !=null and startTime !='' and endTime !=null and endTime !=''">
+            AND (his.START_TIME BETWEEN #{startTime} AND  #{endTime} OR  his.END_TIME BETWEEN #{startTime} AND  #{endTime})
+        </if>
+        <if test="lgcsAreaCode !=null and lgcsAreaCode !=''">
+            AND  house.LGCS_AREA_CODE =#{lgcsAreaCode}
+        </if>
+        <if test="cityCode !=null and cityCode !=''">
+            AND house.CITY_CODE =#{cityCode}
+        </if>
+        <if test="districtCode !=null and districtCode !='' ">
+            AND house.DISTRICT_CODE= #{districtCode}
+        </if>
+    </sql>
+
+    <select id="count" parameterType="com.msk.bs.bean.IBS2101118Param" resultType="int">
+      SELECT  count(1) FROM (
+            SELECT
+            bs.SL_CODE AS slCode,
+            bs.HOUSE_CODE AS  houseCode,
+            bs.BUYER_ID AS buyerId,
+            bs.START_TIME AS startTime,
+            bs.END_TIME AS endTime,
+            bs.APPLY_SIDE AS developmentWay,
+            ifnull(bs.APPLY_STATUS,'') AS applyStatus,
+            bs.APPLY_TIME AS applyTime,
+            ifnull(house.HOUSE_SHOW_NAME,'')AS  houseShowName,
+             '' AS sl_bs_reason,
+            house.LGCS_AREA_CODE AS lgcsAreaCode,
+            house.CITY_CODE AS cityCode,
+            house.DISTRICT_CODE AS districtCode
+            FROM  sl_bs_buyer bs
+            LEFT JOIN  sl_house_account house
+            on bs.HOUSE_CODE = house.HOUSE_CODE
+            and bs.SL_CODE = house.SL_CODE
+            and house.DEL_FLG =0
+            WHERE
+            bs.DEL_FLG = 0
+            and  bs.BUYER_ID =#{buyerId}
+            <include refid="whereBuyerCondition"/>
+        <if test="startTime !=null and startTime !='' and endTime !=null and endTime !=''">
+            Union All
+            SELECT
+            his.SL_CODE AS slCode,
+            his.HOUSE_CODE AS  houseCode,
+            his.BUYER_ID AS buyerId,
+            his.START_TIME AS startTime,
+            his.END_TIME AS endTime,
+            ifnull(his.APPLY_SIDE,'') AS developmentWay,
+            ifnull(his.APPLY_STATUS,'') AS applyStatus,
+            his.APPLY_TIME AS applyTime,
+            ifnull(house.HOUSE_SHOW_NAME,'') AS  houseShowName,
+            ifnull(his.BUYER_REASON,'') AS changeReason,
+            house.LGCS_AREA_CODE AS lgcsAreaCode,
+            house.CITY_CODE AS cityCode,
+            house.DISTRICT_CODE AS districtCode
+            FROM  sl_bs_buyer_his his
+            LEFT JOIN  sl_house_account house
+            on his.HOUSE_CODE = house.HOUSE_CODE
+            and his.SL_CODE = house.SL_CODE
+            and house.DEL_FLG =0
+            where
+            his.DEL_FLG = 0
+            and his.BUYER_ID = #{buyerId}
+            <include refid="whereBuyerHisCondition"/>
+        </if>
+            ORDER BY  buyerId,startTime
+        ) AS  buyerCount
+    </select>
+
+    <select id="findOne" parameterType="com.msk.bs.bean.IBS2101118Param" resultType="com.msk.core.entity.SlHouseTelmarkingRec" >
+        SELECT
+         SL_CODE AS slCode,
+         HOUSE_CODE AS houseCode,
+         MARKET_CONTENT AS marketContent,
+         PD_FEATURE_CODE AS pdFeatureCode,
+         PROBLEM_CONTENT AS problemContent,
+         BASIC_INFO_CORRECT AS basicInfoCorrect,
+         ONLINE_REC AS onlineRec
+         FROM  sl_house_telmarking_rec
+         WHERE
+         SL_CODE =#{filterMap.slCode}
+          AND  HOUSE_CODE =#{filterMap.houseCode}
+          AND TEL_DATE =(
+              SELECT  max(TEL_DATE) FROM sl_house_telmarking_rec
+              WHERE TEL_DATE  BETWEEN #{filterMap.startTime} AND  #{filterMap.endTime}
+           )
+          AND DEL_FLG = 0
+    </select>
+</mapper>
+

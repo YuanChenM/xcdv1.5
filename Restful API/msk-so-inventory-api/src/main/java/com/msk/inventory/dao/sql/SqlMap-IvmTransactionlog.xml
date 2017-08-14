@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.TransactionLogServiceImpl">
+       <!--插入数据-->
+       <insert id="insertTransactionLog" parameterType="com.msk.inventory.bean.IvmTransactionLogBean">
+              INSERT INTO ivm_transaction_log
+              (
+                PRODUCT_XML,
+                WH_ID,
+                WH_CODE,
+                OWNER_ID,
+                <if test="ownerCode!=null and ownerCode!=''">
+                    OWNER_CODE,
+                </if>
+                <if test="beloneXml!=null and beloneXml!=''">
+                    BELONE_XML,
+                </if>
+                <if test="supplierId!=null and supplierId!=''">
+                    SUPPLIER_ID,
+                </if>
+                SUPPLIER_CODE,
+                TRANSACTION_ID,
+                TRANSACTION_NO,
+                TRANSACTION_TYPE,
+                <if test="transactionDesc!=null and transactionDesc!=''">
+                    TRANSACTION_DESC,
+                </if>
+                PUCHARSE_BATCH,
+                <if test="innerBatch!=null and innerBatch!=''">
+                    INNER_BATCH,
+                </if>
+                <if test="price!=null and price!=''">
+                    PRICE,
+                </if>
+                QTY,
+                <if test="uom!=null and uom!=''">
+                    UOM,
+                </if>
+                <if test="transactionDate!=null">
+                    TRANSACTION_DATE,
+                </if>
+                DEL_FLG,
+                CRT_ID,
+                CRT_TIME,
+                UPD_ID,
+                UPD_TIME,
+                ACT_ID,
+                ACT_TIME,
+                VER
+              )
+              VALUES
+              (
+                #{productXml},
+                #{whId},
+                #{whCode},
+                #{ownerId},
+                <if test="ownerCode!=null and ownerCode!=''">
+                    #{ownerCode},
+                </if>
+                <if test="beloneXml!=null and beloneXml!=''">
+                    #{beloneXml},
+                </if>
+                <if test="supplierId!=null and supplierId!=''">
+                    #{supplierId},
+                </if>
+                #{supplierCode},
+                #{transactionId},
+                #{transactionNo},
+                #{transactionType},
+                <if test="transactionDesc!=null and transactionDesc!=''">
+                    #{transactionDesc},
+                </if>
+                #{pucharseBatch},
+                <if test="innerBatch!=null and innerBatch!=''">
+                    #{innerBatch},
+                </if>
+                <if test="price!=null and price!=''">
+                    #{price},
+                </if>
+                #{qty},
+                <if test="uom!=null and uom!=''">
+                    #{uom},
+                </if>
+                <if test="transactionDate!=null">
+                    #{transactionDate},
+                </if>
+                0,
+                #{crtId},
+                #{crtTime},
+                #{updId},
+                #{updTime},
+                #{actId},
+                #{actTime},
+                1
+              )
+       </insert>
+</mapper>

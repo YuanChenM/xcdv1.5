@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2102117Logic">
+
+    <sql id="selectTrain">
+        IFNULL(TRAIN_ID,'') AS trainId,
+        IFNULL(SL_CODE,'') AS slCode,
+        IFNULL(HOUSE_CODE,'') AS houseCode,
+        TRAIN_START AS trainStart,
+        TRAIN_END AS trainEnd,
+        IFNULL(TRAIN_COMP,'') AS trainComp,
+        IFNULL(TRAIN_CERTIFICATE,'') AS trainCertificate
+    </sql>
+
+    <select id="findPageList" resultType="com.msk.bs.bean.BS2102118Bean" parameterType="com.msk.bs.bean.BS2102116Param">
+        SELECT
+        <include refid="selectTrain"/>
+        FROM sl_house_training
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        AND
+        SL_CODE = #{slCode}
+        AND
+        HOUSE_CODE = #{houseCode}
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.bs.bean.BS2102116Param">
+        SELECT
+        count(1)
+        FROM sl_house_training
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        AND
+        SL_CODE = #{slCode}
+        AND
+        HOUSE_CODE = #{houseCode}
+    </select>
+
+    <update id="modify" parameterType="com.msk.bs.bean.BS2102118Bean">
+        UPDATE sl_house_training
+        SET
+        DEL_FLG = 1,
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId},
+        VER = VER+1
+        WHERE
+        SL_CODE = #{slCode}
+        AND
+        HOUSE_CODE=#{houseCode}
+        AND
+        TRAIN_ID = #{trainId}
+        AND
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+    </update>
+
+    <update id="updateTrainByID" parameterType="com.msk.core.entity.SlHouseTraining">
+        UPDATE sl_house_training
+        SET
+        TRAIN_START = #{trainStart},
+        TRAIN_END = #{trainEnd},
+        TRAIN_COMP = #{trainComp},
+        TRAIN_CERTIFICATE = #{trainCertificate},
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId},
+        VER = VER+1
+        WHERE
+        SL_CODE = #{slCode}
+        AND
+        HOUSE_CODE=#{houseCode}
+        AND
+        TRAIN_ID = #{trainId}
+        AND
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+    </update>
+
+    <select id="findTrainById" resultType="com.msk.bs.bean.BS2102118Bean" parameterType="com.msk.bs.bean.BS2102118Bean">
+        SELECT
+        <include refid="selectTrain"/>
+        FROM sl_house_training
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        AND
+        TRAIN_ID = #{trainId}
+    </select>
+</mapper>
+

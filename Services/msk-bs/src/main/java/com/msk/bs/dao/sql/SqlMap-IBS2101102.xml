@@ -1,0 +1,986 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101102RsLogic">
+    <select id="findSlAccountYesOrNO" resultType="java.lang.Integer" parameterType="BaseParam">
+        SELECT
+        COUNT(1)
+        FROM
+        sl_bs_account
+        WHERE (DEL_FLG IS NULL OR DEL_FLG =0)
+        <if test="filterMap.slAccount != null and filterMap.slAccount != ''">
+            AND SL_ACCOUNT = #{filterMap.slAccount} OR SL_TEL = #{filterMap.slAccount}
+        </if>
+        <if test="filterMap.slTel != null and filterMap.slTel != ''">
+            AND SL_TEL = #{filterMap.slTel}
+        </if>
+    </select>
+
+    <insert id="save" parameterType="com.msk.core.entity.SlAccount">
+        INSERT INTO sl_bs_account (
+        SL_ACCOUNT,
+        SL_TEL,
+        SL_SHOW_NAME,
+        SL_CONTACT,
+        ACCOUNT_PSD,
+        ACCOUNT_IMG,
+        AUTH_STATUS,
+        FROM_FLG,
+        CRT_TIME,
+        CRT_ID,
+        DEL_FLG,
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  End  Start-->
+        VER
+        )
+        VALUES
+        (
+        #{slAccount},
+        #{slTel},
+        #{slShowName},
+        #{slContact},
+        #{accountPsd},
+        #{accountImg},
+        #{authStatus},
+        #{fromFlg},
+        #{crtTime},
+        #{crtId},
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        '0',
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        0
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        )
+    </insert>
+
+    <insert id="saveSlSeller" parameterType="com.msk.core.entity.SlSeller">
+        INSERT INTO sl_bs_basic_info (
+        SL_CODE,
+        SL_ACCOUNT,
+        SL_CODE_DIS,
+        SL_CON_FLG,
+        AREA_CODE,
+        LGCS_AREA_CODE,
+        PROVINCE_CODE,
+        PROVINCE_NAME,
+        CITY_CODE,
+        CITY_NAME,
+        DISTRICT_CODE,
+        DISTRICT_NAME,
+        EP_ID,
+        SL_MAIN_CLASS,
+        SNK_FLG,
+        SELF_FLG,
+        AGENT_FLG,
+        OEM_FLG,
+        BUYER_FLG,
+        SQA_STATUS,
+        DIST_QUA,
+        SHOP_QUA,
+        MEMO1,
+        MEMO2,
+        MEMO3,
+        MEMO4,
+        MEMO5,
+        MEMO6,
+        MEMO7,
+        MEMO8,
+        MEMO9,
+        MEMO10,
+        MEMO11,
+        MEMO12,
+        MEMO13,
+        MEMO14,
+        MEMO15,
+        MEMO16,
+        MEMO17,
+        MEMO18,
+        MEMO19,
+        MEMO20,
+        DEL_FLG,
+        CRT_TIME,
+        CRT_ID,
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  End  Start-->
+        VER
+        )
+        VALUES
+        (
+        #{slCode},
+        #{slAccount},
+        #{slCodeDis},
+        #{slConFlg},
+        #{areaCode},
+        #{lgcsAreaCode},
+        #{provinceCode},
+        #{provinceName},
+        #{cityCode},
+        #{cityName},
+        #{districtCode},
+        #{districtName},
+        #{epId},
+        #{slMainClass},
+        #{snkFlg},
+        #{selfFlg},
+        #{agentFlg},
+        #{oemFlg},
+        #{buyerFlg},
+        #{sqaStatus},
+        #{distQua},
+        #{shopQua},
+        #{memo1},
+        #{memo2},
+        #{memo3},
+        #{memo4},
+        #{memo5},
+        #{memo6},
+        #{memo7},
+        #{memo8},
+        #{memo9},
+        #{memo10},
+        #{memo11},
+        #{memo12},
+        #{memo13},
+        #{memo14},
+        #{memo15},
+        #{memo16},
+        #{memo17},
+        #{memo18},
+        #{memo19},
+        #{memo20},
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        '0',
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        #{crtTime},
+        #{crtId},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        0
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        )
+    </insert>
+
+    <insert id="saveSlBuyershop" parameterType="com.msk.core.entity.SlBuyershop">
+        INSERT INTO sl_bs_buyershop (
+        SL_CODE,
+        SL_IDCARD,
+        SL_SORT,
+        SL_ADDRESS,
+        LAT,
+        LON,
+        FLAG10,
+        FLAG9,
+        FLAG8,
+        FLAG7,
+        FLAG6,
+        FLAG5,
+        FLAG4,
+        FLAG3,
+        FLAG2,
+        FLAG1,
+        CRT_TIME,
+        CRT_ID,
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  End  Start-->
+        VER,
+        <!--Add: 3096 新增买手基本信息和店铺信息保存成功后，数据库存银行信息的表sl_bs_bankaccount和店铺信息表sl_bs_shop_info里的DEL_FLG字段没有值 2016/09/23   BY  朱凯  Start-->
+        DEL_FLG
+        <!--Add: 3096 新增买手基本信息和店铺信息保存成功后，数据库存银行信息的表sl_bs_bankaccount和店铺信息表sl_bs_shop_info里的DEL_FLG字段没有值 2016/09/23   BY  朱凯  end-->
+        )
+        VALUES
+        (
+        #{slCode},
+        #{slIdcard},
+        #{slSort},
+        #{slAddress},
+        #{lat},
+        #{lon},
+        #{flag10},
+        #{flag9},
+        #{flag8},
+        #{flag7},
+        #{flag6},
+        #{flag5},
+        #{flag4},
+        #{flag3},
+        #{flag2},
+        #{flag1},
+        #{crtTime},
+        #{crtId},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        0,
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        <!--Add: 3096 新增买手基本信息和店铺信息保存成功后，数据库存银行信息的表sl_bs_bankaccount和店铺信息表sl_bs_shop_info里的DEL_FLG字段没有值 2016/09/23   BY  朱凯  Start-->
+        0
+        <!--Add: 3096 新增买手基本信息和店铺信息保存成功后，数据库存银行信息的表sl_bs_bankaccount和店铺信息表sl_bs_shop_info里的DEL_FLG字段没有值 2016/09/23   BY  朱凯  end-->
+        )
+    </insert>
+
+
+    <insert id="saveSlShopInfo" parameterType="com.msk.core.entity.SlShopInfo">
+        INSERT INTO sl_bs_shop_info (
+        SL_CODE,
+        SHOP_ID,
+        SHOP_NAME,
+        SHOP_LOGO,
+        MANAGING_CHARACT10,
+        MANAGING_CHARACT9,
+        MANAGING_CHARACT8,
+        MANAGING_CHARACT7,
+        MANAGING_CHARACT6,
+        MANAGING_CHARACT5,
+        MANAGING_CHARACT4,
+        MANAGING_CHARACT3,
+        MANAGING_CHARACT2,
+        MANAGING_CHARACT1,
+        SHOP_FLAG30,
+        SHOP_FLAG29,
+        SHOP_FLAG28,
+        SHOP_FLAG27,
+        SHOP_FLAG26,
+        SHOP_FLAG25,
+        SHOP_FLAG24,
+        SHOP_FLAG23,
+        SHOP_FLAG22,
+        SHOP_FLAG21,
+        SHOP_FLAG20,
+        SHOP_FLAG19,
+        SHOP_FLAG18,
+        SHOP_FLAG17,
+        SHOP_FLAG16,
+        SHOP_FLAG15,
+        SHOP_FLAG14,
+        SHOP_FLAG13,
+        SHOP_FLAG12,
+        SHOP_FLAG11,
+        SHOP_FLAG10,
+        SHOP_FLAG9,
+        SHOP_FLAG8,
+        SHOP_FLAG7,
+        SHOP_FLAG6,
+        SHOP_FLAG5,
+        SHOP_FLAG4,
+        SHOP_FLAG3,
+        SHOP_FLAG2,
+        SHOP_FLAG1,
+        CRT_TIME,
+        CRT_ID,
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  End  Start-->
+        VER,
+        <!--Add: 3096 新增买手基本信息和店铺信息保存成功后，数据库存银行信息的表sl_bs_bankaccount和店铺信息表sl_bs_shop_info里的DEL_FLG字段没有值 2016/09/23   BY  朱凯  Start-->
+        DEL_FLG
+        <!--Add: 3096 新增买手基本信息和店铺信息保存成功后，数据库存银行信息的表sl_bs_bankaccount和店铺信息表sl_bs_shop_info里的DEL_FLG字段没有值 2016/09/23   BY  朱凯  end-->
+        )VALUES(
+        #{slCode},
+        #{shopId},
+        #{shopName},
+        #{shopLogo},
+        #{managingCharact10},
+        #{managingCharact9},
+        #{managingCharact8},
+        #{managingCharact7},
+        #{managingCharact6},
+        #{managingCharact5},
+        #{managingCharact4},
+        #{managingCharact3},
+        #{managingCharact2},
+        #{managingCharact1},
+        #{shopFlag30},
+        #{shopFlag29},
+        #{shopFlag28},
+        #{shopFlag27},
+        #{shopFlag26},
+        #{shopFlag25},
+        #{shopFlag24},
+        #{shopFlag23},
+        #{shopFlag22},
+        #{shopFlag21},
+        #{shopFlag20},
+        #{shopFlag19},
+        #{shopFlag18},
+        #{shopFlag17},
+        #{shopFlag16},
+        #{shopFlag15},
+        #{shopFlag14},
+        #{shopFlag13},
+        #{shopFlag12},
+        #{shopFlag11},
+        #{shopFlag10},
+        #{shopFlag9},
+        #{shopFlag8},
+        #{shopFlag7},
+        #{shopFlag6},
+        #{shopFlag5},
+        #{shopFlag4},
+        #{shopFlag3},
+        #{shopFlag2},
+        #{shopFlag1},
+        #{crtTime},
+        #{crtId},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        0,
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        <!--Add: 3096 新增买手基本信息和店铺信息保存成功后，数据库存银行信息的表sl_bs_bankaccount和店铺信息表sl_bs_shop_info里的DEL_FLG字段没有值 2016/09/23   BY  朱凯  Start-->
+        0
+        <!--Add: 3096 新增买手基本信息和店铺信息保存成功后，数据库存银行信息的表sl_bs_bankaccount和店铺信息表sl_bs_shop_info里的DEL_FLG字段没有值 2016/09/23   BY  朱凯  end-->
+        )
+    </insert>
+
+    <update id="modify" parameterType="com.msk.core.entity.SlAccount">
+        UPDATE sl_bs_account
+        SET
+        SL_ACCOUNT = #{slAccount},
+        SL_TEL = #{slTel},
+        SL_SHOW_NAME = #{slShowName},
+        SL_CONTACT = #{slContact},
+        ACCOUNT_PSD =#{accountPsd},
+        ACCOUNT_IMG =#{accountImg},
+        UPD_ID = #{updId},
+        FROM_FLG = #{fromFlg},
+        DEL_FLG = #{delFlg},
+        UPD_TIME = #{updTime},
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        VER = VER+1
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+        WHERE
+        SL_ACCOUNT = #{slAccount}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+    <update id="modifyOfUpdate" parameterType="com.msk.core.entity.SlSeller">
+        UPDATE sl_bs_basic_info
+        SET
+        SL_CON_FLG = #{slConFlg},
+        SNK_FLG = #{snkFlg},
+        SELF_FLG = #{selfFlg},
+        AGENT_FLG = #{agentFlg},
+        OEM_FLG = #{oemFlg},
+        BUYER_FLG = #{buyerFlg},
+        SHOP_QUA = #{shopQua},
+        PROVINCE_CODE = #{provinceCode},
+        CITY_CODE = #{cityCode},
+        DISTRICT_CODE = #{districtCode},
+        MEMO1 = #{memo1},
+        MEMO2 = #{memo2},
+        MEMO3 = #{memo3},
+        MEMO4 = #{memo4},
+        MEMO5 = #{memo5},
+        MEMO7 = #{memo7},
+        MEMO8 = #{memo8},
+        MEMO9 = #{memo9},
+        MEMO10 = #{memo10},
+        MEMO11 = #{memo11},
+        MEMO12 = #{memo12},
+        MEMO13 = #{memo13},
+        MEMO14 = #{memo14},
+        MEMO15 = #{memo15},
+        MEMO16 = #{memo16},
+        MEMO17 = #{memo17},
+        MEMO18 = #{memo18},
+        MEMO19 = #{memo19},
+        MEMO20 = #{memo20},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        UPD_ID = #{updId},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        UPD_TIME = #{updTime},
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        VER = VER+1
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+        WHERE
+        SL_CODE = #{slCode}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+
+    <update id="modifyOfSlBuyerShop" parameterType="com.msk.core.entity.SlBuyershop">
+        UPDATE sl_bs_buyershop
+        SET
+        <if test="slIdcard != null and slIdcard != ''">
+            SL_IDCARD=#{slIdcard},
+        </if>
+        <if test="slSort != null and slSort != ''">
+            SL_SORT = #{slSort},
+        </if>
+        <if test="slAddress != null and slAddress != ''">
+            SL_ADDRESS = #{slAddress},
+        </if>
+        <if test="lat != null and lat != ''">
+            LAT = #{lat},
+        </if>
+        <if test="lon != null and lon != ''">
+            LON = #{lon},
+        </if>
+        FLAG10 = #{flag10},
+        FLAG9 = #{flag9},
+        FLAG8 = #{flag8},
+        FLAG7 = #{flag7},
+        FLAG6 = #{flag6},
+        FLAG5 = #{flag5},
+        FLAG4 = #{flag4},
+        FLAG3 = #{flag3},
+        FLAG2 = #{flag2},
+        FLAG1 = #{flag1},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        UPD_ID = #{updId},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        UPD_TIME = #{updTime},
+        VER = VER+1
+        WHERE
+        SL_CODE = #{slCode}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+
+    <update id="modifyOfSlShopInfo" parameterType="com.msk.core.entity.SlShopInfo">
+        UPDATE sl_bs_shop_info
+        SET
+        SHOP_NAME = #{shopName},
+        SHOP_LOGO = #{shopLogo},
+        MANAGING_CHARACT10 = #{managingCharact10},
+        MANAGING_CHARACT9 = #{managingCharact9},
+        MANAGING_CHARACT8 = #{managingCharact8},
+        MANAGING_CHARACT7 = #{managingCharact7},
+        MANAGING_CHARACT6 = #{managingCharact6},
+        MANAGING_CHARACT5 = #{managingCharact5},
+        MANAGING_CHARACT4 = #{managingCharact4},
+        MANAGING_CHARACT3 = #{managingCharact3},
+        MANAGING_CHARACT2 = #{managingCharact2},
+        MANAGING_CHARACT1 = #{managingCharact1},
+        SHOP_FLAG30 = #{shopFlag30},
+        SHOP_FLAG29 = #{shopFlag29},
+        SHOP_FLAG28 = #{shopFlag28},
+        SHOP_FLAG27 = #{shopFlag27},
+        SHOP_FLAG26 = #{shopFlag26},
+        SHOP_FLAG25 = #{shopFlag25},
+        SHOP_FLAG24 = #{shopFlag24},
+        SHOP_FLAG23 = #{shopFlag23},
+        SHOP_FLAG22 = #{shopFlag22},
+        SHOP_FLAG21 = #{shopFlag21},
+        SHOP_FLAG20 = #{shopFlag20},
+        SHOP_FLAG19 = #{shopFlag19},
+        SHOP_FLAG18 = #{shopFlag18},
+        SHOP_FLAG17 = #{shopFlag17},
+        SHOP_FLAG16 = #{shopFlag16},
+        SHOP_FLAG15 = #{shopFlag15},
+        SHOP_FLAG14 = #{shopFlag14},
+        SHOP_FLAG13 = #{shopFlag13},
+        SHOP_FLAG12 = #{shopFlag12},
+        SHOP_FLAG11 = #{shopFlag11},
+        SHOP_FLAG10 = #{shopFlag10},
+        SHOP_FLAG9 = #{shopFlag9},
+        SHOP_FLAG8 = #{shopFlag8},
+        SHOP_FLAG7 = #{shopFlag7},
+        SHOP_FLAG6 = #{shopFlag6},
+        SHOP_FLAG5 = #{shopFlag5},
+        SHOP_FLAG4 = #{shopFlag4},
+        SHOP_FLAG3 = #{shopFlag3},
+        SHOP_FLAG2 = #{shopFlag2},
+        SHOP_FLAG1 = #{shopFlag1},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        UPD_ID = #{updId},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        UPD_TIME = #{updTime},
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        VER = VER+1
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+        WHERE
+        SHOP_ID = #{shopId}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+
+
+    <update id="modifyOfDelFlgAndSlBuyerShop" parameterType="com.msk.bs.bean.IBS2101102RsParam">
+        UPDATE sl_bs_buyershop
+        SET
+        DEL_FLG = 1,
+        UPD_TIME = #{updTime},
+        UPD_ID = #{crtId},
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        VER = VER+1
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+        WHERE
+        SL_CODE = #{slCode}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+
+    <update id="modifyOfDelFlg" parameterType="com.msk.core.entity.SlAccount">
+        UPDATE sl_bs_account
+        SET
+        DEL_FLG = 1,
+        UPD_TIME = #{updTime},
+        UPD_ID = #{crtId},
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        VER = VER+1
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+        WHERE
+        SL_ACCOUNT = #{slAccount}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+
+    <update id="modifyOfDelFlgAndSlSeller" parameterType="com.msk.bs.bean.IBS2101102RsParam">
+        UPDATE sl_bs_basic_info
+        SET
+        DEL_FLG = 1,
+        UPD_TIME = #{updTime},
+        UPD_ID = #{crtId},
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        VER = VER+1
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+        WHERE
+        SL_CODE = #{slCode}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+
+    <update id="modifyOfDelFlgDlShopInfo" parameterType="com.msk.bs.bean.IBS2101102RsParam">
+        UPDATE sl_bs_shop_info
+        SET
+        DEL_FLG = 1,
+        UPD_TIME = #{updTime},
+        UPD_ID = #{crtId},
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        VER = VER+1
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+        WHERE
+        SL_CODE = #{slCode}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+
+    <select id="findBysSlAccount" resultType="com.msk.core.entity.SlSeller" parameterType="BaseParam">
+        SELECT
+        SL_CODE AS slCode,
+        SL_ACCOUNT AS slAccount,
+        SL_CODE_DIS AS slCodeDis,
+        SL_CON_FLG AS slConFlg,
+        AREA_CODE AS areaCode,
+        LGCS_AREA_CODE AS lgcsAreaCode,
+        PROVINCE_CODE AS provinceCode,
+        CITY_CODE AS cityCode,
+        DISTRICT_CODE AS districtCode,
+        EP_ID AS epId,
+        SL_MAIN_CLASS AS slMainClass,
+        SNK_FLG AS snkFlg,
+        SELF_FLG AS selfFlg,
+        AGENT_FLG AS agentFlg,
+        OEM_FLG AS oemFlg,
+        BUYER_FLG AS buyerFlg,
+        SQA_STATUS AS sqaStatus,
+        DIST_QUA AS distQua,
+        SHOP_QUA AS shopQua,
+        MEMO8 AS memo8,
+        VER AS ver
+        FROM
+        sl_bs_basic_info
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="filterMap.slAccount != null and filterMap.slAccount != ''">
+                AND SL_ACCOUNT = #{filterMap.slAccount}
+            </if>
+            <if test="filterMap.slTel != null and filterMap.slTel != ''">
+                AND SL_TEL = #{filterMap.slTel}
+            </if>
+            <if test="filterMap.accountPsd != null and filterMap.accountPsd != ''">
+                AND A.ACCOUNT_PSD = #{filterMap.accountPsd}
+            </if>
+        </where>
+    </select>
+
+    <select id="findSlAccountAll" resultType="com.msk.bs.bean.IBS2101103RsResult" parameterType="BaseParam">
+        SELECT
+        A.SL_ACCOUNT AS slAccount,
+        A.SL_TEL AS slTel,
+        A.SL_SHOW_NAME AS slShowName,
+        A.SL_CONTACT AS slContact,
+        A.ACCOUNT_PSD AS accountPsd,
+        A.ACCOUNT_IMG AS accountImg,
+        A.AUTH_STATUS AS authStatus,
+        A.FROM_FLG AS fromFlg,
+        B.SL_CODE_DIS AS slCodeDis,
+        B.SL_CON_FLG AS slConFlg,
+        B.AREA_CODE AS areaCode,
+        B.LGCS_AREA_CODE AS lgcsAreaCode,
+        B.PROVINCE_CODE AS provinceCode,
+        B.CITY_CODE AS cityCode,
+        B.DISTRICT_CODE AS districtCode,
+        B.EP_ID AS epId
+        B.SL_MAIN_CLASS AS slMainClass,
+        B.SNK_FLG AS snkFlg,
+        B.SELF_FLG AS selfFlg,
+        B.AGENT_FLG AS agentFlg,
+        B.OEM_FLG AS oemFlg,
+        B.BUYER_FLG AS buyerFlg,
+        B.SQA_STATUS AS sqaStatus,
+        B.DIST_QUA AS distQua,
+        B.SHOP_QUA AS shopQua,
+        B.MEMO1 AS memo1,
+        B.MEMO2 AS memo2,
+        B.MEMO3 AS memo3,
+        B.MEMO4 AS memo4,
+        B.MEMO5 AS memo5,
+        B.MEMO6 AS memo6,
+        B.MEMO7 AS memo7,
+        B.MEMO8 AS memo8,
+        B.MEMO9 AS memo9,
+        B.MEMO10 AS memo10,
+        B.MEMO11 AS memo11,
+        B.MEMO12 AS memo12,
+        B.MEMO13 AS memo13,
+        B.MEMO14 AS memo14,
+        B.MEMO15 AS memo15,
+        B.MEMO16 AS memo16,
+        B.MEMO17 AS memo17,
+        B.MEMO18 AS memo18,
+        B.MEMO19 AS memo19,
+        B.MEMO20 AS memo20,
+        C.SL_IDCARD AS slIdcard,
+        C.SL_SORT AS slSort,
+        C.SL_ADDRESS AS slAddress,
+        C.LAT AS lat,
+        C.LON AS lon,
+        C.FLAG10 AS flag10,
+        C.FLAG9 AS flag9,
+        C.FLAG8 AS flag8,
+        C.FLAG7 AS flag7,
+        C.FLAG6 AS flag6,
+        C.FLAG5 AS flag5,
+        C.FLAG4 AS flag4,
+        C.FLAG3 AS flag3,
+        C.FLAG2 AS flag2,
+        C.FLAG1 AS flag1,
+        D.SHOP_ID AS shopId,
+        D.SHOP_NAME AS shopName,
+        D.SHOP_LOGO AS shopLogo,
+        D.MANAGING_CHARACT10 AS managingCharact10,
+        D.MANAGING_CHARACT9 AS managingCharact9,
+        D.MANAGING_CHARACT8 AS managingCharact8,
+        D.MANAGING_CHARACT7 AS managingCharact7,
+        D.MANAGING_CHARACT6 AS managingCharact6,
+        D.MANAGING_CHARACT5 AS managingCharact5,
+        D.MANAGING_CHARACT4 AS managingCharact4,
+        D.MANAGING_CHARACT3 AS managingCharact3,
+        D.MANAGING_CHARACT2 AS managingCharact2,
+        D.MANAGING_CHARACT1 AS managingCharact1,
+        D.SHOP_FLAG30 AS shopFlag30,
+        D.SHOP_FLAG29 AS shopFlag29,
+        D.SHOP_FLAG28 AS shopFlag28,
+        D.SHOP_FLAG27 AS shopFlag27,
+        D.SHOP_FLAG26 AS shopFlag26,
+        D.SHOP_FLAG25 AS shopFlag25,
+        D.SHOP_FLAG24 AS shopFlag24,
+        D.SHOP_FLAG23 AS shopFlag23,
+        D.SHOP_FLAG22 AS shopFlag22,
+        D.SHOP_FLAG21 AS shopFlag21,
+        D.SHOP_FLAG20 AS shopFlag20,
+        D.SHOP_FLAG19 AS shopFlag19,
+        D.SHOP_FLAG18 AS shopFlag18,
+        D.SHOP_FLAG17 AS shopFlag17,
+        D.SHOP_FLAG16 AS shopFlag16,
+        D.SHOP_FLAG15 AS shopFlag15,
+        D.SHOP_FLAG14 AS shopFlag14,
+        D.SHOP_FLAG13 AS shopFlag13,
+        D.SHOP_FLAG12 AS shopFlag12,
+        D.SHOP_FLAG11 AS shopFlag11,
+        D.SHOP_FLAG10 AS shopFlag10,
+        D.SHOP_FLAG9 AS shopFlag9,
+        D.SHOP_FLAG8 AS shopFlag8,
+        D.SHOP_FLAG7 AS shopFlag7,
+        D.SHOP_FLAG6 AS shopFlag6,
+        D.SHOP_FLAG5 AS shopFlag5,
+        D.SHOP_FLAG4 AS shopFlag4,
+        D.SHOP_FLAG3 AS shopFlag3,
+        D.SHOP_FLAG2 AS shopFlag2,
+        D.SHOP_FLAG1 AS shopFlag1
+        FROM
+        sl_bs_account AS A
+        LEFT JOIN sl_bs_basic_info AS B ON B.SL_ACCOUNT = A.SL_ACCOUNT
+        LEFT JOIN sl_bs_buyershop AS C ON B.SL_CODE = C.SL_CODE
+        LEFT JOIN sl_bs_shop_info AS D ON D.SL_CODE = C.SL_CODE
+        <where>
+            (A.DEL_FLG IS NULL OR A.DEL_FLG = 0)
+            <if test="filterMap.slAccount != null and filterMap.slAccount != ''">
+                AND A.SL_ACCOUNT = #{filterMap.slAccount}
+            </if>
+            <if test="filterMap.accountPsd != null and filterMap.accountPsd != ''">
+                AND A.ACCOUNT_PSD = #{filterMap.accountPsd}
+            </if>
+        </where>
+    </select>
+
+    <select id="findSlSellerYesOrNo" resultType="java.lang.Integer" parameterType="BaseParam">
+        SELECT COUNT(1) FROM sl_bs_basic_info
+        WHERE (DEL_FLG IS NULL OR DEL_FLG =0)
+        <if test="filterMap.slCode != null and filterMap.slCode != ''">
+            AND SL_CODE = #{filterMap.slCode}
+        </if>
+        <if test="filterMap.slAccount != null and filterMap.slAccount != ''">
+            AND SL_ACCOUNT = #{filterMap.slAccount}
+        </if>
+    </select>
+
+    <select id="findShopInfoBySlCode" resultType="com.msk.core.entity.SlShopInfo" parameterType="BaseParam">
+        SELECT
+        SL_CODE AS slCode,
+        SHOP_ID AS shopId,
+        SHOP_NAME AS shopName,
+        SHOP_LOGO AS shopLogo
+        FROM sl_bs_shop_info
+        WHERE (DEL_FLG IS NULL OR DEL_FLG =0)
+        <if test="filterMap.slCode != null and filterMap.slCode != ''">
+            AND SL_CODE = #{filterMap.slCode}
+        </if>
+    </select>
+
+    <select id="findSlBuyerShopYesOrNo" resultType="java.lang.Integer" parameterType="BaseParam">
+        SELECT COUNT(1) FROM sl_bs_buyershop
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="filterMap.slCode != null and filterMap.slCode != ''">
+                AND SL_CODE = #{filterMap.slCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="findSlShopInfoYesOrNo" resultType="java.lang.Integer" parameterType="BaseParam">
+        SELECT COUNT(1) FROM sl_bs_shop_info
+        <where>
+            (DEL_FLG IS NULL OR DEL_FLG =0)
+            <if test="filterMap.shopId != null and filterMap.shopId != ''">
+                AND SHOP_ID = #{filterMap.shopId}
+            </if>
+            <if test="filterMap.slCode != null and filterMap.slCode != ''">
+                AND SL_CODE = #{filterMap.slCode}
+            </if>
+        </where>
+    </select>
+
+    <!--未用到，先注掉-->
+    <!--<select id="findAccountList" resultType="int"
+            parameterType="BaseParam">
+        SELECT
+        count(1)
+        FROM sl_bs_basic_info
+        WHERE SL_CODE_DIS like '4${filterMap.slMainClass}${filterMap.cityCode}%'
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+
+    <select id="findSlCodeDisMax" resultType="com.msk.core.entity.SlSeller"
+            parameterType="BaseParam">
+        SELECT
+        max(CONVERT(SL_CODE_DIS,SIGNED))+1 AS slCodeDis
+        FROM sl_bs_basic_info
+        WHERE SL_CODE_DIS like '4${filterMap.slMainClass}${filterMap.cityCode}%'
+        AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>-->
+
+    <select id="findSlSellerForSlAccount" resultType="com.msk.core.entity.SlSeller"
+            parameterType="BaseParam">
+        SELECT
+        SL_CODE AS slCode
+        FROM sl_bs_basic_info
+        WHERE SL_ACCOUNT = #{filterMap.slAccount} AND (DEL_FLG IS NULL OR DEL_FLG =0)
+    </select>
+    <select id="getBankCount" resultType="java.lang.Integer" parameterType="com.msk.core.entity.SlBsBankaccount">
+        SELECT count(1) FROM sl_bs_bankaccount WHERE SL_CODE = #{slCode}
+    </select>
+    <insert id="saveSlBsBankAccount" parameterType="com.msk.core.entity.SlBsBankaccount">
+        INSERT INTO sl_bs_bankaccount (
+        ACCOUNT_ID,
+        SL_CODE,
+        ACCOUNT_NAME,
+        BANK_NAME,
+        BANK_NO,
+        CARD_TYPE,
+        BANK_TEL,
+        DEL_FLG,
+        CRT_TIME,
+        CRT_ID,
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  End  Start-->
+        VER
+        )VALUES(
+        #{accountId},
+        #{slCode},
+        #{accountName},
+        #{bankName},
+        #{bankNo},
+        #{cardType},
+        #{bankTel},
+        <!--Add: 3096 新增买手基本信息和店铺信息保存成功后，数据库存银行信息的表sl_bs_bankaccount和店铺信息表sl_bs_shop_info里的DEL_FLG字段没有值 2016/09/23   BY  朱凯  Start-->
+        0,
+        <!--Add: 3096 新增买手基本信息和店铺信息保存成功后，数据库存银行信息的表sl_bs_bankaccount和店铺信息表sl_bs_shop_info里的DEL_FLG字段没有值 2016/09/23   BY  朱凯  end-->
+        #{crtTime},
+        #{crtId},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        0
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+        )
+    </insert>
+    <!--Modify for Bug #3531 2016/11/1  zhukai start-->
+    <update id="updateSlBsBankAccount" parameterType="com.msk.core.entity.SlBsBankaccount">
+        UPDATE sl_bs_bankaccount SET
+        <if test="accountName!=null">
+            ACCOUNT_NAME = #{accountName},
+        </if>
+        <if test="bankName!=null">
+            BANK_NAME = #{bankName},
+        </if>
+        <if test="bankNo!=null">
+            BANK_NO = #{bankNo},
+        </if>
+        <if test="cardType!=null">
+            CARD_TYPE = #{cardType},
+        </if>
+        <if test="bankTel!=null">
+            BANK_TEL = #{bankTel},
+        </if>
+        <!--Modify for Bug #3531 2016/11/1  zhukai end-->
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER+1
+        WHERE SL_CODE = #{slCode}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+    <!--Add for Bug #2505 at 2016/09/08 by ni_shaotang Start-->
+    <select id="isAccountTel"  resultType="java.lang.Integer" parameterType="com.msk.core.entity.BsAccount">
+        SELECT count(1) FROM sl_bs_account WHERE sl_account != #{slAccount} AND SL_TEL = #{slTel} AND DEL_FLG = '0'
+    </select>
+    <!--Add for Bug #2505 at 2016/09/08 by ni_shaotang End-->
+
+    <!--新增时校验买手手机号唯一性-->
+    <select id="checkSlTel" parameterType="com.msk.core.entity.BsAccount" resultType="int">
+        SELECT COUNT(1) from sl_bs_account
+        where
+        DEL_FLG =0
+        AND (SL_ACCOUNT = #{slTel} OR  SL_TEL =#{slTel} OR SL_SHOW_NAME = #{slTel})
+    </select>
+
+    <!--新增时校验买手名称唯一性-->
+    <select id="checkSlContact" parameterType="com.msk.core.entity.BsAccount" resultType="int">
+        SELECT COUNT(1) from sl_bs_account
+        where
+        DEL_FLG =0
+        AND (SL_ACCOUNT = #{slShowName} OR  SL_TEL =#{slShowName} OR SL_SHOW_NAME = #{slShowName})
+    </select>
+
+    <!--校验买手账号唯一性-->
+    <select id="checkSlAccount" parameterType="com.msk.core.entity.BsAccount" resultType="int">
+        SELECT COUNT(1) from sl_bs_account
+        where
+        DEL_FLG =0
+        AND (SL_ACCOUNT = #{slAccount} OR  SL_TEL =#{slAccount} OR SL_SHOW_NAME = #{slAccount})
+    </select>
+
+    <!--<select id="findHouseShowName" resultType="int" parameterType="com.msk.core.entity.BsAccount">
+        SELECT
+        COUNT(1)
+        FROM
+        sl_house_account
+        WHERE
+        HOUSE_TEL != #{slTel}
+        AND HOUSE_SHOW_NAME = #{slShowName}
+        AND DEL_FLG = '0'
+    </select>-->
+
+    <select id="findHouseTel" resultType="int" parameterType="com.msk.core.entity.BsAccount">
+        SELECT
+        COUNT(1)
+        FROM
+        sl_house_account
+        WHERE
+        HOUSE_SHOW_NAME != #{slShowName}
+        AND HOUSE_TEL = #{slTel}
+        AND DEL_FLG = '0'
+    </select>
+
+    <!--修改时校验买手账号唯一性-->
+    <select id="checkModifySlAccount" parameterType="com.msk.core.entity.BsAccount" resultType="int">
+        SELECT COUNT(1) from sl_bs_account
+        where
+        DEL_FLG =0
+        AND SL_ACCOUNT &lt;&gt;  #{slAccount}
+        AND (SL_ACCOUNT = #{slAccount} OR SL_TEL =#{slAccount} OR SL_SHOW_NAME = #{slAccount})
+    </select>
+
+
+    <!--修改时校验买手名称唯一性-->
+    <select id="checkModifySlContact" parameterType="com.msk.core.entity.BsAccount" resultType="int">
+        SELECT COUNT(1) from sl_bs_account
+        where
+        DEL_FLG =0
+       AND SL_ACCOUNT &lt;&gt;  #{slAccount}
+       AND (SL_ACCOUNT = #{slShowName} OR SL_TEL =#{slShowName} OR SL_SHOW_NAME =#{slShowName})
+    </select>
+
+    <!--修改时校验买手手机号唯一性-->
+    <select id="checkModifySlTel" parameterType="com.msk.core.entity.BsAccount" resultType="int">
+        SELECT COUNT(1) from sl_bs_account
+        where
+        DEL_FLG =0
+        AND SL_ACCOUNT &lt;&gt;  #{slAccount}
+        AND (SL_ACCOUNT = #{slTel} OR SL_TEL =#{slTel} OR SL_SHOW_NAME =#{slTel})
+    </select>
+</mapper>

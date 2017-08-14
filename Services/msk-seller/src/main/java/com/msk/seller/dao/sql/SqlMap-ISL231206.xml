@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231206RsLogic">
+    <select id="getSlPropInfo" parameterType="com.msk.seller.bean.ISL231206RsParam" resultType="com.msk.seller.bean.ISL231206RsBean">
+        SELECT
+          DISTINCT
+          A.PROD_EP_ID AS prodEpId,
+          B.SL_CODE AS slCode,
+          B.SL_CODE_DIS AS slCodeDis,
+          C.EP_NAME AS epName,
+          B.SL_CODE_MANUFACTURE AS slCodeManufacture
+        FROM
+          sl_product AS A
+          LEFT JOIN sl_seller AS B  ON A.PROD_EP_ID = B.EP_ID AND B.DEL_FLG = 0
+          LEFT JOIN sl_enterprise AS C ON A.PROD_EP_ID = C.EP_ID AND C.DEL_FLG = 0
+        WHERE
+          A.DEL_FLG = 0
+          <if test="slCode!=null and slCode!=''">
+              AND A.SL_CODE = #{slCode}
+          </if>
+          <if test="pdClassesCode!=null and pdClassesCode!=''">
+              AND A.PD_CLASSES_CODE = #{pdClassesCode}
+          </if>
+          <if test="machiningCode!=null and machiningCode!=''">
+              AND A.MACHINING_CODE = #{machiningCode}
+          </if>
+          <if test="pdBreedCode!=null and pdBreedCode!=''">
+              AND A.PD_BREED_CODE = #{pdBreedCode}
+          </if>
+          <if test="pdFeatureCode!=null and pdFeatureCode!=''">
+              AND A.PD_FEATURE_CODE = #{pdFeatureCode}
+          </if>
+          <if test="weightCode!=null and weightCode!=''">
+              AND A.WEIGHT_CODE = #{weightCode}
+          </if>
+    </select>
+</mapper>

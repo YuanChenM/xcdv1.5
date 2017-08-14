@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD142103Logic">
+
+    <sql id="whereSqlId">
+        <where>
+            <if test="filterMap.classestreeCode!=null and filterMap.classestreeCode!=''">
+                AND A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+            </if>
+            <if test="filterMap.machiningName!=null and filterMap.machiningName!=''">
+                AND B.LEVEL_NAME like #{filterMap.machiningName}
+            </if>
+            <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+                AND G.SALES_NAME like #{filterMap.breedName}
+            </if>
+            <!--<if test="filterMap.gradeName!=null and filterMap.gradeName!=''">
+                AND 'A2' like #{filterMap.gradeName}
+            </if>-->
+            <if test="filterMap.slMainClass!=null and filterMap.slMainClass!=''">
+                AND SL.SL_MAIN_CLASS = #{filterMap.slMainClass}
+            </if>
+            <if test="filterMap.slLicAddr!=null and filterMap.slLicAddr!=''">
+                AND ET.LIC_ADDR like #{filterMap.slLicAddr}
+            </if>
+            <if test="filterMap.slName!=null and filterMap.slName!=''">
+                AND ET.EP_NAME like #{filterMap.slName}
+            </if>
+            <if test="filterMap.sllfAddr!=null and filterMap.sllfAddr!=''">
+                AND ET2.LIC_ADDR like #{filterMap.sllfAddr}
+            </if>
+            <if test="filterMap.sllfName!=null and filterMap.sllfName!=''">
+                AND ET2.EP_NAME like #{filterMap.sllfName}
+            </if>
+            <if test="filterMap.brandClass!=null and filterMap.brandClass!=''">
+                AND BD.BRAND_CLASS = #{filterMap.brandClass}
+            </if>
+            <if test="filterMap.brandName!=null and filterMap.brandName!=''">
+                AND BD.BRAND_NAME like #{filterMap.brandName}
+            </if>
+        </where>
+    </sql>
+    <select id="findPageList" parameterType="BasePageParam" resultType="com.msk.product.bean.PD142103Bean">
+        SELECT
+        IFNULL(B.LEVEL_NAME,'') AS machiningName,
+        IFNULL(G.SCIENTIFIC_NAME,'') AS scientificName,
+        IFNULL(G.LOCAL_NAME,'') AS localName,
+        IFNULL(G.SALES_NAME,'') breedName,
+        IFNULL(CONCAT(D.CLASSESTREE_CODE, 2),'') AS attributeCode,
+        IFNULL(D.LEVEL_NAME,'') AS featureName,
+        IFNULL('A2','') AS gradeName,
+        IFNULL('2','') AS gradeCode,
+        IFNULL(E.LEVEL_NAME,'') AS weightName,
+        IFNULL(F.LEVEL_NAME,'') AS normsOut,
+        (CASE WHEN IFNULL(SL.SL_MAIN_CLASS,'')='0' THEN '生产商' WHEN IFNULL(SL.SL_MAIN_CLASS,'')='1' THEN '自产型' WHEN
+        IFNULL(SL.SL_MAIN_CLASS,'')='2' THEN '代理型' WHEN IFNULL(SL.SL_MAIN_CLASS,'')='3' THEN 'OEM型' ELSE '' END) AS
+        slMainClassName,
+        IFNULL(SL.SL_MAIN_CLASS,'') AS slMainClass,
+        IFNULL(ET.LIC_ADDR,'') AS slLicAddr,
+        IFNULL(ET.EP_NAME,'') AS slName,
+        IFNULL(ET2.LIC_ADDR,'') AS sllfAddr,
+        IFNULL(ET2.EP_NAME,'') AS sllfName,
+        (CASE WHEN IFNULL(BD.BRAND_CLASS,'')='0' THEN '卖家独立品牌' WHEN IFNULL(BD.BRAND_CLASS,'')='1' THEN '神农先生联合' WHEN
+        IFNULL(BD.BRAND_CLASS,'')='2' THEN '神农客联合' WHEN IFNULL(BD.BRAND_CLASS,'')='3' THEN '神农人家联合' ELSE '' END) AS
+        brandClassName,
+        IFNULL(BD.BRAND_CLASS,'')AS brandClass,
+        IFNULL(BD.BRAND_NAME,'') AS brandName,
+        IFNULL(BD.BRAND_ID,'') AS brandId,
+        IFNULL(SL.SL_CODE_DIS,'')AS slCodeDis,
+        IFNULL(SL2.SL_CODE_MANUFACTURE,'')AS slCodeManufacture,
+        IFNULL(F.LEVEL_CODE,'')AS normsCode,
+        IFNULL(PD.PD_CLASSES_CODE,'')AS pdClassesCode,
+        IFNULL(PD.MACHINING_CODE,'')AS machiningCode,
+        IFNULL(PD.PD_BREED_CODE,'')AS pdBreedCode,
+        IFNULL(PD.PD_FEATURE_CODE,'')AS pdFeatureCode,
+        IFNULL(PD.WEIGHT_CODE,'')AS weightCode
+        FROM
+        pd_classestree AS A
+        INNER JOIN pd_classestree AS B ON A.CLASSESTREE_CODE = B.PARENT_CODE
+        INNER JOIN pd_classestree AS C ON B.CLASSESTREE_CODE = C.PARENT_CODE
+        INNER JOIN pd_classestree AS D ON C.CLASSESTREE_CODE = D.PARENT_CODE
+        INNER JOIN pd_classestree AS E ON D.CLASSESTREE_CODE = E.PARENT_CODE
+        INNER JOIN pd_classestree AS F ON E.CLASSESTREE_CODE = F.PARENT_CODE
+        INNER JOIN pd_classestree_mat AS G ON C.CLASSESTREE_CODE = G.CLASSESTREE_CODE
+        LEFT JOIN sl_product AS PD ON PD.PD_CLASSES_CODE = A.LEVEL_CODE
+        AND PD.MACHINING_CODE = B.LEVEL_CODE
+        AND PD.PD_BREED_CODE = C.LEVEL_CODE
+        AND PD.PD_FEATURE_CODE = D.LEVEL_CODE
+        AND PD.WEIGHT_CODE = E.LEVEL_CODE
+        LEFT JOIN sl_pd_pkg PKG ON PKG.SL_PD_ID = PD.SL_PD_ID AND PKG.PKG_CODE=F.LEVEL_CODE
+        LEFT JOIN sl_seller SL ON PD.SL_CODE = SL.SL_CODE
+        LEFT JOIN sl_seller SL2 ON PD.PROD_EP_ID = SL2.EP_ID
+        LEFT JOIN sl_enterprise ET ON ET.EP_ID = SL.EP_ID
+        LEFT JOIN sl_enterprise ET2 ON ET2.EP_ID = PD.PROD_EP_ID
+        LEFT JOIN sl_ep_brand BD ON BD.EP_ID = PD.BRAND_EP_ID
+        AND BD.BRAND_ID = PD.BRAND_ID
+        <include refid="whereSqlId"></include>
+        ORDER BY
+        B.CLASSESTREE_CODE,
+        C.CLASSESTREE_CODE,
+        D.CLASSESTREE_CODE,
+        E.CLASSESTREE_CODE,
+        F.CLASSESTREE_CODE,
+        SL.SL_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" parameterType="BasePageParam" resultType="Integer">
+        SELECT
+        count(1)
+        FROM
+        pd_classestree AS A
+        INNER JOIN pd_classestree AS B ON A.CLASSESTREE_CODE = B.PARENT_CODE
+        INNER JOIN pd_classestree AS C ON B.CLASSESTREE_CODE = C.PARENT_CODE
+        INNER JOIN pd_classestree AS D ON C.CLASSESTREE_CODE = D.PARENT_CODE
+        INNER JOIN pd_classestree AS E ON D.CLASSESTREE_CODE = E.PARENT_CODE
+        INNER JOIN pd_classestree AS F ON E.CLASSESTREE_CODE = F.PARENT_CODE
+        INNER JOIN pd_classestree_mat AS G ON C.CLASSESTREE_CODE = G.CLASSESTREE_CODE
+        LEFT JOIN sl_product AS PD ON PD.PD_CLASSES_CODE = A.LEVEL_CODE
+        AND PD.MACHINING_CODE = B.LEVEL_CODE
+        AND PD.PD_BREED_CODE = C.LEVEL_CODE
+        AND PD.PD_FEATURE_CODE = D.LEVEL_CODE
+        AND PD.WEIGHT_CODE = E.LEVEL_CODE
+        LEFT JOIN sl_pd_pkg PKG ON PKG.SL_PD_ID = PD.SL_PD_ID AND PKG.PKG_CODE=F.LEVEL_CODE
+        LEFT JOIN sl_seller SL ON PD.SL_CODE = SL.SL_CODE
+        LEFT JOIN sl_enterprise ET ON ET.EP_ID = SL.EP_ID
+        LEFT JOIN sl_enterprise ET2 ON ET2.EP_ID = PD.PROD_EP_ID
+        LEFT JOIN sl_ep_brand BD ON BD.EP_ID = PD.BRAND_EP_ID
+        AND BD.BRAND_ID = PD.BRAND_ID
+        <include refid="whereSqlId"></include>
+    </select>
+</mapper>

@@ -1,0 +1,47 @@
+    <sqlList>
+        <?xml version="1.0" encoding="UTF-8"?>
+        <sql id="ISO151405.getSalesVolumnAndPdCode">
+        SELECT
+        SUM(a.salesVolumnLong) as salesVolumnLong
+        , a.pdCode as pdCode
+        FROM
+        (
+        SELECT
+    </sql>
+
+    <sql id="ISO151405.detailIfo">
+        AS pdCode
+        , IFNULL(SUM(IFNULL(ORDER_QTY, 0)), 0) AS salesVolumnLong
+        FROM
+        SO_ORDER_DETAIL
+        WHERE
+        DEL_FLG = 0
+        AND LEFT (PD_CODE, 5) =
+        LEFT (
+    </sql>
+
+    <sql id="ISO151405.leftFiveCondition">
+        , 5)
+    </sql>
+
+    <sql id="ISO151405.union">
+        UNION
+        SELECT
+    </sql>
+
+    <sql id="ISO151405.historyIfo">
+        AS pdCode
+        , IFNULL(SALES_VOLUMN, 0) AS salesVolumnLong
+        FROM
+        SO_SALES_VOLUMN_HISTORY
+        WHERE
+        DEL_FLG
+        AND LEFT (PD_CODE, 5) =
+        LEFT (
+    </sql>
+
+    <sql id="ISO151405.tableAlias">
+        )a
+    </sql>
+
+</sqlList>

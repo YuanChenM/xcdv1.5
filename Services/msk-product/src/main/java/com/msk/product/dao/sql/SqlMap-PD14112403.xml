@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD14112403Logic">
+
+    <insert id="save" parameterType="com.msk.core.entity.PdClassestree">
+	INSERT INTO PD_CLASSESTREE (
+	CLASSESTREE_ID,
+	CLASSESTREE_CODE,
+	LEVEL_CODE,
+	LEVEL_NAME,
+	PARENT_CODE,
+	PARENT_NAME,
+	TREE_LEVEL,
+	DEL_FLG,
+	CRT_ID,
+	CRT_TIME,
+	UPD_ID,
+	UPD_TIME,
+	ACT_ID,
+	ACT_TIME,
+	VER)
+VALUES
+	(
+		#{classestreeId},
+		#{classestreeCode},
+		#{levelCode},
+		#{levelName},
+		#{parentCode},
+		#{parentName},
+		#{treeLevel},
+		'0',
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		#{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  Start -->
+		#{actId},
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  End -->
+		#{actTime},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		'1'
+	);
+	</insert>
+
+    <select id="findClassesByParentCode" parameterType="BaseParam" resultType="int">
+		SELECT COUNT(1)
+		FROM PD_CLASSESTREE A
+		WHERE A.PARENT_CODE = #{filterMap.parentCode}
+		AND A.LEVEL_NAME = #{filterMap.levelName}
+	</select>
+    <!--二级分类修改操作-->
+    <update id="modify" parameterType="com.msk.core.entity.PdClassestree">
+		  UPDATE PD_CLASSESTREE AS A SET
+			 A.LEVEL_NAME = #{levelName}
+			 ,A.UPD_ID = #{updId}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+			,A.UPD_TIME = #{updTime}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+			,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+		  WHERE A.CLASSESTREE_CODE =#{classestreeCode}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+			AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+	</update>
+
+    <!-- 修改操作 产品特征数据 -->
+    <select id="findFeaExist" parameterType="BaseParam" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM PD_FEATURE
+		WHERE MACHINING_CODE = #{filterMap.machiningCode}
+		AND CLASSES_CODE = #{filterMap.classesCode}
+		AND BREED_CODE = #{filterMap.breedCode}
+		AND FEATURE_NAME = #{filterMap.featureName}
+	</select>
+
+    <!--获取特征最大id-->
+    <select id="findFeaMaxId" parameterType="BaseParam" resultType="com.msk.core.entity.PdFeature">
+		SELECT
+		CASE
+		WHEN MAX(FEATURE_CODE) IS NULL THEN 1
+		ELSE MAX(FEATURE_CODE)+1 END AS featureCode
+		FROM PD_FEATURE
+		WHERE MACHINING_CODE = #{filterMap.machiningCode}
+		AND CLASSES_CODE = #{filterMap.classesCode}
+		AND BREED_CODE = #{filterMap.breedCode}
+	</select>
+
+    <!--查询产品标准有无重复-->
+    <select id="findPdStand" parameterType="BaseParam" resultType="int">
+		SELECT COUNT(1)
+		FROM PD_STANDARD A
+		WHERE A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</select>
+
+    <!--产品树形表中是否存在-->
+    <select id="findClassesTreeExist" parameterType="BaseParam" resultType="int">
+		SELECT
+		COUNT(1)
+		FROM PD_CLASSESTREE
+		WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</select>
+
+    <!--保存产品特征数据-->
+    <insert id="saveFea" parameterType="com.msk.core.entity.PdFeature">
+			INSERT INTO PD_FEATURE (
+				CLASSES_CODE,
+				MACHINING_CODE,
+				BREED_CODE,
+				FEATURE_CODE,
+				FEATURE_NAME,
+				CLASSESTREE_CODE,
+				DEL_FLG,
+				CRT_ID,
+				CRT_TIME,
+				UPD_ID,
+				UPD_TIME,
+				ACT_ID,
+				ACT_TIME,
+				VER)
+			VALUES
+				(
+					#{classesCode},
+					#{machiningCode},
+					#{breedCode},
+					#{featureCode},
+					#{featureName},
+					#{classestreeCode},
+					'0',
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+					#{crtId},
+					#{crtTime},
+					#{updId},
+					#{updTime},
+					<!--Modify: 添加公共属性 2016/09/26   BY  任强  Start -->
+					#{actId},
+					<!--Modify: 添加公共属性 2016/09/26   BY  任强  End -->
+					#{actTime},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+					'1'
+				);
+	</insert>
+
+    <!--保存商品标准数据-->
+    <insert id="savePdStand" parameterType="com.msk.core.entity.PdStandard">
+		INSERT INTO PD_STANDARD (
+		STANDARD_ID,
+		CLASSES_CODE,
+		MACHINING_CODE,
+		BREED_CODE,
+		FEATURE_CODE,
+		CLASSESTREE_CODE,
+		QLT_FLG,
+		TNC_FLG,
+		NOR_FLG,
+		ORG_FLG,
+		FED_FLG,
+		MCQ_FLG,
+		GNQ_FLG,
+		TSP_FLG,
+		DEL_FLG,
+		CRT_ID,
+		CRT_TIME,
+		UPD_ID,
+		UPD_TIME,
+		ACT_ID,
+		ACT_TIME,
+		VER
+		)
+		VALUES
+		(
+		#{standardId},
+		#{classesCode},
+		#{machiningCode},
+		#{breedCode},
+		#{featureCode},
+		#{classestreeCode},
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		#{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  Start -->
+		#{actId},
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  End -->
+		#{actTime},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		'1'
+		);
+	</insert>
+
+    <!--修改操作-->
+    <update id="modifyFeature" parameterType="com.msk.core.entity.PdFeature">
+		UPDATE PD_FEATURE  SET
+		FEATURE_NAME = #{featureName}
+		,UPD_ID = #{updId}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		,UPD_TIME = #{updTime}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+		WHERE CLASSESTREE_CODE =#{classestreeCode}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+			AND  DEL_FLG='0'
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+	</update>
+
+    <select id="findListFeatureTree" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestree">
+		SELECT
+		PARENT_NAME AS parentName,
+		CLASSESTREE_CODE AS classestreeCode
+		FROM PD_CLASSESTREE
+		WHERE PARENT_CODE = #{filterMap.parentFeature}
+	</select>
+
+    <update id="modifyClassesParentName" parameterType="com.msk.core.entity.PdClassestree">
+		UPDATE PD_CLASSESTREE AS A SET
+		A.PARENT_NAME = #{parentName}
+		,A.UPD_ID = #{updId}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		,A.UPD_TIME = #{updTime}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+		WHERE A.CLASSESTREE_CODE =#{classestreeCode}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+			AND  DEL_FLG='0'
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+	</update>
+
+
+    <!--删除操作-->
+    <!--查询当前节点下是否存在子节点-->
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestree">
+		SELECT CLASSESTREE_CODE
+		FROM PD_CLASSESTREE
+		WHERE PARENT_CODE = #{filterMap.classestreeCode}
+	</select>
+
+    <!-- 删除classes产品类别信息表中数据-->
+    <delete id="removePdFeature" parameterType="BaseParam">
+		DELETE FROM PD_FEATURE
+		WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</delete>
+
+    <!-- 删除产品标准表中数据-->
+    <delete id="removePdStandard" parameterType="BaseParam">
+		DELETE FROM PD_STANDARD
+		WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</delete>
+
+
+    <!-- 删除classes产品类别信息表中数据-->
+    <delete id="remove" parameterType="BaseParam">
+		DELETE FROM PD_CLASSESTREE
+		WHERE CLASSESTREE_CODE = #{filterMap.classestreeCode}
+	</delete>
+
+</mapper>

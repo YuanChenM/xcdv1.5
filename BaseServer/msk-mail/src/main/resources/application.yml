@@ -1,0 +1,14 @@
+spring:
+  mail:
+    from: redmine@dxl123.net
+    host: smtp.dxl123.net
+    username: redmine@dxl123.net
+    password: XMGL999
+    properties:
+      mail:
+        smtp:
+          auth: true
+server:
+  port: ${server.port}
+  context-path: /msk-mail/
+append.mail.cc: shen_cb@hoperun.com

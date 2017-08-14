@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121405Logic">
+    <select id="findMarketNameByLevel" resultType="com.msk.core.entity.ByMarketTerminal" parameterType="BaseParam">
+        SELECT
+          TER_MARKET_ID AS terMarketId,
+          MARKET_NAME AS marketName
+        FROM by_market_terminal
+        WHERE
+          MARKET_LEVEL = #{filterMap.marketLevel}
+          AND LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+          AND CITY_CODE = #{filterMap.cityCode}
+          AND DEL_FLG = 0
+    </select>
+    <select id="getBuyerPoolList" resultType="com.msk.br.bean.BR121405Result" parameterType="com.msk.br.bean.BR121405Param">
+        SELECT
+        oBuyerInfo.BUYER_ID AS buyerId,
+        d.NEW_STATUS_BREED AS marketingsStatus,
+        CASE
+        WHEN d.NEW_EXCEPTION_STATUS = 32 AND #{marketingsStatusCla} = 3
+        THEN
+        '信息错误'
+        ELSE
+        d.NEW_STATUS_BREED_NAME
+        END AS marketingsStatusName,
+        oBuyerInfo.MARKET_NAME AS marketName,
+        oBuyerInfo.BUYER_NAME AS buyerName,
+        byPoolRelation.POOL_BUYER_CODE AS buyerCode,
+        ifnull(oBuyerInfo.BOSS_NAME, '') AS bossName,
+        ifnull(oBuyerInfo.BOSS_TEL, '') AS bossTel,
+        ifnull(oBuyerInfo.BUYER_WECHAT, '') AS buyerWechat,
+        ifnull(oBuyerInfo.BUYER_QQ, '') AS buyerQq,
+        ifnull(oBuyerInfo.MANAGE_ADDR, '') AS manageAddr
+        FROM
+        br_buyer_pool buyerPool
+        INNER JOIN br_buyer_pool_relationship byPoolRelation ON buyerPool.BUYER_POOL_ID = byPoolRelation.BUYER_POOL_ID
+        AND buyerPool.DEL_FLG = '0'
+        AND byPoolRelation.DEL_FLG = '0'
+        INNER JOIN
+        (SELECT
+        a.BUYER_ID,
+        a.NEW_STATUS_BREED,
+        c.maxTime,
+        a.CURRENT_STATUS_FLG,
+        a.NEW_STATUS_BREED_NAME,
+        a.NEW_EXCEPTION_STATUS,
+        a.DEL_FLG
+        from br_buyer_marketing_status_history a INNER JOIN
+        (SELECT
+        b.BUYER_ID,
+        MAX(b.MODIFY_TIME) AS maxTime
+        FROM
+        br_buyer_marketing_status_history b
+        WHERE
+        <![CDATA[ b.MODIFY_TIME <= concat(#{fileStartTime}, ' 23:59:59') ]]>
+        GROUP BY
+        b.BUYER_ID) c ON a.BUYER_ID = c.BUYER_ID AND a.MODIFY_TIME = c.maxTime) d ON d.BUYER_ID = byPoolRelation.BUYER_ID
+        AND d.DEL_FLG = '0'
+        INNER JOIN br_o_buyer_info oBuyerInfo ON byPoolRelation.BUYER_ID = oBuyerInfo.BUYER_ID
+        AND oBuyerInfo.DEL_FLG = '0'
+        LEFT JOIN by_market_terminal terminal ON oBuyerInfo.MARKET_CODE = terminal.MARKET_CODE AND oBuyerInfo.DEL_FLG = terminal.DEL_FLG
+        WHERE
+        buyerPool.CLASSES_CODE = #{classesCode}
+        AND buyerPool.MACHINING_CODE_U = #{machiningCode}
+        /** Modif for Bug#2748 at 2016/09/19 by yuan_zhifei Start*/
+        AND oBuyerInfo.BUYER_TYPE = #{buyerType}
+        /** Modif for Bug#2748 at 2016/09/19 by yuan_zhifei End*/
+        AND buyerPool.LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND buyerPool.CITY_CODE = #{cityCode}
+        <if test="marketId != null and marketId != ''">
+            AND terminal.TER_MARKET_ID = #{marketId}
+        </if>
+        <if test="marketingsStatusCla == 1 and marketingsStatusList.size > 0 ">
+            /*营销期*/
+            AND d.NEW_STATUS_BREED IN
+            <foreach collection="marketingsStatusList" item="marketingsStatus" open="(" separator="," close=")">
+                #{marketingsStatus}
+            </foreach>
+        </if>
+        <if test="marketingsStatusCla == 2 and marketingsStatusList.size > 0 ">
+            /*销售期*/
+            AND d.NEW_STATUS_BREED IN
+            <foreach collection="marketingsStatusList" item="marketingsStatus" open="(" separator="," close=")">
+                #{marketingsStatus}
+            </foreach>
+        </if>
+        <if test="marketingsStatusCla == 3 and marketingsStatus == ''">
+            /*异常*/
+            AND (d.NEW_STATUS_BREED = 31 OR d.NEW_EXCEPTION_STATUS = 32)
+        </if>
+        <if test="marketingsStatusCla == 3 and marketingsStatus == 31">
+            AND  d.NEW_STATUS_BREED = 31
+        </if>
+        <if test="marketingsStatusCla == 3 and marketingsStatus == 32" >
+            AND d.NEW_EXCEPTION_STATUS = 32
+        </if>
+        GROUP BY byPoolRelation.BUYER_ID
+        ORDER BY oBuyerInfo.MARKETINGS_STATUS
+    </select>
+    <insert id="save" parameterType="BaseParam">
+        INSERT INTO
+          br_file_buyer_pool (
+            FILE_ID,
+            FILE_SERVER_ID,
+            FILE_NAME,
+            FILE_SUF,
+            FILE_START_TIME,
+            FILE_END_TIME,
+            FILE_CREATE_TIME,
+            FILE_STATUS,
+            POOL_TYPE,
+            LGCS_AREA_CODE,
+            LGCS_AREA_NAME,
+            CITY_CODE,
+            CITY_NAME,
+            BUYER_TYPE,
+            CLASSES_CODE,
+            MACHINING_CODE_U,
+            MARKETINGS_PERIOD_NAME,
+            MARKETINGS_STATUS,
+            MARKET_ID,
+            MARKET_NAME,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+          )VALUES (
+            #{filterMap.fileId},
+            #{filterMap.fileServerId},
+            #{filterMap.fileName},
+            #{filterMap.fileSuf},
+            #{filterMap.fileStartTime},
+            #{filterMap.fileEndTime},
+            #{filterMap.fileCreateTime},
+            2,
+            1,
+            #{filterMap.lgcsAreaCode},
+            #{filterMap.lgcsAreaName},
+            #{filterMap.cityCode},
+            #{filterMap.cityName},
+            #{filterMap.buyerType},
+            #{filterMap.classesCode},
+            #{filterMap.machiningCode},
+            #{filterMap.marketingsPeriodName},
+            #{filterMap.marketingsStatus},
+            #{filterMap.marketId},
+            #{filterMap.marketName},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+          )
+    </insert>
+    <update id="modify" parameterType="BaseParam">
+        UPDATE
+          br_file_buyer_pool
+        SET
+          FILE_SERVER_ID = #{filterMap.fileServerId},
+          FILE_CREATE_TIME = #{filterMap.fileCreateTime},
+          FILE_STATUS = '1',
+          DEL_FLG = #{delFlg}
+          ,UPD_ID = #{updId}
+		  ,UPD_TIME = #{updTime}
+        WHERE
+          FILE_ID = #{filterMap.fileId}
+          AND DEL_FLG = '0'
+    </update>
+
+
+    <update id="deleteFlag" parameterType="BaseParam" >
+        UPDATE br_file_buyer_pool
+        SET DEL_FLG = '1'
+        ,UPD_ID = #{updId}
+		,UPD_TIME = #{updTime}
+        WHERE FILE_ID = #{filterMap.fileId}
+    </update>
+
+    <update id="modifyFileStatus" parameterType="BaseParam">
+        UPDATE br_file_buyer_pool
+        SET FILE_STATUS = '3'
+          ,UPD_ID = #{updId}
+		  ,UPD_TIME = #{updTime}
+        WHERE FILE_ID = #{filterMap.fileId}
+    </update>
+</mapper>

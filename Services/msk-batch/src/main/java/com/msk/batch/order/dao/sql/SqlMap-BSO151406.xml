@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.order.logic.BSO151406Logic">
+    <select id="findShipList" parameterType="BaseParam" resultType="com.msk.batch.order.bean.BSO151406Result">
+        select
+        SHIP_ID as shipId,
+        SHIP_CODE as shipCode,
+        ORDER_ID as orderId,
+        ORDER_CODE as orderCode,
+        CANCEL_MAN_ID as cancelManId,
+        CANCEL_MAN_NAME as cancelManName,
+        date_format(A.CANCEL_TIME,'%Y-%m-%d %H:%i:%s') as cancelTimeStr,
+        IFNULL(CANCEL_REASON,'') as cancelReason,
+        IFNULL(CANCEL_REMARK,'') as cancelRemark
+        from SO_ORDER_SHIP A
+        where A.SHIP_STATUS = #{shipStatus}
+        and A.DEL_FLG = 0
+    </select>
+
+    <update id="modify" parameterType="BaseParam">
+        UPDATE
+        SO_ORDER_SHIP
+        SET
+        SHIP_STATUS = #{shipStatus},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE SHIP_ID = #{shipId}
+        AND DEL_FLG = 0
+    </update>
+</mapper>

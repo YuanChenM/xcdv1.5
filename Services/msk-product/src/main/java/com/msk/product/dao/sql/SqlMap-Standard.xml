@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.StandardLogic">
+    <sql id="whereCondtion">
+        WHERE 1=1 
+        <if test="filterMap.classesCode != null">
+            AND PDS.CLASSES_CODE=#{filterMap.classesCode}
+        </if>
+        <if test="filterMap.breedCode != null">
+            AND PDS.BREED_CODE=#{filterMap.breedCode}
+        </if>
+        <if test="filterMap.sellerCode != null">
+            AND PDS.SELLER_CODE=#{filterMap.sellerCode}
+        </if>
+        <if test="filterMap.pdStdId != null">
+            AND PDS.PD_STD_ID=#{filterMap.pdStdId}
+        </if>
+        
+    </sql>
+    <select id="findOne" resultType="com.msk.product.bean.Standard" parameterType="BaseParam">
+        SELECT 
+        <include refid="com.msk.product.logic.PD141113Logic.selectFiled"/>
+        <include refid="com.msk.product.logic.PD141113Logic.selectFrom"/>
+        <include refid="whereCondtion"/>
+        ORDER BY PDS.PD_STD_ID
+        LIMIT 1
+    </select>
+    <select id="getPageCount" parameterType="BasePageParam" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM PD_STANDARD
+        <include refid="whereCondtion"/>
+    </select>
+    <select id="countPdStandard" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+          from pd_standard
+          WHERE 1=1 
+        <if test="filterMap.classesCode != null">
+            AND CLASSES_CODE=#{filterMap.classesCode}
+        </if>
+        <if test="filterMap.breedCode != null">
+            AND BREED_CODE=#{filterMap.breedCode}
+        </if>
+        <if test="filterMap.sellerCode != null">
+            AND SELLER_CODE=#{filterMap.sellerCode}
+        </if>
+    </select>
+    
+    <insert id="insertPdStandard" parameterType="BaseParam">
+        insert into pd_standard(PD_STD_ID,CLASSES_CODE,BREED_CODE,SELLER_CODE,DEL_FLG)
+        select CONCAT(max(PD_STD_ID) + 1,'')
+             , #{filterMap.classesCode}
+             , #{filterMap.breedCode}
+             , #{filterMap.sellerCode}
+             , '0'
+          from pd_standard
+    </insert>
+
+    <insert id="save" parameterType="com.msk.core.entity.PdStandard">
+        INSERT INTO PD_STANDARD(PD_STD_ID,CLASSES_CODE,BREED_CODE,SELLER_CODE)
+        VALUE (#{pdStdId},#{classesCode},#{breedCode},'')
+    </insert>
+</mapper>

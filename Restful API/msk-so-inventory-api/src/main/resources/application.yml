@@ -1,0 +1,33 @@
+spring:
+  aop:
+    auto: true
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  redis:
+    database: 11
+    host: 10.30.10.14
+    password: Admin123#
+    port: 6379
+    pool:
+      max-idle: 1024
+      max-active: 200
+      max-wait: 1000
+###Config Server相关配置###########
+config:
+    server:
+      environment: development
+      url: http://10.20.16.83/msk-config-server/api
+      configConstantUrl: /load/config/constant
+      propertiesUrl: /load/properties
+      moduleName: Inventory
+context:
+    listener:
+      classes: com.msk.common.listener.ApplicationEventListener
+server:
+  port: 8888
+  context-path: /msk-inventory/
+mybatis:
+  mapperLocations: classpath*:com/msk/inventory/dao/sql/SqlMap-*.xml

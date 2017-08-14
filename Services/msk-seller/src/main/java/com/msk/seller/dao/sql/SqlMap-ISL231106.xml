@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231106Logic">
+    <insert id="save" parameterType="com.msk.core.entity.SlPdTncStdOther">
+       INSERT INTO sl_pd_tnc_std_other (
+            STD_FLAG,
+            SL_CODE,
+            SL_PD_ID,
+            STANDARD_ID,
+            TNC_STD_ITEM_ID,
+            AGREE_FLG,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUES
+            (
+            #{stdFlag},
+            #{slCode},
+            #{slPdId},
+            #{standardId},
+            #{tncStdItemId},
+            #{agreeFlg},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{crtId},
+            #{crtTime},
+            #{crtId},
+            #{crtTime},
+            1
+            )
+    </insert>
+    <update id="modify" parameterType="com.msk.core.entity.SlPdTncStdOther">
+        UPDATE sl_pd_tnc_std_other
+        SET
+         AGREE_FLG = #{agreeFlg},
+         DEL_FLG = #{delFlg},
+         UPD_ID = #{updId},
+         UPD_TIME =#{updTime},
+         VER=VER + 1,
+         DEL_FLG=#{delFlg}
+        WHERE
+        SL_CODE=#{slCode}
+        AND SL_PD_ID = #{slPdId}
+        AND STANDARD_ID = #{standardId}
+        AND TNC_STD_ITEM_ID=#{tncStdItemId}
+        AND  STD_FLAG=#{stdFlag}
+    </update>
+    <select id="findSlPdTncStdCount" parameterType="com.msk.core.entity.SlPdTncStdOther"
+            resultType="Integer">
+        SELECT
+            count(1)
+        FROM
+            sl_pd_tnc_std_other AS A
+        WHERE
+            SL_CODE=#{slCode}
+            AND SL_PD_ID = #{slPdId}
+            AND STANDARD_ID = #{standardId}
+            AND TNC_STD_ITEM_ID=#{tncStdItemId}
+            AND  STD_FLAG=#{stdFlag}
+            AND  DEL_FLG =0
+    </select>
+
+    <select id="findSlPdTncStdList" parameterType="BaseParam"
+            resultType="com.msk.core.entity.SlPdTncStdOther">
+        SELECT
+        A.SL_CODE AS slCode,
+        A.SL_PD_ID AS slPdId,
+        A.STANDARD_ID AS standardId,
+        A.TNC_STD_ITEM_ID AS tncStdItemId
+        A.STD_FLAG AS stdFlag
+        FROM
+        sl_pd_tnc_std_other AS A
+        WHERE
+        DEL_FLG =0
+        <if test="filterMap.slPdTncStdOthers != null and filterMap.slPdTncStdOthers.size() > 0">
+            AND (
+            <foreach item="item" index="index" collection="filterMap.slPdTncStdOthers" open="(" separator="OR" close=")">
+                SL_CODE=#{item.slCode}
+                AND SL_PD_ID = #{item.slPdId}
+                AND STANDARD_ID = #{item.standardId}
+                AND TNC_STD_ITEM_ID=#{item.tncStdItemId}
+                AND STD_FLAG=#{item.stdFlag}
+            </foreach>
+            )
+        </if>
+    </select>
+</mapper>

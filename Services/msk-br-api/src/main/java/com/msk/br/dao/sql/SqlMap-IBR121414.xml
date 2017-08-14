@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121414Logic">
+    <insert id="save" parameterType="com.msk.br.bean.IBR121414RsParam">
+        INSERT INTO br_m_pd_classes(
+        ID,
+        CLASSES_CODE,
+        CLASSES_NAME,
+        MACHINING_CODE,
+        MACHINING_NAME,
+        MACHINING_CODE_U,
+        MACHINING_NAME_U,
+        BY_POOL_MACHINING_CODE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES (
+        #{id},
+        #{classesCode},
+        #{classesName},
+        #{machiningCode},
+        #{machiningName},
+        #{machiningCodeU},
+        #{machiningNameU},
+        #{byPoolMachiningCode},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+
+    <update id="modify" parameterType="com.msk.br.bean.IBR121414RsParam">
+        UPDATE br_m_pd_classes
+        SET  MACHINING_CODE_U = #{machiningCodeU},
+             MACHINING_NAME_U = #{machiningNameU},
+             BY_POOL_MACHINING_CODE = #{byPoolMachiningCode},
+             UPD_ID = #{updId},
+             UPD_TIME = #{updTime},
+             DEL_FLG = 0
+        WHERE
+             CLASSES_CODE = #{classesCode}
+        AND  MACHINING_CODE = #{machiningCode}
+    </update>
+
+    <select id="count" parameterType="com.msk.br.bean.IBR121414RsParam" resultType="int">
+      SELECT count(1)
+      FROM br_m_pd_classes
+      WHERE CLASSES_CODE = #{classesCode}
+      AND  MACHINING_CODE = #{machiningCode}
+    </select>
+
+    <select id="findList" parameterType="com.msk.br.bean.IBR121414RsParam" resultType="com.msk.core.entity.BrMPdClasses">
+        SELECT
+          CLASSES_CODE AS classesCode,
+          CLASSES_NAME AS classesName,
+          MACHINING_CODE_U AS machiningCodeU,
+          MACHINING_NAME_U AS machiningNameU
+        FROM
+          br_m_pd_classes
+        WHERE
+          DEL_FLG = 0
+        GROUP BY MACHINING_CODE_U,CLASSES_CODE
+    </select>
+
+    <update id="updateDelFlg"  parameterType="com.msk.br.bean.IBR121414RsParam">
+        UPDATE  br_m_pd_classes
+        SET DEL_FLG = 1
+        WHERE
+          CLASSES_CODE = #{classesCode}
+         AND MACHINING_CODE_U LIKE #{machiningCodeU}
+    </update>
+
+    <select id="nameCount" resultType="int" parameterType="com.msk.br.bean.IBR121414RsParam">
+        SELECT count(1)
+        FROM br_m_pd_classes
+        WHERE
+        CLASSES_CODE = #{classesCode}
+        AND MACHINING_CODE_U LIKE #{machiningCodeU}
+        AND DEL_FLG = 0
+    </select>
+
+    <update id="deleteMachin" parameterType="com.msk.br.bean.IBR121414RsParam">
+        UPDATE  br_m_pd_classes
+        SET DEL_FLG = 1
+        WHERE
+          CLASSES_CODE = #{hideClassesCheck}
+         AND MACHINING_CODE_U LIKE #{hideMachinCheck}
+    </update>
+</mapper>

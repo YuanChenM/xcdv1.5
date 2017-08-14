@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101117RsLogic">
+    <update id="modify"  parameterType="com.msk.bs.bean.IBS2101117Param">
+        UPDATE sl_bs_buyer
+        SET START_TIME = #{orderCrtTime},
+         END_TIME = #{endTime}
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        ,UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        ,VER=VER+1
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+        WHERE
+            BUYER_ID = #{buyerId}
+        <if test="applyStatus != null">
+          AND APPLY_STATUS = #{applyStatus}
+        </if>
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  (DEL_FLG IS NULL OR DEL_FLG =0)
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+</mapper>
+

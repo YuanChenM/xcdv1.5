@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.ds.logic.BSC181101Logic">
+    <insert id="batchSaveVirtualStockActual" parameterType="BaseParam">
+    INSERT INTO `ds_pd_virtual_stock_actual`(
+      `SUPP_DS_ID`,`VIRTUAL_STOCK_ACTUAL_ID`,`DIST_MONTH`,`LGCS_CODE`,`SUPP_CODE`,`PD_STOCK_TYPE`,`HALF_CODE`,
+      `CLASSES_CODE`,`BREED_CODE`,`FEATURE_CODE`,`GRADE_CODE`,`OUT_SPEC`,`OUT_NW`,`PD_CODE`,`NORMS_CODE`,
+      `INPUT_DATE`,`OLD_ACTUAL_NUM`,`NEW_ACTUAL_NUM`,`DEL_FLG`,`CRT_ID`,`CRT_TIME`,`UPD_ID`,`UPD_TIME`,
+      `ACT_ID`,`ACT_TIME`,`VER`
+    )
+    SELECT
+      PLAN.SUPP_DS_ID,${filterMap.virtualStockActualId},PLAN.DIST_MONTH,PLAN.LGCS_CODE,PLAN.SUPP_CODE,PLAN.PD_STOCK_TYPE,PLAN.HALF_CODE
+      ,PLAN.CLASSES_CODE,PLAN.BREED_CODE,PLAN.FEATURE_CODE,PLAN.GRADE_CODE,PLAN.OUT_SPEC,PLAN.OUT_NW,PLAN.PD_CODE,PLAN.NORMS_CODE
+      ,PLAN.ADJUST_DATE,0,0,0,PLAN.CRT_ID,PLAN.CRT_TIME,NULL,NULL
+      ,NULL,NULL,1
+    FROM ds_pd_virtual_stock_plan AS PLAN
+    WHERE PLAN.VIRTUAL_STOCK_PLAN_ID=#{filterMap.virtualStockPlanId}
+    </insert>
+
+    <insert id="batchSaveVirtualStockPlan" parameterType="BaseEntity">
+        INSERT INTO `ds_pd_virtual_stock_plan`
+        (`SUPP_DS_ID`,
+        `VIRTUAL_STOCK_PLAN_ID`,
+        `DIST_MONTH`,
+        `LGCS_CODE`,
+        `LGCS_NAME`,
+        `SUPP_CODE`,
+        `SUPP_NAME`,
+        `PD_STOCK_TYPE`,
+        `HALF_CODE`,
+        `CLASSES_CODE`,
+        `CLASSES_NAME`,
+        `MACHINING_CODE`,
+        `MACHINING_NAME`,
+        `BREED_CODE`,
+        `BREED_NAME`,
+        `FEATURE_CODE`,
+        `FEATURE_NAME`,
+        `WEIGHT_CODE`,
+        `WEIGHT_NAME`,
+        `GRADE_CODE`,
+        `GRADE_NAME`,
+        `OUT_SPEC`,
+        `OUT_NW`,
+        `PD_CODE`,
+        `NORMS_CODE`,
+        `NORMS_NAME`,
+        `ADJUST_DATE`,
+        `ORIG_PLAN_NUM`,
+        `OLD_PLAN_NUM`,
+        `NEW_PLAN_NUM`,
+        `DEL_FLG`,
+        `CRT_ID`,
+        `CRT_TIME`,
+        `UPD_ID`,
+        `UPD_TIME`,
+        `ACT_ID`,
+        `ACT_TIME`,
+        `VER`)
+        VALUES
+        (#{suppDsId},
+        #{virtualStockPlanId},
+        #{distMonth},
+        #{lgcsCode},
+        #{lgcsName},
+        #{suppCode},
+        #{suppName},
+        #{pdStockType},
+        #{halfCode},
+        #{classesCode},
+        #{classesName},
+        #{machiningCode},
+        #{machiningName},
+        #{breedCode},
+        #{breedName},
+        #{featureCode},
+        #{featureName},
+        #{weightCode},
+        #{weightName},
+        #{gradeCode},
+        #{gradeName},
+        #{outSpec},
+        #{outNw},
+        #{pdCode},
+        #{normsCode},
+        #{normsName},
+        #{adjustDate},
+        #{origPlanNum},
+        #{oldPlanNum},
+        #{newPlanNum},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        #{ver})
+    </insert>
+    <insert id="save" parameterType="BaseEntity">
+        INSERT INTO DS_SUPP_DIST_NUM(
+        SUPP_DS_ID,
+        DIST_MONTH,
+        LGCS_CODE,
+        SUPP_CODE,
+        PD_CODE,
+        BRAND_TYPE,
+        DIST_TYPE,
+        DIST_NUM,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES(
+        #{suppDsId},
+        #{distMonth},
+        #{lgcsCode},
+        #{suppCode},
+        #{pdCode},
+        #{brandType},
+        #{distType},
+        #{distNum},
+        0,
+        #{crtId},
+        #{crtTime},
+        null,
+        null,
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+    <!-- 条件语句 -->
+    <sql id="whereCondition">
+        <where>
+            DIST_MONTH = #{distMonth}
+            AND LGCS_CODE = #{lgcsCode}
+            AND SUPP_CODE = #{suppCode}
+            AND PD_CODE = #{pdCode}
+            AND BRAND_TYPE = #{brandType}
+            AND DIST_TYPE = #{distType}
+        </where>
+    </sql>
+    <update id="modify" parameterType="BaseEntity">
+        UPDATE
+        DS_SUPP_DIST_NUM
+        SET
+        BRAND_TYPE = #{brandType},
+        DIST_NUM = #{distNum},
+        UPD_ID = #{crtId},
+        UPD_TIME = #{actTime},
+        VER = VER + 1
+        <include refid="whereCondition"/>
+    </update>
+
+    <!-- 修改existChk中的条件为从filterMap中取值,原为属性值 2016/7/28 likai1 -->
+    <select id="existChk" resultType="Integer" parameterType="BaseParam">
+        SELECT
+        count(0)
+        FROM DS_SUPP_DIST_NUM
+        WHERE
+        DIST_MONTH = #{filterMap.distMonth}
+        AND LGCS_CODE = #{filterMap.lgcsCode}
+        AND SUPP_CODE = #{filterMap.suppCode}
+        AND PD_CODE = #{filterMap.pdCode}
+        AND BRAND_TYPE = #{filterMap.brandType}
+        AND DIST_TYPE = #{filterMap.distType}
+    </select>
+    <select id="findPdNormsStd" resultType="com.msk.core.entity.PdNormsStd"
+            parameterType="BaseParam">
+        SELECT
+        A.SL_CODE,
+        C.SL_PD_ID,
+        C.PKG_CODE AS normsCode,
+        C.OUT_GW AS normsKg,
+        C.OUT_SIZE AS normsOutSize,
+        C.OUT_MTS AS normsOutTexture,
+        C.PKG_TEN AS normsTen,
+        C.OUT_LENGTH AS normsLength,
+        C.OUT_WIDTH AS normsWidth,
+        C.OUT_HEIGHT AS normsHeight,
+        C.OUT_VOLUME AS normsVolume,
+        C.OUT_SPEC AS normsOut,
+        C.OUT_NW as normsKg
+        FROM
+        sl_seller A
+        INNER JOIN sl_product B ON B.SL_CODE = A.SL_CODE
+        <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+            AND B.PD_CLASSES_CODE = #{filterMap.classesCode}
+        </if>
+        <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+            AND B.MACHINING_CODE = #{filterMap.machiningCode}
+        </if>
+        <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+            AND B.PD_BREED_CODE = #{filterMap.breedCode}
+        </if>
+        <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+            AND B.PD_FEATURE_CODE = #{filterMap.featureCode}
+        </if>
+        <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+            AND B.WEIGHT_CODE = #{filterMap.weightCode}
+        </if>
+        AND B.DEL_FLG = 0
+        INNER JOIN sl_pd_pkg C ON C.SL_CODE = B.SL_CODE
+        AND C.SL_PD_ID = B.SL_PD_ID
+        AND C.DEL_FLG = 0
+        WHERE
+        A.DEL_FLG = 0
+        AND A.SL_CODE = #{filterMap.slCode}
+    </select>
+    <select id="findPdNormsStdProd" resultType="com.msk.core.entity.PdNormsStd"
+            parameterType="BaseParam">
+        SELECT
+        B.NORMS_CODE AS normsCode,
+        B.NETWEIGHT_OUT AS normsKg,
+        B.NORMS_OUT AS normsOut
+        FROM
+        pd_standard A
+        INNER JOIN pd_norms_std B ON B.STANDARD_ID = A.STANDARD_ID
+        AND B.DEL_FLG = 0
+        WHERE
+        A.DEL_FLG = 0
+        <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+            AND A.CLASSES_CODE = #{filterMap.classesCode}
+        </if>
+        <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+            AND A.MACHINING_CODE = #{filterMap.machiningCode}
+        </if>
+        <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+            AND A.BREED_CODE = #{filterMap.breedCode}
+        </if>
+        <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+            AND A.FEATURE_CODE = #{filterMap.featureCode}
+        </if>
+        <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+            AND A.WEIGHT_CODE = #{filterMap.weightCode}
+        </if>
+    </select>
+</mapper>

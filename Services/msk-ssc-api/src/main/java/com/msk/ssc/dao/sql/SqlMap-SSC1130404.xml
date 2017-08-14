@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC1130404Logic">
+
+    <!-- 根据合同产品ID，删除产品的包装 -->
+    <update id="deletePackageByProductId" parameterType="com.msk.ssc.bean.SSC11304PackageBean">
+        UPDATE ssc_package_material_info
+        SET DEL_FLG = 1,
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            DEL_FLG = 0
+        AND DETAIL_ID = #{detailId}
+    </update>
+
+</mapper>

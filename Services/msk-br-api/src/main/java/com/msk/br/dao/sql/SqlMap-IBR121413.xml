@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121413Logic">
+  <select id="buyerPdClasses" resultType="com.msk.br.bean.IBR121413RsBean" parameterType="BaseParam">
+    SELECT
+      oOrder.BUYER_ID AS buyerId,
+      oBuyer.BUYER_CODE AS buyerCode,
+	  IFNULL(oOrder.CLASSES_CODE, '') AS classesCode,
+	  IFNULL(pdClasses.CLASSES_NAME, '') AS classesName,
+	  IFNULL(pdClasses.MACHINING_CODE, '') AS machiningCode,
+	  IFNULL(pdClasses.MACHINING_NAME, '') AS machiningName,
+	  IFNULL(pdClasses.MACHINING_CODE_U, '') AS machiningCodeU,
+	  IFNULL(pdClasses.BY_POOL_MACHINING_CODE, '') AS byPoolMachiningCode,
+      IFNULL(oBuyer.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+      IFNULL(oBuyer.CITY_CODE,'') AS cityCode,
+      oOrder.BUYER_TYPE AS buyerType
+    FROM
+      br_o_order_info oOrder
+      INNER JOIN br_o_buyer_info oBuyer ON oOrder.BUYER_ID = oBuyer.BUYER_ID
+      AND RIGHT(CONCAT('00',oOrder.BUYER_TYPE),2) = '01'
+      AND oOrder.DEL_FLG = oBuyer.DEL_FLG
+      INNER JOIN br_m_pd_classes pdClasses ON oOrder.CLASSES_CODE = pdClasses.CLASSES_CODE AND oOrder.MACHINING_CODE = pdClasses.MACHINING_CODE AND oOrder.DEL_FLG = pdClasses.DEL_FLG
+      GROUP BY
+      oOrder.BUYER_ID,
+      oBuyer.BUYER_CODE,
+      oOrder.CLASSES_CODE,
+      oOrder.MACHINING_CODE,
+      oBuyer.LGCS_AREA_CODE,
+      oBuyer.CITY_CODE
+  </select>
+</mapper>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141146Logic">
+
+    <select id="findPdClasses" resultType="com.msk.product.bean.IPD141146RsResult"
+            parameterType="BaseParam">
+        SELECT
+        A.CLASSES_CODE AS classesCode,
+        A.CLASSES_NAME AS classesName
+        FROM PD_CLASSES AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+        </where>
+    </select>
+    <select id="findPdMachining" resultType="com.msk.product.bean.IPD141146RsResult"
+            parameterType="BaseParam">
+        SELECT
+        A.CLASSES_CODE AS classesCode,
+        A.MACHINING_CODE AS machiningCode,
+        A.MACHINING_NAME AS machiningName
+        FROM PD_MACHINING AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+        </where>
+    </select>
+    <select id="findPdBreed" resultType="com.msk.product.bean.IPD141146RsResult"
+            parameterType="BaseParam">
+        SELECT
+        A.CLASSES_CODE AS classesCode,
+        A.MACHINING_CODE AS machiningCode,
+        A.COUNTRY_CODE AS countryCode,
+        A.BREED_CODE AS breedCode,
+        A.BREED_NAME AS breedName
+        FROM PD_BREED AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+                AND A.BREED_NAME=#{filterMap.breedName}
+            </if>
+        </where>
+    </select>
+    <select id="findPdFeature" resultType="com.msk.product.bean.IPD141146RsResult"
+            parameterType="BaseParam">
+        SELECT
+        A.CLASSES_CODE AS classesCode,
+        A.MACHINING_CODE AS machiningCode,
+        A.BREED_CODE AS breedCode,
+        A.FEATURE_CODE AS featureCode,
+        A.FEATURE_NAME AS featureName
+        FROM PD_FEATURE AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND A.FEATURE_CODE=#{filterMap.featureCode}
+            </if>
+            <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+                AND A.FEATURE_NAME=#{filterMap.featureName}
+            </if>
+        </where>
+    </select>
+    <select id="findPdWeight" resultType="com.msk.product.bean.IPD141146RsResult"
+            parameterType="BaseParam">
+        SELECT
+        A.CLASSES_CODE AS classesCode,
+        A.MACHINING_CODE AS machiningCode,
+        A.BREED_CODE AS breedCode,
+        A.FEATURE_CODE AS featureCode,
+        A.WEIGHT_CODE AS weightCode,
+        A.WEIGHT_NAME AS weightName,
+        A.WEIGHT_VAL AS weightVal
+        FROM PD_WEIGHT AS A
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND A.CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND A.MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND A.BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND A.FEATURE_CODE=#{filterMap.featureCode}
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                AND A.WEIGHT_CODE=#{filterMap.weightCode}
+            </if>
+            <if test="filterMap.weightName!=null and filterMap.weightName!=''">
+                AND A.WEIGHT_NAME=#{filterMap.weightName}
+            </if>
+            <if test="filterMap.weightVal!=null and filterMap.weightVal!=''">
+                AND A.WEIGHT_VAL=#{filterMap.weightVal}
+            </if>
+        </where>
+    </select>
+
+    <select id="findGrade" resultType="com.msk.product.bean.IPD141146RsResult"
+            parameterType="BaseParam">
+        SELECT
+        A.GRADE_CODE AS gradeCode,
+        A.GRADE_NAME AS gradeName
+        FROM PD_GRADE AS A
+        <where>
+            <if test="filterMap.gradeCode!=null and filterMap.gradeCode!=''">
+                AND A.GRADE_CODE=#{filterMap.gradeCode}
+            </if>
+        </where>
+    </select>
+
+
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141146RsResult">
+        SELECT
+        A.NORMS_CODE AS normsCode
+        ,A.NORMS_OUT AS normsName
+        ,A.NORMS_SUTTLE AS normsSuttle
+        ,A.NORMS_ERROR AS normsError
+        ,A.NORMS_NUMBER AS normsNumber
+        ,A.NORMS_SIZE  AS normsSize
+        ,A.NORMS_TEXTURE AS normsTexture
+        ,A.NORMS_OUT AS normsOut
+        ,A.NORMS_KG AS normsKg
+        ,A.NORMS_OUT_SIZE AS normsOutSize
+        ,A.NORMS_OUT_TEXTURE AS normsOutTexture
+        FROM PD_NORMS_STD AS A
+        WHERE A.STANDARD_ID = (SELECT B.STANDARD_ID FROM PD_STANDARD B
+        WHERE
+        B.CLASSES_CODE = #{filterMap.classesCode}
+        AND B.MACHINING_CODE = #{filterMap.machiningCode}
+        AND B.BREED_CODE = #{filterMap.breedCode}
+        AND B.FEATURE_CODE = #{filterMap.featureCode}
+        AND B.WEIGHT_CODE = #{filterMap.weightCode})
+    </select>
+</mapper>

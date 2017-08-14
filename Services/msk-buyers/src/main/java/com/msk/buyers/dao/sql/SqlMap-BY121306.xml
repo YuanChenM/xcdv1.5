@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121306Logic">
+    <select id="findFoodMarketInfo" parameterType="BaseParam" resultType="com.msk.core.entity.ByMarketFood">
+        SELECT
+        FOD_MARKET_ID AS fodMarketId,
+        MARKET_CODE AS marketCode,
+        MARKET_NAME AS marketName,
+        MARKET_ADDR AS marketAddr,
+        MARKET_TYPE AS marketType,
+        MARKET_TYPE_NAME AS marketTypeName,
+        SECTION_TYPE AS sectionType,
+        SECTION_TYPE_NAME AS sectionTypeName,
+        LGCS_AREA_CODE AS lgcsAreaCode,
+        LGCS_AREA_NAME AS lgcsAreaName,
+        CITY_CODE AS cityCode,
+        CITY_NAME AS cityName,
+        DISTRICT_CODE AS districtCode,
+        DISTRICT_NAME AS districtName
+        FROM
+        by_market_food
+        WHERE
+        DEL_FLG = 0
+        AND FOD_MARKET_ID = #{filterMap.fodMarketId}
+    </select>
+
+    <update id="saveFoodMarketInfo" parameterType = "BaseEntity">
+        UPDATE
+        BY_MARKET_FOOD
+        SET MARKET_CODE = #{marketCode}
+            ,MARKET_NAME = #{marketName}
+            ,MARKET_ADDR = #{marketAddr}
+            ,MARKET_TYPE = #{marketType}
+            ,MARKET_TYPE_NAME = #{marketTypeName}
+            ,SECTION_TYPE = #{sectionType}
+            ,SECTION_TYPE_NAME = #{sectionTypeName}
+            ,LGCS_AREA_CODE = #{lgcsAreaCode}
+            ,LGCS_AREA_NAME = #{lgcsAreaName}
+            ,CITY_CODE = #{cityCode}
+            ,CITY_NAME = #{cityName}
+            ,DISTRICT_CODE = #{districtCode}
+            ,DISTRICT_NAME = #{districtName}
+            ,UPD_ID = #{updId}
+            ,UPD_TIME = #{updTime}
+        WHERE
+        FOD_MARKET_ID = #{fodMarketId}
+    </update>
+
+    <!--数据插入 -->
+    <insert id="addFodMarketInfo" parameterType="com.msk.core.entity.ByMarketFood">
+        INSERT INTO by_market_food(
+        FOD_MARKET_ID,
+        MARKET_CODE,
+        MARKET_NAME,
+        MARKET_ADDR,
+        MARKET_TYPE,
+        MARKET_TYPE_NAME,
+        SECTION_TYPE,
+        SECTION_TYPE_NAME,
+        LGCS_AREA_CODE,
+        LGCS_AREA_NAME,
+        CITY_CODE,
+        CITY_NAME,
+        DISTRICT_CODE,
+        DISTRICT_NAME,
+        DEL_FLG,
+
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+
+        VER
+        )VALUES (
+        #{fodMarketId},
+        #{marketCode},
+        #{marketName},
+        #{marketAddr},
+        #{marketType},
+        #{marketTypeName},
+        #{sectionType},
+        #{sectionTypeName},
+        #{lgcsAreaCode},
+        #{lgcsAreaName},
+        #{cityCode},
+        #{cityName},
+        #{districtCode},
+        #{districtName},
+        0,
+
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+
+        0
+        )
+    </insert>
+    <select id="getFodMarketInfoCount" resultType="Integer" parameterType="com.msk.core.entity.ByMarketFood">
+        select count(1)
+        from by_market_food
+        WHERE LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND CITY_CODE = #{cityCode}
+        AND DISTRICT_CODE = #{districtCode}
+        AND DEL_FLG = 0
+    </select>
+
+
+    <select id="getFodMarketId" resultType="com.msk.core.entity.ByMarketFood" parameterType="BaseParam">
+        SELECT  FOD_MARKET_ID  AS fodMarketId
+        FROM  BY_MARKET_FOOD
+        WHERE MARKET_CODE =#{filterMap.marketCode}
+        AND DEL_FLG = 0
+    </select>
+</mapper>

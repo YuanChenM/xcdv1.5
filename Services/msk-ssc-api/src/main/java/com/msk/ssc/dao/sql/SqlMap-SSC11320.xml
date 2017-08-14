@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11320Logic">
+
+    <!--查询付款清单-->
+    <select id="findRequest" resultType="com.msk.ssc.bean.SSC11320RsBean"
+            parameterType="com.msk.ssc.bean.SSC11320RsParam">
+        SELECT
+	    B.CONTRACT_AMOUNT AS contractTotalAmount,
+	    A.PAYMENT_TYPE AS paymentType,
+	    A.APPROVAL_PERSON AS approvalPerson,
+	    date_format(A.APPROVAL_DATE,'%Y-%m-%d %H:%i:%S') AS approvalDate,
+	    A.AUDITING_PERSON AS auditingPerson,
+	    A.PAYMENT_TERM AS paymentTerm,
+	    A.DELIVERY_ID AS deliveryId,
+	    A.DELIVERY_CODE AS deliveryCode,
+	    A.VERIFICATION_ID AS verificationId,
+	    A.VERIFICATION_CODE AS verificationCode,
+	    A.CONTRACT_ID AS contractId,
+	    A.CONTRACT_CODE AS contractCode,
+	    A.AMOUNT AS totalAmount,
+	    date_format(A.AUDITING_DATE,'%Y-%m-%d %H:%i:%S') AS auditingDate
+        FROM
+	    SSC_PAYMENT_REQUEST AS A
+        LEFT JOIN SSC_CONTRACT_BASIC AS B ON A.CONTRACT_ID = B.CONTRACT_ID
+        WHERE
+	        A.PAYMENT_REQUEST_ID = #{paymentRequestId}
+        AND A.DEL_FLG = 0
+    </select>
+        <!--查询付款记录-->
+    <select id="findInfo" resultType="com.msk.ssc.bean.SSC11320RsBean"
+            parameterType="com.msk.ssc.bean.SSC11320RsParam">
+        SELECT
+        A.PAYMENT_ID as paymentId,
+        B.PAYMENT_REQUEST_ID as paymentRequestId,
+        B.PAYMENT_REQUEST_CODE as paymentRequestCode,
+        B.CONTRACT_TOTAL_AMOUNT as contractTotalAmount,
+        A.AMOUNT as amount,
+        A.PAYER as payer,
+        A.PAYER_BANK as payerBank,
+        A.PATER_ACCOUNT as paterAccount,
+        A.RECEIVING as receiving,
+        A.SUBJECT as subject,
+        A.PAID_TYPE as paidType,
+        A.RECEIVING_BANK as receivingBank,
+        A.RECEIVING_ACCOUNT as receivingAccount,
+        date_format(A.REMIT_TIME,'%Y-%m-%d %H:%i:%S') AS remitTime
+        FROM  SSC_PAYMENT_INFO as A
+        INNER JOIN SSC_PAYMENT_REQUEST as B
+        on A.PAYMENT_REQUEST_ID=B.PAYMENT_REQUEST_ID
+        WHERE
+        A.PAYMENT_ID =#{paymentId}
+        AND A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+    </select>
+
+    <!--查询累计金额-->
+    <select id="getAccumulateAmount" resultType="BigDecimal" parameterType="com.msk.ssc.bean.SSC11320RsParam">
+        select sum(AMOUNT) as sccumulateAmount
+        FROM  SSC_PAYMENT_INFO
+        WHERE  PAYMENT_REQUEST_ID =#{paymentRequestId}
+        AND  STATUS=#{status}
+    </select>
+</mapper>

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121409Logic">
+    <select id="findOne" parameterType = "BaseParam" resultType = "com.msk.core.entity.ByMarketFoodBasic">
+       SELECT
+	IFNULL(MARKET_ID, '') AS marketId,
+	IFNULL(MARKET_CODE, '') AS marketCode,
+	IFNULL(MARKET_NAME, '') AS marketName,
+	IFNULL(MARKET_ADDR, '') AS marketAddr,
+	IFNULL(SECTION_TYPE, '') AS sectionType,
+	IFNULL(SECTION_TYPE_NAME, '') AS sectionTypeName,
+	IFNULL(RADIATION_RANGE, '') AS radiationRange,
+	IFNULL(RADIATION_RANGE_TYPE_NAME,'') AS radiationRangeTypeName,
+	IFNULL(MARKET_ASSESS_NATURE,'') AS marketAssessNature,
+	IFNULL(MARKET_ASSESS_NATURE_NAME,'') AS marketAssessNatureName,
+	IFNULL(BY_AVERAGE_PRICE_TYPE, '') AS byAveragePriceType,
+	IFNULL(BY_AVERAGE_PRICE_TYPE_NAME,'') AS byAveragePriceTypeName,
+	IFNULL(MARKET_NATURE,'') AS marketNature,
+	IFNULL(MARKET_NATURE_NAME,'') AS marketNatureName,
+	IFNULL(LGCS_AREA_CODE,'') AS lgcsAreaCode,
+	IFNULL(LGCS_AREA_NAME,'') AS lgcsAreaName,
+	IFNULL(CITY_CODE,'') AS cityCode,
+	IFNULL(CITY_NAME,'') AS cityName,
+	IFNULL(DISTRICT_CODE, '') AS districtCode,
+	IFNULL(DISTRICT_NAME, '') AS districtName,
+	IFNULL(MERCHANT_TOTAL_NO, 0) AS merchantTotalNo,
+	IFNULL(N_TARGET_BUYER, 0) AS ntargetBuyer,
+	IFNULL(N_TARGET_ANNUAL_TURNOVER, 0) AS ntargetAnnualTurnover,
+	IFNULL(TARGET_BUYER, 0) AS targetBuyer,
+	IFNULL(TARGET_ANNUAL_TURNOVER, 0) AS targetAnnualTurnover,
+	RESEARCH_PHASE AS researchPhase,
+	RESEARCH_PHASE_NAME AS researchPhaseName,
+	MARKET_STATUS AS marketStatus
+    FROM
+	by_market_food_basic
+        WHERE
+           MARKET_ID = #{filterMap.marketId}
+           AND IS_MARKET_NEW = 1
+           AND IS_PHASE_NEW = 1
+           AND DEL_FLG = 0
+    </select>
+    <select id="count" resultType="int" parameterType="BaseParam">
+        SELECT
+        count(1)
+        FROM
+        by_market_food_basic
+        WHERE
+        MARKET_NAME = #{filterMap.marketName}
+        AND DEL_FLG='0'
+        AND LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+        AND CITY_CODE = #{filterMap.cityCode}
+        AND DISTRICT_CODE = #{filterMap.districtCode}
+    </select>
+    <select id="findPageList" resultType="com.msk.core.entity.ByMarketFoodByInfo" parameterType="BaseParam">
+        SELECT
+        ID AS id,
+        MARKET_ID AS marketId,
+        MERCHANT_NAME AS merchantName,
+        MERCHANT_TYPE AS merchantType,
+        ifnull(TOTAL_MERCHANT,0) AS totalMerchant,
+        ifnull(ANNUAL_TURNOVER,0) AS annualTurnover,
+        IS_TARGET_MERCHANT AS isTargetMerchant
+        FROM by_market_food_by_info
+        WHERE
+        MARKET_ID = #{filterMap.marketId}
+        <if test="filterMap.merchantTypes != null and filterMap.merchantTypes.length > 0">
+            AND MERCHANT_TYPE IN
+            <foreach collection="filterMap.merchantTypes" item="merchantType" open="(" separator="," close=")">
+                #{merchantType}
+            </foreach>
+        </if>
+        <if test="filterMap.merchantName != null and filterMap.merchantName != ''">
+            AND MERCHANT_NAME LIKE #{filterMap.merchantName}
+        </if>
+        <if test="filterMap.totalMerchant != null and filterMap.totalMerchant != ''">
+            AND TOTAL_MERCHANT <![CDATA[ >= #{filterMap.totalMerchant}]]>
+        </if>
+            AND DEL_FLG = 0
+        ORDER BY id,marketId
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        from by_market_food_by_info
+        WHERE
+        MARKET_ID = #{filterMap.marketId}
+        <if test="filterMap.merchantTypes != null and filterMap.merchantTypes.length > 0">
+            AND MERCHANT_TYPE IN
+            <foreach collection="filterMap.merchantTypes" item="merchantType" open="(" separator="," close=")">
+                #{merchantType}
+            </foreach>
+        </if>
+        <if test="filterMap.merchantName != null and filterMap.merchantName != ''">
+            AND MERCHANT_NAME LIKE #{filterMap.merchantName}
+        </if>
+        <if test="filterMap.totalMerchant != null and filterMap.totalMerchant != ''">
+            AND TOTAL_MERCHANT <![CDATA[ >= #{filterMap.totalMerchant}]]>
+        </if>
+            AND DEL_FLG = 0
+    </select>
+
+    <insert id="save" parameterType = "com.msk.buyers.bean.BY121409Bean">
+        INSERT INTO
+           by_market_food_basic(
+           ID,
+           MARKET_ID,
+           MARKET_NAME,
+           MARKET_ADDR,
+           MARKET_CODE,
+           MARKET_NATURE,
+           MARKET_NATURE_NAME,
+           SECTION_TYPE,
+           SECTION_TYPE_NAME,
+           RADIATION_RANGE,
+           RADIATION_RANGE_TYPE_NAME,
+           MARKET_ASSESS_NATURE,
+           MARKET_ASSESS_NATURE_NAME,
+           BY_AVERAGE_PRICE_TYPE,
+           BY_AVERAGE_PRICE_TYPE_NAME,
+           LGCS_AREA_CODE,
+           LGCS_AREA_NAME,
+           CITY_CODE,
+           CITY_NAME,
+           DISTRICT_CODE,
+           DISTRICT_NAME,
+           MERCHANT_TOTAL_NO,
+           N_TARGET_BUYER,
+           N_TARGET_ANNUAL_TURNOVER,
+           TARGET_BUYER,
+           TARGET_ANNUAL_TURNOVER,
+           IS_PHASE_NEW,
+           IS_MARKET_NEW,
+           RESEARCH_PHASE,
+           RESEARCH_PHASE_NAME,
+           MARKET_STATUS,
+           DEL_FLG,
+
+           CRT_ID,
+           CRT_TIME,
+           UPD_ID,
+           UPD_TIME,
+           ACT_ID,
+           ACT_TIME,
+
+           VER
+           )VALUES (
+           #{id},
+           #{marketId},
+           #{marketName},
+           #{marketAddr},
+           #{marketCode},
+           #{marketNature},
+           #{marketNatureName},
+           #{sectionType},
+           #{sectionTypeName},
+           #{radiationRange},
+           #{radiationRangeTypeName},
+           #{marketAssessNature},
+           #{marketAssessNatureName},
+           #{byAveragePriceType},
+           #{byAveragePriceTypeName},
+           #{lgcsAreaCode},
+           #{lgcsAreaName},
+           #{cityCode},
+           #{cityName},
+           #{districtCode},
+           #{districtName},
+           #{merchantTotalNo},
+           #{ntargetBuyer},
+           #{ntargetAnnualTurnover},
+           #{targetBuyer},
+           #{targetAnnualTurnover},
+           1,
+           1,
+           #{researchPhase},
+           #{researchPhaseName},
+           #{marketStatus},
+           0,
+
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+
+           1
+           )
+    </insert>
+    <update id="modifyOldPhase" parameterType = "com.msk.buyers.bean.BY121409Bean">
+        UPDATE
+        by_market_food_basic
+        SET
+        IS_PHASE_NEW = 0
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+
+        WHERE
+        MARKET_ID = #{marketId}
+        AND RESEARCH_PHASE = #{oldResearchPhase}
+        AND IS_PHASE_NEW = 1
+        AND DEL_FLG = 0
+    </update>
+    <update id="modifyNewPhase" parameterType = "com.msk.buyers.bean.BY121409Bean">
+        UPDATE
+        by_market_food_basic
+        SET
+        IS_PHASE_NEW = 0
+
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+
+        WHERE
+        MARKET_ID = #{marketId}
+        AND RESEARCH_PHASE = #{researchPhase}
+        AND IS_MARKET_NEW = 0
+        AND DEL_FLG = 0
+    </update>
+    <update id="modify" parameterType = "com.msk.buyers.bean.BY121409Bean">
+        UPDATE
+        by_market_food_basic
+        SET
+        IS_MARKET_NEW = 0,
+        IS_PHASE_NEW = #{isPhaseNew}
+
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+
+        WHERE
+        MARKET_ID = #{marketId}
+        AND IS_MARKET_NEW = 1
+        AND DEL_FLG = 0
+    </update>
+</mapper>

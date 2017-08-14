@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.WarehouseServiceImpl">
+    <!-- 表字段 -->
+	<sql id="selectSql">
+        WH_ID AS whId,
+        WH_CODE AS whCode,
+        WH_NAME AS whName,
+        LOGIC_AREA AS logicArea,
+        AREA_NAME AS areaName,
+        WH_ADDRESS AS whAddress
+	</sql>
+    <!--条件 -->
+	<sql id="whereCondition">
+		<where>
+            <if test="whId!=null">
+                  AND WH_ID=#{whId}
+            </if> 
+            <if test="whCode!=null">
+                  AND WH_CODE=#{whCode}
+            </if> 
+            <if test="whName!=null">
+                  AND WH_NAME=#{whName}
+            </if> 
+            <if test="logicArea!=null">
+                  AND LOGIC_AREA=#{logicArea}
+            </if> 
+            <if test="areaName!=null">
+                  AND AREA_NAME=#{areaName}
+            </if> 
+            <if test="whAddress!=null">
+                  AND WH_ADDRESS=#{whAddress}
+            </if> 
+
+		</where>
+	</sql>
+    <!--数据插入 -->
+	<insert id="insertOne" parameterType="com.msk.inventory.bean.IvmWarehouseBean">
+		INSERT INTO ivm_warehouse
+		(
+            <if test="whId!=null">
+                WH_ID,
+            </if> 
+            <if test="whCode!=null">
+                WH_CODE,
+            </if> 
+            <if test="whName!=null">
+                WH_NAME,
+            </if> 
+            <if test="logicArea!=null">
+                LOGIC_AREA,
+            </if> 
+            <if test="areaName!=null">
+                AREA_NAME,
+            </if> 
+            <if test="whAddress!=null">
+                WH_ADDRESS,
+            </if> 			
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            VER
+		)
+		VALUES
+		(
+            <if test="whId!=null">
+                #{whId},
+            </if> 
+            <if test="whCode!=null">
+                #{whCode},
+            </if> 
+            <if test="whName!=null">
+                #{whName},
+            </if> 
+            <if test="logicArea!=null">
+                #{logicArea},
+            </if> 
+            <if test="areaName!=null">
+                #{areaName},
+            </if> 
+            <if test="whAddress!=null">
+                #{whAddress},
+            </if> 
+            0,
+            #{crtId},
+            #{crtTime},
+            1
+		)
+	</insert>
+	<update id="editOne" parameterType="com.msk.inventory.bean.IvmWarehouseBean">
+		update ivm_warehouse 
+		set 
+            WH_NAME=#{whName},
+            LOGIC_AREA=#{logicArea},
+            AREA_NAME=#{areaName},
+            WH_ADDRESS=#{whAddress}
+        WHERE
+            WH_CODE=#{whCode}
+	</update>
+	<select id="queryListByCondition" resultType="com.msk.inventory.bean.IvmWarehouseBean" parameterType="com.msk.inventory.bean.IvmWarehouseBean">
+		select 
+		<include refid="selectSql"/>
+		from ivm_warehouse
+	<include refid="whereCondition"/>
+	</select>
+	
+	<select id="countByCondition" resultType="Integer" parameterType="com.msk.inventory.bean.IvmWarehouseBean">
+		select count(1)
+		from ivm_warehouse
+		<include refid="whereCondition"/>
+	</select>
+</mapper>

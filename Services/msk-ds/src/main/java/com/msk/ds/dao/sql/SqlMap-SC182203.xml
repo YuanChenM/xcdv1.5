@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ds.logic.SC182203Logic">
+    <select id="getSupp" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182203Bean">
+        /*已调用接口 SELECT
+        slenterprise.EP_NAME as suppName,
+        slseller.SL_CODE as suppCode
+        FROM
+        sl_seller slseller,
+        sl_enterprise slenterprise
+        WHERE
+        slseller.EP_ID = slenterprise.EP_ID
+        AND slseller.SL_ACCOUNT=#{slAccount}*/
+    </select>
+    <select id="getProductLotList" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182203Bean">
+        SELECT
+        dsproductlot.half_period as halfPeriod,
+        /*已修改mdlogisticsarea.lgcs_area_name as lgcsName,*/
+        stockPlan.lgcs_name as lgcsName,
+        dsproductlot.classes_code as classesCode,
+        dsproductlot.breed_code as breedCode,
+        dsproductlot.machining_code as machiningCode,
+        dsproductlot.feature_code as featureCode,
+        dsproductlot.weight_code as weightCode,
+        dsproductlot.grade_code as gradeCode,
+        dsproductlot.manu_date as manuDate,
+        dsproductlot.shelf_life as shelfLife,
+        dsproductlot.stor_condition as storCondition,
+        dsproductlot.food_manu_licen as foodManuLicen,
+        dsproductlot.client as client,
+        dsproductlot.un_client as unClient,
+        dsproductlot.client_addr as clientAddr,
+        dsproductlot.un_client_addr as unClientAddr,
+        dsproductlot.client_phone as clientPhone,
+        dsproductlot.un_client_phone as unClientPhone,
+        dsproductlot.manu_origin as manuOrigin,
+        dsproductlot.sum_new_act_num as sumNewActNum,
+        dsproductlot.brand_logo as brandLogo,
+        dsproductlot.pro_lot_num as proLotNum
+        FROM
+        ds_product_lot dsproductlot /*已修改left JOIN
+        md_logistics_area mdlogisticsarea  ON
+        dsproductlot.lgcs_code=mdlogisticsarea.lgcs_area_code*/
+        LEFT JOIN (
+          SELECT DISTINCT
+		    ds_pd_virtual_stock_plan.classes_code,
+		    ds_pd_virtual_stock_plan.classes_name
+	      FROM
+		    ds_pd_virtual_stock_plan
+		  WHERE DEL_FLG = 0
+        ) stockPlan ON
+        stockPlan.lgcs_code = dsproductlot.lgcs_code
+        WHERE
+        dsproductlot.supp_code = #{suppCode}
+        dsproductlot.DEL_FLG = 0
+    </select>
+    <!-- 表字段 -->
+    <sql id="selectFiled">
+        DS.HALF_PERIOD AS halfPeriod,
+        /*已修改LOG.LGCS_AREA_NAME AS lgcsName,*/
+        IFNULL(stockPlan.LGCS_NAME, '') AS lgcsName,
+        DS.LGCS_CODE AS lgcsCode,
+        DS.PRO_LOT_NUM AS proLotNum
+    </sql>
+    <sql id="selectFrom">
+        FROM ds_product_lot AS DS
+        /*已修改LEFT JOIN md_logistics_area AS LOG
+        ON DS.LGCS_CODE = LOG.LGCS_AREA_CODE*/
+        LEFT JOIN (
+	      SELECT DISTINCT
+		  ds_pd_virtual_stock_plan.lgcs_code,
+		  ds_pd_virtual_stock_plan.lgcs_name
+	    FROM
+		  ds_pd_virtual_stock_plan
+		WHERE DEL_FLG = 0
+        ) stockPlan ON DS.LGCS_CODE = stockPlan.LGCS_CODE
+    </sql>
+    <sql id="whereCondition">
+        <where>
+            1=1
+            <if test="filterMap.halfPeriod!=null and filterMap.halfPeriod!=''">
+                AND DS.HALF_PERIOD like #{filterMap.halfPeriod}
+            </if>
+            <if test="filterMap.lgcsNames!=null and filterMap.lgcsNames!=''">
+                AND stockPlan.LGCS_NAME IN
+                <foreach collection="filterMap.lgcsNames" item="lgcsName" open="(" separator="," close=")">
+                    #{lgcsName}
+                </foreach>
+            </if>
+            <if test="filterMap.proLotNum!=null and filterMap.proLotNum!=''">
+                AND DS.PRO_LOT_NUM like #{filterMap.proLotNum}
+            </if>
+            AND DEL_FLG = 0
+        </where>
+    </sql>
+    <select id="findPageList" resultType="com.msk.ds.bean.SC182203Bean"
+            parameterType="BasePageParam">
+        SELECT
+        <include refid="selectFiled" />
+        <include refid="selectFrom" />
+        <include refid="whereCondition" />
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        select count(1)
+        <include refid="selectFrom" />
+        <include refid="whereCondition"/>
+    </select>
+</mapper>

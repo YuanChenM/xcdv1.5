@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121311Logic">
+
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerBasicInfo">
+      SELECT
+          BUYER_ID AS buyerId
+          ,BUYER_CODE AS buyerCode
+          ,BUYER_NAME AS buyerName
+          ,BUYER_ADDR AS buyerAddr
+          ,SUPERIOR_ID AS superiorId
+          ,SUPERIOR_TYPE AS superiorType
+          ,SUPERIOR_NAME AS superiorName
+          ,SUPERIOR_QUA AS superiorQua
+          ,LGCS_AREA_CODE AS lgcsAreaCode
+          ,LGCS_AREA_NAME AS lgcsAreaName
+          ,CITY_CODE AS cityCode
+          ,CITY_NAME AS cityName
+          ,DISTRICT_CODE AS districtCode
+          ,DISTRICT_NAME AS districtName
+          ,BUYER_WEBSITE AS buyerWebsite
+          ,BUYER_WECHAT AS buyerWechat
+          ,STORE_NO AS storeNo
+          ,STORE_AREA AS storeArea
+          ,BUSI_TEL AS busiTel
+          ,EMPLOYEES_NUM AS employeesNum
+          ,PAYMENT_TYPE AS paymentType
+          ,PLAN_ORDER_GAP AS planOrderGap
+          ,PLAN_ORDER_NUM AS planOrderNum
+          ,ACTUAL_ORDER_GAP AS actualOrderGap
+          ,ACTUAL_ORDER_NUM AS actualOrderNum
+          ,MARKETINGS_STATUS AS marketingsStatus
+          ,REGISTER_SOURCE AS registerSource
+        ,SUPERIOR_SUB_TYPE AS superiorSubType
+        ,SUPERIOR_SUB_NAME AS superiorSubName
+        ,IS_MARKET_FLG AS isMarketFlg
+      FROM by_buyer_basic_info
+      WHERE DEL_FLG = 0
+        AND BUYER_ID = #{filterMap.buyerId}
+    </select>
+
+</mapper>

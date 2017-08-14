@@ -1,0 +1,738 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.TransactionLogic">
+    <sql id="selectFiledTrans">
+        TRANS_ID AS transId,
+        BUSINESS_MAIN_ID AS businessMainId,
+        BUSINESS_MAIN_CODE AS businessMainCode,
+        BUSINESS_MAIN_NAME AS businessMainName,
+        BUSINESS_ASSISTANT_ID AS businessAssistantId,
+        BUSINESS_ASSISTANT_CODE AS businessAssistantCode,
+        BUSINESS_ASSISTANT_NAME AS businessAssistantName,
+        BUSINESS_MAIN_ROLE AS businessMainRole,
+        BUSINESS_ASSISTANT_ROLE AS businessAssistantRole,
+        TRANS_CODE AS transCode,
+        TRANS_TYPE AS transType,
+        TRANS_FLG AS transFlg,
+        ORDER_AMOUNT AS orderAmount,
+        TRAN_TIME AS tranTime,
+        SUPPLY_PLATFORM AS supplyPlatform,
+        PAYMENT_TYPE AS paymentType,
+        DUE AS due,
+        RECEIVEABLE AS receiveable,
+        REMARK AS remark,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+    </sql>
+
+    <sql id="selectFiledRefund">
+        REFUND_ID AS refundId,
+        TRANS_CODE AS transCode,
+        TRANS_TYPE AS transType,
+        REFUND_CODE AS refundCode,
+        REFUND_AMOUNT AS refundAmount,
+        SELLER_BILL_ID AS sellerBillId,
+        REFUND_TIME AS refundTime,
+        REFUND_TYPE AS refundType,
+        RE_SHIP_FLG AS reShipFlg,
+        PAYER_ID AS payerId,
+        PAYER_ROLE AS payerRole,
+        PAYEE_ID AS payeeId,
+        REMARK AS remark,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        PAYEE_CODE AS payeeCode,
+        PLATFORM AS platform,
+        PAYEE_NAME AS payeeName,
+        PAYEE_ROLE AS payeeRole,
+        VER AS ver
+    </sql>
+
+    <sql id="selectFiledBuyerBill">
+        BUYER_BILL_ID AS buyerBillId,
+        TRANS_CODE AS transCode,
+        TRANS_TYPE AS transType,
+        SETTLEMENT_STATUS AS settlementStatus,
+        DUE AS due,
+        REFUND_FLG AS refundFlg,
+        PAID AS paid,
+        REFUNDABLE AS refundable,
+        REAL_REFUND AS realRefund,
+        MATCH_VER_FLG AS matchVerFlg,
+        STATEMENT_FLG AS statementFlg,
+        REMARK AS remark,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+    </sql>
+
+    <sql id="selectFiledSellerBill">
+        SELLER_BILL_ID AS sellerBillId,
+        SELLER_BILL_NO AS sellerBillNo,
+        BUSINESS_MAIN_ID AS businessMainId,
+        BUSINESS_MAIN_CODE AS businessMainCode,
+        BUSINESS_MAIN_NAME AS businessMainName,
+        BUSINESS_MAIN_ROLE AS businessMainRole,
+        SETTLEMENT_STATUS AS settlementStatus,
+        START_DATE AS startDate,
+        END_DATE AS endDate,
+        PAYMENT_TYPE AS paymentType,
+        SUPPLY_PLATFORM AS supplyPlatform,
+        BILL_TYPE AS billType,
+        BILL_AMOUNT AS billAmount,
+        RECEIVEABLE AS receiveable,
+        RECEIVED AS received,
+        REFUNDABLE AS refundable,
+        REAL_REFUND AS realRefund,
+        TRANS_PAID_STATUS AS transPaidStatus,
+        CHARGE_RATE AS chargeRate,
+        HANDING_CHARGE AS handingCharge,
+        CHARGE_STATUS AS chargeStatus,
+        MATCH_VER_FLG AS matchVerFlg,
+        STATEMENT_FLG AS statementFlg,
+        REMARK AS remark,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+    </sql>
+
+    <sql id="whereCondition">
+        <where>
+            1 = 1
+        </where>
+    </sql>
+
+    <insert id="saveTrans" parameterType="com.msk.core.entity.SoCpTransaction">
+        INSERT INTO SO_CP_TRANSACTION (
+            TRANS_ID,
+            BUSINESS_MAIN_ID,
+            BUSINESS_MAIN_CODE,
+            BUSINESS_MAIN_NAME,
+            BUSINESS_ASSISTANT_ID,
+            BUSINESS_ASSISTANT_CODE,
+            BUSINESS_ASSISTANT_NAME,
+            BUSINESS_MAIN_ROLE,
+            BUSINESS_ASSISTANT_ROLE,
+            BS_ID,
+            BS_CODE,
+            BS_NAME,
+            TRANS_CODE,
+            TRANS_TYPE,
+            ORDER_ID,
+            TRANS_FLG,
+            ORDER_AMOUNT,
+            TRAN_TIME,
+            SUPPLY_PLATFORM,
+            PAYMENT_TYPE,
+            DUE,
+            RECEIVEABLE,
+            REMARK,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER)
+        VALUES (
+            #{transId},
+            #{businessMainId,jdbcType=VARCHAR},
+            #{businessMainCode,jdbcType=VARCHAR},
+            #{businessMainName},
+            #{businessAssistantId},
+            #{businessAssistantCode},
+            #{businessAssistantName},
+            #{businessMainRole},
+            #{businessAssistantRole},
+            #{bsId},
+            #{bsCode},
+            #{bsName},
+            #{transCode},
+            #{transType},
+            #{orderId},
+            0,
+            #{orderAmount},
+            #{tranTime},
+            #{supplyPlatform},
+            #{paymentType},
+            #{due},
+            #{receiveable},
+            #{remark},
+            0,
+			#{crtId},
+			#{crtTime},
+			#{updId},
+			#{updTime},
+			#{actId},
+			#{actTime},
+            1)
+    </insert>
+
+    <insert id="saveRefund" parameterType="com.msk.core.entity.SoCpRefund">
+        INSERT INTO SO_CP_REFUND (
+            REFUND_ID,
+            TRANS_CODE,
+            TRANS_TYPE,
+            ORDER_ID,
+            REFUND_CODE,
+            REFUND_AMOUNT,
+            SELLER_BILL_ID,
+            REFUND_TIME,
+            REFUND_TYPE,
+            RE_SHIP_FLG,
+            PAYER_ID,
+            PAYER_ROLE,
+            PAYEE_ID,
+            PAYEE_CODE,
+            PLATFORM,
+            PAYEE_NAME,
+            PAYEE_ROLE,
+            REMARK,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER)
+        VALUES (
+            #{refundId},
+            #{transCode},
+            #{transType},
+            #{orderId},
+            #{refundCode},
+            #{refundAmount},
+            #{sellerBillId},
+            #{refundTime},
+            #{refundType},
+            #{reShipFlg},
+            #{payerId},
+            #{payerRole},
+            #{payeeId,jdbcType=VARCHAR},
+            #{payeeCode,jdbcType=VARCHAR},
+            #{platform},
+            #{payeeName},
+            #{payeeRole},
+            #{remark},
+            0,
+			#{crtId},
+			#{crtTime},
+			#{updId},
+			#{updTime},
+			#{actId},
+			#{actTime},
+            1)
+    </insert>
+
+    <insert id="saveBuyerBill" parameterType="com.msk.core.entity.SoCpBuyerBill">
+        INSERT INTO SO_CP_BUYER_BILL (
+            BUYER_BILL_ID,
+            TRANS_CODE,
+            TRANS_ID,
+            ORDER_ID,
+            TRANS_TYPE,
+            SETTLEMENT_STATUS,
+            DUE,
+            REFUND_FLG,
+            PAID,
+            REFUNDABLE,
+            REAL_REFUND,
+            MATCH_VER_FLG,
+            STATEMENT_FLG,
+            REMARK,
+            RELIEF_AMOUNT,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER)
+        VALUES (
+            #{buyerBillId},
+            #{transCode},
+            #{transId},
+            #{orderId},
+            #{transType},
+            1,
+            #{due},
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            #{remark},
+            0,
+            0,
+			#{crtId},
+			#{crtTime},
+			#{updId},
+			#{updTime},
+			#{actId},
+			#{actTime},
+            1)
+    </insert>
+
+    <insert id="saveRunning" parameterType="com.msk.core.entity.SoCpRunning">
+        INSERT INTO SO_CP_RUNNING (
+        RUNNING_ID,
+        AMOUNT_TYPE,
+        BACK_TYPE,
+        BILL_ID,
+        TRANS_CODE,
+        TRANS_TYPE,
+        ORDER_ID,
+        REFUND_ID,
+        REFUND_CODE,
+        PAID_AMOUNT,
+        PAID_TYPE,
+        PAID_SEQ,
+        VER_SEQ,
+        PAID_TIME,
+        PAYER_ID,
+        PAYER_ROLE,
+        PAYEE_ID,
+        PAYEE_ROLE,
+        PAYEE_CODE,
+        PLATFORM,
+        HANDLER,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES (
+        #{runningId},
+        #{amountType},
+        #{backType},
+        #{billId},
+        #{transCode},
+        #{transType},
+        #{orderId},
+        #{refundId},
+        #{refundCode},
+        #{paidAmount},
+        #{paidType},
+        #{paidSeq},
+        #{verSeq},
+        #{paidTime},
+        #{payerId},
+        #{payerRole},
+        #{payeeId,jdbcType=VARCHAR},
+        #{payeeRole},
+        #{payeeCode,jdbcType=VARCHAR},
+        #{platform},
+        #{handler},
+        #{remark},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1)
+    </insert>
+
+    <insert id="saveSelCharging" parameterType="com.msk.core.entity.SoCpSelCharging">
+        INSERT INTO SO_CP_SEL_CHARGING (
+        SEL_CHARGING_ID,
+        SELLER_BILLING_ID,
+        TRANS_CODE,
+        TRANS_TYPE,
+        ORDER_ID,
+        BUSINESS_MAIN_ID,
+        BUSINESS_MAIN_CODE,
+        BUSINESS_MAIN_NAME,
+        BUSINESS_MAIN_ROLE,
+        BUSINESS_ASSISTANT_ID,
+        BUSINESS_ASSISTANT_CODE,
+        BUSINESS_ASSISTANT_NAME,
+        BUSINESS_ASSISTANT_ROLE,
+        DELIVERY_CODE,
+        DELIVERY_TIME,
+        SHIPPING_AMOUNT,
+        PAID_AMOUNT,
+        CHARGE_FLG,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUE (
+        #{selChargingId},
+        #{sellerBillingId},
+        #{transCode},
+        #{transType},
+        #{orderId},
+        #{businessMainId},
+        #{businessMainCode},
+        #{businessMainName},
+        #{businessMainRole},
+        #{businessAssistantId},
+        #{businessAssistantCode},
+        #{businessAssistantName},
+        #{businessAssistantRole},
+        #{deliveryCode},
+        #{deliveryTime},
+        #{shippingAmount},
+        #{paidAmount},
+        #{chargeFlg},
+        #{remark},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1)
+    </insert>
+
+    <update id="modifyTrans" parameterType="com.msk.core.entity.SoCpTransaction">
+        UPDATE SO_CP_TRANSACTION
+        SET
+        <if test="transFlg!=null">
+            TRANS_FLG = #{transFlg},
+        </if>
+        <if test="remark!=null">
+            REMARK = #{remark},
+        </if>
+        <if test="delFlg!=null">
+            DEL_FLG = #{delFlg},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        <where>
+            <if test="transCode!=null">
+                TRANS_CODE = #{transCode}
+            </if>
+            <if test="transType!=null">
+                AND TRANS_TYPE = #{transType}
+            </if>
+            <if test="transId!=null">
+                AND TRANS_ID = #{transId}
+            </if>
+        </where>
+    </update>
+
+    <update id="modifyBuyerBill" parameterType="com.msk.core.entity.SoCpBuyerBill">
+        UPDATE SO_CP_BUYER_BILL
+        SET
+        <if test="settlementStatus!=null">
+            SETTLEMENT_STATUS = #{settlementStatus},
+        </if>
+        /** Bug #3362 modify by renyi on 2016/10/17 start */
+        <if test="reliefAmount!=null">
+            RELIEF_AMOUNT = #{reliefAmount},
+        </if>
+        /** Bug #3362 modify by renyi on 2016/10/17 end */
+        <if test="refundFlg!=null">
+            REFUND_FLG = #{refundFlg},
+        </if>
+        <if test="paid!=null">
+            PAID = #{paid},
+        </if>
+        <if test="refundable!=null">
+            REFUNDABLE = #{refundable},
+        </if>
+        <if test="realRefund!=null">
+            REAL_REFUND = #{realRefund},
+        </if>
+        <if test="matchVerFlg!=null">
+            MATCH_VER_FLG = #{matchVerFlg},
+        </if>
+        <if test="statementFlg!=null">
+            STATEMENT_FLG = #{statementFlg},
+        </if>
+        <if test="remark!=null">
+            REMARK = #{remark},
+        </if>
+        <if test="delFlg!=null">
+            DEL_FLG = #{delFlg},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        <where>
+            <if test="transCode!=null">
+                TRANS_CODE = #{transCode}
+            </if>
+            <if test="transType!=null">
+                AND TRANS_TYPE = #{transType}
+            </if>
+            <if test="buyerBillId!=null">
+                AND BUYER_BILL_ID = #{buyerBillId}
+            </if>
+        </where>
+    </update>
+
+    <update id="modifySellerBill" parameterType="com.msk.core.entity.SoCpSellerBill">
+        UPDATE SO_CP_SELLER_BILL
+        SET
+        <if test="settlementStatus!=null">
+            SETTLEMENT_STATUS=#{settlementStatus},
+        </if>
+        <if test="paymentType!=null">
+            PAYMENT_TYPE=#{paymentType},
+        </if>
+        <if test="receiveable!=null">
+            RECEIVEABLE=#{receiveable},
+        </if>
+        <if test="received!=null">
+            RECEIVED=#{received},
+        </if>
+        <if test="refundable!=null">
+            REFUNDABLE=#{refundable},
+        </if>
+        <if test="realRefund!=null">
+            REAL_REFUND=#{realRefund},
+        </if>
+        <if test="transPaidStatus!=null">
+            TRANS_PAID_STATUS=#{transPaidStatus},
+        </if>
+        <if test="chargeStatus!=null">
+            CHARGE_STATUS=#{chargeStatus},
+        </if>
+        <if test="matchVerFlg!=null">
+            MATCH_VER_FLG=#{matchVerFlg},
+        </if>
+        <if test="statementFlg!=null">
+            STATEMENT_FLG=#{statementFlg},
+        </if>
+        <if test="remark!=null">
+            REMARK=#{remark},
+        </if>
+        <if test="delFlg!=null">
+            DEL_FLG = #{delFlg},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        <where>
+            <if test="businessMainId!=null">
+                BUSINESS_MAIN_ID = #{businessMainId}
+            </if>
+            <if test="startDate!=null">
+                AND START_DATE = #{startDate}
+            </if>
+            <if test="endDate!=null">
+                AND END_DATE = #{endDate}
+            </if>
+        </where>
+    </update>
+
+    <select id="findOneTrans" parameterType="com.msk.core.entity.SoCpTransaction"
+            resultType="com.msk.core.entity.SoCpTransaction">
+        SELECT
+        <include refid="selectFiledTrans"/>
+        FROM SO_CP_TRANSACTION
+        <where>
+            DEL_FLG = 0
+            <if test="transCode!=null">
+                AND TRANS_CODE = #{transCode}
+            </if>
+            <if test="transType!=null">
+                AND TRANS_TYPE = #{transType}
+            </if>
+            <if test="transId!=null">
+                AND TRANS_ID = #{transId}
+            </if>
+        </where>
+    </select>
+
+    <select id="findOneRefund" parameterType="com.msk.core.entity.SoCpRefund"
+            resultType="com.msk.core.entity.SoCpRefund">
+        SELECT
+        <include refid="selectFiledRefund"/>
+        FROM SO_CP_REFUND
+        <where>
+            DEL_FLG = 0
+            <if test="refundId!=null">
+                AND REFUND_ID = #{refundId}
+            </if>
+            <if test="refundCode!=null">
+                AND REFUND_CODE = #{refundCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="findOneBuyerBill" parameterType="com.msk.core.entity.SoCpBuyerBill"
+            resultType="com.msk.core.entity.SoCpBuyerBill">
+        SELECT
+        <include refid="selectFiledBuyerBill"/>
+        FROM SO_CP_BUYER_BILL
+        <where>
+            DEL_FLG = 0
+            <if test="transCode!=null">
+                AND TRANS_CODE = #{transCode}
+            </if>
+            <if test="transType!=null">
+                AND TRANS_TYPE = #{transType}
+            </if>
+            <if test="buyerBillId!=null">
+                AND BUYER_BILL_ID = #{buyerBillId}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findOneSellerBill" parameterType="java.util.HashMap" resultType="com.msk.core.entity.SoCpSellerBill">
+        SELECT
+        <include refid="selectFiledSellerBill"/>
+        FROM SO_CP_SELLER_BILL
+        <where>
+            DEL_FLG = 0
+            <if test="businessMainId!=null and businessMainId!=''">
+                AND BUSINESS_MAIN_ID = #{businessMainId}
+            </if>
+            <if test="startDate!=null">
+                AND DATE_FORMAT(START_DATE,'%Y-%m-%d') = DATE_FORMAT(#{startDate},'%Y-%m-%d')
+            </if>
+            <if test="endDate!=null">
+                AND DATE_FORMAT(END_DATE,'%Y-%m-%d') = DATE_FORMAT(#{endDate},'%Y-%m-%d')
+            </if>
+            <if test="deliveryDate!=null">
+                <![CDATA[
+                AND START_DATE <= #{deliveryDate}
+                AND END_DATE >= #{deliveryDate}
+                ]]>
+            </if>
+            <if test="sellerBillNo!=null and sellerBillNo!=''">
+                AND SELLER_BILL_NO = #{sellerBillNo}
+            </if>
+        </where>
+    </select>
+
+    <update id="modifyRunning" parameterType="com.msk.core.entity.SoCpRunning">
+        UPDATE SO_CP_RUNNING
+        SET
+        AMOUNT_TYPE = #{amountType},
+        BACK_TYPE = #{backType},
+        BILL_ID = #{billId},
+        TRANS_CODE = #{transCode},
+        TRANS_TYPE = #{transType},
+        REFUND_ID = #{refundId},
+        REFUND_CODE = #{refundCode},
+        PAID_AMOUNT = #{paidAmount},
+        PAID_TYPE = #{paidType},
+        PAID_SEQ = #{paidSeq},
+        VER_SEQ = #{verSeq},
+        PAID_TIME = #{paidTime},
+        PAYER_ID = #{payerId},
+        PAYER_ROLE = #{payerRole},
+        PAYEE_ID = #{payeeId},
+        PAYEE_ROLE = #{payeeRole},
+        REMARK = #{remark},
+        DEL_FLG = '0',
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1,
+        PAYEE_CODE = #{payeeCode},
+        PLATFORM = #{platform},
+        HANDLER = #{handler},
+        ORDER_ID = #{orderId}
+        WHERE
+        RUNNING_ID = #{runningId}
+    </update>
+
+    <select id="findOneRunning" parameterType="com.msk.core.entity.SoCpRunning"
+            resultType="com.msk.core.entity.SoCpRunning">
+        SELECT
+        RUNNING_ID AS runningId,
+        AMOUNT_TYPE AS amountType,
+        BACK_TYPE AS backType,
+        BILL_ID AS billId,
+        TRANS_CODE AS transCode,
+        TRANS_TYPE AS transType,
+        ORDER_ID AS orderId,
+        REFUND_ID AS refundId,
+        REFUND_CODE AS refundCode,
+        PAID_AMOUNT AS paidAmount,
+        PAID_TYPE AS paidType,
+        PAID_SEQ AS paidSeq,
+        VER_SEQ AS verSeq,
+        PAID_TIME AS paidTime,
+        PAYER_ID AS payerId,
+        PAYEE_ID AS payeeId,
+        PAYEE_CODE AS payeeCode,
+        PLATFORM AS platform,
+        HANDLER AS handler,
+        REMARK AS remark,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+        FROM
+        SO_CP_RUNNING
+        WHERE
+        RUNNING_ID = #{runningId}
+    </select>
+
+    <update id="modifyRefund" parameterType="com.msk.core.entity.SoCpRefund">
+        UPDATE SO_CP_REFUND
+        SET
+        TRANS_CODE = #{transCode},
+        TRANS_TYPE = #{transType},
+        REFUND_CODE = #{refundCode},
+        REFUND_AMOUNT = #{refundAmount},
+        SELLER_BILL_ID = #{sellerBillId},
+        REFUND_TIME = #{refundTime},
+        REFUND_TYPE = #{refundType},
+        RE_SHIP_FLG = #{reShipFlg},
+        PAYER_ID = #{payerId},
+        PAYER_ROLE = #{payerRole},
+        PAYEE_ID = #{payeeId},
+        REMARK = #{remark},
+        DEL_FLG = 0,
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1,
+        PAYEE_CODE = #{payeeCode},
+        PLATFORM = #{platform},
+        PAYEE_NAME = #{payeeName},
+        PAYEE_ROLE = #{payeeRole},
+        ORDER_ID = #{orderId}
+        WHERE
+        REFUND_ID = #{refundId}
+    </update>
+
+</mapper>

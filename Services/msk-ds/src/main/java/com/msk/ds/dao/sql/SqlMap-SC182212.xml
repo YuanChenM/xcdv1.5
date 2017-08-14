@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ds.logic.SC182212Logic">
+
+    <sql id="selectSql">
+    SELECT
+	LOT_ID AS lotId,
+	CLASSES_CODE AS classesCode,
+	CLASSES_NAME AS classesName,
+	MACHINING_CODE AS machiningCode,
+	MACHINING_NAME AS machiningName,
+	BREED_CODE AS breedCode,
+	BREED_NAME AS breedName,
+	IFNULL(FEATURE_CODE,'') AS featureCode,
+	IFNULL(FEATURE_NAME,'') AS featureName,
+	WEIGHT_CODE AS weightCode,
+	WEIGHT_NAME AS weightName,
+	GRADE_CODE AS gradeCode,
+	GRADE_NAME AS gradeName,
+	SL_CODE AS slCode,
+	SL_NAME AS slName,
+	PD_CODE AS pdCode,
+	PD_NAME AS pdName,
+	PKG_CODE AS pkgCode,
+	SL_CODE_DIS AS slCodeDis,
+	IFNULL(SL_CODE_MANUFACTURE,'') AS slCodeManufacture,
+	SALES_PLATFORM AS salesPlatform,
+	IFNULL(LGCS_CODE,'') AS lgcsCode,
+	DATE_CODE AS dateCode,
+	IFNULL(LGCS_NAME,'') AS lgcsName,
+	case when IFNULL(PD_STATUS,'') = 1 then '申请中'
+	 when IFNULL(PD_STATUS,'') = 2 then '论证中'
+	 when IFNULL(PD_STATUS,'') = 3 then '禁止准入'
+	 when IFNULL(PD_STATUS,'') = 4 then '试销'
+	 when IFNULL(PD_STATUS,'') = 5 then '正式上线'
+	 when IFNULL(PD_STATUS,'') = 6 then '下线'
+	 when IFNULL(PD_STATUS,'') = 7 then '黑名单'
+	 when IFNULL(PD_STATUS,'') = 8 then '缺货中'
+	 ELSE ''
+	 end  AS pdStatus,
+	IFNULL(ORIGIN,'') AS origin,
+	IFNULL(PRODCINGAREA,'') AS prodcingArea,
+	MANUFACTURER AS manufacturer,
+	BRAND AS brand,
+	IFNULL(NETWEIGHT,'') AS netWeight,
+	IFNULL(PKG_SPEC,'') AS pkgSpec,
+	IFNULL(PKG_WAY,'') AS pkgWay,
+	IFNULL(PD_TIME,'') AS pdTime,
+	IFNULL(SHELF_LIFE,'') AS shelfLife,
+	IFNULL(PROCESSING_WAY,'') AS processingWay,
+	IFNULL(STORAGE_WAY,'') AS storageWay,
+	CRT_TIME AS crtTime
+    </sql>
+
+
+    <select id="findPageList" parameterType="com.hoperun.core.bean.BasePageParam"
+            resultType="com.msk.ds.bean.SC182212Bean">
+        <include refid="selectSql"/>
+        FROM ds_sl_pd_lot
+        <where>
+
+        <if test="filterMap.lotId!=null and filterMap.lotId!=''">
+            AND LOT_ID = #{filterMap.lotId}
+        </if>
+
+        <if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+            AND SL_CODE_DIS LIKE #{filterMap.slCodeDis}
+        </if>
+        <if test="filterMap.slCodeManufacture!=null and filterMap.slCodeManufacture!=''">
+            AND SL_CODE_MANUFACTURE LIKE #{filterMap.slCodeManufacture}
+        </if>
+        <if test="filterMap.salesPlatform!=null and filterMap.salesPlatform!=''">
+            AND SALES_PLATFORM LIKE #{filterMap.salesPlatform}
+        </if>
+        <if test="filterMap.dateCode!=null and filterMap.dateCode!=''">
+            AND DATE_CODE LIKE #{filterMap.dateCode}
+        </if>
+        <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+            AND CLASSES_CODE LIKE #{filterMap.classesCode}
+        </if>
+        <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+            AND MACHINING_CODE LIKE #{filterMap.machiningCode}
+        </if>
+        <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+            AND BREED_CODE LIKE #{filterMap.breedCode}
+        </if>
+        <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+            AND FEATURE_CODE LIKE #{filterMap.featureCode}
+        </if>
+        <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+            AND WEIGHT_CODE LIKE #{filterMap.weightCode}
+        </if>
+        <if test="filterMap.gradeCode!=null and filterMap.gradeCode!=''">
+            AND GRADE_CODE LIKE #{filterMap.gradeCode}
+        </if>
+        AND DEL_FLG = 0
+
+
+        </where>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer"
+            parameterType="com.hoperun.core.bean.BasePageParam">
+        select COUNT(1)
+        FROM ds_sl_pd_lot
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND CLASSES_CODE LIKE #{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                AND MACHINING_CODE LIKE #{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND BREED_CODE LIKE #{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                AND FEATURE_CODE LIKE #{filterMap.featureCode}
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                AND WEIGHT_CODE LIKE #{filterMap.weightCode}
+            </if>
+            <if test="filterMap.gradeCode!=null and filterMap.gradeCode!=''">
+                AND GRADE_CODE LIKE #{filterMap.gradeCode}
+            </if>
+
+            <if test="filterMap.lotId!=null and filterMap.lotId!=''">
+                AND LOT_ID = #{filterMap.lotId}
+            </if>
+
+            <if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+                AND SL_CODE_DIS LIKE #{filterMap.slCodeDis}
+            </if>
+            <if test="filterMap.slCodeManufacture!=null and filterMap.slCodeManufacture!=''">
+                AND SL_CODE_MANUFACTURE LIKE #{filterMap.slCodeManufacture}
+            </if>
+            <if test="filterMap.salesPlatform!=null and filterMap.salesPlatform!=''">
+                AND SALES_PLATFORM LIKE #{filterMap.salesPlatform}
+            </if>
+            <if test="filterMap.dateCode!=null and filterMap.dateCode!=''">
+                AND DATE_CODE LIKE #{filterMap.dateCode}
+            </if>
+            AND DEL_FLG = 0
+        </where>
+    </select>
+
+    <delete id="remove">
+        DELETE FROM ds_sl_pd_lot
+        <if test="filterMap.lotId!=null and filterMap.lotId!=''">
+            WHERE LOT_ID = #{filterMap.lotId}
+        </if>
+    </delete>
+
+    <delete id="removeMore">
+        DELETE FROM ds_lot_serial
+        <if test="filterMap.lotId!=null and filterMap.lotId!=''">
+            WHERE LOT_ID = #{filterMap.lotId}
+        </if>
+    </delete>
+</mapper>

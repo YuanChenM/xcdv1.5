@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141112Logic">
+
+
+    <select id="findPageList" parameterType="BaseParam"
+            resultType="com.msk.product.bean.IPD141112RsPdClaSubItemResult">
+        SELECT
+        standARD.STANDARD_ID AS standardId
+        ,standARD.CLASSES_CODE AS classesCode
+        ,StandARD.BREED_CODE AS breedCode
+        ,StandARD.FEATURE_CODE AS featureCode
+        ,(CASE WHEN StandARD.QLT_FLG='1' THEN '有' ELSE '无' END) AS hasQtySpec
+        ,(CASE WHEN StandARD.TNC_FLG='1' THEN '有' ELSE '无' END) AS hasTncSpec
+        ,Classes.CLASSES_NAME AS classesName
+        ,Breed.BREED_NAME AS breedName
+        ,feature.FEATURE_NAME AS featureName
+        FROM
+        PD_STANDARD AS standARD
+        INNER JOIN PD_CLASSES AS Classes ON StandARD.CLASSES_CODE = Classes.CLASSES_CODE
+        INNER JOIN PD_BREED AS Breed ON StandARD.CLASSES_CODE = Breed.CLASSES_CODE AND StandARD.BREED_CODE =
+        Breed.BREED_CODE
+        INNER JOIN PD_FEATURE AS feature ON StandARD.CLASSES_CODE = feature.CLASSES_CODE AND StandARD.BREED_CODE =
+        feature.BREED_CODE AND StandARD.FEATURE_CODE = feature.FEATURE_CODE
+        WHERE
+        StandARD.QLT_FLG='1' OR StandARD.TNC_FLG='1'
+        <if test="startPos>=0 and pageCount>0">
+            LIMIT #{startPos}, #{pageCount}
+        </if>
+    </select>
+
+    <!-- 查询一级数据条数 -->
+    <select id="getPageCount" parameterType="BaseParam" resultType="int">
+        SELECT count(1)
+        FROM PD_STANDARD AS StandARD
+		INNER JOIN  PD_CLASSES AS Classes ON StandARD.CLASSES_CODE = Classes.CLASSES_CODE
+		INNER JOIN  PD_BREED AS Breed ON StandARD.CLASSES_CODE = Breed.CLASSES_CODE AND StandARD.BREED_CODE = Breed.BREED_CODE
+		INNER JOIN  PD_FEATURE AS feature ON StandARD.CLASSES_CODE = feature.CLASSES_CODE AND StandARD.BREED_CODE = feature.BREED_CODE AND StandARD.FEATURE_CODE = feature.FEATURE_CODE
+        WHERE
+        StandARD.QLT_FLG='1' OR StandARD.TNC_FLG='1'
+    </select>
+
+
+    <select id="findListPdQltStd" parameterType="BaseParam"
+            resultType="com.msk.product.bean.IPD141112RsPdStdItemResult">
+        select
+        A.QLT_STD_ITEM_ID AS qltStdItemId
+        ,A.QLT_STD_ITEM_NAME AS qltStdItemName
+        ,B.QLT_STD_EXC_VAL AS qltStdExcVal
+        ,B.QLT_STD_SUIT_VAL AS qltStdSuitVal
+        ,B.QLT_STD_UNQUAL_VAL AS qltStdUnqualVal
+        from PD_QLT_STD_ITEM AS A
+        LEFT JOIN PD_QLT_STD AS B
+        ON A.QLT_STD_ITEM_ID = B.QLT_STD_ITEM_ID
+        AND
+        <if test="filterMap.standardId!=null and filterMap.standardId!=''">
+            B.STANDARD_ID =#{filterMap.standardId}
+        </if>
+        where A.QLT_STD_SUB_ID=#{filterMap.qltStdSubId} AND A.QLT_STD_CLA_ID=#{filterMap.qltStdClaId}
+    </select>
+
+    <!--查询三级类目中的数据-->
+    <select id="findListPdQltStdSubCla" parameterType="BaseParam"
+            resultType="com.msk.product.bean.IPD141112RsPdStdSubResult">
+        SELECT
+         PdStdSubCla.QLT_STD_SUB_ID AS qltStdSubId
+        ,PdStdSubCla.QLT_STD_SUB_NAME AS qltStdSubName
+        ,PdStdSubCla.QLT_STD_CLA_ID AS qltStdClaId
+        FROM
+        PD_QLT_STD_SUB_CLA AS PdStdSubCla
+        WHERE 1=1
+        AND PdStdSubCla.QLT_STD_CLA_ID = #{filterMap.qltStdClaId}
+    </select>
+
+    <!--查询二级类目中的数据-->
+    <select id="findListPdQltStdCla" parameterType="BaseParam"
+            resultType="com.msk.product.bean.IPD141112RsPdStdClaResult">
+        SELECT
+         PdStdCla.QLT_STD_CLA_ID AS qltStdClaId
+        ,PdStdCla.QLT_STD_CLA_NAME AS qltStdClaName
+        FROM
+        PD_QLT_STD_CLA AS PdStdCla
+    </select>
+
+    <!--  查询技术标准列表-->
+    <select id="findListPdTncStd" parameterType="BaseParam"
+            resultType="com.msk.product.bean.IPD141112RsPdTncResult">
+        SELECT
+		A.TNC_STD_ITEM_ID AS tncStdItemId
+		,B.TNC_STD_ITEM_NAME AS tncStdItemName
+		,A.TNC_STD_VAL1 AS tncStdVal1
+		,A.TNC_STD_VAL2 AS tncStdVal2
+		,A.TNC_STD_VAL3 AS tncStdVal3
+        FROM
+        PD_TNC_STD AS A
+        LEFT JOIN PD_TNC_STD_ITEM B ON A.TNC_STD_ITEM_ID = B.TNC_STD_ITEM_ID
+        WHERE A.STANDARD_ID = #{filterMap.standardId}
+    </select>
+
+</mapper>

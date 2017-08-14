@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.stock.logic.ISO151432Logic">
+
+	<sql id="whereCondition">
+		WHERE   DEL_FLG=0
+
+		<if test="slCode!=null and slCode!=''">
+			and SL_CODE=#{slCode}
+		</if>
+		<if test="supplierCode!=null and supplierCode!=''">
+			and SUPPLIER_CODE=#{supplierCode}
+		</if>
+
+		<if test="slName!=null and slName!=''">
+			and SL_NAME like '%${slName}%'
+		</if>
+		<if test="lgcsCode!=null and lgcsCode!=''">
+			and LGCS_CODE like  '${lgcsCode}%'
+		</if>
+		<if test="supplierName!=null and supplierName!=''">
+			and SUPPLIER_NAME =#{supplierName}
+		</if>
+		<if test="lgcsName!=null and lgcsName!=''">
+			and LGCS_NAME like  '${lgcsName}%'
+		</if>
+
+		<if test="warehouseCode!=null and warehouseCode!=''">
+			and WAREHOUSE_CODE like  '${warehouseCode}%'
+		</if>
+
+		<if test="warehouseName!=null and warehouseName!=''">
+			and  WAREHOUSE_NAME like  '${warehouseName}%'
+		</if>
+
+		<if test="pdCode!=null and pdCode!=''">
+			and Pd_Code  like '${pdCode}%'
+		</if>
+
+		<if test="classesCode!=null and classesCode!=''">
+			and Pd_Code like  '${classesCode}%'
+		</if>
+
+		<if test="stockType!=null and stockType!=''">
+			and  STOCK_TYPE=#{stockType}
+		</if>
+
+		<if test="breedCode!=null and breedCode!=''">
+			and Pd_Code like '___${breedCode}%'
+		</if>
+		<if test="pdName!=null and pdName!=''">
+			and   PD_NAME like '%${pdName}%'
+		</if>
+		<if test="supplyPlatform!=null and supplyPlatform!=''">
+			and   SUPPLY_PLATFORM  =#{supplyPlatform}
+		</if>
+
+
+		<if test="stockQty!=null ">
+			   and  STOCK_QTY >    #{stockQty}
+		</if>
+
+
+		<if test="enabledStockQty!=null">
+			and   ENABLED_STOCK_QTY  >  #{enabledStockQty}
+		</if>
+
+		<if test="salePlatform!=null and salePlatform!=''">
+			and   SUPPLY_PLATFORM  =#{salePlatform}
+		</if>
+
+		<if test="slCodeList!=null and slCodeList.size()>0">
+			and  SL_CODE IN
+			<foreach collection="slCodeList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+
+		<if test="supplierCodeList!=null and supplierCodeList.size()>0">
+			and  SUPPLIER_CODE  IN
+			<foreach collection="supplierCodeList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</sql>
+
+
+	<select id="com.msk.stock.logic.ISO151432Logic.findSPStock" resultType="com.msk.stock.bean.Stock" parameterType="com.msk.stock.bean.StockRsParam">
+
+	   SELECT
+	STOCK_ID  as  stockId,
+	IFNULL(STOCK_TYPE,'')  as stockType,
+	IFNULL(CLASSES_CODE,'')  AS classesCode,
+	IFNULL(CLASSES_NAME,'') AS classesName,
+	IFNULL(BREED_CODE,'') AS breedCode,
+	IFNULL(BREED_NAME,'') AS breedName,
+	IFNULL(FEATURE_CODE,'') AS featureCode,
+	IFNULL(FEATURE_NAME,'') AS featureName,
+	IFNULL(NORMS_CODE,'') AS normsCode,
+	IFNULL(NORMS_NAME,'') AS normsName,
+	IFNULL(PD_LEVEL,'') AS pdLevel,
+	PACKING_VOLUME AS packingVolume,
+	IFNULL(SUPPLIER_CODE,'')  as  supplierCode,
+	IFNULL(SUPPLIER_NAME,'')  as  supplierName,
+	IFNULL(LGCS_NAME,'未知区域')as lgcsName,
+	IFNULL(WAREHOUSE_CODE,'') as warehouseCode,
+	IFNULL(WAREHOUSE_NAME,'') AS warehouseName,
+	IFNULL(SL_CODE,'') AS slCode,
+	IFNULL(concat(CLASSES_NAME,BREED_NAME), '未知产品') AS constitutedPdName,
+	SL_NAME  as  slName,
+	LGCS_CODE as lgcsCode,
+	SL_NAME as slName,
+	(case  SUPPLY_PLATFORM
+	when 1 then '神农客'
+	when 2 then '美侍客'
+	when 3 then '大促会'
+	ELSE '' END)
+	as   supplyPlatform,
+	IFNULL(UNIT,'')        as unit,
+	IFNULL(PD_CODE,'')     as pdCode,
+	IFNULL(PD_NAME,'')      as pdName,
+	WEIGHT AS weight,
+	VOLUME AS volume,
+	STOCK_QTY as stockQty,
+	998  AS enabledStockQty
+		<if test="group!=null and group!=''">
+			,SUM(IFNULL(STOCK_QTY,0))as sumStock
+
+		</if>
+	FROM  so_stock_sp
+	<include refid="whereCondition" />
+		<if test="orderBy!=null and orderBy!=''">
+			order by ${orderBy}
+		</if>
+		<if test="group!=null and group!=''">
+			GROUP  by  ${group}
+		</if>
+</select>
+
+
+
+
+
+
+
+
+	<select id="getPageCount" resultType="Integer" parameterType="com.msk.stock.bean.StockRsParam">
+		SELECT  count(1)
+		 FROM  so_stock_sp
+		<include refid="whereCondition" />
+		<if test="group!=null and group!=''">
+			GROUP  by #{group}
+		</if>
+	</select>
+
+
+
+	<!--检查供应商是否有库存-->
+	<select id="countSoStockSupp" parameterType="BaseParam" resultType="int">
+		SELECT count(1)
+		FROM SO_STOCK_SP
+		<include refid="whereConditionSupp"/>
+	</select>
+
+
+
+	<select id="countSuppStocked" parameterType="BaseParam" resultType="int">
+		SELECT count(1)
+		FROM so_stock_sp  a
+		WHERE a.STOCK_QTY >= #{stockNum}
+		<include refid="ConditionSupp"/>
+	</select>
+
+
+
+	<sql id="whereConditionSupp">
+		<where>
+			<if test="stockNum != null">
+				AND STOCK_QTY > #{stockNum}
+			</if>
+			<if test="lgcsCode != null and lgcsCode != ''">
+				AND LGCS_CODE = LEFT(#{lgcsCode}, 2)
+			</if>
+			<if test="slCode != null and slCode != ''">
+				AND SL_CODE = #{slCode}
+			</if>
+			<if test="supplierCode != null and supplierCode != ''">
+				AND SUPPLIER_CODE = #{supplierCode}
+			</if>
+			<if test="pdCode != null and pdCode != ''">
+				AND PD_CODE = #{pdCode}
+			</if>
+			<if test="supplyPlatform != null">
+				AND SUPPLY_PLATFORM = #{supplyPlatform}
+			</if>
+		</where>
+	</sql>
+
+
+
+	<sql id="ConditionSupp">
+		AND a.LGCS_CODE = LEFT(#{lgcsCode}, 2)
+		AND a.SL_CODE = #{slCode}
+		AND a.SUPPLIER_CODE = #{supplierCode}
+		AND a.PD_CODE = #{pdCode}
+	</sql>
+
+	<update id="frozenStockSupp" parameterType="BaseParam">
+		update so_stock_occ_supp
+		set OCCUPY_QTY = OCCUPY_QTY + #{stockNum}
+		<include refid="whereConditionOcc"/>
+	</update>
+
+
+
+
+	<update id="com.msk.stock.logic.ISO151432Logic.updateSPSTOCK" parameterType="com.msk.stock.bean.StockRsParam" >
+		UPDATE so_stock_sp
+		SET STOCK_QTY = #{stockQty}
+		WHERE STOCK_ID = #{stockId}
+	</update>
+
+
+	<update id="cancelFrozenStockSupp" parameterType="BaseParam">
+		update so_stock_occ_supp
+		set OCCUPY_QTY = OCCUPY_QTY - #{stockNum}
+		<include refid="whereConditionOcc"/>
+	</update>
+
+
+	<insert id="insertSoStockSpHistory" parameterType="BaseParam">
+		INSERT INTO     so_stock_sp_history(
+		so_stock_sp_history.STOCK_ID,
+		so_stock_sp_history.history_date,
+		so_stock_sp_history.LGCS_CODE,
+		so_stock_sp_history.LGCS_NAME,
+		so_stock_sp_history.WAREHOUSE_CODE,
+		so_stock_sp_history.WAREHOUSE_NAME,
+		so_stock_sp_history.SUPPLY_PLATFORM,
+		so_stock_sp_history.STOCK_TYPE,
+		so_stock_sp_history.SL_CODE,
+		so_stock_sp_history.SL_NAME,
+		so_stock_sp_history.SUPPLIER_CODE,
+		so_stock_sp_history.SUPPLIER_NAME,
+		so_stock_sp_history.CLASSES_CODE,
+		so_stock_sp_history.CLASSES_NAME,
+		so_stock_sp_history.BREED_CODE,
+		so_stock_sp_history.BREED_NAME,
+		so_stock_sp_history.FEATURE_CODE,
+		so_stock_sp_history.FEATURE_NAME,
+		so_stock_sp_history.NORMS_CODE,
+		so_stock_sp_history.NORMS_NAME,
+		so_stock_sp_history.PD_CODE,
+		so_stock_sp_history.PD_NAME,
+		so_stock_sp_history.PD_LEVEL,
+		so_stock_sp_history.UNIT,
+		so_stock_sp_history.PACKING_VOLUME,
+		so_stock_sp_history.WEIGHT,
+		so_stock_sp_history.VOLUME,
+		so_stock_sp_history.STOCK_QTY,
+		so_stock_sp_history.DEL_FLG,
+		so_stock_sp_history.CRT_ID,
+		so_stock_sp_history.CRT_TIME,
+		so_stock_sp_history.UPD_ID,
+		so_stock_sp_history.UPD_TIME,
+		so_stock_sp_history.ACT_ID,
+		so_stock_sp_history.ACT_TIME,
+		so_stock_sp_history.VER)
+		SELECT       @i:=@i+1 AS STOCK_ID,
+		#{historyDate},
+		so_stock_sp.LGCS_CODE,
+		so_stock_sp.LGCS_NAME,
+		so_stock_sp.WAREHOUSE_CODE,
+		so_stock_sp.WAREHOUSE_NAME,
+		so_stock_sp.SUPPLY_PLATFORM,
+		so_stock_sp.STOCK_TYPE,
+		so_stock_sp.SL_CODE,
+		so_stock_sp.SL_NAME,
+		so_stock_sp.SUPPLIER_CODE,
+		so_stock_sp.SUPPLIER_NAME,
+		so_stock_sp.CLASSES_CODE,
+		so_stock_sp.CLASSES_NAME,
+		so_stock_sp.BREED_CODE,
+		so_stock_sp.BREED_NAME,
+		so_stock_sp.FEATURE_CODE,
+		so_stock_sp.FEATURE_NAME,
+		so_stock_sp.NORMS_CODE,
+		so_stock_sp.NORMS_NAME,
+		so_stock_sp.PD_CODE,
+		so_stock_sp.PD_NAME,
+		so_stock_sp.PD_LEVEL,
+		so_stock_sp.UNIT,
+		so_stock_sp.PACKING_VOLUME,
+		so_stock_sp.WEIGHT,
+		so_stock_sp.VOLUME,
+		so_stock_sp.STOCK_QTY,
+		so_stock_sp.DEL_FLG,
+		so_stock_sp.CRT_ID,
+		so_stock_sp.CRT_TIME,
+		so_stock_sp.UPD_ID,
+		so_stock_sp.UPD_TIME,
+		so_stock_sp.ACT_ID,
+		so_stock_sp.ACT_TIME,
+		so_stock_sp.VER
+		FROM      so_stock_sp,
+		(SELECT @i :=(SELECT
+		CASE
+		WHEN MAX(STOCK_ID) IS NULL THEN 1
+		ELSE MAX(STOCK_ID) END
+		FROM so_stock_sp_history)) historyStockId
+	</insert>
+
+	<sql id="whereConditionOcc">
+		<where>
+			<if test="pdCode != null and pdCode != ''">
+				AND PD_CODE = #{pdCode}
+			</if>
+			<if test="lgcsCode != null and lgcsCode != ''">
+				AND LGCS_CODE = LEFT(#{lgcsCode}, 2)
+			</if>
+			<if test="slCode != null and slCode != ''">
+				AND SL_CODE = #{slCode}
+			</if>
+		</where>
+	</sql>
+
+	<update id ="updateSoStockSp" parameterType="BaseParam" >
+		UPDATE     so_stock_sp
+		SET     so_stock_sp.STOCK_QTY = so_stock_sp.STOCK_QTY + #{stockNum},
+		so_stock_sp.CRT_ID = #{crtId},
+		so_stock_sp.CRT_TIME = sysdate(),
+		so_stock_sp.UPD_ID = #{updId},
+		so_stock_sp.UPD_TIME = sysdate(),
+		so_stock_sp.ACT_ID = #{actId},
+		so_stock_sp.ACT_TIME = sysdate()
+		WHERE     so_stock_sp.LGCS_CODE = #{lgcsCode}
+		AND     so_stock_sp.WAREHOUSE_CODE = #{warehouseCode}
+		AND     so_stock_sp.SUPPLY_PLATFORM = #{supplyPlatform}
+		AND     so_stock_sp.STOCK_TYPE = #{stockType}
+		AND     so_stock_sp.SL_CODE = #{slCode}
+		AND     so_stock_sp.SUPPLIER_CODE = #{supplierCode}
+		AND     so_stock_sp.PD_CODE = #{pdCode}
+	</update>
+
+	<insert id ="insertSoStockSp" parameterType="BaseParam" >
+		INSERT INTO     so_stock_sp(
+		so_stock_sp.STOCK_ID,
+		so_stock_sp.LGCS_CODE,
+		so_stock_sp.LGCS_NAME,
+		so_stock_sp.WAREHOUSE_CODE,
+		so_stock_sp.WAREHOUSE_NAME,
+		so_stock_sp.SUPPLY_PLATFORM,
+		so_stock_sp.STOCK_TYPE,
+		so_stock_sp.SL_CODE,
+		so_stock_sp.SL_NAME,
+		so_stock_sp.SUPPLIER_CODE,
+		so_stock_sp.SUPPLIER_NAME,
+		so_stock_sp.CLASSES_CODE,
+		so_stock_sp.CLASSES_NAME,
+		so_stock_sp.BREED_CODE,
+		so_stock_sp.BREED_NAME,
+		so_stock_sp.FEATURE_CODE,
+		so_stock_sp.FEATURE_NAME,
+		so_stock_sp.NORMS_CODE,
+		so_stock_sp.NORMS_NAME,
+		so_stock_sp.PD_CODE,
+		so_stock_sp.PD_NAME,
+		so_stock_sp.PD_LEVEL,
+		so_stock_sp.UNIT,
+		so_stock_sp.PACKING_VOLUME,
+		so_stock_sp.WEIGHT,
+		so_stock_sp.VOLUME,
+		so_stock_sp.STOCK_QTY,
+		so_stock_sp.ENABLED_STOCK_QTY,
+		so_stock_sp.DEL_FLG,
+		so_stock_sp.CRT_ID,
+		so_stock_sp.CRT_TIME,
+		so_stock_sp.UPD_ID,
+		so_stock_sp.UPD_TIME,
+		so_stock_sp.ACT_ID,
+		so_stock_sp.ACT_TIME,
+		so_stock_sp.VER)
+		VALUES      (
+		#{stockId},
+		#{lgcsCode},
+		#{lgcsName},
+		#{warehouseCode},
+		#{warehouseName},
+		#{supplyPlatform},
+		#{stockType},
+		#{slCode},
+		#{slName},
+		#{supplierCode},
+		#{supplierName},
+		#{classesCode},
+		#{classesName},
+		#{breedCode},
+		#{breedName},
+		#{featureCode},
+		#{featureName},
+		#{normsCode},
+		#{normsName},
+		#{pdCode},
+		#{pdName},
+		#{pdLevel},
+		#{unit},
+		#{packingVolume},
+		#{weight},
+		#{volume},
+		#{stockNum},
+		#{enabledStockQty},
+		0,
+		#{crtId},
+		sysdate(),
+		#{updId},
+		sysdate(),
+		#{actId},
+		sysdate(),
+		1)
+	</insert>
+
+
+	<update id ="updateSoStockSl" parameterType="BaseParam">
+		UPDATE   so_stock_sl
+		SET   so_stock_sl.STOCK_QTY = so_stock_sl.STOCK_QTY + #{stockNum},
+		so_stock_sl.UPD_ID = #{updId},
+		so_stock_sl.UPD_TIME = sysdate(),
+		so_stock_sl.ACT_ID = #{actId},
+		so_stock_sl.ACT_TIME = sysdate()
+		WHERE   so_stock_sl.LGCS_CODE = #{lgcsCode}
+		AND   so_stock_sl.WAREHOUSE_CODE = #{warehouseCode}
+		AND   so_stock_sl.STOCK_TYPE = #{stockType}
+		AND   so_stock_sl.SL_CODE = #{slCode}
+		AND   so_stock_sl.PD_CODE = #{pdCode}
+	</update>
+
+	<insert id ="insertSoStockSl" parameterType="BaseParam">
+		INSERT INTO so_stock_sl(
+		so_stock_sl.STOCK_ID,
+		so_stock_sl.sale_platform,
+		so_stock_sl.LGCS_CODE,
+		so_stock_sl.LGCS_NAME,
+		so_stock_sl.WAREHOUSE_CODE,
+		so_stock_sl.WAREHOUSE_NAME,
+		so_stock_sl.STOCK_TYPE,
+		so_stock_sl.SL_CODE,
+		so_stock_sl.SL_NAME,
+		so_stock_sl.CLASSES_CODE,
+		so_stock_sl.CLASSES_NAME,
+		so_stock_sl.BREED_CODE,
+		so_stock_sl.BREED_NAME,
+		so_stock_sl.FEATURE_CODE,
+		so_stock_sl.FEATURE_NAME,
+		so_stock_sl.NORMS_CODE,
+		so_stock_sl.NORMS_NAME,
+		so_stock_sl.PD_CODE,
+		so_stock_sl.PD_NAME,
+		so_stock_sl.PD_LEVEL,
+		so_stock_sl.UNIT,
+		so_stock_sl.PACKING_VOLUME,
+		so_stock_sl.WEIGHT,
+		so_stock_sl.VOLUME,
+		so_stock_sl.STOCK_QTY,
+		so_stock_sl.ENABLED_STOCK_QTY,
+		so_stock_sl.DEL_FLG,
+		so_stock_sl.CRT_ID,
+		so_stock_sl.CRT_TIME,
+		so_stock_sl.UPD_ID,
+		so_stock_sl.UPD_TIME,
+		so_stock_sl.ACT_ID,
+		so_stock_sl.ACT_TIME,
+		so_stock_sl.VER)
+		VALUES (
+		#{stockId},
+		#{supplyPlatform},
+		#{lgcsCode},
+		#{lgcsName},
+		#{warehouseCode},
+		#{warehouseName},
+		#{stockType},
+		#{slCode},
+		#{slName},
+		#{classesCode},
+		#{classesName},
+		#{breedCode},
+		#{breedName},
+		#{featureCode},
+		#{featureName},
+		#{normsCode},
+		#{normsName},
+		#{pdCode},
+		#{pdName},
+		#{pdLevel},
+		#{unit},
+		#{packingVolume},
+		#{weight},
+		#{volume},
+		#{stockNum},
+		#{enabledStockQty},
+		0,
+		#{crtId},
+		sysdate(),
+		#{updId},
+		sysdate(),
+		#{actId},
+		sysdate(),
+		1)
+	</insert>
+
+
+	<insert id ="insertSoStockRecord" parameterType="BaseParam" >
+		INSERT INTO   so_stock_record(
+		so_stock_record.STOCK_ID,
+		so_stock_record.FLOW_ID,
+		so_stock_record.PD_CODE,
+		so_stock_record.SUPPLIER_CODE,
+		so_stock_record.SL_CODE,
+		so_stock_record.QTY,
+		so_stock_record.TYPE,
+		so_stock_record.DEL_FLG,
+		so_stock_record.CRT_ID,
+		so_stock_record.CRT_TIME,
+		so_stock_record.UPD_ID,
+		so_stock_record.UPD_TIME,
+		so_stock_record.ACT_ID,
+		so_stock_record.ACT_TIME,
+		so_stock_record.VER)
+		VALUES  (#{stockId},
+		#{flowId},
+		#{pdCode},
+		#{supplierCode},
+		#{slCode},
+		abs(#{stockNum}),
+		#{changeType},
+		0,
+		#{crtId},
+		sysdate(),
+		#{updId},
+		sysdate(),
+		#{actId},
+		sysdate(),
+		1)
+	</insert>
+</mapper>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141147Logic">
+
+    <select id="findOne" parameterType="com.msk.core.entity.PdQltStd" resultType="com.msk.core.entity.PdStandard">
+        SELECT
+        A.STANDARD_ID AS standardId
+        FROM PD_STANDARD AS A
+        WHERE A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+    </select>
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.PD141147Bean">
+       SELECT
+        A.FED_STD_ITEM_ID AS fedStdItemId
+       ,B.FED_STD_ITEM_NAME AS fedStdItemName
+       ,A.FED_GOOD_VAL AS fedGoodVal
+       ,A.FED_NORMAL_VAL AS fedNormalVal
+       ,A.FED_BAD_VAL AS fedBadVal
+       FROM PD_FED_STD AS A
+       LEFT JOIN PD_FED_STD_ITEM AS B ON A.FED_STD_ITEM_ID = B.FED_STD_ITEM_ID
+       WHERE A.STANDARD_ID = #{filterMap.standardId}
+       ORDER BY A.FED_STD_ITEM_ID
+    </select>
+
+    <select id="findFedStdList" parameterType="BaseParam" resultType="com.msk.product.bean.PD141147Bean">
+        SELECT
+        A.FED_STD_ITEM_ID AS fedStdItemId
+        ,A.FED_STD_ITEM_NAME AS fedStdItemName
+        FROM PD_FED_STD_ITEM AS A
+        ORDER BY A.FED_STD_ITEM_ID
+    </select>
+
+    <!--数据插入操作-->
+    <insert id="save" parameterType="com.msk.product.bean.PD141147Bean">
+        INSERT INTO PD_FED_STD (
+	STANDARD_ID,
+	FED_STD_ITEM_ID,
+	FED_GOOD_VAL,
+	FED_NORMAL_VAL,
+	FED_BAD_VAL,
+	REMARK,
+	DEL_FLG,
+	CRT_ID,
+	CRT_TIME,
+	UPD_ID,
+	UPD_TIME,
+	ACT_ID,
+	ACT_TIME,
+	VER)
+        VALUES(
+    #{standardId},
+    #{fedStdItemId},
+    #{fedGoodVal},
+    #{fedNormalVal},
+    #{fedBadVal},
+    NULL,
+   '0',
+   <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+    #{crtId},
+    #{crtTime},
+    #{updId},
+    #{updTime},
+    <!--Modify: 添加公共属性 2016/09/26   BY  任强  Start -->
+    #{actId},
+    <!--Modify: 添加公共属性 2016/09/26   BY  任强  End -->
+    #{actTime},
+    <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+    '1'
+	);
+    </insert>
+
+    <!--数据更新操作-->
+    <update id="modify" parameterType="com.msk.product.bean.PD141147Bean">
+        UPDATE PD_FED_STD SET
+        FED_GOOD_VAL = #{fedGoodVal},
+        FED_NORMAL_VAL = #{fedNormalVal},
+        FED_BAD_VAL = #{fedBadVal},
+        UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME = #{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        WHERE STANDARD_ID = #{standardId}
+        AND  FED_STD_ITEM_ID = #{fedStdItemId}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+
+    <!-- 获取产品品种名称和品种下的特征名称-->
+    <select id="findName" parameterType="BaseParam" resultType="com.msk.product.bean.PD141124showNameBean">
+        SELECT
+        LEVEL_NAME AS featureNames
+        FROM  PD_CLASSESTREE
+        WHERE PARENT_CODE = #{filterMap.classestreeCode}
+        ORDER BY LEVEL_CODE
+    </select>
+
+    <!-- 修改产品标准标准表中数据-->
+    <update id="modifyStdFlg" parameterType="BaseParam" >
+        UPDATE PD_STANDARD SET
+        FED_FLG = #{filterMap.flg},
+        UPD_ID = #{filterMap.updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME = #{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+        WHERE STANDARD_ID = #{filterMap.standardId}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+</mapper>

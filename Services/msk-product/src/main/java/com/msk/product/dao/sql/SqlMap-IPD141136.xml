@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141136Logic">
+    <select id="count"  resultType="int">
+            SELECT
+            COUNT(DISTINCT(B.STANDARD_ID))
+            FROM PD_SFT_STD B
+            LEFT JOIN PD_STANDARD A ON A.STANDARD_ID = B.STANDARD_ID
+    </select>
+
+    <!-- map返回 -->
+    <resultMap type="com.msk.product.bean.IPD141136RsSftItemBean" id="qltMap">
+            <result property="sftStdClaId" column="PARENT_ID"/>
+            <result property="sftStdClaName" column="PARENT_NAME"/>
+            <collection property="sftStdSublist" ofType="com.msk.product.bean.IPD141136RsSftBean">
+                <result property="sftStdItemId" column="SFT_STD_ITEM_ID"/>
+                <result property="sftStdItemName" column="SFT_STD_ITEM_NAME"/>
+                <result property="okVal" column="SFT_OK_VAL"/>
+                <result property="ngVal" column="SFT_NG_VAL"/>
+            </collection>
+    </resultMap>
+
+    <select id="findList" parameterType="BaseParam" resultMap="qltMap">
+        SELECT
+        A.SFT_STD_ITEM_ID
+        ,C.SFT_STD_ITEM_NAME
+        ,A.SFT_OK_VAL
+        ,A.SFT_NG_VAL
+        ,C.PARENT_ID
+        ,C.PARENT_NAME
+        FROM
+        PD_SFT_STD AS A
+        LEFT JOIN PD_SFT_STD_ITEM C ON A.SFT_STD_ITEM_ID = C.SFT_STD_ITEM_ID
+        WHERE  A.STANDARD_ID = #{filterMap.standardId}
+        ORDER BY A.STANDARD_ID,A.SFT_STD_ITEM_ID
+    </select>
+
+
+    <select id="findPageList" parameterType="com.msk.product.bean.IPD141136RsParam" resultType="com.msk.product.bean.IPD141136RsBean">
+        SELECT
+        DISTINCT(B.STANDARD_ID) AS standardId
+        ,A.CLASSES_CODE AS classesCode
+        ,A.BREED_CODE AS  breedCode
+        ,A.MACHINING_CODE AS machiningCode
+        ,A.FEATURE_CODE AS featureCode
+        FROM PD_SFT_STD B
+        LEFT JOIN PD_STANDARD A ON A.STANDARD_ID = B.STANDARD_ID
+        ORDER BY B.STANDARD_ID
+        <if test="startPos>=0 and pageCount>0">
+            LIMIT #{startPos}, #{pageCount}
+        </if>
+    </select>
+
+    <select id="getPageCount"  resultType="int">
+        SELECT
+            COUNT(DISTINCT(B.STANDARD_ID))
+            FROM PD_SFT_STD B
+            LEFT JOIN PD_STANDARD A ON A.STANDARD_ID = B.STANDARD_ID
+    </select>
+</mapper>
+
+
+
+
+
+
+

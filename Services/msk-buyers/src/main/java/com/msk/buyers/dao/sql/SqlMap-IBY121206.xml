@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121206Logic">
+    <select id="findPictures" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerPictures">
+        SELECT
+            ID AS id,
+            BUYER_ID AS buyerId,
+            BUS_LIC_PIC AS busLicPic,
+            ORG_CERTIFICATE_PIC AS orgCertificatePic,
+            TAX_CERTIFICATE_PIC AS taxCertificatePic,
+            FOOD_CERTIFICATE_PIC AS foodCertificatePic,
+            LEGAL_CERTIFICATE_PIC AS legalCertificatePic
+        FROM
+            by_buyer_pictures
+        WHERE
+            BUYER_ID = #{filterMap.buyerId}
+            AND DEL_FLG = 0
+    </select>
+    <update id="buyerPicturesModify" parameterType="BaseEntity">
+        UPDATE
+            by_buyer_pictures
+        SET
+        BUYER_ID = #{buyerId}
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        <if test="busLicPic != null and busLicPic != ''">
+            ,BUS_LIC_PIC = #{busLicPic}
+        </if>
+        <if test="orgCertificatePic != null and orgCertificatePic != ''">
+            ,ORG_CERTIFICATE_PIC = #{orgCertificatePic}
+        </if>
+        <if test="taxCertificatePic != null and taxCertificatePic != ''">
+            ,TAX_CERTIFICATE_PIC = #{taxCertificatePic}
+        </if>
+        <if test="foodCertificatePic != null and foodCertificatePic != ''">
+            ,FOOD_CERTIFICATE_PIC = #{foodCertificatePic}
+        </if>
+        <if test="legalCertificatePic != null and legalCertificatePic != ''">
+            ,LEGAL_CERTIFICATE_PIC = #{legalCertificatePic}
+        </if>
+        WHERE
+            ID = #{id}
+            AND DEL_FLG = 0
+    </update>
+    <insert id="buyerPicturesInsert" parameterType="BaseEntity">
+        INSERT INTO
+            by_buyer_pictures(
+                ID,
+                BUYER_ID,
+                BUS_LIC_PIC,
+                ORG_CERTIFICATE_PIC,
+                TAX_CERTIFICATE_PIC,
+                FOOD_CERTIFICATE_PIC,
+                LEGAL_CERTIFICATE_PIC,
+                DEL_FLG,
+                CRT_ID,
+                CRT_TIME,
+                UPD_ID,
+                UPD_TIME,
+                ACT_ID,
+                ACT_TIME,
+                VER
+            )VALUES (
+                #{id},
+                #{buyerId},
+                #{busLicPic},
+                #{orgCertificatePic},
+                #{taxCertificatePic},
+                #{foodCertificatePic},
+                #{legalCertificatePic},
+                0,
+                #{crtId},
+                #{crtTime},
+                #{updId},
+                #{updTime},
+                #{actId},
+                #{actTime},
+                1
+            )
+    </insert>
+
+    <select id="findPicturesList" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerPictures">
+        SELECT
+        ID AS id,
+        BUYER_ID AS buyerId,
+        BUS_LIC_PIC AS busLicPic,
+        ORG_CERTIFICATE_PIC AS orgCertificatePic,
+        TAX_CERTIFICATE_PIC AS taxCertificatePic,
+        FOOD_CERTIFICATE_PIC AS foodCertificatePic,
+        LEGAL_CERTIFICATE_PIC AS legalCertificatePic
+        FROM
+        by_buyer_pictures
+        WHERE
+        DEL_FLG = 0
+        <if test="buyerIdList !=null and buyerIdList.size()>0">
+            AND BUYER_ID in
+            <foreach item="buyerId" index="index" collection="buyerIdList"
+                     open="(" separator="," close=")">
+                #{buyerId}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="regBuyersId" resultType="Integer" parameterType="BaseParam" >
+        SELECT COUNT(1)
+        FROM BY_BUYER_BASIC_INFO
+        WHERE  DEL_FLG=0
+        AND  BUYER_ID = #{filterMap.buyerId}
+    </select>
+
+</mapper>

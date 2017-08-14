@@ -1,0 +1,52 @@
+spring:
+  aop:
+    auto: true
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  jpa:
+    database: MYSQL
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+  properties:
+    dialect: org.hibernate.dialect.MySQL5Dialect
+  redis:
+    database: 11
+    host: 10.30.10.14
+    password: Admin123#
+    port: 6379
+    pool:
+      max-idle: 1024
+      max-active: 200
+      max-wait: 1000
+###Config Server相关配置###########
+config:
+    server:
+      environment: development
+      url: http://10.20.16.83/msk-config-server/api
+      configConstantUrl: /load/config/constant
+      propertiesUrl: /load/properties
+      moduleName: ORDER-API
+server:
+  port: 8889
+  context-path: /msk-order-api/
+mybatis:
+    basePackage: com.msk.order.dao
+context:
+    listener:
+      classes: com.msk.common.listener.ApplicationEventListener
+api:
+  title: 虚拟库存系统API
+  description: 江苏润和开发和提供给XCD项目有关虚拟库存系统的Restful API
+  version: 1.0
+  termsOfServiceUrl: 没有服务条款
+  contact:
+    name: 江苏润和软件股份有限公司
+    url: ""
+    email: ""
+  license: 江苏润和软件股份有限公司
+  licenseUrl: ""

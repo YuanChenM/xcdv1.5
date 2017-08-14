@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-/   SELECT STANDARD_ID AS standardId
+        FROM pd_standard
+        WHERE CLASSES_CODE = /ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121215Logic">
+    <select id="getPdFedStd" resultType="com.msk.core.entity.ByResearchStdFed" parameterType="BaseParam">
+        SELECT STANDARD_ID AS standardId
+        FROM pd_standard
+        WHERE CLASSES_CODE =#{filterMap.classesCode}
+        AND MACHINING_CODE = #{filterMap.machiningCode}
+        AND BREED_CODE = #{filterMap.breedCode}
+        AND CLASSESTREE_CODE = #{filterMap.treeCode}
+    </select>
+
+    <select id="countResearchFed" parameterType="BaseParam" resultType="int">
+        SELECT count(1)
+        FROM by_research_std_fed
+        WHERE BUYER_ID = #{filterMap.buyerId}
+        AND STANDARD_ID = #{filterMap.standardId}
+    </select>
+
+    <select id="getPdFed" resultType="com.msk.core.entity.ByResearchStdFed" parameterType="BaseParam">
+        SELECT 0 AS id
+             , '' AS buyerId
+             , a.CLASSES_CODE AS classesCode
+             , a.MACHINING_CODE AS machiningCode
+             , a.BREED_CODE AS breedCode
+             , a.STANDARD_ID AS standardId
+             , b.FED_STD_ITEM_ID AS fedStdItemId
+             , c.FED_STD_ITEM_NAME AS fedStdItemName
+             , b.FED_GOOD_VAL AS goodVal
+             , '0' AS goodValAgree
+             , b.FED_NORMAL_VAL AS normalVal
+             , '0' AS normalValAgree
+             , b.FED_BAD_VAL AS badVal
+             , '0' AS badValAgree
+             , '' AS description
+             , b.REMARK AS remark
+             , '0' AS isResearch
+         FROM pd_standard a
+         INNER JOIN pd_fed_std b
+         ON b.STANDARD_ID = a.STANDARD_ID
+         AND b.DEL_FLG = a.DEL_FLG
+         INNER JOIN pd_fed_std_item c
+         ON c.FED_STD_ITEM_ID = b.FED_STD_ITEM_ID
+         AND c.IS_CATALOG = '1'
+         AND c.DEL_FLG = b.DEL_FLG
+         WHERE a.CLASSES_CODE = #{filterMap.classesCode}
+         AND a.MACHINING_CODE = #{filterMap.machiningCode}
+         AND a.BREED_CODE = #{filterMap.breedCode}
+         AND a.CLASSESTREE_CODE = #{filterMap.treeCode}
+    </select>
+
+    <select id="getResearchFed" resultType="com.msk.core.entity.ByResearchStdFed" parameterType="BaseParam">
+        SELECT ID AS id
+             , BUYER_ID AS buyerId
+             , CLASSES_CODE AS classesCode
+             , MACHINING_CODE AS machiningCode
+             , BREED_CODE AS breedCode
+             , STANDARD_ID AS standardId
+             , FED_STD_ITEM_ID AS fedStdItemId
+             , FED_STD_ITEM_NAME AS fedStdItemName
+             , GOOD_VAL AS goodVal
+             , GOOD_VAL_AGREE AS goodValAgree
+             , NORMAL_VAL AS normalVal
+             , NORMAL_VAL_AGREE AS normalValAgree
+             , BAD_VAL AS badVal
+             , BAD_VAL_AGREE AS badValAgree
+             , DESCRIPTION AS description
+             , REMARK AS remark
+             , IS_RESEARCH AS isResearch
+        FROM by_research_std_fed
+        WHERE BUYER_ID = #{filterMap.buyerId}
+        AND STANDARD_ID = #{filterMap.standardId}
+    </select>
+
+    <update id="modify" parameterType="com.msk.core.entity.ByResearchStdFed">
+        UPDATE by_research_std_fed
+        SET GOOD_VAL_AGREE = #{goodValAgree}
+        , NORMAL_VAL_AGREE = #{normalValAgree}
+        , BAD_VAL_AGREE = #{badValAgree}
+        , DESCRIPTION = #{description}
+        , IS_RESEARCH = #{isResearch}
+        , UPD_ID = #{updId}
+        , UPD_TIME = #{updTime}
+        WHERE BUYER_ID = #{buyerId}
+        AND STANDARD_ID = #{standardId}
+        AND FED_STD_ITEM_ID = #{fedStdItemId}
+        AND DEL_FLG = '0'
+    </update>
+
+    <insert id="save" parameterType="com.msk.core.entity.ByResearchStdFed">
+        INSERT INTO by_research_std_fed
+        (
+        ID,
+        BUYER_ID,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        BREED_CODE,
+        STANDARD_ID,
+        FED_STD_ITEM_ID,
+        FED_STD_ITEM_NAME,
+        GOOD_VAL,
+        GOOD_VAL_AGREE,
+        NORMAL_VAL,
+        NORMAL_VAL_AGREE,
+        BAD_VAL,
+        BAD_VAL_AGREE,
+        DESCRIPTION,
+        REMARK,
+        IS_RESEARCH,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        SELECT @rownum:=@rownum + 1 + a.maxId as id
+        , #{buyerId} AS buyerId
+        , #{classesCode} AS classesCode
+        , #{machiningCode} AS machiningCode
+        , #{breedCode} AS breedCode
+        , #{standardId} AS standardId
+        , a.FED_STD_ITEM_ID AS fedStdItemId
+        , a.FED_STD_ITEM_NAME AS fedStdItemName
+        , a.FED_GOOD_VAL AS goodVal
+        , '0' AS goodValAgree
+        , a.FED_NORMAL_VAL AS normalVal
+        , '0' AS normalValAgree
+        , a.FED_BAD_VAL AS badVal
+        ,'0' AS normalValAgree
+        , '' AS description
+        , a.REMARK AS remark
+        , '0' AS isResearch
+        , #{delFlg}
+        , #{updId}
+        , #{updTime}
+        , #{updId}
+        , #{updTime}
+        , #{updId}
+        , #{updTime}
+        , #{ver}
+        FROM (
+        SELECT @rownum:=0 AS rowNum
+        , (SELECT ifnull(MAX(ID), 0) FROM by_research_std_fed) AS maxId
+        , std.FED_STD_ITEM_ID
+        , item.FED_STD_ITEM_NAME
+        , std.FED_GOOD_VAL
+        , std.FED_NORMAL_VAL
+        , std.FED_BAD_VAL
+        , std.REMARK
+        FROM pd_fed_std std
+        INNER JOIN pd_fed_std_item item
+        ON item.FED_STD_ITEM_ID = std.FED_STD_ITEM_ID
+        AND item.DEL_FLG = std.DEL_FLG
+        AND item.IS_CATALOG = '1'
+        WHERE std.STANDARD_ID = #{standardId}
+        AND std.DEL_FLG = '0'
+        ORDER BY std.FED_STD_ITEM_ID) a
+    </insert>
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2102116Logic">
+
+    <sql id="selectEdu">
+        IFNULL(EDU_ID,'') AS eduId,
+        IFNULL(SL_CODE,'') AS slCode,
+        IFNULL(HOUSE_CODE,'') AS houseCode,
+        EDU_START AS eduStart,
+        EDU_END AS eduEnd,
+        IFNULL(EDU_COMP,'') AS eduComp,
+        IFNULL(EDU_RECORD,'') AS eduRecord,
+        IFNULL(EDU_DEGREE,'') AS eduDegree
+    </sql>
+
+    <select id="findPageList" resultType="com.msk.bs.bean.BS2102117Bean" parameterType="com.msk.bs.bean.BS2102116Param">
+        SELECT
+        <include refid="selectEdu"/>
+        FROM sl_house_education
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        <if test="slCode!=null and slCode!=''">
+            AND SL_CODE = #{slCode}
+        </if>
+        AND
+        HOUSE_CODE = #{houseCode}
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.bs.bean.BS2102116Param">
+        SELECT
+        count(1)
+        FROM sl_house_education
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        <if test="slCode!=null and slCode!=''">
+            AND SL_CODE = #{slCode}
+        </if>
+        AND
+        HOUSE_CODE = #{houseCode}
+    </select>
+
+    <update id="modify" parameterType="com.msk.bs.bean.BS2102117Bean">
+        UPDATE sl_house_education
+        SET
+        DEL_FLG = 1,
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId},
+        VER = VER+1
+        WHERE
+        HOUSE_CODE=#{houseCode}
+       <if test="slCode!=null and slCode!=''">
+        AND SL_CODE = #{slCode}
+      </if>
+        AND EDU_ID = #{eduId}
+        AND (DEL_FLG = '0' OR DEL_FLG IS NULL )
+    </update>
+
+    <update id="updateEduByID" parameterType="com.msk.core.entity.SlHouseEducation">
+        UPDATE sl_house_education
+        SET
+        EDU_START = #{eduStart},
+        EDU_END = #{eduEnd},
+        EDU_COMP = #{eduComp},
+        EDU_RECORD = #{eduRecord},
+        EDU_DEGREE = #{eduDegree},
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId},
+        VER = VER+1
+        WHERE
+        HOUSE_CODE=#{houseCode}
+        <if test="slCode!=null and slCode!=''">
+            AND SL_CODE = #{slCode}
+        </if>
+        AND
+        EDU_ID = #{eduId}
+        AND
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+    </update>
+
+    <select id="findEduById" resultType="com.msk.bs.bean.BS2102117Bean" parameterType="com.msk.bs.bean.BS2102117Bean">
+        SELECT
+        <include refid="selectEdu"/>
+        FROM sl_house_education
+        WHERE
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+        AND
+        EDU_ID = #{eduId}
+    </select>
+</mapper>
+

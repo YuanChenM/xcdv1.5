@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141111Logic">
+    <sql id="selectSql">
+    A.STANDARD_ID AS standardId,
+    A.NORMS_CODE AS normsCode,
+    A.NORMS_SUTTLE AS normsSuttle,
+    A.NORMS_ERROR AS normsError,
+    A.NORMS_NUMBER AS normsNumber,
+    A.NORMS_SIZE AS normsSize,
+    A.NORMS_TEXTURE AS normsTexture,
+    A.NORMS_OUT AS normsOut,
+    A.NORMS_KG AS normsKg,
+    A.NORMS_OUT_SIZE AS normsOutSize,
+    A.NORMS_OUT_TEXTURE AS normsOutTexture,
+    A.NORMS_TEN AS normsTen,
+    A.DEL_FLG AS delFlg,
+    A.CRT_ID AS crtId,
+    A.CRT_TIME AS crtTime,
+    A.UPD_ID AS updld,
+    A.UPD_TIME AS updTime,
+    A.ACT_ID AS actId,
+    A.ACT_TIME AS actTime,
+    A.VER AS ver
+  </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.normsSuttle!=null and filterMap.normsSuttle!=''">
+                AND A.NORMS_SUTTLE like #{filterMap.normsSuttle}
+            </if>
+            <if test="filterMap.normsError!=null and filterMap.normsError!=''">
+                AND A.NORMS_ERROR like #{filterMap.normsError}
+            </if>
+            <if test="filterMap.normsNumber!=null and filterMap.normsNumber!=''">
+                AND A.NORMS_NUMBER like #{filterMap.normsNumber}
+            </if>
+            <if test="filterMap.normsSize!=null and filterMap.normsSize!=''">
+                AND A.NORMS_SIZE like #{filterMap.normsSize}
+            </if>
+            <if test="filterMap.normsTexture!=null and filterMap.normsTexture!=''">
+                AND A.NORMS_TEXTURE like #{filterMap.normsTexture}
+            </if>
+            <if test="filterMap.normsOut!=null and filterMap.normsOut!=''">
+                AND A.NORMS_OUT like #{filterMap.normsOut}
+            </if>
+            <if test="filterMap.normsKg!=null and filterMap.normsKg!=''">
+                AND A.NORMS_KG like #{filterMap.normsKg}
+            </if>
+            <if test="filterMap.normsOutSize!=null and filterMap.normsOutSize!=''">
+                AND A.NORMS_OUT_SIZE like #{filterMap.normsOutSize}
+            </if>
+            <if test="filterMap.normsOuttexture!=null and filterMap.normsOuttexture!=''">
+                AND A.NORMS_OUT_TEXTURE like #{filterMap.normsOutTexture}
+            </if>
+        </where>
+    </sql>
+    <select id="findPageList" resultType="com.msk.core.entity.PdNormsStd"
+            parameterType="com.hoperun.core.bean.BasePageParam">
+        select
+        <include refid="selectSql"/>
+        from PD_NORMS_STD AS A
+        <where>
+            <if test="filterMap.standardId!='' and filterMap.standardId!=null">
+                AND A.STANDARD_ID=#{filterMap.standardId}
+            </if>
+        </where>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer"
+            parameterType="com.hoperun.core.bean.BasePageParam">
+        SELECT COUNT(1)
+        FROM PD_NORMS_STD AS A
+        LEFT JOIN PD_STANDARD AS B ON A.STANDARD_ID = B.STANDARD_ID
+        <where>
+            <if test="filterMap.standardId!='' and filterMap.standardId!=null">
+                AND A.STANDARD_ID=#{filterMap.standardId}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,25 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<form action="${ctx}/PD141108/loadStandard" id="PD141108SearchForm">
+	<table style="width: 100%">
+		<tr>
+			<td width="50px">神农客</td>
+			<td width="50px">类别编码</td>
+			<td width="15%">
+			     <select name="classesCode" <c:if test="${readonly}">onfocus="this.defaultIndex=this.selectedIndex;" onchange="this.selectedIndex=this.defaultIndex;"</c:if> >
+                            <c:forEach items="${classesList}" var="classes">
+                                <option value="${classes.classesCode}"  <c:if test="${classes.classesCode eq classesCode}">selected="selected"</c:if> >${classes.classesName}</option>
+                            </c:forEach>
+                 </select>
+			</td>
+			<td width="50px">品种编码</td>
+			<td width="15%">
+			     <select name="breedCode" <c:if test="${readonly}">onfocus="this.defaultIndex=this.selectedIndex;" onchange="this.selectedIndex=this.defaultIndex;"</c:if>>
+                            <c:forEach items="${breedList}" var="breed">
+                                <option value="${breed.breedCode}" <c:if test="${classes.breedCode eq breedCode}">selected="selected"</c:if> >${breed.breedName}</option>
+                            </c:forEach>
+                 </select>
+			</td>
+			<td><msk:button buttonValue="选择" buttonId="PD141108.Search" /></td>
+		</tr>
+	</table>
+</form>

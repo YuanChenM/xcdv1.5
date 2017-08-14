@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121406Logic">
+    <select id="findPageList" resultType="com.msk.buyers.bean.BY121406Bean" parameterType="BasePageParam">
+        SELECT
+        IFNULL(A.MARKET_ID, '') AS marketId,
+        IFNULL(A.MARKET_NAME, '') AS marketName,
+        IFNULL(A.LGCS_AREA_NAME, '') AS lgcsAreaName,
+        IFNULL(A.MARKET_ADDR, '') AS marketAddr,
+        IFNULL(A.RESEARCH_PHASE, '') AS researchPhase,
+        IFNULL(B.MARKET_NATURE, '') AS netMarketNature,
+        IFNULL(B.MARKET_LEVEL_NAME, '') AS netMarketLevelName,
+        IFNULL(B.RADIATION_RANGE_TYPE_NAME, '') AS netRadiationRangeTypeName,
+        IFNULL(C.MARKET_NATURE, '') AS advanceMarketNature,
+        IFNULL(C.MARKET_LEVEL_NAME, '') AS advanceMarketLevelName,
+        IFNULL(C.RADIATION_RANGE_TYPE_NAME, '') AS advanceRadiationRangeTypeName,
+        IFNULL(D.MARKET_NATURE, '') AS auditMarketNature,
+        IFNULL(D.MARKET_LEVEL_NAME, '') AS auditMarketLevelName,
+        IFNULL(D.RADIATION_RANGE_TYPE_NAME, '') AS auditRadiationRangeTypeName
+        FROM
+        BY_MARKET_TERMINAL_BASIC A
+        LEFT JOIN BY_MARKET_TERMINAL_BASIC B
+        ON A.MARKET_ID = B.MARKET_ID
+        AND B.DEL_FLG = '0'
+        AND B.IS_PHASE_NEW = '1'
+        AND B.RESEARCH_PHASE = '3'
+        AND B.MARKET_STATUS = '1'
+        LEFT JOIN BY_MARKET_TERMINAL_BASIC C
+        ON A.MARKET_ID = C.MARKET_ID
+        AND C.DEL_FLG = '0'
+        AND C.IS_PHASE_NEW = '1'
+        AND C.RESEARCH_PHASE = '1'
+        AND C.MARKET_STATUS = '1'
+        LEFT JOIN BY_MARKET_TERMINAL_BASIC D
+        ON A.MARKET_ID = D.MARKET_ID
+        AND D.DEL_FLG = '0'
+        AND D.IS_PHASE_NEW = '1'
+        AND D.RESEARCH_PHASE = '2'
+        AND D.MARKET_STATUS = '1'
+        WHERE A.IS_MARKET_NEW = '1'
+        AND A.DEL_FLG = '0'
+        <if test="filterMap.lgcsAreaName!=null and filterMap.lgcsAreaName!=''">
+            AND A.LGCS_AREA_NAME LIKE #{filterMap.lgcsAreaName}
+        </if>
+        <if test="filterMap.marketName!=null and filterMap.marketName!=''">
+            AND A.MARKET_NAME LIKE #{filterMap.marketName}
+        </if>
+        <if test="filterMap.marketAddr!=null and filterMap.marketAddr!=''">
+            AND A.MARKET_ADDR LIKE #{filterMap.marketAddr}
+        </if>
+        <if test="filterMap.researchPhases != null and filterMap.researchPhases.length > 0 ">
+            AND A.RESEARCH_PHASE IN
+            <foreach collection="filterMap.researchPhases" item="researchPhase" open="(" separator="," close=")">
+                #{researchPhase}
+            </foreach>
+        </if>
+        GROUP BY A.MARKET_ID
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+    <select id="getPageCount" resultType="int" parameterType="BasePageParam">
+        SELECT COUNT(1) FROM
+        (SELECT
+            A.MARKET_ID,
+            A.MARKET_NAME,
+            A.LGCS_AREA_NAME,
+            A.MARKET_ADDR,
+            A.RESEARCH_PHASE
+        FROM
+            BY_MARKET_TERMINAL_BASIC A
+            LEFT JOIN BY_MARKET_TERMINAL_BASIC B
+            ON A.MARKET_ID = B.MARKET_ID
+            AND B.DEL_FLG = '0'
+            AND B.IS_PHASE_NEW = '1'
+            AND B.RESEARCH_PHASE = '3'
+            LEFT JOIN BY_MARKET_TERMINAL_BASIC C
+            ON A.MARKET_ID = C.MARKET_ID
+            AND C.DEL_FLG = '0'
+            AND C.IS_PHASE_NEW = '1'
+            AND C.RESEARCH_PHASE = '1'
+            LEFT JOIN BY_MARKET_TERMINAL_BASIC D
+            ON A.MARKET_ID = D.MARKET_ID
+            AND D.DEL_FLG = '0'
+            AND D.IS_PHASE_NEW = '1'
+            AND D.RESEARCH_PHASE = '2'
+            WHERE A.IS_MARKET_NEW = '1'
+            AND A.DEL_FLG = '0'
+            GROUP BY A.MARKET_ID) t
+            WHERE
+            1 = 1
+            <if test="filterMap.lgcsAreaName!=null and filterMap.lgcsAreaName!=''">
+                AND t.LGCS_AREA_NAME LIKE #{filterMap.lgcsAreaName}
+            </if>
+            <if test="filterMap.marketName!=null and filterMap.marketName!=''">
+                AND t.MARKET_NAME LIKE #{filterMap.marketName}
+            </if>
+            <if test="filterMap.marketAddr!=null and filterMap.marketAddr!=''">
+                AND t.MARKET_ADDR LIKE #{filterMap.marketAddr}
+            </if>
+            <if test="filterMap.researchPhases != null and filterMap.researchPhases.length > 0 ">
+                AND t.RESEARCH_PHASE IN
+                <foreach collection="filterMap.researchPhases" item="researchPhase" open="(" separator="," close=")">
+                    #{researchPhase}
+                </foreach>
+            </if>
+    </select>
+    <update id="modify" parameterType="com.msk.buyers.bean.BY121406Bean">
+        UPDATE
+          by_market_terminal_basic
+        SET
+          DEL_FLG = 1
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE
+        MARKET_ID = #{marketId}
+        AND RESEARCH_PHASE = #{researchPhase}
+        AND DEL_FLG = 0
+    </update>
+    <insert id="save" parameterType="com.msk.core.entity.ByMarketTerminalBasic">
+        INSERT INTO
+        by_market_terminal_basic(
+        ID,
+        MARKET_ID,
+        MARKET_CODE,
+        MARKET_NAME,
+        MARKET_ADDR,
+        MARKET_LEVEL,
+        MARKET_LEVEL_NAME,
+        AREA_COVERED,
+        AREA_COVERED_LEVEL,
+        IS_LARGE_STORAGE,
+        RADIATION_RANGE_TYPE_NAME,
+        RADIATION_RANGE_LEVEL,
+        FACE_BUYER_TYPE_NAME,
+        FACE_BUYER_LEVEL,
+        MARKET_NATURE,
+        MARKET_NATURE_EMOHASIS,
+        LGCS_AREA_CODE,
+        LGCS_AREA_NAME,
+        CITY_CODE,
+        CITY_NAME,
+        MAX_CLASS_BUYER_TYPE,
+        MAX_CLASS_BUYER_NUM,
+        MAX_CLASS_BUYER_LEVEL,
+        N_TARGET_BUYER,
+        N_TARGET_ANNUAL_TURNOVER,
+        TARGET_BUYER,
+        TARGET_BUYER_LEVEL,
+        TARGET_ANNUAL_TURNOVER,
+        TARGET_ANNUAL_TURNOVER_LEVEL,
+        IS_MERCHANT_NEW,
+        IS_PHASE_NEW,
+        IS_MARKET_NEW,
+        RESEARCH_PHASE,
+        RESEARCH_PHASE_NAME,
+        MARKET_STATUS,
+        DEL_FLG,
+
+
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+
+
+
+
+        VER
+        )VALUES (
+        #{id},
+        #{marketId},
+        #{marketCode},
+        #{marketName},
+        #{marketAddr},
+        #{marketLevel},
+        #{marketLevelName},
+        #{areaCovered},
+        #{areaCoveredLevel},
+        #{isLargeStorage},
+        #{radiationRangeTypeName},
+        #{radiationRangeLevel},
+        #{faceBuyerTypeName},
+        #{faceBuyerLevel},
+        #{marketNature},
+        #{marketNatureEmohasis},
+        #{lgcsAreaCode},
+        #{lgcsAreaName},
+        #{cityCode},
+        #{cityName},
+        #{maxClassBuyerType},
+        #{maxClassBuyerNum},
+        #{maxClassBuyerLevel},
+        #{ntargetBuyer},
+        #{ntargetAnnualTurnover},
+        #{targetBuyer},
+        #{targetBuyerLevel},
+        #{targetAnnualTurnover},
+        #{targetAnnualTurnoverLevel},
+        0,
+        1,
+        #{isMarketNew},
+        #{researchPhase},
+        #{researchPhaseName},
+        #{marketStatus},
+        0,
+
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+
+        1
+        )
+    </insert>
+</mapper>

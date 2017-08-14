@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121221Logic">
+    <select id="countPdStd" resultType="int" parameterType="BaseParam">
+        SELECT COUNT(1)
+        FROM pd_standard a
+        INNER JOIN ${filterMap.pdTableName} b
+        ON b.STANDARD_ID = a.STANDARD_ID
+        WHERE a.CLASSES_CODE = #{filterMap.classesCode}
+        AND a.MACHINING_CODE = #{filterMap.machiningCode}
+        AND a.BREED_CODE = #{filterMap.breedCode}
+        AND a.DEL_FLG = '0'
+    </select>
+    <select id="getResearchStatus" resultType="com.msk.buyers.bean.IBY121221Bean" parameterType="BaseParam">
+        SELECT (ifnull(MIN(IS_RESEARCH), '0') + ifnull(MAX(IS_RESEARCH), '0')) AS researchStatus
+          FROM ${filterMap.byTableName}
+         WHERE BUYER_ID = #{filterMap.buyerId}
+           AND CLASSES_CODE = #{filterMap.classesCode}
+           AND MACHINING_CODE = #{filterMap.machiningCode}
+           AND BREED_CODE = #{filterMap.breedCode}
+           AND DEL_FLG = '0'
+    </select>
+    <select id="countResearchCat" resultType="int" parameterType="BaseParam">
+        SELECT COUNT(1)
+          FROM by_research_category
+         WHERE BUYER_ID = #{filterMap.buyerId}
+           AND CLASSES_CODE = #{filterMap.classesCode}
+           AND MACHINING_CODE = #{filterMap.machiningCode}
+           AND BREED_CODE = #{filterMap.breedCode}
+           AND DEL_FLG = '0'
+    </select>
+    <select id="countResearchCatDetail" resultType="int" parameterType="BaseParam">
+        SELECT COUNT(1)
+          FROM by_research_category a
+         INNER JOIN by_research_cat_detail b
+            ON b.CATEGORY_ID = a.CATEGORY_ID
+         WHERE a.BUYER_ID = #{filterMap.buyerId}
+           AND a.CLASSES_CODE = #{filterMap.classesCode}
+           AND a.MACHINING_CODE = #{filterMap.machiningCode}
+           AND a.BREED_CODE = #{filterMap.breedCode}
+           AND a.DEL_FLG = '0'
+           AND b.DEL_FLG = '0'
+    </select>
+</mapper>

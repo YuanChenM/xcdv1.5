@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.BR121403Logic">
+	<select id="findPageList" resultType="com.msk.core.entity.BrOBuyerInfo"  parameterType="BasePageParam" >
+		SELECT
+		DISTINCT(br_info.BUYER_ID),
+		IFNULL(br_info.BUYER_ID,'') AS buyerId
+		,IFNULL(br_info.BUYER_NAME,'') AS buyerName
+		,IFNULL(br_info.BUYER_CODE,'') AS  buyerCode
+		,IFNULL(br_info.MARKET_NAME,'') AS marketName
+		FROM
+		BR_O_BUYER_INFO br_info
+		INNER JOIN br_o_order_info br_order ON br_info.BUYER_ID = br_order.BUYER_ID AND br_info.DEL_FLG = br_order.DEL_FLG
+		WHERE
+		br_info.DEL_FLG = 0
+		<if test="filterMap.buyerName!=null and filterMap.buyerName!=''">
+			AND br_info.BUYER_NAME LIKE #{filterMap.buyerName}
+		</if>
+		<if test="filterMap.buyerCode!=null and filterMap.buyerCode!=''">
+			AND br_info.BUYER_CODE LIKE #{filterMap.buyerCode}
+		</if>
+		<if test="filterMap.marketName!=null and filterMap.marketName!=''">
+			AND br_info.MARKET_NAME LIKE #{filterMap.marketName}
+		</if>
+		ORDER BY buyerId
+		<if test="paging==true">
+			LIMIT #{startPos},#{pageSize}
+		</if>
+	</select>
+
+	<select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+		SELECT
+		COUNT(DISTINCT(br_info.BUYER_ID))
+		FROM
+		BR_O_BUYER_INFO br_info
+		INNER JOIN br_o_order_info br_order ON br_info.BUYER_ID = br_order.BUYER_ID AND br_info.DEL_FLG = br_order.DEL_FLG
+		WHERE
+		br_info.DEL_FLG = 0
+		<if test="filterMap.buyerName!=null and filterMap.buyerName!=''">
+			AND br_info.BUYER_NAME LIKE #{filterMap.buyerName}
+		</if>
+		<if test="filterMap.buyerCode!=null and filterMap.buyerCode!=''">
+			AND br_info.BUYER_CODE LIKE #{filterMap.buyerCode}
+		</if>
+		<if test="filterMap.marketName!=null and filterMap.marketName!=''">
+			AND br_info.MARKET_NAME LIKE #{filterMap.marketName}
+		</if>
+	</select>
+</mapper>

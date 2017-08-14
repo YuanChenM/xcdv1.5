@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.sp.logic.BSP171104Logic">
+
+    <insert id="batchSave"  parameterType="List">
+        INSERT INTO SP_LOGS_PRODUCT_HIS
+        (PD_ID,
+        PD_TIME,
+        LGCS_CODE,
+        LGCS_NAME,
+        PD_CODE,
+        SCIENTIFIC_NAME,
+        LOCAL_NAME,
+        SALES_NAME,
+        PD_NAME,
+        CLASSES_CODE,
+        CLASSES,
+        MACHINING_CODE,
+        MACHINING,
+        BREED_CODE,
+        BREED,
+        FEATURE_CODE,
+        FEATURE,
+        WEIGHT_CODE,
+        WEIGHT,
+        GRADE_CODE,
+        GRADE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (#{item.pdId},
+            #{item.pdTime},
+            #{item.lgcsCode},
+            #{item.lgcsName},
+            #{item.pdCode},
+            #{item.scientificName},
+            #{item.localName},
+            #{item.salesName},
+            #{item.pdName},
+            #{item.classesCode},
+            #{item.classes},
+            #{item.machiningCode},
+            #{item.machining},
+            #{item.breedCode},
+            #{item.breed},
+            #{item.featureCode},
+            #{item.feature},
+            #{item.weightCode},
+            #{item.weight},
+            #{item.gradeCode},
+            #{item.grade},
+            0,
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            #{item.actId},
+            #{item.actTime},
+            1
+            )
+        </foreach>
+    </insert>
+</mapper>

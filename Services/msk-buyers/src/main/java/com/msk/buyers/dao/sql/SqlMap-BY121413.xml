@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121413Logic">
+    <!--查询市场下所有的店铺信息-->
+    <sql id="whereCondition">
+    <where>
+        A.DEL_FLG='0'
+        AND B.DEL_FLG='0'
+        AND A.IS_TARGET_MERCHANT = #{filterMap.isTargetMerchant}
+        AND A.MARKET_ID= #{filterMap.marketId}
+        <!--
+        <if test="filterMap.storeId != null and filterMap.storeId != ''">
+            AND A.STORE_ID = #{filterMap.storeId}
+        </if>
+        <if test="filterMap.remark != null and filterMap.remark != ''">
+            AND A.REMARK LIKE #{filterMap.remark}
+        </if>
+        <if test="filterMap.salePd != null and filterMap.salePd != ''">
+            AND B.SALE_PD LIKE #{filterMap.salePd}
+        </if>
+        -->
+        <if test="filterMap.buyerStoreNo != null and filterMap.buyerStoreNo != ''">
+            AND A.BUYER_STORE_NO LIKE #{filterMap.buyerStoreNo}
+        </if>
+
+    </where>
+    </sql>
+
+    <select id="findMarketTerminalStore" resultType="com.msk.buyers.bean.BY121413Bean" parameterType="BasePageParam">
+        SELECT
+        A.STORE_ID AS storeId,
+        IFNULL(A.BUYER_STORE_NO,'') AS buyerStoreNo,
+        IFNULL(A.MARKET_ID,'') AS marketId,
+        IFNULL(A.IS_TARGET_MERCHANT,'') AS isTargetMerchant,
+        IFNULL(A.MERCHANT_TYPE,'') AS merchantType,
+        IFNULL(A.REMARK,'') AS remark,
+        B.ID AS id,
+        IFNULL(B.SALE_PD_CODE,'') AS salePdCode,
+        IFNULL(B.SALE_PD,'') AS salePd
+        FROM BY_MARKET_TERMINAL_BR_SEARCH AS A
+        INNER JOIN BY_MARKET_TERMINAL_BR_SALE_PD AS B ON A.STORE_ID=B.STORE_ID AND  A.DEL_FLG = B.DEL_FLG
+        <include refid="whereCondition" />
+        ORDER BY A.BUYER_STORE_NO
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        SELECT
+        COUNT(1)
+        FROM BY_MARKET_TERMINAL_BR_SEARCH AS A
+        INNER JOIN BY_MARKET_TERMINAL_BR_SALE_PD AS B ON A.STORE_ID=B.STORE_ID AND  A.DEL_FLG = B.DEL_FLG
+        <include refid="whereCondition" />
+        ORDER BY A.BUYER_STORE_NO
+    </select>
+
+
+    <!--店铺下所有产品-->
+    <select id="findMarketTerminalPd" resultType="com.msk.core.entity.ByMarketTerminalBrSalePd"
+            parameterType="BaseParam">
+        SELECT
+        ID AS id,
+        IFNULL(BUYER_STORE_NO,'') AS buyerStoreNo,
+        IFNULL(SALE_PD_CODE,'') AS salePdCode,
+        IFNULL(SALE_PD,'') AS salePd
+        FROM BY_MARKET_TERMINAL_BR_SALE_PD
+        WHERE
+        DEL_FLG='0'
+        <if test="filterMap.storeId != null and filterMap.storeId != ''">
+            AND STORE_ID = #{filterMap.storeId}
+        </if>
+    </select>
+
+    <!--删除买家下的所有产品-->
+    <update id="deleteSalePd" parameterType="BaseParam">
+        UPDATE BY_MARKET_TERMINAL_BR_SALE_PD
+        SET   DEL_FLG = '1'
+       ,UPD_ID = #{filterMap.updId}
+       ,UPD_TIME = #{filterMap.updTime}
+
+        WHERE
+        BUYER_STORE_NO=#{filterMap.buyerStoreNo}
+    </update>
+
+    <!--店铺信息存在的产品,进行修改-->
+    <update id="updateSalePd" parameterType="BaseParam">
+         UPDATE BY_MARKET_TERMINAL_BR_SALE_PD
+         SET
+         SALE_PD_CODE= #{filterMap.salePdCode},
+         SALE_PD= #{filterMap.salePd}
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+         WHERE
+         STORE_ID = #{filterMap.storeId}
+         AND DEL_FLG= 0
+     </update>
+
+    <insert id="insertSalePd" parameterType="com.msk.buyers.bean.BY121413Param">
+        INSERT INTO BY_MARKET_TERMINAL_BR_SALE_PD
+        (
+         ID ,
+         STORE_ID,
+         BUYER_STORE_NO,
+         SALE_PD_CODE,
+         SALE_PD,
+
+         DEL_FLG,
+         CRT_ID,
+         CRT_TIME,
+         UPD_ID,
+         UPD_TIME,
+         ACT_ID,
+         ACT_TIME,
+
+         VER
+        )
+        VALUES(
+         #{id},
+         #{storeId},
+         #{buyerStoreNo},
+         #{salePdCode},
+         #{salePd},
+
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+
+        1
+        )
+    </insert>
+
+    <!--验证该店铺是否已经存在-->
+    <select id="regStore" resultType="Integer" parameterType="BaseParam">
+        SELECT count(1)
+        FROM BY_MARKET_TERMINAL_BR_SEARCH
+        WHERE
+        DEL_FLG='0'
+       AND  BUYER_STORE_NO=#{filterMap.buyerStoreNo}
+       AND  MARKET_ID= #{filterMap.marketId}
+    </select>
+    <!--新增店铺买家表-->
+    <insert id="insertStore" parameterType="com.msk.buyers.bean.BY121413Param">
+        INSERT INTO BY_MARKET_TERMINAL_BR_SEARCH
+        (
+          STORE_ID,
+          BUYER_STORE_NO,
+          MARKET_ID,
+          IS_TARGET_MERCHANT,
+          REMARK,
+
+         DEL_FLG,
+         CRT_ID,
+         CRT_TIME,
+         UPD_ID,
+         UPD_TIME,
+         ACT_ID,
+         ACT_TIME,
+         VER
+        )VALUES
+        (
+        #{storeId},
+        #{buyerStoreNo},
+        #{marketId},
+        #{isTargetMerchant},
+        #{remark},
+
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+
+    </insert>
+
+    <!--修改备注-->
+    <update id="modifyRemark" parameterType="com.msk.buyers.bean.BY121413Param">
+        UPDATE BY_MARKET_TERMINAL_BR_SEARCH
+        SET
+        IS_TARGET_MERCHANT =#{isTargetMerchant},
+        REMARK = #{remark},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        STORE_ID=#{storeId}
+        AND MARKET_ID= #{marketId}
+    </update>
+
+    <!--根据买家下拥有的产品种类数量修改买家类型-->
+    <update id="modifyMerchantType" parameterType="BaseParam">
+        UPDATE BY_MARKET_TERMINAL_BR_SEARCH
+		SET MERCHANT_TYPE = #{filterMap.merchantType}
+	   ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+		WHERE
+		STORE_ID=#{filterMap.storeId}
+		AND  MARKET_ID= #{filterMap.marketId}
+    </update>
+
+    <!--根据店铺id删除店铺信息-->
+    <update id="deleteBrSearch" parameterType="BaseParam">
+        UPDATE BY_MARKET_TERMINAL_BR_SEARCH
+        SET DEL_FLG = '1'
+       ,UPD_ID = #{filterMap.updId}
+       ,UPD_TIME = #{filterMap.updTime}
+        WHERE
+        STORE_ID=#{filterMap.storeId}
+    </update>
+
+    <!--编辑数据的时候,同时更新  by_market_terminal_basic 表的状态 1-->
+    <update id="modifyBasicStatus" parameterType="BaseParam">
+        UPDATE BY_MARKET_TERMINAL_BASIC
+        SET IS_MERCHANT_NEW =#{filterMap.isMerchantNew}
+
+       ,UPD_ID = #{filterMap.updId}
+       ,UPD_TIME = #{filterMap.updTime}
+        WHERE
+        MARKET_ID=#{filterMap.marketId}
+        AND  IS_MARKET_NEW=#{filterMap.isMarketNew}
+        AND  IS_PHASE_NEW=#{filterMap.isPhaseNew}
+
+    </update>
+
+</mapper>

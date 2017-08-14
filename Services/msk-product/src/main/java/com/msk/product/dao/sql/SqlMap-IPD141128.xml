@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141128Logic">
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141128RsResult">
+        SELECT
+        A.BREED_CODE AS breedCode
+        ,A.BREED_NAME AS breedName
+        FROM PD_BREED AS A
+        WHERE A.CLASSES_CODE = #{filterMap.classesCode}
+        AND A.MACHINING_CODE = #{filterMap.machiningCode}
+    </select>
+</mapper>

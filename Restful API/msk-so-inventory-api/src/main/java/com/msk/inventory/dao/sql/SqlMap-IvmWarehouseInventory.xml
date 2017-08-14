@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.WarehouseInventoryServiceImpl">
+    <!-- 表字段 -->
+	<sql id="selectSql">
+        SYNCHRO_ID AS synchroId,
+        SYNCHRO_NO AS synchroNo,
+        SYNCHRO_DATE AS synchroDate,
+        SKU AS sku,
+        WH_ID AS whId,
+        WH_CODE AS whCode,
+        LOGIC_AREA AS logicArea,
+        OWNER_ID AS ownerId,
+        SUPPLIER_ID AS supplierId,
+        IV_TYPE AS ivType,
+        QTY AS qty
+	</sql>
+    <!--条件 -->
+	<sql id="whereCondition">
+		<where>
+            <if test="synchroId!=null">
+                  AND SYNCHRO_ID=#{synchroId}
+            </if> 
+            <if test="synchroNo!=null">
+                  AND SYNCHRO_NO=#{synchroNo}
+            </if> 
+            <if test="synchroDate!=null">
+                  AND SYNCHRO_DATE=#{synchroDate}
+            </if> 
+            <if test="sku!=null">
+                  AND SKU=#{sku}
+            </if> 
+            <if test="whId!=null">
+                  AND WH_ID=#{whId}
+            </if> 
+            <if test="whCode!=null">
+                  AND WH_CODE=#{whCode}
+            </if> 
+            <if test="logicArea!=null">
+                  AND LOGIC_AREA=#{logicArea}
+            </if> 
+            <if test="ownerId!=null">
+                  AND OWNER_ID=#{ownerId}
+            </if> 
+            <if test="supplierId!=null">
+                  AND SUPPLIER_ID=#{supplierId}
+            </if> 
+            <if test="ivType!=null">
+                  AND IV_TYPE=#{ivType}
+            </if> 
+            <if test="qty!=null">
+                  AND QTY=#{qty}
+            </if> 
+
+		</where>
+	</sql>
+    <!--数据插入 -->
+	<insert id="insertOne" parameterType="com.msk.inventory.bean.IvmWarehouseInventoryBean">
+		INSERT INTO ivm_warehouse_inventory
+		(
+            <if test="synchroNo!=null">
+                SYNCHRO_NO,
+            </if> 
+            <if test="synchroDate!=null">
+                SYNCHRO_DATE,
+            </if> 
+            <if test="sku!=null">
+                SKU,
+            </if> 
+            <if test="whId!=null">
+                WH_ID,
+            </if> 
+            <if test="whCode!=null">
+                WH_CODE,
+            </if> 
+            <if test="logicArea!=null">
+                LOGIC_AREA,
+            </if> 
+            <if test="ownerId!=null">
+                OWNER_ID,
+            </if> 
+            <if test="supplierId!=null">
+                SUPPLIER_ID,
+            </if> 
+            <if test="ivType!=null">
+                IV_TYPE,
+            </if> 
+            <if test="qty!=null">
+                QTY
+            </if> 			
+		)
+		VALUES
+		(
+            <if test="synchroNo!=null">
+                #{synchroNo},
+            </if> 
+            <if test="synchroDate!=null">
+                #{synchroDate},
+            </if> 
+            <if test="sku!=null">
+                #{sku},
+            </if> 
+            <if test="whId!=null">
+                #{whId},
+            </if> 
+            <if test="whCode!=null">
+                #{whCode},
+            </if> 
+            <if test="logicArea!=null">
+                #{logicArea},
+            </if> 
+            <if test="ownerId!=null">
+                #{ownerId},
+            </if> 
+            <if test="supplierId!=null">
+                #{supplierId},
+            </if> 
+            <if test="ivType!=null">
+                #{ivType},
+            </if> 
+            <if test="qty!=null">
+                #{qty}
+            </if> 
+		)
+	</insert>
+    <insert id="insertByList" parameterType="com.msk.inventory.bean.IvmWarehouseInventoryBean">
+        INSERT INTO ivm_warehouse_inventory
+        (
+            SYNCHRO_NO,
+            SYNCHRO_DATE,
+            SKU,
+            WH_ID,
+            WH_CODE,
+            LOGIC_AREA,
+            OWNER_ID,
+            OWNER_CODE,
+            SL_ID,
+            SL_CODE,
+            IV_TYPE,
+            QTY
+        )
+        VALUES
+        <if test="sqlsList !=null">
+                <foreach collection="sqlsList" item="item" open="" separator="">
+                (
+                    #{item.synchroNo},
+                    #{item.synchroDate},
+                    #{item.sku},
+                    #{item.whId},
+                    #{item.whCode},
+                    #{item.logicArea},
+                    #{item.ownerId},
+                    #{item.ownerCode},
+                    #{item.slId},
+                    #{item.slCode},
+                    #{item.ivType},
+                    #{item.qty}
+                )
+            </foreach>
+        </if>
+    </insert>
+	<select id="queryListByCondition" resultType="com.msk.inventory.bean.IvmWarehouseInventoryBean">
+		select 
+		<include refid="selectSql"/>
+		from ivm_warehouse_inventory
+        <include refid="whereCondition"/>
+	</select>
+	<select id="countByCondition" resultType="Integer" parameterType="com.msk.inventory.bean.IvmWarehouseInventoryBean">
+		select count(1)
+		from ivm_warehouse_inventory
+		<include refid="whereCondition"/>
+	</select>
+</mapper>

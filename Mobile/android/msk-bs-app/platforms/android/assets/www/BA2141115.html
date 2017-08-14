@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link href="css/css.css" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <link rel="stylesheet" href="css/swiper-3.3.1.min.css">
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="js/constantDef.js"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+    <script type="text/javascript" src="jquery/swiper-3.3.1.min.js"></script>
+    <title>委托订单详细</title>
+</head>
+
+<body>
+<style>
+    .last-bor{
+        border-bottom: 10px solid #e6e6e6;
+    }
+</style>
+<!--页眉开始-->
+<div class="wapp-head">委托订单详细
+    <a href="javascript:void(0);" class="head-back">返回</a>
+</div>
+<!--页眉结束/-->
+<!--订单主体开始-->
+<div class="wapp-pr">
+    <!--列表菜单开始-->
+    <div class="pr-menu" id="menu">
+        <a href="javascript:void(0);" class="big on" id="item0">订单信息</a>
+        <a href="javascript:void(0);" class="big" id="item1">买家信息</a>
+        <a href="javascript:void(0);" class="big" id="item2">配送信息</a>
+        <a href="javascript:void(0);" class="big" id="item3">订单明细</a>
+    </div>
+    <!--列表菜单结束/-->
+
+    <!--列表信息主体开始-->
+    <div class="swiper-container wtxq-list" style="margin: 79px 0 0;">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide blue-slide">
+                <ul>
+                    <li>物流区<span></span></li>
+                    <li>订单来源<span></span></li>
+                    <li>订单类型<span></span></li>
+                    <li>付款类型<span></span></li>
+                    <li>订单总金额<span></span></li>
+                    <li>是否开发票<span></span></li>
+                    <li>冻品管家<span></span></li>
+                    <li>订单员<span></span></li>
+                    <li>订单创建时间<span></span></li>
+                    <li class="no-bor">订单状态<span></span></li>
+                </ul>
+            </div>
+            <div class="swiper-slide blue-slide">
+                <ul>
+                    <li>买家编号<span></span></li>
+                    <li>买家名称<span></span></li>
+                    <li>买家类型 <span></span></li>
+                    <li>收货人姓名<span></span></li>
+                    <li>收货人电话<span></span></li>
+                    <li>收货人省份<span></span></li>
+                    <li>收货人城市<span></span></li>
+                    <li>收货人街道<span></span></li>
+                    <li>详细地址<span></span></li>
+                </ul>
+            </div>
+            <div class="swiper-slide blue-slide">
+                <ul>
+                    <li>习惯正常收货时间<span></span></li>
+                    <li>习惯收货最早时间要求<span></span></li>
+                    <li>习惯收货最晚时间要求<span></span></li>
+                    <li>发货时间<span></span></li>
+                    <li>动检证要求<span></span></li>
+                </ul>
+            </div>
+            <div class="swiper-slide blue-slide">
+                <ul>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--列表信息主体结束-->
+</div>
+<div style="display: none;" id="product">
+    <ul style="display: none;">
+        <li>产品编码<span></span></li>
+        <li>产品名称<span></span></li>
+        <li>产品规格<span></span></li>
+        <li>产品净重<span></span></li>
+        <li>产品等级<span></span></li>
+        <li>单价(元/箱)<span></span></li>
+        <li>金额<span></span></li>
+        <li>订购数量<span></span></li>
+        <li>发货数量<span></span></li>
+        <li>取消数量<span></span></li>
+        <li>退货数量<span></span></li>
+        <li>拒收数量<span></span></li>
+    </ul>
+</div>
+<!--订单主体结束/-->
+</body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<script src="js/BA2141115.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

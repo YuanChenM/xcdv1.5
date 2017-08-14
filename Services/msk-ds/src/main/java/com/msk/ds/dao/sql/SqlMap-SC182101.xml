@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.msk.ds.logic.SC182101Logic">
+
+    <sql id="selectSumFiled">
+        deliveryStockId,
+        distMonth,
+        lgcsCode,
+        lgcsName,
+        suppCode,
+        suppName,
+        halfCode,
+        halfName,
+        deliveryStockStatus,
+        deliveryWarehouseAddr,
+        deliveryResponName,
+        deliveryResponTel,
+        deliveryExecuteName,
+        deliveryExecuteTel,
+        transportUnitName,
+        transportUnitResponName,
+        transportUnitResponTel,
+        transportUnitExecuteName,
+        transportUnitExecuteTel,
+        deliveryMemo,
+        stockMemo,
+        deliveryReceiveStockTime,
+        deliveryStockTimeReq,
+        stockAddr,
+        stockResponName,
+        stockResponTel,
+        stockExecuteName,
+        stockExecuteTel,
+        sourceFlg,
+        sum(sendPlanQty) AS sendPlanQty,
+        sum(sendActualQty) AS sendActualQty,
+        sum(recriveQty) AS recriveQty,
+        sum(differQty) AS differQty,
+        sum(sendPlanNum) AS sendPlanNum,
+        sum(sendActualNum) AS sendActualNum,
+        sum(receiveNum) AS receiveNum,
+        sum(differNum) AS differNum
+    </sql>
+
+    <sql id="selectFiled">
+       stockDetail.PD_CODE AS pdCode,
+        stockDetail.norms_code AS normsCode,
+        DS.DELIVERY_STOCK_ID AS deliveryStockId,
+        DS.DIST_MONTH AS distMonth,
+        IFNULL(DS.LGCS_NAME,'') AS lgcsName,
+        IFNULL(DS.LGCS_CODE,'') AS lgcsCode,
+        IFNULL(DS.SUPP_NAME,'') AS suppName,
+        IFNULL(DS.SUPP_CODE,'') AS suppCode,
+        IFNULL(DS.HALF_CODE,'') AS halfCode,
+        IFNULL(DS.HALF_CODE,'') AS halfName,
+        IFNULL(DS.DELIVERY_STOCK_STATUS,'') AS deliveryStockStatus,
+        DS.DELIVERY_WAREHOUSE_ADDR AS deliveryWarehouseAddr,
+        DS.DELIVERY_RESPON_NAME AS deliveryResponName,
+        DS.DELIVERY_RESPON_TEL AS deliveryResponTel,
+        DS.DELIVERY_EXECUTE_NAME AS deliveryExecuteName,
+        DS.DELIVERY_EXECUTE_TEL AS deliveryExecuteTel,
+        DS.TRANSPORT_UNIT_NAME AS transportUnitName,
+        DS.TRANSPORT_UNIT_RESPON_NAME AS transportUnitResponName,
+        DS.TRANSPORT_UNIT_RESPON_TEL AS transportUnitResponTel,
+        DS.TRANSPORT_UNIT_EXECUTE_NAME AS transportUnitExecuteName,
+        DS.TRANSPORT_UNIT_EXECUTE_TEL AS transportUnitExecuteTel,
+        DS.DELIVERY_MEMO AS deliveryMemo,
+        DS.STOCK_MEMO AS stockMemo,
+        DATE_FORMAT(DS.DELIVERY_RECEIVE_STOCK_TIME, '%Y/%m/%d %H:%i:%s') AS deliveryReceiveStockTime,
+        IFNULL(DS.DELIVERY_STOCK_TIME_REQ,'') AS deliveryStockTimeReq,
+        DS.STOCK_ADDR AS stockAddr,
+        DS.STOCK_RESPON_NAME AS stockResponName,
+        DS.STOCK_RESPON_TEL AS stockResponTel,
+        DS.STOCK_EXECUTE_NAME AS stockExecuteName,
+        DS.STOCK_EXECUTE_TEL AS stockExecuteTel,
+        IFNULL(DS.SOURCE_FLG,'') AS sourceFlg,
+        IFNULL(stockDetail.PD_OUT_NW, 0) * IFNULL(stockDetail.PLAN_DELIVERY_NUM, 0) AS sendPlanQty,
+        IFNULL(stockDetail.PD_OUT_NW, 0) * IFNULL(stockDetail.ACTUAL_DELIVERY_NUM, 0) AS sendActualQty,
+        IFNULL(stockDetail.PD_OUT_NW, 0) * IFNULL(stockDetail.ACTUAL_RECEIVE_NUM, 0) AS recriveQty,
+        IFNULL(stockDetail.PD_OUT_NW, 0) * (IFNULL(stockDetail.ACTUAL_RECEIVE_NUM, 0) - IFNULL(stockDetail.PLAN_DELIVERY_NUM, 0)) AS differQty,
+        IFNULL(stockDetail.PLAN_DELIVERY_NUM, 0) AS sendPlanNum,
+        IFNULL(stockDetail.ACTUAL_DELIVERY_NUM, 0) AS sendActualNum,
+        IFNULL(stockDetail.ACTUAL_RECEIVE_NUM , 0) AS receiveNum,
+        IFNULL(stockDetail.ACTUAL_RECEIVE_NUM, 0) - IFNULL(stockDetail.PLAN_DELIVERY_NUM, 0) AS differNum
+    </sql>
+    <sql id="selectFrom">
+        FROM (select * from ds_delivery_stock DSS
+        LEFT JOIN (select DISTINCT LGCS_CODE AS lgcsCode,LGCS_NAME from ds_pd_virtual_stock_plan) b on (DSS.LGCS_CODE = b.lgcsCode)
+        LEFT JOIN (select DISTINCT SUPP_CODE AS suppCode,SUPP_NAME from ds_pd_virtual_stock_plan) c on (DSS.SUPP_CODE = c.suppCode)
+        <include refid="whereCondition"/>
+        order by DSS.DELIVERY_STOCK_ID desc
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+        ) DS
+        LEFT JOIN ds_delivery_stock_detail stockDetail ON stockDetail.DELIVERY_STOCK_ID = DS.DELIVERY_STOCK_ID
+        AND stockDetail.DEL_FLG = 0
+    </sql>
+
+    <sql id="selectCountFrom">
+        FROM (select * from ds_delivery_stock DSS
+        LEFT JOIN (select DISTINCT LGCS_CODE AS lgcsCode,LGCS_NAME from ds_pd_virtual_stock_plan) b on (DSS.LGCS_CODE = b.lgcsCode)
+        LEFT JOIN (select DISTINCT SUPP_CODE AS suppCode,SUPP_NAME from ds_pd_virtual_stock_plan) c on (DSS.SUPP_CODE = c.suppCode)
+        <include refid="whereCondition"/>
+        order by DSS.DELIVERY_STOCK_ID desc
+        ) DS
+        LEFT JOIN ds_delivery_stock_detail stockDetail ON stockDetail.DELIVERY_STOCK_ID = DS.DELIVERY_STOCK_ID
+        AND stockDetail.DEL_FLG = 0
+    </sql>
+
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.deliveryStockId!=null and filterMap.deliveryStockId!=''">
+                AND DSS.DELIVERY_STOCK_ID like #{filterMap.deliveryStockId}
+            </if>
+            <if test="filterMap.distMonth!=null and filterMap.distMonth!=''">
+                AND DSS.DIST_MONTH like #{filterMap.distMonth}
+            </if>
+            <if test="filterMap.lgcsName!=null and filterMap.lgcsName!=''">
+                AND b.LGCS_NAME like #{filterMap.lgcsName}
+            </if>
+            <if test="filterMap.suppCode!=null and filterMap.suppCode!=''">
+                AND DSS.SUPP_CODE like #{filterMap.suppCode}
+            </if>
+            <if test="filterMap.suppName!=null and filterMap.suppName!=''">
+                AND c.SUPP_NAME like #{filterMap.suppName}
+            </if>
+            <if test="filterMap.sourceFlg!=null and filterMap.sourceFlg!=''">
+                AND DSS.SOURCE_FLG IN
+                <foreach collection="filterMap.sourceFlg" item="sourceFlgs" open="(" separator="," close=")">
+                    #{sourceFlgs}
+                </foreach>
+            </if>
+            <!--<if test="filterMap.halfCodes!=null">
+                AND DS.HALF_CODE IN
+                <foreach collection="filterMap.halfCodes" item="halfCode" open="(" separator="," close=")">
+                    #{halfCode}
+                </foreach>
+            </if>-->
+            <if test="filterMap.deliveryStocks!=null">
+                AND DSS.DELIVERY_STOCK_STATUS IN
+                <foreach collection="filterMap.deliveryStocks" item="deliveryStockStatus" open="(" separator=","
+                         close=")">
+                    #{deliveryStockStatus}
+                </foreach>
+            </if>
+            <!-- #1763 添加实际到货时间 create by likai on 2016/8/15 start -->
+            <if test="filterMap.deliveryReceiveStockTimeStart!=null and filterMap.deliveryReceiveStockTimeStart!=''">
+                <![CDATA[ AND DATE_FORMAT(DELIVERY_RECEIVE_STOCK_TIME,'%Y-%m-%d') >= #{filterMap.deliveryReceiveStockTimeStart}]]>
+            </if>
+            <if test="filterMap.deliveryReceiveStockTimeEnd!=null and filterMap.deliveryReceiveStockTimeEnd!=''">
+                <![CDATA[ AND DATE_FORMAT(DELIVERY_RECEIVE_STOCK_TIME,'%Y-%m-%d') <= #{filterMap.deliveryReceiveStockTimeEnd}]]>
+            </if>
+            <!-- #1763 添加实际到货时间 create by likai on 2016/8/15 end -->
+            <if test="filterMap.crtId!=null and filterMap.crtId!=''">
+                AND DSS.CRT_ID = #{filterMap.crtId}
+            </if>
+            AND DSS.DEL_FLG = 0
+        </where>
+    </sql>
+
+    <!--<select id="findAll" resultType="com.msk.ds.bean.SC182101Bean">
+        select
+        <include refid="selectFiled"/>
+        from ds_delivery_stock
+        AND SOURCE_FLG = 1
+        AND DEL_FLG = 0
+    </select>-->
+
+    <select id="findPageList" parameterType="BasePageParam" resultType="com.msk.ds.bean.SC182101Bean">
+        SELECT
+        <include refid="selectSumFiled"/>
+        FROM (
+        SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        group by  DS.DELIVERY_STOCK_ID,stockDetail.PD_CODE,stockDetail.norms_code
+        order by deliveryStockId desc
+        ) a
+        GROUP BY deliveryStockId
+        order by deliveryStockId desc
+
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        SELECT COUNT(1) FROM (
+        SELECT deliveryStockId FROM (
+        SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectCountFrom"/>
+        group by  DS.DELIVERY_STOCK_ID,stockDetail.PD_CODE,stockDetail.norms_code
+        order by deliveryStockId desc
+        ) a
+        GROUP BY deliveryStockId
+        order by deliveryStockId desc) b
+    </select>
+
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.ds.bean.SC182101Bean">
+        SELECT
+        DS.DELIVERY_STOCK_ID AS deliveryStockId,
+        DS.DIST_MONTH AS distMonth,
+        DS.LGCS_CODE AS lgcsCode,
+        DS.SUPP_CODE AS suppCode,
+        DS.HALF_CODE AS halfCode,
+        DS.DELIVERY_STOCK_STATUS AS deliveryStockStatus,
+        IFNULL(b.LGCS_NAME,'') AS lgcsName,
+        IFNULL(c.SUPP_NAME,'') AS suppName,
+        <!-- #1763 添加实际到货时间 create by likai on 2016/8/15 start -->
+        DS.DELIVERY_RECEIVE_STOCK_TIME AS deliveryReceiveStockTime,
+        <!-- #1763 添加实际到货时间 create by likai on 2016/8/15 end -->
+        DS.DELIVERY_WAREHOUSE_ADDR AS deliveryWarehouseAddr,
+        DS.DELIVERY_RESPON_NAME AS deliveryResponName,
+        DS.DELIVERY_RESPON_TEL AS deliveryResponTel,
+        DS.DELIVERY_EXECUTE_NAME AS deliveryExecuteName,
+        DS.DELIVERY_EXECUTE_TEL AS deliveryExecuteTel,
+        DS.TRANSPORT_UNIT_NAME AS transportUnitName,
+        DS.TRANSPORT_UNIT_RESPON_NAME AS transportUnitResponName,
+        DS.TRANSPORT_UNIT_RESPON_TEL AS transportUnitResponTel,
+        DS.TRANSPORT_UNIT_EXECUTE_NAME AS transportUnitExecuteName,
+        DS.TRANSPORT_UNIT_EXECUTE_TEL AS transportUnitExecuteTel,
+        DS.DELIVERY_MEMO AS deliveryMemo,
+        DS.STOCK_MEMO AS stockMemo,
+        DS.DELIVERY_STOCK_TIME_REQ AS deliveryStockTimeReq,
+        DS.STOCK_ADDR AS stockAddr,
+        DS.STOCK_RESPON_NAME AS stockResponName,
+        DS.STOCK_RESPON_TEL AS stockResponTel,
+        DS.STOCK_EXECUTE_NAME AS stockExecuteName,
+        DS.STOCK_EXECUTE_TEL AS stockExecuteTel,
+        IFNULL(DS.SOURCE_FLG,'') AS sourceFlg,
+        DS.SSC_DELIVERY_STOCK_ID AS sscDeliveryStockId
+        FROM ds_delivery_stock AS DS
+        LEFT JOIN (select DISTINCT LGCS_CODE, LGCS_NAME from ds_pd_virtual_stock_plan) b on (DS.LGCS_CODE = b.LGCS_CODE)
+        LEFT JOIN (select DISTINCT SUPP_CODE, SUPP_NAME from ds_pd_virtual_stock_plan) c on (DS.SUPP_CODE = c.SUPP_CODE)        WHERE DELIVERY_STOCK_ID = #{filterMap.deliveryStockId}
+        AND DS.DEL_FLG = 0
+        AND DS.SOURCE_FLG = #{filterMap.sourceFlg}
+        GROUP BY DS.DELIVERY_STOCK_ID
+    </select>
+
+    <update id="modify" parameterType="com.msk.ds.bean.SC182101Bean">
+        update ds_delivery_stock
+        set
+        DIST_MONTH=#{distMonth},
+        LGCS_CODE=#{lgcsCode},
+        SUPP_CODE=#{suppCode},
+        HALF_CODE=#{halfCode},
+        DELIVERY_STOCK_STATUS=#{deliveryStockStatus},
+        <!-- #1763 添加实际到货时间 create by likai on 2016/8/15 start -->
+        DELIVERY_RECEIVE_STOCK_TIME = #{deliveryReceiveStockTime},
+        <!-- #1763 添加实际到货时间 create by likai on 2016/8/15 end -->
+        DELIVERY_WAREHOUSE_ADDR=#{deliveryWarehouseAddr},
+        DELIVERY_RESPON_NAME=#{deliveryResponName},
+        DELIVERY_RESPON_TEL=#{deliveryResponTel},
+        DELIVERY_EXECUTE_NAME=#{deliveryExecuteName},
+        DELIVERY_EXECUTE_TEL=#{deliveryExecuteTel},
+        TRANSPORT_UNIT_NAME=#{transportUnitName},
+        TRANSPORT_UNIT_RESPON_NAME=#{transportUnitResponName},
+        TRANSPORT_UNIT_RESPON_TEL=#{transportUnitResponTel},
+        TRANSPORT_UNIT_EXECUTE_NAME=#{transportUnitExecuteName},
+        TRANSPORT_UNIT_EXECUTE_TEL=#{transportUnitExecuteTel},
+        DELIVERY_MEMO=#{deliveryMemo},
+        STOCK_MEMO=#{stockMemo},
+        DELIVERY_STOCK_TIME_REQ=#{deliveryStockTimeReq},
+        STOCK_ADDR=#{stockAddr},
+        STOCK_RESPON_NAME=#{stockResponName},
+        STOCK_RESPON_TEL=#{stockResponTel},
+        STOCK_EXECUTE_NAME=#{stockExecuteName},
+        STOCK_EXECUTE_TEL=#{stockExecuteTel},
+        UPD_ID=#{updId},
+        UPD_TIME=#{upTime},
+        DEL_FLG = #{delFlg},
+        VER = VER +1
+        WHERE
+        DELIVERY_STOCK_ID = #{deliveryStockId}
+        AND SOURCE_FLG = #{sourceFlg}
+        AND DEL_FLG = 0
+    </update>
+
+    <select id="getSumDelivery" resultType="com.msk.ds.bean.SC182101Bean"
+            parameterType="BasePageParam">
+        SELECT
+        deliveryStockId,
+        SUM(sendPlanQty) as currentSendPlanQty,
+        SUM(sendActualQty)as currentSendActualQty,
+        SUM(recriveQty)as currentRecriveQty,
+        SUM(differQty)as currentDifferQty,
+        SUM(sendPlanNum)as currentSendPlanNum,
+        SUM(sendActualNum)as currentSendActualNum,
+        SUM(receiveNum)AS currentReceiveNum,
+        SUM(differNum)as currentDifferNum
+        from(
+        SELECT
+        <include refid="selectSumFiled"/>
+        FROM (
+        SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        group by  DS.DELIVERY_STOCK_ID,stockDetail.PD_CODE,stockDetail.norms_code
+        order by deliveryStockId desc
+        ) a
+        GROUP BY deliveryStockId
+        order by deliveryStockId desc
+
+        ) b
+    </select>
+
+
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231125RsLogic">
+    <select id="findList" resultType="com.msk.core.entity.SlEnterprise"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        SELECT
+        A.EP_ID AS epId,
+        A.EP_NAME AS epName,
+        A.LIC_TYPE AS licType,
+        A.LIC_NAME AS licName,
+        A.LIC_NO AS licNo,
+        A.LIC_ADDR AS licAddr,
+        A.LIC_BUSI_TYPE AS licBusiType,
+        A.LIC_BUSI_SCOPE AS licBusiScope,
+        A.LIC_LEGAL_PERSON AS licLegalPerson,
+        A.LIC_REG_CAPITAL AS licRegCapital,
+        A.LIC_PAIDIN_CAPITAL AS licPaidinCapital,
+        A.LIC_CRT_DATE AS licCrtDate,
+        A.LIC_TERM_BEGIN AS licTermBegin,
+        A.LIC_TERM_END AS licTermEnd,
+        A.LIC_TERM_UNLIIMITED AS licTermUnliimited,
+        A.TAX_NO AS taxNo,
+        A.TAX_VAT_NO AS taxVatNo,
+        A.ORG_NO AS orgNo,
+        A.ORG_TERM_BEGIN AS orgTermBegin,
+        A.ORG_TERM_END AS orgTermEnd,
+        A.BAL_LEGAL_PERSON AS balLegalPerson,
+        A.BAL_BANK AS balBank,
+        A.BAL_ACCOUNT AS balAccount,
+        A.FDL_NO AS fdlNo,
+        A.FDL_TERM_BEGIN AS fdlTermBegin,
+        A.FDL_TERM_END AS fdlTermEnd,
+        A.VER AS ver
+        FROM
+        sl_enterprise AS A
+        INNER JOIN sl_seller B ON A.EP_ID=B.EP_ID
+        WHERE
+        B.SL_MAIN_CLASS IN (0,1)
+        AND  A.DEL_FLG = 0
+        AND  B.DEL_FLG = 0
+        <if test = "filterMap.epId != null and filterMap.epId != ''">
+            AND A.EP_ID = #{filterMap.epId}
+        </if>
+        <if test = "filterMap.epName != null and filterMap.epName != ''">
+            AND A.EP_NAME = #{filterMap.epName}
+        </if>
+    </select>
+</mapper>

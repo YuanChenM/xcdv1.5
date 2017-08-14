@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121406Logic">
+    <select id="findPageList" resultType="com.msk.br.bean.BR121405Bean" parameterType="BasePageParam">
+        SELECT
+        IFNULL(c.FILE_ID, '') AS fileId,
+        IFNULL(c.FILE_SERVER_ID, '') AS fileServerId,
+        IFNULL(c.FILE_NAME,'') AS fileName,
+        IFNUll(c.MARKETINGS_PERIOD_NAME,'') AS marketingsPeriodName,
+        IFNULL(c.FILE_SUF, '') AS fileSuf,
+        IFNULL(c.POOL_TYPE, '') AS poolType,
+        IFNULL(date_format(c.FILE_CREATE_TIME,'%Y-%m-%d %H:%m:%s'),'') AS fileCreateTimeStr,
+        IFNULL(date_format(c.FILE_START_TIME,'%Y-%m-%d'),'') AS fileStartTimeStr,
+        IFNULL(date_format(c.FILE_END_TIME,'%Y-%m-%d'),'') AS fileEndTimeStr,
+        IFNULL(c.FILE_STATUS,'') AS fileStatus,
+        IFNULL(c.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(c.LGCS_AREA_NAME,'') AS lgcsAreaName,
+        IFNULL(c.CITY_CODE,'') AS cityCode,
+        IFNULL(c.CITY_NAME,'') AS cityName,
+        IFNULL(c.BUYER_TYPE,'') AS buyerType,
+        IFNULL(c.BUYER_SUB_TYPE,'') AS buyerSubType,
+        IFNULL(c.CLASSES_CODE,'') AS classesCode,
+        IFNULL(c.MACHINING_CODE_U,'') AS machiningCodeU,
+        IFNULL(c.MARKETINGS_STATUS,'') AS marketingsStatus,
+        IFNULL(c.MARKET_NAME,'') AS marketName
+        FROM
+        br_file_buyer_pool c
+        WHERE c.DEL_FLG = '0'
+        <if test="filterMap.poolType != null and filterMap.poolType != '' and filterMap.poolType == 1">
+            AND c.POOL_TYPE = #{filterMap.poolType}
+        </if>
+        <if test="filterMap.poolType != null and filterMap.poolType != '' and filterMap.poolType == 2">
+            AND c.POOL_TYPE = #{filterMap.poolType}
+        </if>
+        <if test="filterMap.poolType != null and filterMap.poolType != '' and filterMap.poolType == 3">
+            AND c.POOL_TYPE = #{filterMap.poolType}
+        </if>
+        <if test="filterMap.poolType != null and filterMap.poolType != '' and filterMap.poolType == 4">
+            AND c.POOL_TYPE = #{filterMap.poolType}
+        </if>
+        <if test="filterMap.poolType != null and filterMap.poolType != '' and filterMap.poolType == 5">
+            AND c.POOL_TYPE = #{filterMap.poolType}
+        </if>
+        <if test="filterMap.poolType != null and filterMap.poolType != '' and filterMap.poolType == 6">
+            AND c.POOL_TYPE = #{filterMap.poolType}
+        </if>
+        <if test="filterMap.fileName != null and filterMap.fileName != ''">
+            AND c.FILE_NAME LIKE #{filterMap.fileName}
+        </if>
+        <if test="filterMap.marketingsPeriodName != null and filterMap.marketingsPeriodName != ''">
+            AND c.MARKETINGS_PERIOD_NAME LIKE #{filterMap.marketingsPeriodName}
+        </if>
+        <!--<if test="filterMap.lgcsAreaName != null and filterMap.lgcsAreaName != ''">
+            AND c.LGCS_AREA_NAME LIKE #{filterMap.lgcsAreaName}
+        </if>
+        <if test="filterMap.cityName != null and filterMap.cityName != ''">
+            AND c.CITY_NAME LIKE #{filterMap.cityName}
+        </if>-->
+        <if test="filterMap.marketName != null and filterMap.marketName != ''">
+            AND c.MARKET_NAME LIKE #{filterMap.marketName}
+        </if>
+        ORDER BY c.FILE_CREATE_TIME DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        SELECT
+        count(1)
+        FROM
+        br_file_buyer_pool c
+        WHERE c.DEL_FLG = '0'
+        <if test="filterMap.poolType != null and filterMap.poolType != '' and filterMap.poolType == 1">
+            AND c.POOL_TYPE = #{filterMap.poolType}
+        </if>
+        <if test="filterMap.poolType != null and filterMap.poolType != '' and filterMap.poolType == 2">
+            AND c.POOL_TYPE =#{filterMap.poolType}
+        </if>
+        <if test="filterMap.poolType != null and filterMap.poolType != '' and filterMap.poolType == 3">
+            AND c.POOL_TYPE =#{filterMap.poolType}
+        </if>
+        <if test="filterMap.poolType != null and filterMap.poolType != '' and filterMap.poolType == 4">
+            AND c.POOL_TYPE = #{filterMap.poolType}
+        </if>
+        <if test="filterMap.poolType != null and filterMap.poolType != '' and filterMap.poolType == 5">
+            AND c.POOL_TYPE = #{filterMap.poolType}
+        </if>
+        <if test="filterMap.poolType != null and filterMap.poolType != '' and filterMap.poolType == 6">
+            AND c.POOL_TYPE = #{filterMap.poolType}
+        </if>
+        <if test="filterMap.fileName != null and filterMap.fileName != ''">
+            AND c.FILE_NAME LIKE #{filterMap.fileName}
+        </if>
+        <if test="filterMap.marketingsPeriodName != null and filterMap.marketingsPeriodName != ''">
+            AND c.MARKETINGS_PERIOD_NAME LIKE #{filterMap.marketingsPeriodName}
+        </if>
+        <!--<if test="filterMap.lgcsAreaName != null and filterMap.lgcsAreaName != ''">
+            AND c.LGCS_AREA_NAME LIKE #{filterMap.lgcsAreaName}
+        </if>
+        <if test="filterMap.cityName != null and filterMap.cityName != ''">
+            AND c.CITY_NAME LIKE #{filterMap.cityName}
+        </if>-->
+        <if test="filterMap.marketName != null and filterMap.marketName != ''">
+            AND c.MARKET_NAME LIKE #{filterMap.marketName}
+        </if>
+    </select>
+
+    <select id="isExist" resultType="Integer" parameterType="BaseParam">
+        SELECT
+        count(1)
+        FROM
+        BR_FILE_BUYER_POOL
+        WHERE DEL_FLG = '0'
+        AND FILE_NAME = #{filterMap.fileName}
+        /** Modif for Bug#2847 at 2016/09/21 by yuan_zhifei Start*/
+        <if test="filterMap.marketingsPeriodName != null and filterMap.marketingsPeriodName !='' and filterMap.marketingsStatus !=null and filterMap.marketingsStatus != ''">
+            AND MARKETINGS_PERIOD_NAME = #{filterMap.marketingsPeriodName}
+            AND MARKETINGS_STATUS = #{filterMap.marketingsStatus}
+        </if>
+        <if test="filterMap.marketingsPeriodName != null and filterMap.marketingsPeriodName !='' and filterMap.marketingsStatus == ''">
+            AND MARKETINGS_PERIOD_NAME = #{filterMap.marketingsPeriodName}
+            AND MARKETINGS_STATUS = ''
+        </if>
+        <if test='filterMap.marketingsStatus != null and filterMap.marketingsStatus !="" and filterMap.marketId != null and filterMap.marketId != ""'>
+            AND MARKETINGS_STATUS = #{filterMap.marketingsStatus}
+            AND MARKET_ID = #{filterMap.marketId}
+        </if>
+        <if test="filterMap.marketingsStatus != null and filterMap.marketingsStatus !=''">
+            AND MARKETINGS_STATUS = #{filterMap.marketingsStatus}
+        </if>
+        <if test='filterMap.marketingsPeriodName == null or filterMap.marketingsPeriodName == ""'>
+            AND MARKETINGS_PERIOD_NAME = ''
+        </if>
+        <if test='filterMap.marketingsStatus == null or filterMap.marketingsStatus == ""'>
+            AND MARKETINGS_STATUS = ''
+        </if>
+        <if test="filterMap.marketId == null or filterMap.marketId == ''">
+            AND MARKET_ID = ''
+        </if>
+        /** Modif for Bug#2847 at 2016/09/21 by yuan_zhifei End*/
+        <if test='filterMap.marketId != null and filterMap.marketId != ""'>
+            AND MARKET_ID = #{filterMap.marketId}
+        </if>
+        AND POOL_TYPE = #{filterMap.poolType}
+    </select>
+
+    <select id="findChickenOrDuckProducts" resultType="com.msk.br.bean.BR121406RsBean"
+            parameterType="com.msk.br.bean.BR121406RsParam">
+        SELECT
+        t1.productClassification AS productClassification,
+        t1.SALES_NAME AS salesName,
+        t1.SCIENTIFIC_NAME AS scientificName,
+        t1.LOCAL_NAME AS localName,
+        t1.FEATURE_NAME AS featureName,
+        t1.GRADE_NAME AS gradeName,
+        t1.PD_MARKET_NAME AS pdMarketName,
+        t1.ordeAmount AS orderAmount,
+        t1.rankAmounts AS rankAmounts,
+        CONCAT(
+        t1.LGCS_AREA_NAME,
+        '物流区',
+        t1.CITY_NAME,
+        '地区',
+        t1.CLASSES_NAME,
+        t1.MACHINING_NAME,
+        '分销买家池标准产品池单品目录及销售排名管控表'
+        ) AS fileName,
+        t1.LGCS_AREA_CODE AS lgcsAreaCode,
+        t1.LGCS_AREA_NAME AS lgcsAreaName,
+        t1.CITY_NAME AS cityName,
+        t1.CITY_CODE AS cityCode,
+        t1.CLASSES_CODE AS classesCode,
+        t1.CLASSES_NAME AS classesName,
+        t1.MACHINING_CODE AS machiningCode,
+        t1.MACHINING_NAME AS machiningName,
+        t2.receiveQty AS receiveQty,
+        t2.rankQtys AS rankQtys
+        FROM
+        (
+        SELECT
+        @rankAmount := @rankAmount + 1 AS rankAmounts,
+        amo.productClassification,
+        amo.ordeAmount,
+        amo.PD_CODE,
+        amo.SALES_NAME,
+        amo.SCIENTIFIC_NAME,
+        amo.LOCAL_NAME,
+        amo.FEATURE_NAME,
+        amo.GRADE_NAME,
+        amo.LGCS_AREA_CODE,
+        amo.LGCS_AREA_NAME,
+        amo.CITY_CODE,
+        amo.CITY_NAME,
+        amo.CLASSES_CODE,
+        amo.MACHINING_CODE,
+        amo.CLASSES_NAME,
+        amo.MACHINING_NAME,
+        amo.PD_MARKET_NAME
+        FROM
+        (
+        SELECT
+        orde.PD_CODE,
+        @rankAmount := 0,
+        CONCAT(cla.CLASSES_NAME,cla.MACHINING_NAME) AS productClassification,
+        /** Modif for Bug#2608 at 2016/09/12 by yuan_zhifei Start*/
+        fea.SCIENTIFIC_NAME,
+        fea.SALES_NAME,
+        fea.LOCAL_NAME,
+        /** Modif for Bug#2608 at 2016/09/12 by yuan_zhifei End*/
+        fea.FEATURE_NAME,
+        fea.GRADE_NAME,
+        /** Modif for Bug#2441 at 2016/09/12 by yuan_zhifei Start*/
+        /** 销售额=(收货数量-退货数量)*产品单价*/
+        SUM((IFNULL(orde.RECEIVE_QTY,0) - IFNULL(orde.RETURN_QTY,0)) * IFNULL(orde.PD_PRICE,0)) AS ordeAmount,
+        /** Modif for Bug#2441 at 2016/09/07 by yuan_zhifei End*/
+        orde.CLASSES_CODE,
+        orde.MACHINING_CODE,
+        orde.RECEIVE_QTY,
+        orde.RETURN_QTY,
+        orde.PD_PRICE,
+        buyer.LGCS_AREA_CODE,
+        buyer.CITY_CODE,
+        buyer.LGCS_AREA_NAME,
+        buyer.CITY_NAME,
+        cla.CLASSES_NAME,
+        cla.MACHINING_NAME,
+        pd.PD_MARKET_NAME
+        FROM
+        br_o_order_info orde
+        INNER JOIN br_o_buyer_info buyer ON buyer.BUYER_ID = orde.BUYER_ID AND buyer.DEL_FLG = orde.DEL_FLG
+        INNER JOIN br_o_cla_machining_info cla ON cla.CLASSES_CODE = orde.CLASSES_CODE AND  cla.DEL_FLG = orde.DEL_FLG
+        AND cla.MACHINING_CODE = orde.MACHINING_CODE
+        RIGHT JOIN BR_O_BREED_FEA_INFO fea ON fea.BREED_CODE = orde.BREED_CODE AND  orde.DEL_FLG = fea.DEL_FLG
+        AND fea.FEATURE_CODE = orde.FEATURE_CODE
+        AND fea.GRADE_CODE = orde.GRADE_CODE
+        /** Modif for Bug#2441 at 2016/09/07 by yuan_zhifei Start*/
+        AND cla.CLA_ID = fea.CLA_ID
+        /** Modif for Bug#2441 at 2016/09/07 by yuan_zhifei End*/
+        INNER JOIN br_pd_logiarea pd ON pd.LGCS_CODE = buyer.LGCS_AREA_CODE AND buyer.DEL_FLG = pd.DEL_FLG
+        AND pd.CLASSES_CODE = orde.CLASSES_CODE
+        AND pd.MACHINING_CODE = orde.MACHINING_CODE
+        AND pd.BREED_CODE = fea.BREED_CODE
+        /** Modif for Bug#2562 at 2016/09/09 by yuan_zhifei Start*/
+        AND pd.FEATURE_CODE = fea.FEATURE_CODE
+        AND pd.GRADE_CODE = fea.GRADE_CODE
+        /** Modif for Bug#2562 at 2016/09/09 by yuan_zhifei End*/
+        WHERE
+        fea.DEL_FLG = 0
+        AND orde.DEL_FLG = 0
+        /** Modif for Bug#2681 at 2016/09/14 by yuan_zhifei Start*/
+        AND buyer.BUYER_TYPE = '01'
+        /** Modif for Bug#2681 at 2016/09/14 by yuan_zhifei End*/
+        AND buyer.LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND buyer.CITY_CODE = #{cityCode}
+        /*鸡产品白条鸡*/
+        <if test="classesCode != null and classesCode!='' and classesCode == '01'">
+            AND cla.CLASSES_CODE = #{classesCode}
+            AND cla.MACHINING_CODE = #{machiningCodeU}
+        </if>
+        /*鸭产品白条鸭*/
+        <if test="classesCode != null and classesCode!='' and classesCode == '02'">
+            AND cla.CLASSES_CODE = #{classesCode}
+            AND cla.MACHINING_CODE = #{machiningCodeU}
+        </if>
+        AND orde.ORDER_TIME BETWEEN concat(#{fileStartTime}, ' 00:00:00') AND concat(#{fileEndTime}, ' 23:59:59')
+        GROUP BY
+        orde.PD_CODE
+        ORDER BY
+        /** 销售额排名*/
+        ordeAmount DESC
+        ) amo
+        ) t1
+        INNER JOIN (
+        SELECT
+        @rankQty := @rankQty + 1 AS rankQtys,
+        qty.receiveQty,
+        qty.PD_CODE
+        FROM
+        (
+        SELECT
+        /** Modif for Bug#2562 at 2016/09/08 by yuan_zhifei Start*/
+        SUM(IFNULL(orde.RECEIVE_QTY,0) - IFNULL(orde.RETURN_QTY,0)) AS receiveQty,
+        /** Modif for Bug#2562 at 2016/09/08 by yuan_zhifei End*/
+        orde.PD_CODE,
+        @rankQty := 0
+        FROM
+        br_o_order_info orde
+        INNER JOIN br_o_buyer_info buyer ON buyer.BUYER_ID = orde.BUYER_ID AND buyer.DEL_FLG = orde.DEL_FLG
+        INNER JOIN br_o_cla_machining_info cla ON cla.CLASSES_CODE = orde.CLASSES_CODE AND  cla.DEL_FLG = orde.DEL_FLG
+        AND cla.MACHINING_CODE = orde.MACHINING_CODE
+        RIGHT JOIN BR_O_BREED_FEA_INFO fea ON fea.BREED_CODE = orde.BREED_CODE AND  orde.DEL_FLG = fea.DEL_FLG
+        AND fea.FEATURE_CODE = orde.FEATURE_CODE
+        AND fea.GRADE_CODE = orde.GRADE_CODE
+        /** Modif for Bug#2441 at 2016/09/07 by yuan_zhifei Start*/
+        AND cla.CLA_ID = fea.CLA_ID
+        /** Modif for Bug#2441 at 2016/09/07 by yuan_zhifei End*/
+        INNER JOIN br_pd_logiarea pd ON pd.LGCS_CODE = buyer.LGCS_AREA_CODE AND buyer.DEL_FLG = pd.DEL_FLG
+        AND pd.CLASSES_CODE = orde.CLASSES_CODE
+        AND pd.MACHINING_CODE = orde.MACHINING_CODE
+        AND pd.BREED_CODE = fea.BREED_CODE
+        /** Modif for Bug#2562 at 2016/09/09 by yuan_zhifei Start*/
+        AND pd.FEATURE_CODE = fea.FEATURE_CODE
+        AND pd.GRADE_CODE = fea.GRADE_CODE
+        /** Modif for Bug#2562 at 2016/09/09 by yuan_zhifei End*/
+        WHERE
+        fea.DEL_FLG = 0
+        AND orde.DEL_FLG = 0
+        /** Modif for Bug#2681 at 2016/09/14 by yuan_zhifei Start*/
+        AND buyer.BUYER_TYPE = '01'
+        /** Modif for Bug#2681 at 2016/09/14 by yuan_zhifei End*/
+        AND buyer.LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND buyer.CITY_CODE = #{cityCode}
+        /*鸡产品白条鸡*/
+        <if test="classesCode != null and classesCode!='' and classesCode == '01'">
+            AND cla.CLASSES_CODE = #{classesCode}
+            AND cla.MACHINING_CODE = #{machiningCodeU}
+        </if>
+        /*鸭产品白条鸭*/
+        <if test="classesCode != null and classesCode!='' and classesCode == '02'">
+            AND cla.CLASSES_CODE = #{classesCode}
+            AND cla.MACHINING_CODE = #{machiningCodeU}
+        </if>
+        AND orde.ORDER_TIME BETWEEN concat(#{fileStartTime}, ' 00:00:00') AND concat(#{fileEndTime}, ' 23:59:59')
+        GROUP BY
+        orde.PD_CODE
+        ) qty
+        /** Modif for Bug#2653 at 2016/09/13 by yuan_zhifei Start*/
+        ORDER BY
+        qty.receiveQty DESC
+        /** Modif for Bug#2653 at 2016/09/13 by yuan_zhifei End*/
+        ) t2 ON t1.PD_CODE = t2.PD_CODE
+    </select>
+
+    <select id="findChickenOrDuckMachiningProducts" resultType="com.msk.br.bean.BR121406RsBean"
+            parameterType="com.msk.br.bean.BR121406RsParam">
+        SELECT
+        t1.productClassification AS productClassification,
+        t1.SALES_NAME AS salesName,
+        t1.SCIENTIFIC_NAME AS scientificName,
+        t1.LOCAL_NAME AS localName,
+        t1.FEATURE_NAME AS featureName,
+        t1.GRADE_NAME AS gradeName,
+        t1.PD_MARKET_NAME AS pdMarketName,
+        t1.ordeAmount AS orderAmount,
+        t1.rankAmounts AS rankAmounts,
+        CONCAT(t1.LGCS_AREA_NAME,'物流区',t1.CITY_NAME,'地区',t1.CLASSES_NAME,'分割副产品分销买家池标准产品池单品目录及销售排名管控表') AS fileName,
+        t1.LGCS_AREA_CODE AS lgcsAreaCode,
+        t1.LGCS_AREA_NAME AS lgcsAreaName,
+        t1.CITY_NAME AS cityName,
+        t1.CITY_CODE AS cityCode,
+        t1.CLASSES_CODE AS classesCode,
+        t1.CLASSES_NAME AS classesName,
+        t1.MACHINING_CODE AS machiningCode,
+        t1.MACHINING_NAME AS machiningName,
+        t2.receiveQty AS receiveQty,
+        t2.rankQtys AS rankQtys
+        FROM
+        (
+        SELECT
+        @rankAmount := @rankAmount + 1 AS rankAmounts,
+        amo.productClassification,
+        amo.ordeAmount,
+        amo.PD_CODE,
+        amo.SALES_NAME,
+        amo.SCIENTIFIC_NAME,
+        amo.LOCAL_NAME,
+        amo.FEATURE_NAME,
+        amo.GRADE_NAME,
+        amo.LGCS_AREA_CODE,
+        amo.LGCS_AREA_NAME,
+        amo.CITY_CODE,
+        amo.CITY_NAME,
+        amo.CLASSES_CODE,
+        amo.MACHINING_CODE,
+        amo.CLASSES_NAME,
+        amo.MACHINING_NAME,
+        amo.PD_MARKET_NAME
+        FROM
+        (
+        SELECT
+        orde.ORDER_AMOUNT,
+        orde.PD_CODE,
+        @rankAmount := 0,
+        CONCAT(cla.CLASSES_NAME,cla.MACHINING_NAME) AS productClassification,
+        /** Modif for Bug#2608 at 2016/09/12 by yuan_zhifei Start*/
+        fea.SALES_NAME,
+        fea.SCIENTIFIC_NAME,
+        fea.LOCAL_NAME,
+        /** Modif for Bug#2608 at 2016/09/12 by yuan_zhifei End*/
+        fea.FEATURE_NAME,
+        fea.GRADE_NAME,
+        /** 销售额=(收货数量-退货数量)*产品单价 */
+        /** Modif for Bug#2441 at 2016/09/07 by yuan_zhifei Start*/
+        SUM((IFNULL(orde.RECEIVE_QTY,0) - IFNULL(orde.RETURN_QTY,0)) * IFNULL(orde.PD_PRICE,0)) AS ordeAmount,
+        /** Modif for Bug#2441 at 2016/09/07 by yuan_zhifei End*/
+        orde.CLASSES_CODE,
+        orde.MACHINING_CODE,
+        buyer.LGCS_AREA_CODE,
+        buyer.CITY_CODE,
+        buyer.LGCS_AREA_NAME,
+        buyer.CITY_NAME,
+        cla.CLASSES_NAME,
+        cla.MACHINING_NAME,
+        pd.PD_MARKET_NAME
+        FROM
+        br_o_order_info orde
+        INNER JOIN br_o_buyer_info buyer ON buyer.BUYER_ID = orde.BUYER_ID  AND buyer.DEL_FLG = orde.DEL_FLG
+        INNER JOIN br_o_cla_machining_info cla ON cla.CLASSES_CODE = orde.CLASSES_CODE   AND  cla.DEL_FLG = orde.DEL_FLG
+        AND cla.MACHINING_CODE = orde.MACHINING_CODE
+        RIGHT JOIN BR_O_BREED_FEA_INFO fea ON fea.BREED_CODE = orde.BREED_CODE AND  orde.DEL_FLG = fea.DEL_FLG
+        AND fea.FEATURE_CODE = orde.FEATURE_CODE
+        AND fea.GRADE_CODE = orde.GRADE_CODE
+        /** Modif for Bug#2441 at 2016/09/07 by yuan_zhifei Start*/
+        AND cla.CLA_ID = fea.CLA_ID
+        /** Modif for Bug#2441 at 2016/09/07 by yuan_zhifei End*/
+        INNER JOIN br_pd_logiarea pd ON pd.LGCS_CODE = buyer.LGCS_AREA_CODE AND buyer.DEL_FLG = pd.DEL_FLG
+        AND pd.CLASSES_CODE = orde.CLASSES_CODE
+        AND pd.MACHINING_CODE = orde.MACHINING_CODE
+        AND pd.BREED_CODE = fea.BREED_CODE
+        /** Modif for Bug#2562 at 2016/09/09 by yuan_zhifei Start*/
+        AND pd.FEATURE_CODE = fea.FEATURE_CODE
+        AND pd.GRADE_CODE = fea.GRADE_CODE
+        /** Modif for Bug#2562 at 2016/09/09 by yuan_zhifei End*/
+        WHERE
+        fea.DEL_FLG = 0
+        AND orde.DEL_FLG = 0
+        /** Modif for Bug#2681 at 2016/09/14 by yuan_zhifei Start*/
+        AND buyer.BUYER_TYPE = '01'
+        /** Modif for Bug#2681 at 2016/09/14 by yuan_zhifei End*/
+        AND buyer.LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND buyer.CITY_CODE = #{cityCode}
+        /*鸡产品鸡分割品鸡副产品*/
+        <if test="classesCode != null and classesCode!='' and classesCode == '01'">
+            AND cla.CLASSES_CODE = #{classesCode}
+            AND cla.MACHINING_CODE in(2,3)
+        </if>
+        /*鸭产品鸭分割品鸭副产品*/
+        <if test="classesCode != null and classesCode!='' and classesCode == '02'">
+            AND cla.CLASSES_CODE = #{classesCode}
+            AND cla.MACHINING_CODE in(2,3)
+        </if>
+        AND orde.ORDER_TIME BETWEEN concat(#{fileStartTime}, ' 00:00:00') AND concat(#{fileEndTime}, ' 23:59:59')
+        GROUP BY
+        orde.PD_CODE
+        ORDER BY
+        ordeAmount DESC
+        ) amo
+        ) t1
+        INNER JOIN (
+        SELECT
+        @rankQty := @rankQty + 1 AS rankQtys,
+        qty.receiveQty,
+        qty.PD_CODE
+        FROM
+        (
+        SELECT
+        /** Modif for Bug#2562 at 2016/09/08 by yuan_zhifei Start*/
+        SUM(IFNULL(orde.RECEIVE_QTY,0) - IFNULL(orde.RETURN_QTY,0)) AS receiveQty,
+        /** Modif for Bug#2562 at 2016/09/08 by yuan_zhifei End*/
+        orde.PD_CODE,
+        @rankQty := 0
+        FROM
+        br_o_order_info orde
+        INNER JOIN br_o_buyer_info buyer ON buyer.BUYER_ID = orde.BUYER_ID AND buyer.DEL_FLG = orde.DEL_FLG
+        INNER JOIN br_o_cla_machining_info cla ON cla.CLASSES_CODE = orde.CLASSES_CODE AND  cla.DEL_FLG = orde.DEL_FLG
+        AND cla.MACHINING_CODE = orde.MACHINING_CODE
+        RIGHT JOIN BR_O_BREED_FEA_INFO fea ON fea.BREED_CODE = orde.BREED_CODE AND  orde.DEL_FLG = fea.DEL_FLG
+        AND fea.FEATURE_CODE = orde.FEATURE_CODE
+        AND fea.GRADE_CODE = orde.GRADE_CODE
+        /** Modif for Bug#2441 at 2016/09/07 by yuan_zhifei Start*/
+        AND cla.CLA_ID = fea.CLA_ID
+        /** Modif for Bug#2441 at 2016/09/07 by yuan_zhifei End*/
+        INNER JOIN br_pd_logiarea pd ON pd.LGCS_CODE = buyer.LGCS_AREA_CODE AND buyer.DEL_FLG = pd.DEL_FLG
+        AND pd.CLASSES_CODE = orde.CLASSES_CODE
+        AND pd.MACHINING_CODE = orde.MACHINING_CODE
+        AND pd.BREED_CODE = fea.BREED_CODE
+        /** Modif for Bug#2562 at 2016/09/09 by yuan_zhifei Start*/
+        AND pd.FEATURE_CODE = fea.FEATURE_CODE
+        AND pd.GRADE_CODE = fea.GRADE_CODE
+        /** Modif for Bug#2562 at 2016/09/09 by yuan_zhifei End*/
+        WHERE
+        fea.DEL_FLG = 0
+        AND orde.DEL_FLG = 0
+        /** Modif for Bug#2681 at 2016/09/14 by yuan_zhifei Start*/
+        AND buyer.BUYER_TYPE = '01'
+        /** Modif for Bug#2681 at 2016/09/14 by yuan_zhifei End*/
+        AND buyer.LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND buyer.CITY_CODE = #{cityCode}
+        /*鸡产品鸡分割品鸡副产品*/
+        <if test="classesCode != null and classesCode!='' and classesCode == '01'">
+            AND cla.CLASSES_CODE = #{classesCode}
+            AND cla.MACHINING_CODE in(2,3)
+        </if>
+        /*鸭产品鸭分割品鸭副产品*/
+        <if test="classesCode != null and classesCode!='' and classesCode == '02'">
+            AND cla.CLASSES_CODE = #{classesCode}
+            AND cla.MACHINING_CODE in(2,3)
+        </if>
+        AND orde.ORDER_TIME BETWEEN concat(#{fileStartTime}, ' 00:00:00') AND concat(#{fileEndTime}, ' 23:59:59')
+        GROUP BY
+        orde.PD_CODE
+        ) qty
+        /** Modif for Bug#2653 at 2016/09/13 by yuan_zhifei Start*/
+        ORDER BY
+        qty.receiveQty DESC
+        /** Modif for Bug#2653 at 2016/09/13 by yuan_zhifei End*/
+        ) t2 ON t1.PD_CODE = t2.PD_CODE
+    </select>
+
+    <select id="count" resultType="Integer" parameterType="BaseParam">
+        SELECT
+        COUNT(1)
+        FROM
+        br_file_buyer_pool
+        WHERE DEL_FLG = '0'
+        AND FILE_ID = #{filterMap.fileId}
+    </select>
+
+    <update id="modify" parameterType="com.msk.br.bean.BR121406RsParam">
+		UPDATE
+			br_file_buyer_pool
+		SET FILE_SERVER_ID = #{fileServerId},
+		FILE_STATUS = '1',
+
+			UPD_ID = #{updId},
+			UPD_TIME = #{updTime}
+		  WHERE FILE_ID = #{fileId}
+	</update>
+
+    <update id="updateFileBuyerPoolByFileName" parameterType="BaseParam">
+        UPDATE
+        br_file_buyer_pool
+        SET DEL_FLG = '1'
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        WHERE DEL_FLG = '0'
+        AND FILE_NAME = #{filterMap.fileName}
+        /** Modif for Bug#2847 at 2016/09/21 by yuan_zhifei Start*/
+        <if test="filterMap.marketingsPeriodName != null and filterMap.marketingsPeriodName !='' and filterMap.marketingsStatus !=null and filterMap.marketingsStatus != ''">
+            AND MARKETINGS_PERIOD_NAME = #{filterMap.marketingsPeriodName}
+            AND MARKETINGS_STATUS = #{filterMap.marketingsStatus}
+        </if>
+        <if test="filterMap.marketingsPeriodName != null and filterMap.marketingsPeriodName !='' and filterMap.marketingsStatus == ''">
+            AND MARKETINGS_PERIOD_NAME = #{filterMap.marketingsPeriodName}
+            AND MARKETINGS_STATUS = ''
+        </if>
+        <if test='filterMap.marketingsStatus != null and filterMap.marketingsStatus !="" and filterMap.marketId != null and filterMap.marketId != ""'>
+            AND MARKETINGS_STATUS = #{filterMap.marketingsStatus}
+            AND MARKET_ID = #{filterMap.marketId}
+        </if>
+        <if test="filterMap.marketingsStatus != null and filterMap.marketingsStatus !=''">
+            AND MARKETINGS_STATUS = #{filterMap.marketingsStatus}
+        </if>
+        <if test='filterMap.marketingsPeriodName == null or filterMap.marketingsPeriodName == ""'>
+            AND MARKETINGS_PERIOD_NAME = ''
+        </if>
+        <if test='filterMap.marketingsStatus == null or filterMap.marketingsStatus == ""'>
+            AND MARKETINGS_STATUS = ''
+        </if>
+        <if test="filterMap.marketId == null or filterMap.marketId == ''">
+            AND MARKET_ID = ''
+        </if>
+        <if test='filterMap.marketId != null and filterMap.marketId != ""'>
+            AND MARKET_ID = #{filterMap.marketId}
+        </if>
+        /** Modif for Bug#2847 at 2016/09/21 by yuan_zhifei End*/
+        AND POOL_TYPE = #{filterMap.poolType}
+    </update>
+
+    <insert id="save" parameterType="com.msk.br.bean.BR121406RsParam">
+		INSERT INTO br_file_buyer_pool
+        (
+        FILE_ID,
+        FILE_SERVER_ID,
+        FILE_NAME,
+        FILE_SUF,
+        FILE_START_TIME,
+        FILE_END_TIME,
+        FILE_CREATE_TIME,
+        FILE_STATUS,
+        POOL_TYPE,
+        LGCS_AREA_CODE,
+        CITY_CODE,
+        BUYER_TYPE,
+        BUYER_SUB_TYPE,
+        CLASSES_CODE,
+        MACHINING_CODE_U,
+        MARKETINGS_PERIOD_NAME,
+        MARKETINGS_STATUS,
+        MARKET_ID,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{fileId},
+        #{fileServerId},
+        #{fileName},
+        #{fileSuf},
+        #{fileStartTime},
+        #{fileEndTime},
+        #{fileCreateTime},
+        2,
+        2,
+        #{lgcsAreaCode},
+        #{cityCode},
+        #{buyerType},
+        #{buyerSubType},
+        #{classesCode},
+        #{machiningCodeU},
+        #{marketingsPeriodName},
+        #{marketingsStatus},
+        #{marketId},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+	</insert>
+
+    <update id="deleteFlag" parameterType="com.msk.br.bean.BR121406RsParam" >
+        UPDATE br_file_buyer_pool
+        SET DEL_FLG = '1'
+          ,UPD_ID = #{updId}
+		  ,UPD_TIME = #{updTime}
+        WHERE FILE_ID = #{fileId}
+    </update>
+
+    <update id="modifyFileStatus" parameterType="com.msk.br.bean.BR121406RsParam">
+        UPDATE br_file_buyer_pool
+        SET FILE_STATUS = '3'
+        ,UPD_ID = #{updId}
+		,UPD_TIME = #{updTime}
+        WHERE FILE_ID = #{fileId}
+    </update>
+</mapper>

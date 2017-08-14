@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241103010Logic">
+    <select id="findQueryAgentData" parameterType="BaseParam" resultType="com.msk.seller.bean.SlEpAgentAuthBean">
+        SELECT
+        SL_CODE AS slCode,
+        PRODUCER_EP_ID AS producerEpId,
+        CONTRACT_NO AS contractNo,
+        AUTH_EP_NAME AS authEpName,
+        AUTH_TERM_BEGIN AS authTermBegin,
+        AUTH_TERM_END AS authTermEnd,
+        AUTH_TERM_UNLIIMITED AS authTermUnliimited
+        FROM
+        sl_ep_agent_auth AS A
+        <where>
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND A.SL_CODE=#{filterMap.slCode}
+            </if>
+            <if test="filterMap.producerEpId!=null and filterMap.producerEpId!=''">
+                AND A.PRODUCER_EP_ID=#{filterMap.producerEpId}
+            </if>
+            AND A.DEL_FLG=0
+        </where>
+    </select>
+    <select id="findQuerysaveOemData" parameterType="BaseParam" resultType="com.msk.seller.bean.SlEpAgentAuthBean">
+        SELECT
+        SL_CODE AS slCode,
+        PRODUCER_EP_ID AS producerEpId,
+        CONTRACT_NO AS contractNo,
+        AUTH_EP_NAME AS authEpName,
+        AUTH_TERM_BEGIN AS authTermBegin,
+        AUTH_TERM_END AS authTermEnd,
+        AUTH_TERM_UNLIIMITED AS authTermUnliimited
+        FROM
+        sl_ep_oem_auth AS A
+        <where>
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND A.SL_CODE=#{filterMap.slCode}
+            </if>
+            <if test="filterMap.producerEpId!=null and filterMap.producerEpId!=''">
+                AND A.PRODUCER_EP_ID=#{filterMap.producerEpId}
+            </if>
+                AND A.DEL_FLG=0
+        </where>
+    </select>
+
+    <!--添加生产商-->
+    <insert parameterType="com.msk.seller.bean.SlEpAgentAuthBean" id="saveAgentData">
+        insert into sl_ep_agent_auth(
+        SL_CODE,
+        PRODUCER_EP_ID,
+        CONTRACT_NO,
+        AUTH_EP_NAME,
+        AUTH_TERM_BEGIN,
+        AUTH_TERM_END,
+        AUTH_TERM_UNLIIMITED,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )values(
+        #{slCode},
+        #{producerEpId},
+        #{contractNo},
+        #{authEpName},
+        #{authTermBegin},
+        #{authTermEnd},
+        #{authTermUnliimited},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        1
+        )
+    </insert>
+
+    <!--添加OEM-->
+    <insert parameterType="com.msk.seller.bean.SlEpAgentAuthBean" id="saveOemData">
+        insert into sl_ep_oem_auth(
+        SL_CODE,
+        PRODUCER_EP_ID,
+        CONTRACT_NO,
+        AUTH_EP_NAME,
+        AUTH_TERM_BEGIN,
+        AUTH_TERM_END,
+        AUTH_TERM_UNLIIMITED,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )values(
+        #{slCode},
+        #{producerEpId},
+        #{contractNo},
+        #{authEpName},
+        #{authTermBegin},
+        #{authTermEnd},
+        #{authTermUnliimited},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        1
+        )
+    </insert>
+</mapper>

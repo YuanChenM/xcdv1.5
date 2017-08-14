@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.msk.common.logic.ConfigLogic">
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.core.entity.CommConfig">
+        SELECT
+         CC.SYSTEM_KEY AS systemKey
+         ,CC.SYSTEM_VALUE AS systemValue
+        FROM COMM_CONFIG AS CC
+        WHERE CC.DEL_FLG=0
+    </select>
+</mapper>

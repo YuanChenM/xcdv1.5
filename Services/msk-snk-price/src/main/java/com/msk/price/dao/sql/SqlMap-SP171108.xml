@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171108Logic">
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.price.bean.SP171108Bean">
+        <if test="filterMap.type!=null and filterMap.type!='' and filterMap.type !='oem'">
+            <include refid="findApplyNumHis"/>
+        </if>
+        <if test="filterMap.type!=null and filterMap.type!='' and filterMap.type =='oem'">
+            <include refid="findOemApplyNumHis"/>
+        </if>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        <if test="filterMap.type!=null and filterMap.type!='' and filterMap.type !='oem'">
+            <include refid="findApplyNumHisCount"/>
+        </if>
+        <if test="filterMap.type!=null and filterMap.type!='' and filterMap.type =='oem'">
+            <include refid="findOemApplyNumHisCount"/>
+        </if>
+    </select>
+
+    <sql id="findApplyNumHis">
+        SELECT
+            A.DEMAND_ID as demandId
+            ,A.DEMAND_DETAIL_ID as demandDetailId
+            ,IFNULL(A.CRT_TIME,'') AS editTime
+            ,IFNULL(A.ROLE,'') AS roleCode
+            ,IFNULL(B.GRADE_CODE,'') AS gradeCode
+            ,IFNULL(B.APPLY_NUM,'') AS applyNum
+            ,IFNULL(A.MODIFY_NUM,'') AS modifyNum
+            ,IFNULL(A.REMARK,'') AS remark
+        FROM SP_SELLER_PD_DEMANDAPPLY_NUM_HIS A
+        INNER JOIN SP_SELLER_PD_DEMANDAPPLY_NUM B on
+            A.DEMAND_ID = B.DEMAND_ID
+            AND A.DEL_FLG = 0
+            AND B.DEL_FLG = 0
+        <include refid="whereCondition2"/>
+        GROUP BY A.DEMAND_DETAIL_ID ORDER BY A.DEMAND_DETAIL_ID
+    </sql>
+    <sql id="findApplyNumHisCount">
+        select count(1)
+        FROM SP_SELLER_PD_DEMANDAPPLY_NUM_HIS A
+        INNER JOIN SP_SELLER_PD_DEMANDAPPLY_NUM B on
+        A.DEMAND_ID = B.DEMAND_ID
+        AND A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+        <include refid="whereCondition2"/>
+    </sql>
+    <sql id="findOemApplyNumHis">
+        SELECT
+            A.OEM_ID as demandId
+            ,A.OEM_DETAIL_ID as demandDetailId
+            ,IFNULL(A.CRT_TIME,'') AS editTime
+            ,IFNULL(A.ROLE,'') AS roleCode
+            ,IFNULL(B.GRADE_CODE,'') AS gradeCode
+            ,IFNULL(B.APPLY_NUM,'') AS applyNum
+            ,IFNULL(A.QTY,'') AS modifyNum
+            ,IFNULL(A.REMARK,'') AS remark
+        FROM SP_DEMANDAPPLY_DETAIL_OEM A
+        INNER JOIN SP_DEMANDAPPLY_OEM B on
+            A.OEM_ID = B.OEM_ID
+            AND A.DEL_FLG = 0
+            AND B.DEL_FLG = 0
+        <include refid="whereCondition3"/>
+        GROUP BY A.OEM_DETAIL_ID ASC
+    </sql>
+    <sql id="findOemApplyNumHisCount">
+        select count(1)
+        FROM SP_DEMANDAPPLY_DETAIL_OEM A
+        INNER JOIN SP_DEMANDAPPLY_OEM B on
+        A.OEM_ID = B.OEM_ID
+        AND A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+        <include refid="whereCondition3"/>
+    </sql>
+    <sql id="whereCondition2">
+        <where>
+            <if test="filterMap.demandId!=null and filterMap.demandId!=''">
+                AND A.DEMAND_ID = #{filterMap.demandId}
+            </if>
+        </where>
+    </sql>
+    <sql id="whereCondition3">
+        <where>
+            <if test="filterMap.demandId!=null and filterMap.demandId!=''">
+                AND A.OEM_ID = #{filterMap.demandId}
+            </if>
+        </where>
+    </sql>
+</mapper>

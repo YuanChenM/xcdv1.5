@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141149Logic">
+
+	<!-- map返回
+	<resultMap type="com.msk.product.bean.IPD141135RsGnqItemBean" id="prtMap">
+		<result property="lgcsCode" column="LGCS_CODE" jdbcType=""/>
+		<result property="lgcsName" column="LGCS_NAME"/>
+		<result property="classCode" column="CLASSES_CODE"/>
+		<result property="machiningCode" column="MACHINING_CODE"/>
+		<result property="breedCode" column="BREED_CODE"/>
+		<result property="featureCode" column="FEATURE_CODE"/>
+		<result property="weightCode" column="WEIGHT_CODE"/>
+		<result property="gradeCode" column="GRADE_CODE"/>
+		<result property="pdMarketCode" column="PD_MARKET_CODE"/>
+	</resultMap>-->
+	<!-- 查询产品等级编码数据 -->
+	<select id="searchProYyStatus" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141149Result">
+		SELECT
+		A.LGCS_CODE AS lgcsCode
+		,A.LGCS_NAME AS lgcsName,
+		A.CLASSES_CODE As classesCode,
+		A.MACHINING_CODE AS  machiningCode,
+		A.BREED_CODE AS breedCode,
+		A.FEATURE_CODE AS  featureCode,
+		A.WEIGHT_CODE AS  weightCode,
+		A.GRADE_CODE AS gradeCode,
+		A.PD_MARKET_CODE   AS pdMarketCode
+		FROM PD_LOGIAREA AS A
+			WHERE A.DEL_FLG = 0
+			<if test="filterMap.lgcsCode != null and filterMap.lgcsCode != ''">
+				AND A.LGCS_CODE = #{filterMap.lgcsCode}
+			</if>
+			<if test="filterMap.lgcsName != null and filterMap.lgcsName != ''">
+				AND A.LGCS_NAME = #{filterMap.lgcsName}
+			</if>
+			<if test="filterMap.classesCode != null and filterMap.classesCode != ''">
+				AND A.CLASSES_CODE = #{filterMap.classesCode}
+			</if>
+			<if test="filterMap.machiningCode != null and filterMap.machiningCode != ''">
+				AND A.MACHINING_CODE = #{filterMap.machiningCode}
+			</if>
+			<if test="filterMap.breedCode != null and filterMap.breedCode != ''">
+				AND A.BREED_CODE = #{filterMap.breedCode}
+			</if>
+			<if test="filterMap.featureCode != null and filterMap.featureCode != ''">
+				AND A.FEATURE_CODE = #{filterMap.featureCode}
+			</if>
+			<if test="filterMap.weightCode != null and filterMap.weightCode != ''">
+				AND A.WEIGHT_CODE = #{filterMap.weightCode}
+			</if>
+			<if test="filterMap.gradeCode != null and filterMap.gradeCode != ''">
+				AND A.GRADE_CODE = #{filterMap.gradeCode}
+			</if>
+			<if test="filterMap.pdMarketCode != null and filterMap.pdMarketCode != ''">
+				AND A.PD_MARKET_CODE = #{filterMap.pdMarketCode}
+			</if>
+
+	</select>
+
+</mapper>

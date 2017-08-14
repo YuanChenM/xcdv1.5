@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11310Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        A.ID as id,
+        IFNULL(C.PD_DESC, '') AS productName,
+        IFNULL(C.WEIGHT_NAME, '') AS weightName,
+        IFNULL(C.GRADE_NAME, '') AS gradeName,
+        IFNULL(C.PRODUCT_PLAN_BOX , '') AS productPlanBox,
+        IFNULL(C.PRODUCT_PLAN_WEIGHT, '') AS productPlanWeight,
+        IFNULL(A.RECEIVE_BOX, '') AS receiveBox,
+        IFNULL(A.RECEIVE_WEIGHT, '') AS receiveWeight
+    </sql>
+
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="intoId!=null and intoId!=''">
+                AND A.INTO_ID = #{intoId}
+            </if>
+            AND A.DEL_FLG = 0
+        </where>
+    </sql>
+
+    <!--查询生产商入库单详细-->
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11310RsBean"
+            parameterType="com.msk.ssc.bean.SSC11310RsParam">
+        SELECT
+        <include refid="selectSql"/>
+        FROM SSC_INTO_DETAIL A
+        LEFT JOIN SSC_INTO_BASIC B ON A.INTO_ID = B.INTO_ID
+        LEFT JOIN SSC_DELIVERY_PRE_PD C ON B.DELIVERY_PRE_INTO_ID = C.DELIVERY_PRE_INTO_ID
+        AND A.PD_CODE = C.PD_CODE
+        <include refid="whereCondition"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        FROM SSC_INTO_DETAIL A
+        LEFT JOIN SSC_INTO_BASIC B ON A.INTO_ID = B.INTO_ID
+        LEFT JOIN SSC_DELIVERY_PRE_PD C ON B.DELIVERY_PRE_INTO_ID = C.DELIVERY_PRE_INTO_ID
+        AND A.PD_CODE = C.PD_CODE
+        <include refid="whereCondition"/>
+    </select>
+
+
+    <update id="modify" parameterType="com.msk.core.entity.SscIntoDetail">
+        update SSC_INTO_DETAIL
+        set
+        RECEIVE_WEIGHT=#{receiveWeight},
+        RECEIVE_BOX=#{receiveBox},
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime}
+        WHERE
+        ID=#{id}
+    </update>
+
+    <!--箱数合计-->
+    <select id="findBoxTotal" parameterType="BaseParam">
+        SELECT
+        SUM(C.PRODUCT_PLAN_BOX) AS productPlanBox,
+        SUM(A.RECEIVE_BOX) AS receiveBox
+        FROM SSC_INTO_DETAIL A
+        LEFT JOIN SSC_INTO_BASIC B ON A.INTO_ID = B.INTO_ID
+        LEFT JOIN SSC_DELIVERY_PRE_PD C ON B.DELIVERY_PRE_INTO_ID = C.DELIVERY_PRE_INTO_ID
+        AND A.PD_CODE = C.PD_CODE
+        <include refid="whereCondition"/>
+    </select>
+
+    <!--插入入库单详细信息-->
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO SSC_INTO_DETAIL (
+        ID,
+        INTO_ID,
+        INTO_CODE,
+        PD_CODE,
+        RECEIVE_BOX,
+        RECEIVE_WEIGHT,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (
+            #{item.id},
+            #{item.intoId},
+            #{item.intoCode},
+            #{item.pdCode},
+            #{item.receiveBox},
+            #{item.receiveBox} * SUBSTRING_INDEX(UPPER(WEIGHT_NAME),'KG', 1),
+            0,
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.crtId},
+            #{item.crtTime},
+            1
+            )
+        </foreach>
+    </insert>
+</mapper>

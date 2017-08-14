@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141155Logic">
+    <sql id="selectSql">
+    A.TC_PROVIDER_ID AS tcProviderId,
+    A.PROVIDER_CODE AS providerCode,
+    A.PROVIDER_NAME AS providerName,
+    A.CLASSES_CODE AS classesCode,
+    A.CLASSES_NAME AS classesName,
+    A.MACHINING_CODE AS machiningCode,
+    A.MACHINING_NAME AS machiningName,
+    A.BREED_CODE AS breedCode,
+    A.BREED_NAME AS breedName,
+    A.FEATURE_CODE AS featureCode,
+    A.FEATURE_NAME AS featureName,
+    A.WEIGHT_CODE AS weightCode,
+    A.WEIGHT_NAME AS weightName,
+    A.WEIGHT_VAL AS weightVal,
+    A.NORMS_CODE AS normsCode,
+    A.NORMS_NAME AS normsName,
+    A.NORMS_SUTTLE AS normsSuttle,
+    A.NORMS_ERROR AS normsError,
+    A.NORMS_NUMBER AS normsNumber,
+    A.NORMS_SIZE AS normsSize,
+    A.NORMS_TEXTURE AS normsTexture,
+    A.NORMS_OUT AS normsOut,
+    A.NORMS_KG AS normsKg,
+    A.NORMS_OUT_SIZE AS normsOutSize,
+    A.NORMS_OUT_TEXTURE AS normsOutTexture,
+    A.NORMS_TEN AS normsTen,
+    A.NORMS_LENGTH AS normsLength,
+    A.NORMS_WIDTH AS normsWidth,
+    A.NORMS_HEIGHT AS normsHeight,
+    A.NORMS_VOLUME AS normsVolume,
+    A.NETWEIGHT_INNER AS netweightInner,
+    A.NETWEIGHT_OUT AS netweightOut,
+    A.GROSSWEIGHT_OUT AS grossweightOut,
+    A.FEATURE_FLG AS featureFlg,
+    A.SALES_TARGET AS salesTarget,
+    A.MACHINING_WAY AS machiningWay,
+    A.APPLY_DATE AS applyDateTime,
+    A.AUDIT_DATE AS auditDate,
+    A.AUDIT_MEMO AS auditMemo,
+    A.AUDIT_STATUS AS auditStatus
+    </sql>
+    <!--查询卖家申请产品审核数据 -->
+    <select id="queryOneData" resultType="com.msk.product.bean.PdTcProviderPackageParam" parameterType="com.hoperun.core.bean.BasePageParam">
+        select <include refid="selectSql"/>
+        from pd_tc_provider_package AS A
+        where A.TC_PROVIDER_ID=#{filterMap.tcProviderId}
+    </select>
+
+    <!--更新审议意见和审核状态 -->
+    <update id="saveDataMode" parameterType="com.msk.product.bean.PdTcProviderPackageParam">
+        update pd_tc_provider_package AS A
+        set A.AUDIT_MEMO=#{filterMap.auditMemo},
+        A.AUDIT_STATUS=#{filterMap.auditStatus}
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        ,UPD_ID = #{updId},
+        UPD_TIME =  #{updTime},
+        VER = VER + 1
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+        where A.TC_PROVIDER_ID=#{filterMap.tcProviderId}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        AND  DEL_FLG='0'
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+    <!--根据品种名称查询记录是否存在 -->
+    <select id="findBreedName" parameterType="BaseParam" resultType="int">
+        select count(1) from pd_breed
+        where CLASSES_CODE=#{filterMap.classesCode}
+        and MACHINING_CODE=#{filterMap.machiningCode}
+        and BREED_NAME=#{filterMap.breedName}
+    </select>
+    <!--根据品种名称查询记录是否存在 -->
+    <select id="findFeatureName" parameterType="BaseParam" resultType="int">
+        select count(1) from pd_feature
+        where CLASSES_CODE=#{filterMap.classesCode}
+        and MACHINING_CODE=#{filterMap.machiningCode}
+        and BREED_CODE=#{filterMap.breedCode}
+        and FEATURE_NAME=#{filterMap.featureName}
+    </select>
+
+    <!--根据净重名称查询记录是否存在 -->
+    <select id="findWeightName" parameterType="BaseParam" resultType="int">
+        select count(1) from pd_weight
+        where CLASSES_CODE=#{filterMap.classesCode}
+        and MACHINING_CODE=#{filterMap.machiningCode}
+        and BREED_CODE=#{filterMap.breedCode}
+        and FEATURE_CODE=#{filterMap.featureCode}
+        and WEIGHT_NAME=#{filterMap.weightName}
+    </select>
+
+    <!--根据五级分类code查询包装标准ID -->
+    <select id="findStandardId" parameterType="BaseParam" resultType="com.msk.core.entity.PdStandard">
+        select STANDARD_ID AS standardId
+        from pd_standard
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                and CLASSES_CODE=#{filterMap.classesCode}
+            </if>
+            <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+                and MACHINING_CODE=#{filterMap.machiningCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                and BREED_CODE=#{filterMap.breedCode}
+            </if>
+            <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+                and FEATURE_CODE=#{filterMap.featureCode}
+            </if>
+            <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+                and WEIGHT_CODE=#{filterMap.weightCode}
+            </if>
+        </where>
+    </select>
+
+    <!--根据包装标准ID和包装规格查询记录是否存在 -->
+    <select id="findPdNorms" parameterType="BaseParam" resultType="int">
+        select count(1)
+        from pd_norms_std
+        <where>
+            <if test="filterMap.standardId!=null and filterMap.standardId!=''">
+                and STANDARD_ID=#{filterMap.standardId}
+            </if>
+            <if test="filterMap.normsOut!=null and filterMap.normsOut!=''">
+                and NORMS_OUT=#{filterMap.normsOut}
+            </if>
+        </where>
+    </select>
+</mapper>

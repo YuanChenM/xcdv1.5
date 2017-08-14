@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2101103Logic">
+
+    <sql id="selectFiled">
+        A.SL_CODE AS slCode,
+        A.HOUSE_CODE AS houseCode,
+        IFNULL(A.BUYER_ID,'') AS buyerId,
+        IFNULL(A.START_TIME,NOW()) AS startTime,
+        IFNULL(A.END_TIME,NOW()) AS endTime,
+        A.VER AS ver,
+        <if test="filterMap.buyerFlag==1">
+            IFNULL(A.APPLY_SIDE,'') AS applySide,
+            IFNULL(A.APPLY_STATUS,'') AS applyStatus,
+            (CASE A.APPLY_STATUS WHEN '2' THEN '专属会员'
+            WHEN '1' THEN '锁定期'
+            ELSE '' END) AS applyStatusName,
+            IFNULL(A.APPLY_TIME,NOW()) AS applyTime
+        </if>
+    </sql>
+    <sql id="selectFrom">
+        <if test="filterMap.buyerFlag==1">
+            FROM sl_bs_buyer AS A
+        </if>
+        <if test="filterMap.buyerFlag==2">
+            FROM sl_bs_buyer_get AS A
+        </if>
+
+        <!--Add for Bug #3223 at 2016/10/11 by ni_shaotang Start-->
+        INNER JOIN  sl_house_account house
+        on A.HOUSE_CODE = house.HOUSE_CODE
+        and A.SL_CODE = house.SL_CODE
+        and (house.DEL_FLG =0 OR house.DEL_FLG IS NULL )
+        <!--Add for Bug #3223 at 2016/10/11 by ni_shaotang End-->
+    </sql>
+    <sql id="whereCondition">
+        <where>
+            (A.DEL_FLG IS NULL OR A.DEL_FLG=0)
+            <if test="filterMap.buyerId!=null and filterMap.buyerId!=''">
+                AND A.BUYER_ID like #{filterMap.buyerId}
+            </if>
+
+            <if test="filterMap.houseCode!=null and filterMap.houseCode!=''">
+                AND A.HOUSE_CODE like #{filterMap.houseCode}
+            </if>
+
+            <if test="filterMap.applyStatus!=null and filterMap.applyStatus!=''">
+                AND A.APPLY_STATUS = #{filterMap.applyStatus}
+            </if>
+            <if test="filterMap.applyStatusNames!=null">
+                AND A.APPLY_STATUS in
+                <foreach collection="filterMap.applyStatusNames" item="applyStatusName" separator="," open="(" close=")">
+                  #{applyStatusName}
+                </foreach>
+            </if>
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND A.SL_CODE = #{filterMap.slCode}
+            </if>
+            <if test="filterMap.buyerId!=null and filterMap.buyerId!=''">
+                AND A.BUYER_ID = #{filterMap.buyerId}
+            </if>
+            <if test="filterMap.houseCode!=null and filterMap.houseCode!=''">
+                AND A.HOUSE_CODE = #{filterMap.houseCode}
+            </if>
+            <!--Bug #3501 买家列表和冻品管家买家列表，一些查询条件不起作用 by whc start
+            <if test="filterMap.lgcsAreaCode!=null and filterMap.lgcsAreaCode!=''">
+                AND house.V_LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+             </if>
+            <if test="filterMap.cityCode!=null and filterMap.cityCode!=''">
+                AND house.V_CITY_CODE = #{filterMap.cityCode}
+            </if>
+            <if test="filterMap.districtCode!=null and filterMap.districtCode!=''">
+                AND house.V_DISTRICT_CODE = #{filterMap.districtCode}
+            </if>-
+            Bug #3501 买家列表和冻品管家买家列表，一些查询条件不起作用 by whc end-->
+        </where>
+    </sql>
+    <select id="getPageCount" resultType="int" parameterType="BasePageParam">
+        SELECT COUNT(1)
+        from (SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>)A
+    </select>
+    <select id="findPageList" resultType="com.msk.bs.bean.IBS2101107Bean"
+            parameterType="BasePageParam">
+        SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        ORDER BY startTime desc
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+</mapper>

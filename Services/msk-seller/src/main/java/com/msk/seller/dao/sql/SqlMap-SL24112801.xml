@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24112801Logic">
+    <!--查询省级卖家池卖家目录-->
+    <select id="querySlProduct" parameterType="BaseParam" resultType="com.msk.seller.bean.SL24112801Bean">
+        SELECT
+        A.SL_CODE AS zz,
+        A.PROVINCE_CODE AS provinceCode,
+        A.CITY_CODE AS cityCode,
+        B.EP_NAME AS epName,
+        B.LIC_ADDR AS licAddr,
+        C.BRAND_NAME AS brandName,
+        A.SL_CODE_DIS AS slCodeDis,
+        A.SL_CODE_MANUFACTURE AS slCodeManufacture,
+        A.CITY_NAME AS  cityName,
+        A.PROVINCE_NAME AS provinceName
+        FROM
+        SL_PRODUCT AS D
+        INNER JOIN SL_SELLER AS A ON A.SL_CODE = D.SL_CODE
+        INNER JOIN SL_ENTERPRISE AS B ON A.EP_ID = B.EP_ID
+        INNER JOIN SL_EP_BRAND AS C ON C.BRAND_ID = D.BRAND_ID
+        AND C.EP_ID = D.BRAND_EP_ID
+        <where>
+            D.DEL_FLG = 0
+            AND  A.DEL_FLG = 0
+            AND  B.DEL_FLG = 0
+            AND  C.DEL_FLG = 0
+            <if test="filterMap.classCode!=null and filterMap.classCode!=''">
+                AND D.PD_CLASSES_CODE=#{filterMap.classCode}
+            </if>
+            <if test="filterMap.machingCode!=null and filterMap.machingCode!=''">
+                AND D.MACHINING_CODE=#{filterMap.machingCode}
+            </if>
+            <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+                AND D.PD_BREED_CODE=#{filterMap.breedCode}
+            </if>
+            AND (D.STATUS=#{filterMap.status} OR D.STATUS=#{filterMap.statusTwo})
+            GROUP BY A.CITY_CODE
+            ORDER BY A.PROVINCE_CODE
+        </where>
+    </select>
+</mapper>

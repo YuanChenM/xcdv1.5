@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24110300501Logic">
+    <insert id="saveSlEpWorkshop" parameterType="com.msk.core.entity.SlEpWorkshop">
+        <!-- Modified by xia_xiaojie on 2016/6/22. Modified start.
+        INSERT INTO SL_EP_WORKSHOP
+        (EP_ID,WORKSHOP_ID,WORKSHOP_NAME,PRODUCT,PROCESS,DEL_FLG,CRT_ID,CRT_TIME,VER)
+        VALUES (#{epId},#{workshopId},#{workshopName},#{product},#{process},#{delFlg},#{crtId},#{crtTime},#{ver}) -->
+        INSERT INTO SL_EP_WORKSHOP
+            (EP_ID, WORKSHOP_ID, WORKSHOP_NAME, PRODUCT, PROCESS, DEL_FLG, CRT_ID, CRT_TIME, UPD_ID, UPD_TIME, ACT_ID, ACT_TIME, VER)
+        VALUES
+            (#{epId}, #{workshopId}, #{workshopName}, #{product}, #{process}, 0, #{crtId}, #{crtTime}, #{crtId}, #{crtTime}, #{crtId}, #{crtTime},1)
+        <!-- Modified end. -->
+    </insert>
+
+    <select id="selectSlEpWorkshop" resultType="com.msk.core.entity.SlEpWorkshop" parameterType="BaseParam">
+        SELECT
+        slEpWorkshop.EP_ID AS epId
+        FROM  SL_EP_WORKSHOP slEpWorkshop
+        WHERE slEpWorkshop.EP_ID=#{filterMap.epId}
+        AND slEpWorkshop.WORKSHOP_NAME=#{filterMap.workshopName}
+        AND slEpWorkshop.DEL_FLG = 0
+    </select>
+</mapper>

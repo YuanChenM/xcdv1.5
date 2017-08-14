@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.RealityMeasureLogic">
+    <sql id="whereCondtion">
+        <if test="filterMap.classesCode != null">
+            AND CLASSES_CODE = #{filterMap.classesCode}
+        </if>
+        <if test="filterMap.breedCode != null">
+            AND BREED_CODE = #{filterMap.breedCode}
+        </if>
+        <if test="filterMap.sellerCode != null">
+            AND SELLER_CODE = #{filterMap.sellerCode}
+        </if>
+        <if test="filterMap.pdCode != null">
+            AND PD_CODE = #{filterMap.pdCode}
+        </if>
+        <if test="filterMap.pdBatchCode != null">
+            AND PD_BATCH_CODE = #{filterMap.pdBatchCode}
+        </if>
+        <if test="filterMap.pdRltMsrId != null">
+            AND PD_RLT_MSR_ID = #{filterMap.pdRltMsrId}
+        </if>
+    </sql>
+    <select id="getPageCount" parameterType="BaseParam" resultType="int">
+        SELECT
+            COUNT(1)
+        FROM PD_REALITY_MEASURE
+        WHERE 1=1
+        <include refid="whereCondtion"/>
+    </select>
+    
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.PdRealityMsr">
+        SELECT 
+            PD_RLT_MSR_ID AS pdRltMsrId
+            ,PD_STD_ID AS pdStdId
+            ,CLASSES_CODE AS classesCode
+            ,BREED_CODE AS breedCode
+            ,SELLER_CODE AS sellerCode
+            ,PD_CODE AS pdCode
+            ,PD_BATCH_CODE AS pdBatchCode
+        FROM PD_REALITY_MEASURE
+        WHERE 1=1
+        <include refid="whereCondtion"/>
+    </select>
+    <insert id="save" parameterType="BaseParam">
+        INSERT INTO PD_REALITY_MEASURE(
+                                        PD_RLT_MSR_ID
+                                        ,PD_STD_ID
+                                        ,CLASSES_CODE
+                                        ,BREED_CODE
+                                        ,SELLER_CODE
+                                        ,PD_CODE
+                                        ,PD_BATCH_CODE
+        <!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+                                        ,DEL_FLG,
+                                        CRT_ID,
+                                        CRT_TIME,
+                                        UPD_ID,
+                                        UPD_TIME,
+                                        ACT_ID,
+                                        ACT_TIME,
+                                        VER
+        <!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+                                      )
+        VALUES (
+                #{pdRltMsrId}
+                ,#{pdStdId}
+                ,#{classesCode}
+                ,#{breedCode}
+                ,#{sellerCode}
+                ,#{pdCode}
+                ,#{pdBatchCode}
+                <!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+                ,0,
+                #{crtId} ,
+                #{crtTime},
+                #{updId} ,
+                #{updTime},
+                #{actId} ,
+                #{actTime},
+                0
+                <!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+              )
+    </insert>
+</mapper>

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.order.logic.BSO151403Logic">
+
+    <sql id="selectResultSql">
+        sso.ORDER_ID as orderId,
+        sso.ORDER_CODE as orderCode,
+        sso.ORDER_TYPE as orderType,
+        sso.BUYER_CODE as buyersCode,
+        sso.BUYER_ID as buyersId,
+        sso.BUYER_TYPE as buyersType,
+        sso.SUB_ORDER_ID as subOrderId,
+        sso.SUB_ORDER_CODE as subOrderCode,
+        IFNULL(sso.BUYER_NAME,'') as buyersName,
+        so.ORDER_SOURCE as orderSource,
+        sso.SUB_ORDER_STATUS as orderStatus,
+        so.DISTRICT_CODE as districtCode,
+        sso.VER as ver,
+        sso.SELLER_CODE as sellerCode,
+        so.PAYMENT_TYPE as paymentType,
+        sord.FORECAST_SEND_TIME as forecastSendTime,
+        sord.FORECAST_RECEIVE_TIME as forecastReceiveTime,
+        IFNULL(sord.RECEIVER_NAME,'') as receiverName,
+        IFNULL(sord.RECEIVER_TEL,'') as receiverTel,
+        IFNULL(sord.RECEIVER_QQ,'') as receiverQq,
+        IFNULL(sord.RECEIVER_WEIXIN,'') as receiverWeixin,
+        IFNULL(sord.RECEIVER_MAIL,'') as receiverMail,
+        IFNULL(sord.RECEIVER_PROVINCE,'') as receiverProvince,
+        IFNULL(sord.RECEIVER_CITY,'') as receiverCity,
+        IFNULL(sord.RECEIVER_DISTRICT,'') as receiverDistrict,
+        IFNULL(sord.RECEIVER_ADDR,'') as receiverAddr,
+        sord.DELIVERY_TYPE as receiverDeType,
+        sord.ADVANCE_NOTICE_TIME as receiverAdTime,
+        IFNULL(sord.RECEIVER_ADDR2,'') as receiverAddr2,
+        IFNULL(sord.RECEIVER_ADDR_KEY,'') as receiverAddrKey,
+        sord.RECEIVE_TIME AS receiveTime,
+        sord.RECEIVE_EARLIEST AS receiveEarliest,
+        sord.RECEIVE_LAST AS receiveLast,
+        so.SALE_PLATFORM AS salePlatForm
+    </sql>
+
+    <select id="findSubOrderList" parameterType="BaseParam" resultType="com.msk.batch.order.bean.BSO151403Result">
+        SELECT
+        <include refid="selectResultSql"/>
+        FROM
+        SO_SUB_ORDER sso
+        LEFT JOIN SO_ORDER_RECEIVE_DEMAND sord ON sord.ORDER_ID = sso.ORDER_ID
+        LEFT JOIN SO_SUB_ORDER_DETAIL ssod on sso.SUB_ORDER_ID = ssod.SUB_ORDER_ID
+        LEFT JOIN SO_ORDER so on so.ORDER_ID = sso.ORDER_ID
+        WHERE
+        ssod.DETAIL_STATUS = #{detailStatus}
+        AND sso.SUB_ORDER_STATUS <![CDATA[ <> 2 ]]>
+        AND sso.SUB_ORDER_STATUS <![CDATA[ <> 3 ]]>
+        <if test="orderType1!=null and orderType1!=''">
+            AND sso.ORDER_TYPE <![CDATA[<> #{orderType1}]]>
+        </if>
+        <if test="orderType2!=null and orderType2!=''">
+            AND sso.ORDER_TYPE <![CDATA[<> #{orderType2}]]>
+        </if>
+        AND (
+        ssod.PRO_DATE = DATE_FORMAT(
+        DATE_ADD(#{nowDate}, INTERVAL 1 DAY),
+        "%Y-%m-%d"
+        )
+        OR ssod.PRO_DATE IS NULL
+        )
+        GROUP BY sso.SUB_ORDER_ID
+    </select>
+
+    <select id="findSubOrderDetailList" parameterType="BaseParam" resultType="com.msk.batch.order.bean.BSO151403DetailResult">
+        SELECT
+            ssod.PD_CODE AS pdCode,
+            ssod.PD_PRICE AS pdPrice,
+            sod.UNIT AS unit,
+            sosd.SUPP_QTY AS suppQty,
+            sosd.SUPPLIER_CODE AS supplierCode,
+            sosd.ship_detail_id AS orderLine,
+            ssod.SUB_ORDER_DETAIL_ID AS subOrderDetailId,
+            IFNULL(sosd.INBOUND_BATCH,'') AS inboundBatch
+        FROM
+        SO_SUB_ORDER_DETAIL ssod
+        LEFT JOIN SO_ORDER_SHIP_DETAIL sosd ON sosd.SUB_ORDER_DETAIL_ID = ssod.SUB_ORDER_DETAIL_ID
+		LEFT JOIN SO_ORDER_DETAIL sod ON ssod.ORDER_DETAIL_ID = sod.ORDER_DETAIL_ID
+        WHERE
+   		ssod.SUB_ORDER_ID = #{subOrderId}
+        AND ssod.DETAIL_STATUS = #{orderStatus}
+        AND sosd.SHIP_DETAIL_ID IS NOT NULL
+         AND (
+        ssod.PRO_DATE = DATE_FORMAT(
+        DATE_ADD(#{nowDate}, INTERVAL 1 DAY),
+        "%Y-%m-%d"
+        )
+        OR ssod.PRO_DATE IS NULL
+        )
+    </select>
+
+    <update id="modifyOrderStatus" parameterType="com.msk.batch.order.bean.BSO151403Result">
+        UPDATE SO_ORDER so
+        SET so.ORDER_STATUS = #{orderStatus}
+        ,so.UPD_TIME = #{updTime}
+        ,so.VER = so.VER + 1
+        ,so.UPD_ID = #{updId}
+        WHERE
+        so.ORDER_ID = #{orderId}
+    </update>
+
+    <update id="updateSubDetailOrderStatus" parameterType="com.msk.batch.order.bean.BSO151403Result">
+        UPDATE SO_SUB_ORDER_DETAIL ssod
+        LEFT JOIN SO_ORDER_SHIP_DETAIL sosd ON sosd.SUB_ORDER_DETAIL_ID = ssod.SUB_ORDER_DETAIL_ID
+        SET ssod.DETAIL_STATUS = #{detailStatus},
+        ssod.UPD_TIME = #{updTime},
+        ssod.VER = ssod.VER + 1,
+        ssod.UPD_ID = #{updId}
+        WHERE
+        sosd.SHIP_ID = #{shipId}
+    </update>
+
+    <update id="updateOrderShipDetailStatus" parameterType="com.msk.batch.order.bean.BSO151403Result">
+        UPDATE SO_ORDER_SHIP_DETAIL sosd
+        SET sosd.DETAIL_STATUS = #{detailStatus}
+        ,sosd.UPD_TIME = #{updTime}
+        ,sosd.VER = sosd.VER + 1
+        ,sosd.UPD_ID = #{updId}
+        WHERE
+        sosd.SHIP_ID = #{shipId}
+    </update>
+
+    <update id="modifySubOrderStatus" parameterType="com.msk.batch.order.bean.BSO151403Result">
+        UPDATE SO_SUB_ORDER
+        SET SUB_ORDER_STATUS = #{orderStatus}
+        ,VER = VER + 1,
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId}
+        WHERE SUB_ORDER_ID = #{subOrderId}
+    </update>
+
+    <update id="modifyOrderDetailStatus" parameterType="com.msk.batch.order.bean.BSO151403Result">
+        UPDATE SO_ORDER_DETAIL sod
+        LEFT JOIN SO_SUB_ORDER_DETAIL ssod
+        ON sod.ORDER_DETAIL_ID = ssod.ORDER_DETAIL_ID
+        AND (
+        ssod.PRO_DATE = DATE_FORMAT(
+        DATE_ADD(#{nowDate}, INTERVAL 1 DAY),
+        "%Y-%m-%d"
+        )
+        OR ssod.PRO_DATE IS NULL
+        )
+        LEFT JOIN SO_ORDER so
+        ON so.ORDER_ID = sod.ORDER_ID
+        SET
+        sod.DETAIL_STATUS = #{detailStatus}
+        ,sod.VER = sod.VER + 1
+        ,sod.UPD_TIME = #{updTime}
+        ,sod.UPD_ID = #{updId}
+        WHERE
+        so.ORDER_ID = #{orderId}
+    </update>
+
+    <insert id="saveShipInfo" parameterType="com.msk.batch.order.bean.BSO151403Result">
+        INSERT INTO SO_ORDER_SHIP (
+        SHIP_ID
+        ,SHIP_CODE
+        ,SUB_ORDER_ID
+        ,SUB_ORDER_CODE
+        ,ORDER_ID
+        ,ORDER_CODE
+        ,FORECAST_SEND_TIME
+        ,FORECAST_RECEIVE_TIME
+        ,PAYMENT_TYPE
+        ,RECEIVER_NAME
+        ,RECEIVER_TEL
+        ,RECEIVER_QQ
+        ,RECEIVER_WEIXIN
+        ,RECEIVER_MAIL
+        ,RECEIVER_PROVINCE
+        ,RECEIVER_CITY
+        ,RECEIVER_DISTRICT
+        ,RECEIVER_ADDR
+        ,RECEIVER_ADDR2
+        ,RECEIVER_ADDR_KEY
+        ,RECEIVE_TIME
+        ,RECEIVE_EARLIEST
+        ,RECEIVE_LAST
+        ,DELIVERY_TYPE
+        ,SHIP_STATUS
+        ,DEL_FLG
+        ,CRT_ID
+        ,CRT_TIME
+        ,UPD_ID
+        ,UPD_TIME
+        ,ACT_ID
+        ,ACT_TIME,
+        VER
+        ) VALUE (
+        #{shipId},
+        #{shipCode},
+        #{subOrderId},
+        #{subOrderCode},
+        #{orderId},
+        #{orderCode},
+        #{forecastSendTime},
+        #{forecastReceiveTime},
+        #{paymentType},
+        #{receiverName},
+        #{receiverTel},
+        #{receiverQq},
+        #{receiverWeixin},
+        #{receiverMail},
+        #{receiverProvince},
+        #{receiverCity},
+        #{receiverDistrict},
+        #{receiverAddr},
+        #{receiverAddr2},
+        #{receiverAddrKey},
+        #{receiveTime},
+        #{receiveEarliest},
+        #{receiveLast},
+        #{receiverDeType},
+        #{shipStatus},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        #{crtId},
+        #{crtTime},
+        1
+        )
+    </insert>
+
+    <select id="getMaxOrderShipCode" parameterType="BaseParam" resultType="String">
+        SELECT
+         MAX(sos.SHIP_CODE)
+        FROM
+        SO_ORDER_SHIP sos
+        WHERE
+        sos.ORDER_ID = #{filterMap.orderId}
+    </select>
+
+    <update id="modifySuppShipId" parameterType="com.msk.batch.order.bean.BSO151403Result">
+        UPDATE
+        SO_ORDER_SHIP_DETAIL sosd
+        LEFT JOIN SO_SUB_ORDER_DETAIL ssod
+        ON sosd.SUB_ORDER_DETAIL_ID = ssod.SUB_ORDER_DETAIL_ID
+		SET sosd.SHIP_ID = #{shipId},
+		sosd.UPD_ID = #{updId},
+		sosd.UPD_TIME = #{updTime},
+		sosd.VER = sosd.VER + 1
+        WHERE
+		sosd.SHIP_DETAIL_ID = #{shipDetailId}
+        AND ssod.DETAIL_STATUS = #{detailStatus}
+    </update>
+
+    <update id="modifySuppSku" parameterType="com.msk.batch.order.bean.BSO151403Result">
+        UPDATE
+        SO_ORDER_SHIP_DETAIL
+        SET
+        SKU_CODE = #{sku},
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId},
+        VER = VER + 1
+        WHERE SHIP_DETAIL_ID = #{orderLine}
+    </update>
+
+    <update id="modifyOrderStatusStatus" parameterType="com.msk.batch.order.bean.BSO151403Result">
+        UPDATE
+        SO_ORDER_STATUS
+        SET
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        DEL_FLG = 1,
+        VER = VER + 1
+        WHERE ORDER_ID = #{orderId}
+    </update>
+
+    <update id="modifySubOrderStatusStatus" parameterType="com.msk.batch.order.bean.BSO151403Result">
+        UPDATE
+        SO_SUB_ORDER_STATUS
+        SET
+        VER = VER + 1,
+        UPD_TIME = #{updTime},
+        UPD_ID = #{updId},
+        DEL_FLG = 1
+        WHERE SUB_ORDER_ID = #{subOrderId}
+    </update>
+
+
+    <insert id="saveSubOrderStatusStatus" parameterType="com.msk.batch.order.bean.BSO151403Result">
+        INSERT INTO
+        SO_SUB_ORDER_STATUS (
+        STATUS_ID,
+        SUB_ORDER_ID,
+        ORDER_ID,
+        SUB_ORDER_STATUS,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        VER
+        )
+        VALUES
+          (
+            #{statusId},
+            #{subOrderId},
+            #{orderId},
+            #{orderStatus},
+            0,
+            'BSO151403Batch',
+            #{updTime},
+            1
+          )
+    </insert>
+
+
+    <insert id="saveOrderStatusStatus" parameterType="com.msk.batch.order.bean.BSO151403Result">
+        INSERT INTO
+        SO_ORDER_STATUS (
+        STATUS_ID,
+        ORDER_ID,
+        ORDER_CODE,
+        ORDER_STATUS,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{statusId},
+        #{orderId},
+        #{orderCode},
+        #{orderStatus},
+        0,
+        'BSO151403Batch',
+        #{updTime},
+        1
+        )
+    </insert>
+</mapper>

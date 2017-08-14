@@ -1,0 +1,232 @@
+﻿.container {
+    width: 100%;
+    height: 100%;
+    background: url("../img/bg2.png");
+}
+
+.header .bianji {
+    width: 20%;
+    height: 100%;
+    float: right;
+    line-height: 44px;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+}
+
+.bianji_span {
+    font-family: 'Applied Font Regular', 'Applied Font';
+    font-weight: 200;
+    font-style: normal;
+    color: white;
+    font-size: 1.5rem;
+    line-height: 8px;
+}
+
+.main {
+    position: fixed;
+    top: 44px;
+    bottom: 98px;
+    overflow: auto;
+    width: 100%;
+}
+.keyboardShow{
+    height: 200px;
+}
+.main .main_d1 {
+    height: 100%;
+}
+
+.content {
+    width: 40%;
+    height: 100%;
+    float: left;
+}
+
+.product {
+    margin: 1px auto;
+    width: 60%;
+    float: right;
+}
+
+.content .tupian {
+    width: 70%;
+    height: 100%;
+    float: left;
+    display: flex;
+    flex-flow: row;
+}
+.tupian img{
+    margin: auto auto;
+    margin-left: 0px;
+}
+.product .breed {
+    width: 100%;
+    height: 20px;
+    float: left;
+    margin-top: 10px
+}
+
+.product .neirong {
+    padding-top: 5px;
+    width: 100%;
+    height: 45px;
+    float: left;
+}
+.product .neirong p{
+    width: 100%;
+    float: left;
+    font-size: 1rem;
+    color: #737373;
+    margin: 8px 0px 0px 0px;
+}
+
+.product .num_price {
+    width: 90%;
+    float: left;
+    margin-top: 5px;
+}
+
+.product .price {
+    display: inline-block;
+    width: 30%;
+    height: 20px;
+    line-height: 25px;
+}
+
+.product .num {
+   float: right;
+    height: 20px;
+}
+
+.main ul {
+    float: left;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+
+.main ul li {
+    height: 120px;
+    float: left;
+    background: url('../img/buy_1.png') repeat;
+    border-bottom: 7px solid #e6e6e6;
+    width: 100%;
+}
+
+ul li .checkbox {
+    width: 30%;
+    height: 100%;
+    float: left;
+    display: flex;
+    flex-flow: row;
+}
+
+ul li .checkbox a {
+    width: 100%;
+    height: 40px;
+    line-height: 25px;
+    font-size: 14px;
+    color: #595757;
+    background: url('../img/choose1.png') no-repeat center;
+    background-size: 45px;
+    float: left;
+    margin: auto auto;
+}
+
+ul li .checkbox a.on {
+    width: 100%;
+    height: 40px;
+    line-height: 25px;
+    font-size: 14px;
+    color: #595757;
+    background: url('../img/choose2.png') no-repeat center;
+    background-size: 45px;
+    float: left;
+    margin: auto auto;
+}
+
+.block {
+    height: 20px;
+}
+
+.footer1 .checkAllDiv {
+    width: auto;
+    height: 50px;
+    position: absolute;
+}
+
+.footer1 .checkAllDiv .chkAll_span {
+    color: #3D3837;
+    padding: 8px;
+    width: 24px;
+    font-size: 16px;
+    line-height: 41px;
+}
+
+.footer1 .checkAllDiv a {
+    width: auto;
+    height: 50px;
+    line-height: 60px;
+    font-size: 10px;
+    color: #595757;
+    background: url('../img/choose1.png') no-repeat left center;
+    background-size: 45px;
+    text-align: left;
+    text-indent: 33px;
+    float: left;
+}
+
+.footer1 .checkAllDiv a.on {
+    width: auto;
+    height: 50px;
+    line-height: 60px;
+    font-size: 10px;
+    color: #595757;
+    background: url('../img/choose2.png') no-repeat left center;
+    background-size: 45px;
+    text-align: left;
+    text-indent: 33px;
+    float: left;
+}
+
+.footer1 .heji {
+    width: 77%;
+    height: 47px;
+    float: left;
+    margin: -31px 0px 0px 18px;
+}
+
+.footer1 .heji .sum {
+    float: left;
+    width: 100%;
+    height: 30px;
+    margin-top: -10px;
+}
+
+.footer1 .heji .choosed {
+    float: left;
+    width: 100%;
+    height: 30px;
+    margin-top: -6px;
+}
+
+.footer1 .buy {
+    width: 25%;
+    height: 49px;
+    line-height: 49px;
+    float: right;
+    text-align: center;
+    background: url("../img/buy_2.png") no-repeat left center;
+    border-bottom: 1px solid white;
+}
+
+.footer1 .buy .buy_span {
+    font-family: 'Applied Font Regular', 'Applied Font';
+    font-weight: 400;
+    font-style: normal;
+    color: white;
+    font-size:1.5rem;
+    line-height: 30px;
+}
+

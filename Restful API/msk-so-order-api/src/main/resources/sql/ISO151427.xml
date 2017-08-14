@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151427.findProduct">
+        SELECT
+        sod.PD_CODE AS pdCode,
+        sod.PD_NAME AS pdName,
+        sod.PD_PRICE AS unitPrice,
+        sod.RECEIVE_QTY AS pdCount
+        FROM
+        so_order_detail sod
+        INNER JOIN so_order so ON sod.ORDER_ID = so.ORDER_ID
+        WHERE
+        so.DEL_FLG = 0
+        AND sod.DEL_FLG = 0
+        AND so.SELLER_CODE = ?0
+        AND so.ORDER_ID = ?1
+    </sql>
+</sqlList>

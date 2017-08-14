@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171102Logic">
+
+    <!-- 供应商招标数量发布 -->
+    <select id="findDemandPublish" parameterType="BaseParam"  resultType="com.msk.price.bean.SP171102Bean">
+        SELECT
+        (cast(round(A.PUBLISH_TOTAL_NUM,2) as decimal(18,0))) AS publishTotalNum,
+        (cast(round(A.GRADE_RATIO1,2) as decimal(18,0))) AS gradeRatio1,
+        (cast(round(A.GRADE_RATIO2,2) as decimal(18,0))) AS gradeRatio2,
+        (cast(round(A.GRADE_RATIO3,2) as decimal(18,0))) AS gradeRatio3
+        FROM
+        SP_PD_DEMAND_PUBLISH AS A
+        WHERE
+        A.PUBLISH_ID =#{filterMap.publishId}
+        AND
+        A.DEL_FLG = 0
+    </select>
+
+    <!-- 供应商招标数量发布明细 -->
+    <select id="findDemandPublishDetial" parameterType="BaseParam"  resultType="com.msk.price.bean.SP171102Bean">
+        SELECT
+        A.PUBLISH_ID AS publishId,
+        A.GRADE_CODE AS gradeCode,
+        A.PUBLISH_NUM AS publishNum
+        FROM
+        SP_PD_DEMAND_PUBLISH_DETAIL AS A
+        WHERE
+        A.PUBLISH_ID =#{filterMap.publishId}
+        AND
+        A.DEL_FLG = 0
+    </select>
+
+    <!-- 新增供应商招标数量发布表-->
+    <insert id="insertDemandPublish" parameterType="BaseParam">
+        INSERT INTO SP_PD_DEMAND_PUBLISH(
+        PUBLISH_ID,
+        PUBLISH_YM,
+        DEMAND_STARTDATE,
+        DEMAND_ENDDATE,
+        LGCS_CODE,
+        PD_TYPE_CODE,
+        GRADE_RATIO1,
+        GRADE_RATIO2,
+        GRADE_RATIO3,
+        PUBLISH_TOTAL_NUM,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        <!--Modify: 横展开添加公共属性 2016/09/29   BY  任强  Start -->
+        UPD_ID,
+        UPD_TIME,
+        <!--Modify: 横展开添加公共属性 2016/09/29   BY  任强  End -->
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES (
+        #{publishId},
+        #{publishYm},
+        CONCAT(#{demandStartDate},' 00:00:00'),
+        CONCAT(#{demandEndDate},' 23:59:59'),
+        #{lgcsCode},
+        #{pdTypeCode},
+        #{gradeRatio1},
+        #{gradeRatio2},
+        #{gradeRatio3},
+        #{publishTotalNum},
+        0,
+        #{loginId},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang Start-->
+        #{crtTime},
+        <!--Modify: 横展开添加公共属性 2016/09/29   BY  任强  Start -->
+        #{updId},
+        #{updTime},
+        <!--Modify: 横展开添加公共属性 2016/09/29   BY  任强  End -->
+        #{loginId},
+        #{actTime},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang End-->
+        1
+        )
+    </insert>
+
+    <!-- 新增供应商招标数量明细表 -->
+    <insert id="insertDemandPublishDetail" parameterType="BaseParam">
+        INSERT INTO SP_PD_DEMAND_PUBLISH_DETAIL(
+        PUBLISH_DETAIL_ID,
+        PUBLISH_ID,
+        PD_CODE,
+        GRADE_CODE,
+        FORECAST_ID,
+        PUBLISH_NUM,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        <!--Modify: 横展开添加公共属性 2016/09/29   BY  任强  Start -->
+        UPD_ID,
+        UPD_TIME,
+        <!--Modify: 横展开添加公共属性 2016/09/29   BY  任强  End -->
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES (
+        #{publishDetailId},
+        #{publishId},
+        #{pdCode},
+        #{gradeCode},
+        #{forecastId},
+        #{publishNum},
+        0,
+        #{loginId},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang Start-->
+        #{crtTime},
+        <!--Modify: 横展开添加公共属性 2016/09/29   BY  任强  Start -->
+        #{updId},
+        #{updTime},
+        <!--Modify: 横展开添加公共属性 2016/09/29   BY  任强  End -->
+        #{loginId},
+        #{actTime},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang End-->
+        1
+        )
+    </insert>
+
+    <!-- 修改供应商招标数量表 -->
+    <update id="modifyDemandPublish" parameterType="com.msk.price.bean.SP171102Bean">
+        UPDATE
+          SP_PD_DEMAND_PUBLISH
+        SET
+          GRADE_RATIO1=#{gradeRatio1},
+          GRADE_RATIO2=#{gradeRatio2},
+          GRADE_RATIO3=#{gradeRatio3},
+          PUBLISH_TOTAL_NUM=#{publishTotalNum},
+          UPD_ID =#{loginId},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang Start-->
+          UPD_TIME =#{crtTime},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang End-->
+          VER =VER + 1
+       WHERE
+           PUBLISH_ID =#{publishId}
+        AND
+           DEL_FLG = 0
+    </update>
+
+    <!-- 修改供应商招标数量明细表 -->
+    <update id="modifyDemandPublishDetail" parameterType="com.msk.price.bean.SP171102Bean">
+        UPDATE
+           SP_PD_DEMAND_PUBLISH_DETAIL
+        SET
+           PUBLISH_NUM=#{publishNum},
+           UPD_ID =#{loginId},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang Start-->
+           UPD_TIME=#{crtTime},
+        <!--Modif for 保存时间sysdate横展开 at 2016/09/06 by ni_shaotang End-->
+           VER =VER + 1
+       WHERE
+           PUBLISH_ID =#{publishId}
+       AND
+          GRADE_CODE=#{gradeCode}
+       AND
+          DEL_FLG = 0
+    </update>
+
+    <!-- 取得分配管理系数 -->
+    <select id="getBalanceRatio" resultType="com.msk.price.bean.SP171102Bean">
+        SELECT
+	        A.RATIO_TYPE_DETAIL AS ratioTypeDetail,
+	        A.RATIO_TYPE_DETAIL_NM AS ratioTypeDetailNm,
+           (cast(round(A.RATIO_TYPE_DETAIL_VAL,2) as decimal(18,0))) AS ratioTypeDetailVal
+        FROM
+	        SP_CONST_RATIO AS A
+        WHERE
+            A.RATIO_TYPE='balanceRatio'
+        AND
+	        A.DEL_FLG = 0
+        order by
+            A.RATIO_TYPE_DETAIL
+    </select>
+
+</mapper>

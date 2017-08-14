@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <title>买手注册详情</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <link rel="stylesheet" href="css/BA2141120.css" />
+  <link href="css/common.css" type="text/css" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/validator.css" type="text/css" />
+  <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="jquery/jquery-html5Validate.js?v=14"></script>
+    <script src="js/constantDef.js"></script>
+    <script src="jquery/Popt.js"></script>
+    <script src="jquery/citySet.js"></script>
+    <script src="jquery/houseType.js"></script>
+    <script src="js/commonUtil.js"></script>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+</head>
+<body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<div class="Container">
+    <form id="bsForm">
+  <div class="header">
+    <div class="fanhui" id="fanhui"></div>
+    <div class="title">
+      <span class="title_span">买手注册详情页</span>
+    </div>
+  </div>
+  <div class="Content">
+    <ul>
+        <input type="hidden" id="provienceCode"/>
+        <input type="hidden" id="cityCode"/>
+        <input type="hidden" id="areaCode"/>
+      <!--<a class="checkSex" name="male" href="javascript:void(0);"><span class="sex_span">男</span></a><a class="checkSex on" name="female" href="javascript:void(0);"><span class="sex_span">女</span></a>-->
+      <li><div class="account"><div class="left"><span class="font-account"><span style="color: red">*</span>姓名</span></div><div class="right"><input type="text" placeholder="请输入姓名" data-max="18" class="accountInfo" required id="name"/></div></div></li>
+      <li><div class="account"><div class="left"><span class="font-account"><span style="color: red">*</span>性别</span></div>
+          <div class="right"> <div class="radio-div">
+              <div class="sex-div">
+                  <label>
+                      <input type="radio" checked name="sex" value="2" />
+                      <div class="option"></div>
+                      <span class="opt-text">男</span>
+                  </label>
+              </div>
+              <div class="sex-div">
+                  <label>
+                      <input type="radio" name="sex" value="1" />
+                      <div class="option"></div>
+                      <span class="opt-text">女</span>
+                  </label>
+              </div>
+          </div></div>
+      </div></li>
+      <li><div class="account"><div class="left"><span class="font-account"><span style="color: red">*</span>身份证号</span></div><div class="right"><input type="text" data-max="18" data-min="18" placeholder="请输入身份证号" required class="accountInfo" id="idCard"></div></div></li>
+      <li><div class="account"><div class="left"><span class="font-account"><span style="color: red">*</span>手机号码</span></div><div class="right"><input type="tel|xxxx" name="BA2141120" placeholder="请输入手机号码" required class="accountInfo" id="tel"></div></div></li>
+      <!--  <li><div class="account"><div class="left><span class="font-account">买手类型</span></div><div class="right"><select class="selectM" required id="bsMainClass"></select></div></div></li>-->
+      <li><div class="account"><div class="type-js" name="120" id="t"><span class="font-account" style="width: 40%"><span style="color: red">*</span>买手类型</span><input class="wl_input addressr" required type="text" id="houseType" readonly="readonly"/></div></div></li>
+     <!--   <li><div class="account"><div class="left"><span class="font-account">买手一级类型</span></div><div class="right"><select class="selectM" required id="bsMainClass"></select></div></div></li>
+        <li><div class="account"><div class="left"><span class="font-account">职业及职务</span></div><div class="right"><select class="selectM" required id="bsSecondClass"></select></div></div></li>-->
+      <li><div class="account"><div class="address-js" id="r"><span class="font-account" style="width: 40%"><span style="color: red">*</span>详细通讯地址</span><input class="wl_input address" required type="text" id="city" readonly="readonly"/></div></div></li>
+      <li><div class="account"><div class="left"><span class="font-account"><span style="color: red">*</span>街道乡镇</span></div><div class="right"><input type="text" data-max="70" placeholder="请输入详细地址" required class="accountInfo" id="street"></div></div></li>
+      <li><div class="account"><div class="left"><span class="font-account">&nbsp;微信号</span></div><div class="right"><input type="text" placeholder="请输入微信号" data-max="70" class="accountInfo" id="wechat"></div></div></li>
+      <li><div class="account"><div class="left"><span class="font-account">&nbsp;QQ号</span></div><div class="right"><input type="text" placeholder="请输入QQ号" data-max="30" class="accountInfo" id="QQ"></div></div></li>
+      <li><div class="account"><div class="left"><span class="font-account">&nbsp;开户名</span></div><div class="right"><input type="text" placeholder="请输入开户名" data-max="10" class="accountInfo" id="accountName"></div></div></li>
+      <li><div class="account"><div class="left"><span class="font-account">&nbsp;开户行</span></div><div class="right"><input type="text" placeholder="请输入开户行" data-max="50" class="accountInfo" id="bank"></div></div></li>
+        <li><div class="account"><div class="left"><span class="font-account"><span style="color: red">*</span>卡类型</span></div>
+            <div class="right"> <div class="radio-div">
+                <div class="sex-div">
+                    <label>
+                        <input type="radio" checked name="cardType" value="0" />
+                        <div class="option"></div>
+                        <span class="opt-text">储蓄卡</span>
+                    </label>
+                </div>
+                <div class="sex-div">
+                    <label>
+                        <input type="radio" name="cardType" value="1" />
+                        <div class="option"></div>
+                        <span class="opt-text">信用卡</span>
+                    </label>
+                </div>
+            </div></div>
+        </div></li>
+        <li><div class="account"><div class="left"><span class="font-account">&nbsp;账户</span></div><div class="right"><input type="text" placeholder="请输入账户" data-max="20" class="accountInfo" id="accountInfo"></div></div></li>
+      <li></li>
+
+    </ul>
+  </div>
+  <div class="footer" style="width: 100%;height:50px;line-height: 50px;position: fixed;bottom: 0px"><button class="sure" type="submit" id="sure"><span class="span-sure">确定</span></button></div>
+    </form>
+</div>
+</div>
+</body>
+<script src="js/BA2141120.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

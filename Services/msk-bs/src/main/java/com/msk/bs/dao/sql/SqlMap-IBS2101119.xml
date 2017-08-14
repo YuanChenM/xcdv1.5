@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101119RsLogic">
+
+    <sql id="selectFiled">
+        slCode,
+        houseCode,
+        lgcsAreaCode,
+        cityCode,
+        houseName,
+        vLgcsAreaCode,
+        vAreaCode,
+        vProvinceCode,
+        vCityCode,
+        vDistrictCode,
+        vAddress,
+        vipBuyers,
+        publicBuyers,
+        marketingDays,
+        isChangeBuyers
+    </sql>
+    <sql id="selectFiled1">
+        a.SL_CODE AS slCode,
+        a.HOUSE_CODE AS houseCode,
+        a._f,
+        a.LGCS_AREA_CODE AS lgcsAreaCode,
+        a.CITY_CODE AS cityCode,
+        ifnull(a.HOUSE_SHOW_NAME,'') AS houseName,
+        ifnull(a.V_LGCS_AREA_CODE,'') AS vLgcsAreaCode,
+        ifnull(a.V_AREA_CODE,'') AS vAreaCode,
+        ifnull(a.V_PROVINCE_CODE,'') AS vProvinceCode,
+        ifnull(a.V_CITY_CODE,'') AS vCityCode,
+        ifnull(a.V_DISTRICT_CODE,'') AS vDistrictCode,
+        ifnull(a.V_HOUSE_ADDRESS,'') AS vAddress,
+        ifnull(m.VIP_BUYERS,'') AS vipBuyers,
+        ifnull(m.PUBLIC_BUYERS,'') AS publicBuyers,
+        ifnull(m.MARKETING_DAYS,'') AS marketingDays,
+        ifnull(m.IS_CHANGE_BUYERS,'') AS isChangeBuyers
+    </sql>
+
+    <select id="getHouseInfoById" parameterType="com.msk.bs.bean.IBS2101119RsParam" resultType="com.msk.bs.bean.IBS2101119RsBean">
+        SELECT
+        <include refid="selectFiled"/>
+         from (
+              SELECT
+              <include refid="selectFiled1"/>
+              FROM
+                (select *, concat(SL_CODE,HOUSE_CODE) as _f from sl_house_account WHERE DEL_FLG='0') a
+                INNER JOIN
+                (select *, concat(SL_CODE,HOUSE_CODE) as _f from sl_house_manage WHERE DEL_FLG='0') m
+                ON a.SL_CODE = m.SL_CODE
+                AND  a.HOUSE_CODE = m.HOUSE_CODE )A
+                WHERE
+                <if test="lgcsAreaCode != null and lgcsAreaCode != ''">
+                    A.lgcsAreaCode = #{lgcsAreaCode}  AND
+                </if>
+                <if test="cityCode != null and cityCode != ''">
+                   A.cityCode = #{cityCode} AND
+                 </if>
+                A.slCode IN(
+                <foreach collection="houseList" item="params" separator=",">
+                    #{params.slCode}
+                </foreach>
+                )
+                AND  A.houseCode IN(
+                <foreach collection="houseList" item="params" separator=",">
+                    #{params.houseCode}
+                </foreach>
+                )
+                 group by A._f
+    </select>
+</mapper>
+

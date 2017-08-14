@@ -1,0 +1,892 @@
+/* Datewheel overlay */
+.dw, .dwo {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.dw {
+    position: absolute;
+ /*   top: 0;*/
+bottom: 0;
+    left: 0;
+    /*z-index: 1001;*/
+   z-index: 9991001;
+    font-size: 12px;
+    text-shadow: none;
+    -webkit-backface-visibility: hidden;
+    -webkit-box-sizing: border-box;
+    -webkit-user-select: none;
+    -moz-box-sizing: border-box;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -ms-touch-action: none;
+    box-sizing: border-box;
+    user-select: none;
+    touch-action: none;
+}
+.dwi {
+    position: static;
+    display: inline-block;
+}
+.dwwr {
+    padding: 0 2px;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    min-width: 170px;
+    zoom: 1;
+    overflow: hidden;
+   text-align: center;
+}
+.dw-top .dwwr, .dw-bottom .dwwr {
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+/* Datewheel overlay */
+.dw-persp, .dwo {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1001;
+}
+.dwo {
+    background: #000;
+    background: rgba(0,0,0,.7);
+    filter: Alpha(Opacity=70);
+  /* position: relative;*/
+ position: absolute;
+   /*z-index: -1;*/
+}
+/* Bubble positionings */
+.dw-bubble .dw {
+    margin: 20px 0;
+}
+.dw-bubble .dw-arrw {
+    position: absolute;
+    left: 0;
+    width: 100%;
+}
+.dw-bubble-top .dw-arrw {
+    bottom: -36px;
+}
+.dw-bubble-bottom .dw-arrw {
+    top: -36px;
+}
+.dw-bubble .dw-arrw-i {
+    margin: 0 30px;
+    position: relative;
+    height: 36px;
+}
+.dw-bubble .dw-arr {
+    display: block;
+}
+.dw-arr {
+    display: none;
+    position: absolute;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-width: 18px 18px;
+    border-style: solid;
+    margin-left: -18px;
+}
+.dw-bubble-bottom .dw-arr {
+    top: 0;
+    border-color: transparent transparent #fff transparent;
+}
+.dw-bubble-top .dw-arr {
+    bottom: 0;
+    border-color: #fff transparent transparent transparent;
+}
+/* Datewheel wheel container wrapper */
+.dwc {
+    vertical-align: middle;
+    padding: 26px 2px 4px 2px;
+    display: inline-block;
+}
+/* Datewheel label */
+.dwl {
+    left: 0;
+    text-align: center;
+    line-height: 30px;
+    height: 30px;
+    white-space: nowrap;
+    position: absolute;
+    top: -30px;
+    width: 100%;
+}
+/* Datewheel value */
+.dwv {
+    padding: 7px 0;
+    margin: 0 -2px;
+    font-size: 14px;
+}
+.dwi .dwv {
+    margin: 0 2px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+.dw-hidden, .dw .dwwr .dw-hidden {
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+}
+/* Datewheel wheel container */
+.dwrc {
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+.dwwc {
+    margin: 0;
+    padding: 0 2px;
+    position: relative;
+    background: #000;
+    zoom: 1;
+}
+/* Datewheel wheels */
+.dwwl {
+    margin: 4px 2px;
+    padding: 0 2px;
+    position: relative;
+    z-index: 5;
+}
+.dwww {
+    position: relative;
+    padding: 1px;
+}
+.dww {
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+.dw-moz .dww {
+    opacity: .99; /* Fixes Firefox translate overflow bug */
+}
+.dwsc .dwwl {
+    background: #888;
+    background: -webkit-gradient(linear,left bottom,left top,from(#000),color-stop(0.35, #333),color-stop(0.50, #888),color-stop(0.65, #333),to(#000));
+    background: -webkit-linear-gradient(#000 0%,#333 35%, #888 50%,#333 65%,#000 100%);
+    background: -moz-linear-gradient(#000 0%,#333 35%, #888 50%,#333 65%,#000 100%);
+    background: linear-gradient(#000 0%,#333 35%, #888 50%,#333 65%,#000 100%);
+}
+.dwsc .dww {
+    color: #fff;
+    background: #444;
+    background: -webkit-gradient(linear,left bottom,left top,from(#000),color-stop(0.45, #444),color-stop(0.55, #444),to(#000));
+    background: -webkit-linear-gradient(#000 0%,#444 45%, #444 55%, #000 100%);
+    background: -moz-linear-gradient(#000 0%,#444 45%, #444 55%, #000 100%);
+    background: linear-gradient(#000 0%,#444 45%, #444 55%, #000 100%);
+}
+.dw-bf {
+    -webkit-perspective: 1000;
+    -webkit-backface-visibility: hidden;
+}
+.dw-ul {
+    position: relative;
+    z-index: 2;
+}
+.dw-li {
+    padding: 0 5px;
+    display: block;
+    text-align: center;
+    line-height: 40px;
+    font-size: 26px;
+    white-space: nowrap;
+    text-shadow: 0 1px 1px #000;
+    vertical-align: bottom;
+    opacity: .3;
+    filter: Alpha(Opacity=30);
+}
+/* Higlighted */
+.dw-li.dw-hl {
+    background: #fff;
+    background: rgba(255,255,255,.3);
+}
+/* Valid entry */
+.dw-li.dw-v {
+    opacity: 1;
+    filter: Alpha(Opacity=100);
+}
+/* Hidden entry */
+.dw-li.dw-h {
+    visibility: hidden;
+}
+.dw-i {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: 'microsoft yahei';
+    color: #826767;
+    text-align: center;
+}
+/* Wheel +/- buttons */
+.dwwb {
+    position: absolute;
+    z-index: 4;
+    left: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+    text-align: center;
+    opacity: 1;
+    -webkit-transition: opacity .2s linear;
+    transition: opacity .2s linear;
+}
+.dwa .dwwb {
+    opacity: 0;
+}
+.dwpm .dwwbp {
+    top: 0;
+    -webkit-border-radius: 3px 3px 0 0;
+    border-radius: 3px 3px 0 0;
+    font-size: 40px;
+}
+.dwpm .dwwbm {
+    bottom: 0;
+    -webkit-border-radius: 0 0 3px 3px;
+    border-radius: 0 0 3px 3px;
+    font-size: 32px;
+    font-weight: bold;
+}
+.dwpm .dwwl {
+    padding: 0;
+}
+.dwpm .dw-li {
+    text-shadow: none;
+}
+.dwpm .dwwol {
+    display: none;
+}
+/* Datewheel wheel overlay */
+.dwwo {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: -webkit-gradient(linear,left bottom,left top,from(#000),color-stop(0.52, rgba(44,44,44,0)),color-stop(0.48, rgba(44,44,44,0)),to(#000));
+    background: -webkit-linear-gradient(#000 0%,rgba(44,44,44,0) 52%, rgba(44,44,44,0) 48%, #000 100%);
+    background: -moz-linear-gradient(#000 0%,rgba(44,44,44,0) 52%, rgba(44,44,44,0) 48%, #000 100%);
+    background: linear-gradient(#000 0%,rgba(44,44,44,0) 52%, rgba(44,44,44,0) 48%, #000 100%);
+    pointer-events: none;
+}
+/* Background line */
+.dwwol {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 0;
+    margin-top: -1px;
+    border-top: 1px solid #333;
+    border-bottom: 1px solid #555;
+    pointer-events: none;
+}
+/* Datewheel button */
+.dwbg .dwb {
+    cursor: pointer;
+    overflow: hidden;
+    display: block;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 15px;
+    margin: 0 2px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    text-shadow: 0 -1px 1px #000;
+    color: #fff;
+    background: #000;
+    background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, #000),color-stop(0.5, #6e6e6e));
+    background: -webkit-linear-gradient(#6e6e6e 50%,#000 50%);
+    background: -moz-linear-gradient(#6e6e6e 50%,#000 50%);
+    background: linear-gradient(#6e6e6e 50%,#000 50%);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    -webkit-border-radius: 5px;
+    -webkit-backface-visibility: hidden;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+/* Datewheel button container */
+.dwbc {
+    display: table;
+    width: 100%;
+    padding-bottom: 4px;
+    text-align: center;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+/* Datewheel button wrapper */
+.dwbw  {
+    display: table-cell;
+    position: relative;
+    z-index: 5;
+}
+/* Hidden label */
+.dwhl {
+    padding-top: 4px;
+}
+.dwhl .dwl {
+    display: none;
+}
+
+/* Multiple selection */
+.dwms .dwwms .dw-li {
+    padding: 0 40px;
+    position: relative;
+}
+
+.dw-hsel {
+    position: absolute;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px,1px,1px,1px);
+}
+
+.dwms .dw-msel:after {
+    width: 40px;
+    text-align: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '✔';
+}
+/* Backgrounds */
+.dwbg .dwwr {
+    background: #fff;
+    color: #000;
+    font-family: arial, verdana, sans-serif;
+}
+.dwbg .dwv {
+    background-color: #dfdfdf;
+}
+.dwbg .dwpm .dwwl {
+    background: #fff;
+}
+.dwbg .dwpm .dww {
+    color: #000;
+    background: #fff;
+    -webkit-border-radius: 3px;
+}
+.dwbg .dwwb {
+    background: #ccc;
+    color: #888;
+    font-weight: normal;
+    text-decoration: none;
+    text-shadow: 0 -1px 1px #333;
+    box-shadow: 0 0 5px #333;
+    -webkit-box-shadow: 0 0 5px #333;
+}
+.dwbg .dwwbp {
+    background: -webkit-gradient(linear,left bottom,left top,from(#bdbdbd),to(#f7f7f7));
+    background: -webkit-linear-gradient(#f7f7f7,#bdbdbd);
+    background: -moz-linear-gradient(#f7f7f7,#bdbdbd);
+    background: linear-gradient(#f7f7f7,#bdbdbd);
+}
+.dwbg .dwwbm {
+    background: -webkit-gradient(linear,left bottom,left top,from(#f7f7f7),to(#bdbdbd));
+    background: -webkit-linear-gradient(#bdbdbd,#f7f7f7);
+    background: -moz-linear-gradient(#bdbdbd,#f7f7f7);
+    background: linear-gradient(#bdbdbd,#f7f7f7);
+}
+.dwbg .dwbc {
+    font-size: 0;
+}
+.dwbg .dwb-a {
+    background: #3c7500;
+    background: -webkit-gradient(linear,left bottom,left top,color-stop(0.5, #3c7500),color-stop(0.5, #94c840));
+    background: -webkit-linear-gradient(#94c840 50%,#3c7500 50%);
+    background: -moz-linear-gradient(#94c840 50%,#3c7500 50%);
+    background: linear-gradient(#94c840 50%,#3c7500 50%);
+}
+.dwbg .dwwl .dwb-a {
+    background: #3c7500;
+    background: -webkit-gradient(linear,left bottom,left top,from(#3c7500),to(#94c840));
+    background: -webkit-linear-gradient(#94c840,#3c7500);
+    background: -moz-linear-gradient(#94c840,#3c7500);
+    background: linear-gradient(#94c840,#3c7500);
+}
+
+
+.ios7 .dwo {
+    background: rgba(0,0,0,.2);
+    filter: Alpha(Opacity=20);
+}
+.ios7 .dw {
+    background: none;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+.ios7 .dwwr, .ios7 .dww {
+    background: #f7f7f7;
+}
+.ios7 .dwwc, .ios7 .dw .dwwl {
+    background: none;
+}
+.ios7 .dwwr, .ios7 .dwc, .ios7 .dwwc, .ios7 .dwwl {
+    margin: 0;
+    padding: 0;
+}
+.ios7 .dwl {
+    text-align: left;
+    text-indent: 5px;
+    color: #ababab;
+    text-align: center;
+}
+.ios7 .dwwc {
+	  padding: 30px 10px 10px 10px; 
+}
+.ios7 .dwhl .dwwc {
+    padding-top: 10px;
+}
+.ios7 .dw .dwwr {
+    position: relative;
+    padding-top: 40px;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    
+}
+.ios7 .dwwo {
+    background: -webkit-gradient(linear,left bottom,left top,from(#f7f7f7),color-stop(0.52, rgba(245,245,245,0)),color-stop(0.48, rgba(245,245,245,0)),to(#f7f7f7));
+    background: -webkit-linear-gradient(#f7f7f7 0%,rgba(245,245,245,0) 52%, rgba(245,245,245,0) 48%, #f7f7f7 100%);
+    background: -moz-linear-gradient(#f7f7f7 0%,rgba(245,245,245,0) 52%, rgba(245,245,245,0) 48%, #f7f7f7 100%);
+    background: linear-gradient(#f7f7f7 0%,rgba(245,245,245,0) 52%, rgba(245,245,245,0) 48%, #f7f7f7 100%);
+}
+.ios7 .dwwol {
+    padding: 0 10px;
+    height: 34px;
+    margin: -18px 0 0 -10px;
+    border-top: 1px solid #dbdbdb;
+    border-bottom: 1px solid #dbdbdb;
+}
+.ios7 .dw-li {
+    color: #9d9d9d;
+    /* font-size: 22px; ------------->*/
+    font-size: 17px;
+    text-align: left;
+    text-shadow: none;
+}
+.ios7 .dw-hl {
+    background: rgba(0,122,255,.2);
+}
+.ios7 .dw-sel {
+    color: #000;
+}
+.ios7 .dwv {
+    margin: 0;
+    padding: 0;
+    background: none;
+    color: #9d9d9d;
+    line-height: 30px;
+    font-size: 12px;
+    border-bottom: 1px solid #acacac;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+.ios7 .dw .dwbc {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0;
+    border-bottom: 1px solid #acacac;
+}
+.ios7 .dwb {
+    margin: 0;
+    padding: 0 10px;
+    display: inline-block;
+    color: #007aff;
+    text-shadow: none;
+    font-size: 17px;
+    font-weight: normal;
+    background: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    font-family: 'microsoft yahei';
+}
+.ios7 .dwb-a {
+    opacity: .5;
+}
+.ios7 .dwbw {
+    display: block;
+    float: right;
+}
+.ios7 .dwb-c {
+    float: left;
+}
+.ios7 .dwb-s .dwb {
+    /* font-weight: bold; ---------------------->*/
+    float: right;
+    margin-right: 20px
+}
+/* Clickpick mode */
+.ios7 .dwpm .dwwl {
+    border: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.ios7 .dwpm .dww {
+    background: none;
+}
+.ios7 .dwpm .dwwol {
+    display: block;
+}
+.ios7 .dwwb, .ios7 .dwwb:hover {
+    background: #f7f7f7;
+    text-shadow: none;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.ios7 .dwwb.dwb-a {
+    background: #f7f7f7;
+}
+.ios7 .dwwbp {
+    bottom: 0;
+    top: auto;
+}
+.ios7 .dwwbm {
+    top: 0;
+    bottom: auto;
+}
+.ios7 .dwwb span {
+    display: none;
+}
+.ios7 .dwwb:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 50%;
+    width: 13px;
+    height: 13px;
+    left: 50%;
+    margin-top: -7px;
+}
+.ios7 .dwwbp:after {
+    border-left: 2px solid #007aff;
+    border-bottom: 2px solid #007aff;
+    -webkit-transform: rotate(-45deg);
+    -webkit-transform-origin: bottom left;
+    -moz-transform-origin: bottom left;
+    -moz-transform: rotate(-45deg);
+    transform-origin: bottom left;
+    transform: rotate(-45deg);
+}
+.ios7 .dwwbm:after {
+    border-left: 2px solid #007aff;
+    border-top: 2px solid #007aff;
+    -webkit-transform: rotate(45deg);
+    -webkit-transform-origin: top left;
+    -moz-transform: rotate(45deg);
+    -moz-transform-origin: top left;
+    transform: rotate(45deg);
+    transform-origin: top left;
+}
+/* Bubble arrow */
+.ios7 .dw-bubble-bottom .dw-arr {
+    top: 0;
+    border-color: transparent transparent #f7f7f7 transparent;
+}
+.ios7 .dw-bubble-top .dw-arr {
+    bottom: 0;
+    border-color: #f7f7f7 transparent transparent transparent;
+}
+.ios7.dw-bubble .dwwr {
+    overflow: hidden;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+}
+/* Inline display */
+.ios7.dw-inline .dw {
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+.ios7.dw-nobtn .dwwr,
+.ios7.dw-inline .dwwr {
+    padding-top: 0;
+}
+/* Select */
+.ios7.dw-select .dwwo {
+    display: none;
+}
+/* Multiple select */
+.ios7 .dwwms .dwwol {
+    display: none;
+}
+.ios7 .dwwms .dw-li {
+    padding-left: 5px;
+    padding-right: 40px;
+    color: #000;
+}
+.ios7 .dwwms .dw-msel:after {
+    left: auto;
+    right: 0;
+    color: #007aff;
+}
+
+
+.ios71 .dwo {
+    background: rgba(0,0,0,.2);
+    filter: Alpha(Opacity=20);  
+}
+.ios71 .dw {
+    background: none;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+.ios71 .dwwr, .ios71 .dww {
+    background: #f7f7f7;
+}
+.ios71 .dwwc, .ios71 .dw .dwwl {
+    background: none;
+}
+.ios71 .dwwr, .ios71 .dwc, .ios71 .dwwc, .ios71 .dwwl {
+    margin: 0;
+    padding: 0;
+}
+.ios71 .dwl {
+    text-align: left;
+    text-indent: 5px;
+    color: #ababab;
+    text-align: center;
+}
+.ios71 .dwwc {
+	   padding: 30px 0px 20px 0px;
+	   
+}
+.ios71 .dwwr {
+text-align: left;
+}
+.ios71 .dwhl .dwwc {
+    padding-top: 10px;
+}
+.ios71 .dw .dwwr {
+    position: relative;
+    padding-top: 50px;
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    text-align: center;
+}
+.ios71 .dwwo {
+    background: -webkit-gradient(linear,left bottom,left top,from(#f7f7f7),color-stop(0.52, rgba(245,245,245,0)),color-stop(0.48, rgba(245,245,245,0)),to(#f7f7f7));
+    background: -webkit-linear-gradient(#f7f7f7 0%,rgba(245,245,245,0) 52%, rgba(245,245,245,0) 48%, #f7f7f7 100%);
+    background: -moz-linear-gradient(#f7f7f7 0%,rgba(245,245,245,0) 52%, rgba(245,245,245,0) 48%, #f7f7f7 100%);
+    background: linear-gradient(#f7f7f7 0%,rgba(245,245,245,0) 52%, rgba(245,245,245,0) 48%, #f7f7f7 100%);
+}
+.ios71 .dwwol {
+    padding: 0 10px;
+    height: 34px;
+    margin: -18px 0 0 -10px;
+    border-top: 1px solid #dbdbdb;
+    border-bottom: 1px solid #dbdbdb;
+}
+.ios71 .dw-li {
+    color: #9d9d9d;
+    /* font-size: 22px; ------------->*/
+    font-size: 15px;
+    text-align: left;
+    text-shadow: none;
+}
+.ios71 .dw-i{
+   text-align:center;
+}
+.ios71 .dwwr {
+	}
+.ios71 .dw-hl {
+    background: rgba(0,122,255,.2);
+}
+.ios71 .dw-sel {
+    color: #000;
+}
+.ios71 .dwv {
+    margin: 0;
+    padding: 0;
+    background: none;
+    color: #9d9d9d;
+    line-height: 30px;
+    font-size: 12px;
+    border-bottom: 1px solid #acacac;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+.ios71 .dw .dwbc {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0;
+    border-bottom: 1px solid #acacac;
+}
+.ios71 .dwb {
+    margin: 0;
+    padding: 0 10px;
+    display: inline-block;
+    color: #007aff;
+    text-shadow: none;
+    font-size: 17px;
+    font-weight: normal;
+    background: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    font-family: 'microsoft yahei';
+}
+.ios71 .dwb-a {
+    opacity: .5;
+}
+.ios71 .dwbw {
+    display: block;
+    float: right;
+}
+.ios71 .dwb-c {
+    float: left;
+}
+.ios71 .dwb-s .dwb {
+    /* font-weight: bold; ---------------------->*/
+    float: right;
+    margin-right: 20px
+}
+/* Clickpick mode */
+.ios71 .dwpm .dwwl {
+    border: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.ios71 .dwpm .dww {
+    background: none;
+}
+.ios71 .dwpm .dwwol {
+    display: block;
+}
+.ios71 .dwwb, .ios71 .dwwb:hover {
+    background: #f7f7f7;
+    text-shadow: none;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.ios71 .dwwb.dwb-a {
+    background: #f7f7f7;
+}
+.ios71 .dwwbp {
+    bottom: 0;
+    top: auto;
+}
+.ios71 .dwwbm {
+    top: 0;
+    bottom: auto;
+}
+.ios71 .dwwb span {
+    display: none;
+}
+.ios71 .dwwb:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 50%;
+    width: 13px;
+    height: 13px;
+    left: 50%;
+    margin-top: -7px;
+}
+.ios71 .dwwbp:after {
+    border-left: 2px solid #007aff;
+    border-bottom: 2px solid #007aff;
+    -webkit-transform: rotate(-45deg);
+    -webkit-transform-origin: bottom left;
+    -moz-transform-origin: bottom left;
+    -moz-transform: rotate(-45deg);
+    transform-origin: bottom left;
+    transform: rotate(-45deg);
+}
+.ios71 .dwwbm:after {
+    border-left: 2px solid #007aff;
+    border-top: 2px solid #007aff;
+    -webkit-transform: rotate(45deg);
+    -webkit-transform-origin: top left;
+    -moz-transform: rotate(45deg);
+    -moz-transform-origin: top left;
+    transform: rotate(45deg);
+    transform-origin: top left;
+}
+/* Bubble arrow */
+.ios71 .dw-bubble-bottom .dw-arr {
+    top: 0;
+    border-color: transparent transparent #f7f7f7 transparent;
+}
+.ios71 .dw-bubble-top .dw-arr {
+    bottom: 0;
+    border-color: #f7f7f7 transparent transparent transparent;
+}
+.ios71.dw-bubble .dwwr {
+    overflow: hidden;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+}
+/* Inline display */
+.ios71.dw-inline .dw {
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+.ios71.dw-nobtn .dwwr,
+.ios71.dw-inline .dwwr {
+    padding-top: 0;
+}
+/* Select */
+.ios71.dw-select .dwwo {
+    display: none;
+}
+/* Multiple select */
+.ios71 .dwwms .dwwol {
+    display: none;
+}
+.ios71 .dwwms .dw-li {
+    padding-left: 5px;
+    padding-right: 40px;
+    color: #000;
+}
+.ios71 .dwwms .dw-msel:after {
+    left: auto;
+    right: 0;
+    color: #007aff;
+}
+
+.ios71 .dw .dwwr {
+ padding-top: 50px;
+ position: fixed;
+ width: 100%;
+ bottom: 0px; 
+}
+
+.ios71 .dwwc {
+    padding: 30px 0px 20px 0px;
+}
+
+
+
+   .ios71 .dwwr {
+text-align:"";
+}

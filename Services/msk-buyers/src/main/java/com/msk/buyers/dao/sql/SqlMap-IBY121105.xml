@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121105Logic">
+
+    <!--查询菜场列表-->
+    <select id="findPageList" parameterType="com.msk.buyers.bean.IBY121105Param" resultType="com.msk.buyers.bean.IBY121105Bean">
+        SELECT
+        a.BUYER_ID as buyerId,
+        a.TEL_NO as telNo,
+        a.ACCOUNT_NAME as accountName,
+        a.ACCOUNT_PASS as accountPass,
+        b.CRT_TIME as crtTime,
+        b.REGISTER_SOURCE as registerSource
+        FROM
+        by_buyer_basic_info b,
+        by_buyer_account a
+        WHERE b.buyer_id = a.buyer_id
+        <if test="registerSource != 9">
+            AND b.REGISTER_SOURCE = #{registerSource}
+        </if>
+        AND b.CRT_TIME > #{crtTimeInfo}
+        AND a.DEL_FLG = 0
+        AND b.DEL_FLG = 0
+        ORDER BY buyerId
+        LIMIT #{startPos},#{pageCount}
+    </select>
+    <select id="getPageCount" resultType="Integer" parameterType="com.msk.buyers.bean.IBY121105Param">
+        SELECT
+        count(1)
+        FROM
+        by_buyer_basic_info b,
+        by_buyer_account a
+        WHERE b.buyer_id = a.buyer_id
+        <if test="registerSource != 9">
+            AND b.REGISTER_SOURCE = #{registerSource}
+        </if>
+        AND b.CRT_TIME > #{crtTimeInfo}
+        AND a.DEL_FLG = 0
+        AND b.DEL_FLG = 0
+    </select>
+</mapper>

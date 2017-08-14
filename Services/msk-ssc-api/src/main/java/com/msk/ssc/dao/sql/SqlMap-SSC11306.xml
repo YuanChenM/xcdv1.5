@@ -1,0 +1,800 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11306Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        DETAIL_ID AS detailId,
+        DELIVERY_ID AS deliveryId,
+        DELIVERY_CODE AS deliveryCode,
+        /*IFNULL(CONCAT(CLASSES_NAME,'/',MACHINING_NAME,'/',BREED_NAME,'/',FEATURE_NAME,'/',WEIGHT_NAME,'/',NORMS_NAME),'') AS productName,*/
+        IFNULL(PD_CODE,'') AS pdCode,
+        IFNULL(PD_DESC,'') AS pdDesc,
+        IFNULL(PD_DESC,'') AS productName,
+        IFNULL(CLASSES_CODE,'') AS classesCode,
+        IFNULL(CLASSES_NAME,'') AS classesName,
+        IFNULL(MACHINING_CODE,'') AS machiningCode,
+        IFNULL(MACHINING_NAME,'') AS machiningName,
+        IFNULL(BREED_CODE,'') AS breedCode,
+        IFNULL(BREED_NAME,'') AS breedName,
+        IFNULL(FEATURE_CODE,'') AS featureCode,
+        IFNULL(FEATURE_NAME,'') AS featureName,
+        IFNULL(WEIGHT_CODE,'') AS weightCode,
+        IFNULL(WEIGHT_NAME,'') AS weightName,
+        IFNULL(WEIGHT_VAL,'') AS weightVal,
+        IFNULL(NORMS_CODE,'') AS normsCode,
+        IFNULL(NORMS_NAME,'') AS normsName,
+        IFNULL(GRADE_CODE,'') AS gradeCode,
+        IFNULL(GRADE_NAME,'') AS gradeName,
+        IFNULL(PRODUCT_QUALITY_STANDARD,'') AS productQualityStandard,
+        IFNULL(PRODUCT_QUA,'') AS productQua,
+        IFNULL(PRODUCT_BOX,'') AS productBox,
+        IFNULL(FOB_FREE_PACKAGE,'') AS fobFreePackage,
+        IFNULL(PACKAGE_COST,'') AS packageCost,
+        IFNULL(FOB_INCLUDE_PACKAGE,'') AS fobIncludePackage,
+        IFNULL(TRUNK_FREIGHT,'') AS trunkFreight,
+        IFNULL(CIF,'') AS cif,
+        IFNULL(SETTKEMENT_STANDARD_PRICE,'') AS settkementStandardPrice,
+        IFNULL(STANDARD_PRICE,'—') AS standardPriceStr,
+        IFNULL(PRODUCT_VALUE,'') AS productValue,
+        IFNULL(REMARK,'') AS remark,
+        BRAND_EP_ID AS brandEpId,
+        BRAND_ID AS brandId,
+        BRAND_NAME AS brandName,
+        VER AS ver
+    </sql>
+
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            A.DELIVERY_ID = #{deliveryId}
+            <if test="delFlg != 1">
+                AND A.DEL_FLG = 0
+            </if>
+            group by PD_CODE
+        </where>
+    </sql>
+
+    <!--查询发货订单内容列表-->
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC1130601RsBean"
+            parameterType="com.msk.ssc.bean.SSC11306RsParam">
+        SELECT
+        <include refid="selectSql"/>
+        FROM ssc_delivery_order_pd A
+        <include refid="whereCondition"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(B.detailId) from
+        (select DETAIL_ID AS detailId
+        FROM ssc_delivery_order_pd A
+        <include refid="whereCondition"/>) B
+    </select>
+
+    <!--查询发货基本信息-->
+    <select id="findOne" resultType="com.msk.ssc.bean.SSC11306RsBean"
+            parameterType="com.msk.ssc.bean.SSC11306RsParam">
+            SELECT
+                A.DELIVERY_ID AS deliveryId,
+                A.DELIVERY_CODE AS deliveryCode,
+                A.CONTRACT_ID AS contractId,
+                A.CONTRACT_CODE AS contractCode,
+                B.CONTRACT_NAME AS contractName,
+                A.CONTRACT_RELATION_TYPE AS contractRelationType,
+                A.DELIVERY_BATCH AS deliveryBatch,
+                A.SUPPLIER_ID AS supplierId,
+                A.SUPPLIER_NAME AS supplierName,
+                A.SUPPLIER_CODE AS supplierCode,
+                A.PURCHASER_ID AS purchaserId,
+                A.PURCHASER_NAME AS purchaserName,
+                A.PURCHASER_CODE AS purchaserCode,
+                date_format(A.ETD,'%Y-%m-%d') AS etd,
+                date_format(A.ETA,'%Y-%m-%d') AS eta,
+                A.DELIVERY_WAREHOUSE AS deliveryWarehouse,
+                A.DELIVERY_WAREHOUSE_ADDR AS deliveryWarehouseAddr,
+                A.ARRIVE_WAREHOUSE AS arriveWarehouse,
+                A.ARRIVE_WAREHOUSE_ADDR AS arriveWarehouseAddr,
+                A.DELIVERY_STATUS AS deliveryStatus,
+                A.FREIGHT_SETTLE_METHOD AS freightSettleMethod,
+                A.FREIGHT_UNIT AS freightUnit,
+                A.MILEAGE AS mileage,
+                A.TRANSPORT_UNIT AS transportUnit,
+                A.TRANSPORT_COST AS transportCost,
+                A.REMARK AS remark,
+                A.AMOUNT AS amount,
+                A.PURCHASER_AUDIT_ID AS purchaserAuditId,
+                A.PURCHASER_AUDIT_NAME AS purchaserAuditName,
+                A.PURCHASER_AUDIT_TIME AS purchaserAuditTime,
+                A.SUPPLIER_CONFIRM_ID AS supplierConfirmId,
+                A.SUPPLIER_CONFIRM_NAME AS supplierConfirmName,
+                A.SUPPLIER_CONFIRM_TIME AS supplierConfirmTime,
+                A.LGCS_AREA_CODE AS lgcsAreaCode,
+                A.LGCS_AREA_NAME AS lgcsAreaName,
+                A.VER AS ver
+            FROM ssc_delivery_order_basic A
+            LEFT JOIN ssc_contract_basic B ON B.CONTRACT_ID = A.CONTRACT_ID
+            WHERE A.DELIVERY_ID = #{deliveryId}
+    </select>
+
+    <!--修改发货订单基本信息-->
+    <update id="modifyOrderBasic" parameterType="com.msk.ssc.bean.SSC11306RsParam">
+        UPDATE
+        ssc_delivery_order_basic
+        SET
+        <if test="deliveryCode != null and deliveryCode != ''">
+            DELIVERY_CODE = #{deliveryCode},
+        </if>
+        <if test="contractId != null and contractId != ''">
+            CONTRACT_ID = #{contractId},
+        </if>
+        <if test="contractCode != null and contractCode != ''">
+            CONTRACT_CODE = #{contractCode},
+        </if>
+        <if test="contractRelationType != null and contractRelationType != ''">
+            CONTRACT_RELATION_TYPE = #{contractRelationType},
+        </if>
+        <if test="deliveryBatch != null and deliveryBatch != ''">
+            DELIVERY_BATCH = #{deliveryBatch},
+        </if>
+        <if test="supplierId != null and supplierId != ''">
+            SUPPLIER_ID = #{supplierId},
+        </if>
+        <if test="supplierName != null and supplierName != ''">
+            SUPPLIER_NAME = #{supplierName},
+        </if>
+        <if test="supplierCode != null and supplierCode != ''">
+            SUPPLIER_CODE = #{supplierCode},
+        </if>
+        <if test="purchaserId != null and purchaserId != ''">
+            PURCHASER_ID = #{purchaserId},
+        </if>
+        <if test="purchaserName != null and purchaserName != ''">
+            PURCHASER_NAME = #{purchaserName},
+        </if>
+        <if test="purchaserCode != null and purchaserCode != ''">
+            PURCHASER_CODE = #{purchaserCode},
+        </if>
+        <if test="etd != null and etd != ''">
+            ETD = #{etd},
+        </if>
+        <if test="eta != null and eta != ''">
+            ETA = #{eta},
+        </if>
+        <if test="deliveryWarehouse != null and deliveryWarehouse != ''">
+            DELIVERY_WAREHOUSE = #{deliveryWarehouse},
+        </if>
+        <if test="deliveryWarehouseAddr != null and deliveryWarehouseAddr != ''">
+            DELIVERY_WAREHOUSE_ADDR = #{deliveryWarehouseAddr},
+        </if>
+        <if test="arriveWarehouse != null and arriveWarehouse != ''">
+            ARRIVE_WAREHOUSE = #{arriveWarehouse},
+        </if>
+        <if test="arriveWarehouseAddr != null and arriveWarehouseAddr != ''">
+            ARRIVE_WAREHOUSE_ADDR = #{arriveWarehouseAddr},
+        </if>
+        <if test="deliveryStatus != null and deliveryStatus != ''">
+            DELIVERY_STATUS = #{deliveryStatus},
+        </if>
+        <if test="freightSettleMethod != null and freightSettleMethod != ''">
+            FREIGHT_SETTLE_METHOD = #{freightSettleMethod},
+        </if>
+        <if test="freightUnit != null and freightUnit != ''">
+            FREIGHT_UNIT = #{freightUnit},
+        </if>
+        <if test="freightUnit == 0">
+            FREIGHT_UNIT = NULL,
+        </if>
+        <if test="mileage != null and mileage != ''">
+            MILEAGE = #{mileage},
+        </if>
+        <if test="transportUnit != null and transportUnit != ''">
+            TRANSPORT_UNIT = #{transportUnit},
+        </if>
+        <if test="transportUnit == 0">
+            TRANSPORT_UNIT = NULL,
+        </if>
+        <if test="transportCost != null and transportCost != ''">
+            TRANSPORT_COST = #{transportCost},
+        </if>
+        <if test="transportCost == 0">
+            TRANSPORT_COST = NULL,
+        </if>
+        <if test="amount != null and amount != ''">
+            AMOUNT = #{amount},
+        </if>
+        <if test="remark != null and remark != ''">
+            REMARK = #{remark},
+        </if>
+        <if test="purchaserAuditId != null and purchaserAuditId != ''">
+            PURCHASER_AUDIT_ID = #{purchaserAuditId},
+        </if>
+        <if test="purchaserAuditName != null and purchaserAuditName != ''">
+            PURCHASER_AUDIT_NAME = #{purchaserAuditName},
+        </if>
+        <if test="purchaserAuditTime != null and purchaserAuditTime != ''">
+            PURCHASER_AUDIT_TIME = #{purchaserAuditTime},
+        </if>
+        <if test="supplierConfirmId != null and supplierConfirmId != ''">
+            SUPPLIER_CONFIRM_ID = #{supplierConfirmId},
+        </if>
+        <if test="supplierConfirmName != null and supplierConfirmName != ''">
+            SUPPLIER_CONFIRM_NAME = #{supplierConfirmName},
+        </if>
+        <if test="supplierConfirmTime != null and supplierConfirmTime != ''">
+            SUPPLIER_CONFIRM_TIME = #{supplierConfirmTime},
+        </if>
+        <if test="lgcsAreaCode != null and lgcsAreaCode != ''">
+            LGCS_AREA_CODE = #{lgcsAreaCode},
+        </if>
+        <if test="lgcsAreaName != null and lgcsAreaName != ''">
+            LGCS_AREA_NAME = #{lgcsAreaName},
+        </if>
+        <if test="delFlg != null and delFlg != ''">
+            DEL_FLG = #{delFlg},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        DELIVERY_ID = #{deliveryId}
+        AND DEL_FLG = 0
+    </update>
+
+    <update id="modify" parameterType="com.msk.ssc.bean.SSC11306RsParam">
+        update ssc_delivery_order_basic
+        set
+        <if test="etd!=null and etd!=''">
+            ETD=#{etd},
+        </if>
+        <if test="eta!=null and eta!=''">
+            ETA=#{eta},
+        </if>
+        <if test="deliveryBatch!=null and deliveryBatch!=''">
+            DELIVERY_BATCH = #{deliveryBatch},
+        </if>
+        <if test="amount!=null and amount!=''">
+            AMOUNT=#{amount},
+        </if>
+        <if test="deliveryWarehouse!=null and deliveryWarehouse!=''">
+            DELIVERY_WAREHOUSE=#{deliveryWarehouse},
+        </if>
+        <if test="deliveryWarehouseAddr!=null and deliveryWarehouseAddr!=''">
+            DELIVERY_WAREHOUSE_ADDR=#{deliveryWarehouseAddr},
+        </if>
+        <if test="arriveWarehouseAddr!=null and arriveWarehouseAddr!=''">
+            ARRIVE_WAREHOUSE_ADDR=#{arriveWarehouseAddr},
+        </if>
+        <if test="deliveryStatus!=null and deliveryStatus!=''">
+            DELIVERY_STATUS=#{deliveryStatus},
+        </if>
+        <if test="freightSettleMethod!=null and freightSettleMethod!=''">
+            FREIGHT_SETTLE_METHOD=#{freightSettleMethod},
+        </if>
+        <if test="freightUnit!=null and freightUnit!=''">
+            FREIGHT_UNIT=#{freightUnit},
+        </if>
+        <if test="mileage!=null and mileage!=''">
+            MILEAGE=#{mileage},
+        </if>
+        <if test="transportUnit!=null and transportUnit!=''">
+            TRANSPORT_UNIT=#{transportUnit},
+        </if>
+        <if test="transportCost!=null and transportCost!=''">
+            TRANSPORT_COST=#{transportCost},
+        </if>
+        <if test="remark!=null and remark!=''">
+            REMARK=#{remark},
+        </if>
+        <if test="arriveWarehouse!=null and arriveWarehouse!=''">
+            ARRIVE_WAREHOUSE=#{arriveWarehouse},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        DELIVERY_ID=#{deliveryId}
+    </update>
+
+    <!--修改发货订单产品信息-->
+    <update id="modifyOrderPd" parameterType="com.msk.ssc.bean.SSC11306RsParam">
+        UPDATE
+        ssc_delivery_order_pd
+        SET
+        <if test="productQua != null and productQua != ''">
+            PRODUCT_QUA = #{productQua},
+        </if>
+        <if test="productBox != null and productBox != ''">
+            PRODUCT_BOX = #{productBox},
+        </if>
+        TRUNK_FREIGHT = #{trunkFreight},
+        CIF = #{cif},
+        <if test="settkementStandardPrice != null and settkementStandardPrice != ''">
+            SETTKEMENT_STANDARD_PRICE = #{settkementStandardPrice},
+        </if>
+        <if test="standardPrice != null and standardPrice != ''">
+            STANDARD_PRICE = #{standardPrice},
+        </if>
+        <if test="productValue != null and productValue != ''">
+            PRODUCT_VALUE = #{productValue},
+        </if>
+        REMARK = #{remark},
+        <if test="delFlg != null and delFlg != ''">
+            DEL_FLG = #{delFlg},
+        </if>
+        <if test="brandEpId != null and brandEpId != ''">
+            BRAND_EP_ID = #{brandEpId},
+        </if>
+        <if test="brandId != null and brandId != ''">
+            BRAND_ID = #{brandId},
+        </if>
+        <if test="brandName != null and brandName != ''">
+            BRAND_NAME = #{brandName},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        DETAIL_ID = #{detailId}
+    </update>
+
+    <update id="modifyPd" parameterType="com.msk.ssc.bean.SSC1130601RsBean">
+        update ssc_delivery_order_pd
+		set
+            PRODUCT_QUA=#{productQua},
+            PRODUCT_BOX=#{productBox},
+            TRUNK_FREIGHT=#{trunkFreight},
+            CIF=#{cif},
+            SETTKEMENT_STANDARD_PRICE=#{settkementStandardPrice},
+            STANDARD_PRICE=#{standardPrice},
+            PRODUCT_VALUE=#{productValue},
+            REMARK=#{remark},
+            <if test="delFlg!=null and delFlg!=''">
+                DEL_FLG=#{delFlg},
+            </if>
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime},
+            VER = VER + 1
+        WHERE
+            DETAIL_ID=#{detailId}
+    </update>
+
+    <!--获取deliveryCode-->
+    <select id="getMaxDeliveryCode" resultType="com.msk.ssc.bean.SSC11306RsBean"
+            parameterType="com.msk.ssc.bean.SSC11306RsParam">
+        select MAX(SUBSTRING(DELIVERY_CODE,3)) AS deliveryCode
+        from ssc_delivery_order_basic
+        where DELIVERY_CODE like '${deliveryCode}%'
+    </select>
+
+    <!--新增发货订单基本信息 -->
+    <insert id="save" parameterType="com.msk.ssc.bean.SSC11306RsParam">
+        INSERT INTO ssc_delivery_order_basic
+        (
+        <if test="deliveryId!=null and deliveryId!=''">
+            DELIVERY_ID,
+        </if>
+        <if test="deliveryCode!=null and deliveryCode!=''">
+            DELIVERY_CODE,
+        </if>
+        <if test="contractId!=null and contractId!=''">
+            CONTRACT_ID,
+        </if>
+        <if test="contractCode!=null and contractCode!=''">
+            CONTRACT_CODE,
+        </if>
+        <if test="contractRelationType!=null and contractRelationType!=''">
+            CONTRACT_RELATION_TYPE,
+        </if>
+        <if test="deliveryBatch!=null and deliveryBatch!=''">
+            DELIVERY_BATCH,
+        </if>
+        <if test="supplierId!=null and supplierId!=''">
+            SUPPLIER_ID,
+        </if>
+        <if test="supplierName!=null and supplierName!=''">
+            SUPPLIER_NAME,
+        </if>
+        <if test="supplierCode!=null and supplierCode!=''">
+            SUPPLIER_CODE,
+        </if>
+        <if test="purchaserId!=null and purchaserId!=''">
+            PURCHASER_ID,
+        </if>
+        <if test="purchaserName!=null and purchaserName!=''">
+            PURCHASER_NAME,
+        </if>
+        <if test="purchaserCode!=null and purchaserCode!=''">
+            PURCHASER_CODE,
+        </if>
+        <if test="etd!=null and etd!=''">
+            ETD,
+        </if>
+        <if test="eta!=null and eta!=''">
+            ETA,
+        </if>
+        <if test="deliveryWarehouse!=null and deliveryWarehouse!=''">
+            DELIVERY_WAREHOUSE,
+        </if>
+        <if test="deliveryWarehouseAddr!=null and deliveryWarehouseAddr!=''">
+            DELIVERY_WAREHOUSE_ADDR,
+        </if>
+        <if test="arriveWarehouseAddr!=null and arriveWarehouseAddr!=''">
+            ARRIVE_WAREHOUSE_ADDR,
+        </if>
+        <if test="deliveryStatus!=null and deliveryStatus!=''">
+            DELIVERY_STATUS,
+        </if>
+        <if test="freightSettleMethod!=null and freightSettleMethod!=''">
+            FREIGHT_SETTLE_METHOD,
+        </if>
+        <if test="freightUnit!=null and freightUnit!=''">
+            FREIGHT_UNIT,
+        </if>
+        <if test="mileage!=null and mileage!=''">
+            MILEAGE,
+        </if>
+        <if test="transportUnit!=null and transportUnit!=''">
+            TRANSPORT_UNIT,
+        </if>
+        <if test="transportCost!=null and transportCost!=''">
+            TRANSPORT_COST,
+        </if>
+        <if test="remark!=null and remark!=''">
+            REMARK,
+        </if>
+        <if test="arriveWarehouse!=null and arriveWarehouse!=''">
+            ARRIVE_WAREHOUSE,
+        </if>
+        <if test="lgcsAreaCode!=null and lgcsAreaCode!=''">
+            LGCS_AREA_CODE,
+        </if>
+        <if test="lgcsAreaName!=null and lgcsAreaName!=''">
+            LGCS_AREA_NAME,
+        </if>
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER
+        )
+        VALUES
+        (
+        <if test="deliveryId!=null and deliveryId!=''">
+            #{deliveryId},
+        </if>
+        <if test="deliveryCode!=null and deliveryCode!=''">
+            #{deliveryCode},
+        </if>
+        <if test="contractId!=null and contractId!=''">
+            #{contractId},
+        </if>
+        <if test="contractCode!=null and contractCode!=''">
+            #{contractCode},
+        </if>
+        <if test="contractRelationType!=null and contractRelationType!=''">
+            #{contractRelationType},
+        </if>
+        <if test="deliveryBatch!=null and deliveryBatch!=''">
+            #{deliveryBatch},
+        </if>
+        <if test="supplierId!=null and supplierId!=''">
+            #{supplierId},
+        </if>
+        <if test="supplierName!=null and supplierName!=''">
+            #{supplierName},
+        </if>
+        <if test="supplierCode!=null and supplierCode!=''">
+            #{supplierCode},
+        </if>
+        <if test="purchaserId!=null and purchaserId!=''">
+            #{purchaserId},
+        </if>
+        <if test="purchaserName!=null and purchaserName!=''">
+            #{purchaserName},
+        </if>
+        <if test="purchaserCode!=null and purchaserCode!=''">
+            #{purchaserCode},
+        </if>
+        <if test="etd!=null and etd!=''">
+            #{etd},
+        </if>
+        <if test="eta!=null and eta!=''">
+            #{eta},
+        </if>
+        <if test="deliveryWarehouse!=null and deliveryWarehouse!=''">
+            #{deliveryWarehouse},
+        </if>
+        <if test="deliveryWarehouseAddr!=null and deliveryWarehouseAddr!=''">
+            #{deliveryWarehouseAddr},
+        </if>
+        <if test="arriveWarehouseAddr!=null and arriveWarehouseAddr!=''">
+            #{arriveWarehouseAddr},
+        </if>
+        <if test="deliveryStatus!=null and deliveryStatus!=''">
+            #{deliveryStatus},
+        </if>
+        <if test="freightSettleMethod!=null and freightSettleMethod!=''">
+            #{freightSettleMethod},
+        </if>
+        <if test="freightUnit!=null and freightUnit!=''">
+            #{freightUnit},
+        </if>
+        <if test="mileage!=null and mileage!=''">
+            #{mileage},
+        </if>
+        <if test="transportUnit!=null and transportUnit!=''">
+            #{transportUnit},
+        </if>
+        <if test="transportCost!=null and transportCost!=''">
+            #{transportCost},
+        </if>
+        <if test="remark!=null and remark!=''">
+            #{remark},
+        </if>
+        <if test="arriveWarehouse!=null and arriveWarehouse!=''">
+            #{arriveWarehouse},
+        </if>
+        <if test="lgcsAreaCode!=null and lgcsAreaCode!=''">
+            #{lgcsAreaCode},
+        </if>
+        <if test="lgcsAreaName!=null and lgcsAreaName!=''">
+            #{lgcsAreaName},
+        </if>
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        1
+        )
+    </insert>
+
+    <!--新增发货订单产品信息 -->
+    <insert id="saveOrderPd" parameterType="com.msk.ssc.bean.SSC1130601RsBean">
+        INSERT INTO ssc_delivery_order_pd
+        (
+        <if test="detailId!=null and detailId!=''">
+            DETAIL_ID,
+        </if>
+        <if test="deliveryId!=null and deliveryId!=''">
+            DELIVERY_ID,
+        </if>
+        <if test="deliveryCode!=null and deliveryCode!=''">
+            DELIVERY_CODE,
+        </if>
+        <if test="pdCode!=null and pdCode!=''">
+            PD_CODE,
+        </if>
+        <if test="pdDesc!=null and pdDesc!=''">
+            PD_DESC,
+        </if>
+        <if test="classesCode!=null and classesCode!=''">
+            CLASSES_CODE,
+        </if>
+        <if test="classesName!=null and classesName!=''">
+            CLASSES_NAME,
+        </if>
+        <if test="machiningCode!=null and machiningCode!=''">
+            MACHINING_CODE,
+        </if>
+        <if test="machiningName!=null and machiningName!=''">
+            MACHINING_NAME,
+        </if>
+        <if test="breedCode!=null and breedCode!=''">
+            BREED_CODE,
+        </if>
+        <if test="breedName!=null and breedName!=''">
+            BREED_NAME,
+        </if>
+        <if test="featureCode!=null and featureCode!=''">
+            FEATURE_CODE,
+        </if>
+        <if test="featureName!=null and featureName!=''">
+            FEATURE_NAME,
+        </if>
+        <if test="weightCode!=null and weightCode!=''">
+            WEIGHT_CODE,
+        </if>
+        <if test="weightName!=null and weightName!=''">
+            WEIGHT_NAME,
+        </if>
+        <if test="weightVal!=null and weightVal!=''">
+            WEIGHT_VAL,
+        </if>
+        <if test="normsCode!=null and normsCode!=''">
+            NORMS_CODE,
+        </if>
+        <if test="normsName!=null and normsName!=''">
+            NORMS_NAME,
+        </if>
+        <if test="gradeCode!=null and gradeCode!=''">
+            GRADE_CODE,
+        </if>
+        <if test="gradeName!=null and gradeName!=''">
+            GRADE_NAME,
+        </if>
+        <if test="productQualityStandard!=null and productQualityStandard!=''">
+            PRODUCT_QUALITY_STANDARD,
+        </if>
+        <if test="productQua!=null and productQua!=''">
+            PRODUCT_QUA,
+        </if>
+        <if test="productBox!=null and productBox!=''">
+            PRODUCT_BOX,
+        </if>
+        <if test="fobFreePackage!=null and fobFreePackage!=''">
+            FOB_FREE_PACKAGE,
+        </if>
+        <if test="packageCost!=null and packageCost!=''">
+            PACKAGE_COST,
+        </if>
+        <if test="fobIncludePackage!=null and fobIncludePackage!=''">
+            FOB_INCLUDE_PACKAGE,
+        </if>
+        <if test="trunkFreight!=null and trunkFreight!=''">
+            TRUNK_FREIGHT,
+        </if>
+        <if test="cif!=null and cif!=''">
+            CIF,
+        </if>
+        <if test="settkementStandardPrice!=null and settkementStandardPrice!=''">
+            SETTKEMENT_STANDARD_PRICE,
+        </if>
+        <if test="standardPrice != null and standardPrice != ''">
+            STANDARD_PRICE,
+        </if>
+        <if test="productValue!=null and productValue!=''">
+            PRODUCT_VALUE,
+        </if>
+        <if test="remark!=null and remark!=''">
+            REMARK,
+        </if>
+        <if test="brandEpId!=null and brandEpId!=''">
+            BRAND_EP_ID,
+        </if>
+        <if test="brandId!=null and brandId!=''">
+            BRAND_ID,
+        </if>
+        <if test="brandName!=null and brandName!=''">
+            BRAND_NAME,
+        </if>
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER
+        )
+        VALUES
+        (
+        <if test="detailId!=null and detailId!=''">
+            #{detailId},
+        </if>
+        <if test="deliveryId!=null and deliveryId!=''">
+            #{deliveryId},
+        </if>
+        <if test="deliveryCode!=null and deliveryCode!=''">
+            #{deliveryCode},
+        </if>
+        <if test="pdCode!=null and pdCode!=''">
+            #{pdCode},
+        </if>
+        <if test="pdDesc!=null and pdDesc!=''">
+            #{pdDesc},
+        </if>
+        <if test="classesCode!=null and classesCode!=''">
+            #{classesCode},
+        </if>
+        <if test="classesName!=null and classesName!=''">
+            #{classesName},
+        </if>
+        <if test="machiningCode!=null and machiningCode!=''">
+            #{machiningCode},
+        </if>
+        <if test="machiningName!=null and machiningName!=''">
+            #{machiningName},
+        </if>
+        <if test="breedCode!=null and breedCode!=''">
+            #{breedCode},
+        </if>
+        <if test="breedName!=null and breedName!=''">
+            #{breedName},
+        </if>
+        <if test="featureCode!=null and featureCode!=''">
+            #{featureCode},
+        </if>
+        <if test="featureName!=null and featureName!=''">
+            #{featureName},
+        </if>
+        <if test="weightCode!=null and weightCode!=''">
+            #{weightCode},
+        </if>
+        <if test="weightName!=null and weightName!=''">
+            #{weightName},
+        </if>
+        <if test="weightVal!=null and weightVal!=''">
+            #{weightVal},
+        </if>
+        <if test="normsCode!=null and normsCode!=''">
+            #{normsCode},
+        </if>
+        <if test="normsName!=null and normsName!=''">
+            #{normsName},
+        </if>
+        <if test="gradeCode!=null and gradeCode!=''">
+            #{gradeCode},
+        </if>
+        <if test="gradeName!=null and gradeName!=''">
+            #{gradeName},
+        </if>
+        <if test="productQualityStandard!=null and productQualityStandard!=''">
+            #{productQualityStandard},
+        </if>
+        <if test="productQua!=null and productQua!=''">
+            #{productQua},
+        </if>
+        <if test="productBox!=null and productBox!=''">
+            #{productBox},
+        </if>
+        <if test="fobFreePackage!=null and fobFreePackage!=''">
+            #{fobFreePackage},
+        </if>
+        <if test="packageCost!=null and packageCost!=''">
+            #{packageCost},
+        </if>
+        <if test="fobIncludePackage!=null and fobIncludePackage!=''">
+            #{fobIncludePackage},
+        </if>
+        <if test="trunkFreight!=null and trunkFreight!=''">
+            #{trunkFreight},
+        </if>
+        <if test="cif!=null and cif!=''">
+            #{cif},
+        </if>
+        <if test="settkementStandardPrice!=null and settkementStandardPrice!=''">
+            #{settkementStandardPrice},
+        </if>
+        <if test="standardPrice != null and standardPrice != ''">
+            #{standardPrice},
+        </if>
+        <if test="productValue!=null and productValue!=''">
+            #{productValue},
+        </if>
+        <if test="remark!=null and remark!=''">
+            #{remark},
+        </if>
+        <if test="brandEpId!=null and brandEpId!=''">
+            #{brandEpId},
+        </if>
+        <if test="brandId!=null and brandId!=''">
+            #{brandId},
+        </if>
+        <if test="brandName!=null and brandName!=''">
+            #{brandName},
+        </if>
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        1
+        )
+    </insert>
+
+    <!--获取发货订单产品信息-->
+    <select id="findOrderPd" resultType="com.msk.ssc.bean.SSC1130601RsBean"
+            parameterType="com.msk.ssc.bean.SSC11306RsParam">
+        select MAX(DETAIL_ID) AS detailId
+        from ssc_delivery_order_pd
+        where DELIVERY_ID = #{deliveryId}
+        and PD_CODE = #{pdCode}
+        <if test="delFlg != null and delFlg != ''">
+            and DEL_FLG = #{delFlg}
+        </if>
+    </select>
+
+</mapper>

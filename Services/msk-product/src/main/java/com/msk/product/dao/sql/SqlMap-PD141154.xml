@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141154Logic">
+    <sql id="selectSql">
+    IFNULL(A.TC_PROVIDER_ID,'') AS tcProviderId,
+    IFNULL(A.PROVIDER_CODE,'') AS providerCode,
+    IFNULL(A.PROVIDER_NAME,'') AS providerName,
+    IFNULL(A.CLASSES_CODE,'') AS classesCode,
+    IFNULL(A.CLASSES_NAME,'') AS classesName,
+    IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+    IFNULL(A.MACHINING_NAME,'') AS machiningName,
+    IFNULL(A.BREED_CODE,'') AS breedCode,
+    IFNULL(A.BREED_NAME,'') AS breedName,
+    IFNULL(A.FEATURE_CODE,'') AS featureCode,
+    IFNULL(A.FEATURE_NAME,'') AS featureName,
+    IFNULL(A.WEIGHT_CODE,'') AS weightCode,
+    IFNULL(A.WEIGHT_NAME,'') AS weightName,
+    IFNULL(A.WEIGHT_VAL,'') AS weightVal,
+    IFNULL(A.NORMS_CODE,'') AS normsCode,
+    IFNULL(A.NORMS_NAME,'') AS normsName,
+    IFNULL(A.FEATURE_FLG,'') AS featureFlg,
+    IFNULL(A.SALES_TARGET,'') AS salesTarget,
+    IFNULL(A.MACHINING_WAY,'') AS machiningWay,
+    IFNULL(A.APPLY_DATE,'') AS applyDateTime,
+    A.AUDIT_DATE AS auditDate,
+    (CASE WHEN A.AUDIT_STATUS='0' THEN '申请中' WHEN A.AUDIT_STATUS='1' THEN '审核通过' ELSE '审核拒绝' END) AS status
+    </sql>
+
+    <sql id="whereSql">
+      <where>
+          <if test="filterMap.providerCode!=null and filterMap.providerCode!=''">
+              AND A.PROVIDER_CODE like #{filterMap.providerCode}
+          </if>
+          <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+              AND A.CLASSES_CODE like #{filterMap.classesCode}
+          </if>
+          <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+              AND A.MACHINING_CODE like #{filterMap.machiningCode}
+          </if>
+          <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+              AND A.BREED_CODE like #{filterMap.breedCode}
+          </if>
+          <if test="filterMap.featureCode!=null and filterMap.featureCode!=''">
+              AND A.FEATURE_CODE like #{filterMap.featureCode}
+          </if>
+          <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+              AND A.WEIGHT_CODE like #{filterMap.weightCode}
+          </if>
+      </where>
+    </sql>
+    <!--查询卖家申请产品审核数据 -->
+    <select id="findPageList" resultType="com.msk.product.bean.PdTcProviderPackageParam" parameterType="com.hoperun.core.bean.BasePageParam">
+        select <include refid="selectSql"/>
+        from pd_tc_provider_package AS A
+        <include refid="whereSql"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer"
+            parameterType="com.hoperun.core.bean.BasePageParam">
+        SELECT COUNT(1)
+        FROM pd_tc_provider_package AS A
+        <include refid="whereSql"/>
+    </select>
+</mapper>

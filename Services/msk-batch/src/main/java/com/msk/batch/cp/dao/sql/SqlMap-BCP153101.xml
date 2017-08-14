@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.cp.logic.BCP153101Logic">
+
+    <update id="updatePaymentPeriod" parameterType="List">
+        <foreach collection="list" item="paymentPeriodItem" separator=";"  open="" close=";" >
+        update so_cp_payment_period
+        set
+        LAST_PERIOD_END=#{paymentPeriodItem.endDate},
+        UPD_ID = 'BCP153101',
+        UPD_TIME = #{paymentPeriodItem.updTime}
+        WHERE
+        USER_ID=#{paymentPeriodItem.businessMainId}
+        </foreach>
+    </update>
+
+    <update id="updateSelCharging" parameterType="List">
+        <foreach collection="list" item="selChargingItem" separator=";"  open="" close=";" >
+        update so_cp_sel_charging
+        set
+        SELLER_BILLING_ID=#{selChargingItem.sellerBillId},
+        UPD_ID = 'BCP153101',
+        UPD_TIME = #{selChargingItem.updTime}
+        WHERE
+        SEL_CHARGING_ID=#{selChargingItem.selChargingId}
+        AND BUSINESS_MAIN_ID=#{selChargingItem.businessMainId}
+        </foreach>
+    </update>
+
+    <update id="updateRefund" parameterType="List">
+        <foreach collection="list" item="refundItem" separator=";"  open="" close=";" >
+        update so_cp_refund
+        set
+        SELLER_BILL_ID=#{refundItem.sellerBillId},
+        UPD_ID = 'BCP153101',
+        UPD_TIME = #{refundItem.updTime}
+        WHERE
+        REFUND_ID=#{refundItem.refundId}
+        AND PAYEE_ID=#{refundItem.businessMainId}
+        </foreach>
+    </update>
+
+    <insert id="insertSellerBill" parameterType="List">
+        INSERT INTO so_cp_seller_bill
+        (
+            SELLER_BILL_ID,
+            SELLER_BILL_NO,
+            BUSINESS_MAIN_ID,
+            BUSINESS_MAIN_CODE,
+            BUSINESS_MAIN_NAME,
+            BUSINESS_MAIN_ROLE,
+            SETTLEMENT_STATUS,
+            SETTLEMENT_FLG,
+            START_DATE,
+            END_DATE,
+            SUPPLY_PLATFORM,
+            BILL_TYPE,
+            BILL_AMOUNT,
+            RECEIVEABLE,
+            RECEIVED,
+            REFUNDABLE,
+            REAL_REFUND,
+            AJUST_AMOUNT,
+            TRANS_PAID_STATUS,
+            CHARGE_RATE,
+            HANDING_CHARGE,
+            CHARGE_STATUS,
+            MATCH_VER_FLG,
+            STATEMENT_FLG,
+            REMARK,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER)
+        VALUES
+        <foreach collection ="list" item ="slBillItem" index ="index" separator =",">
+        (
+            #{slBillItem.sellerBillId},
+            #{slBillItem.sellerBillNo},
+            #{slBillItem.businessMainId},
+            #{slBillItem.businessMainCode},
+            #{slBillItem.businessMainName},
+            #{slBillItem.businessMainRole},
+            #{slBillItem.settlementStatus},
+            1,
+            #{slBillItem.startDate},
+            #{slBillItem.endDate},
+            #{slBillItem.supplyPlatform},
+            1,
+            #{slBillItem.billAmount},
+            #{slBillItem.receiveable},
+            0,
+            #{slBillItem.refundable},
+            0,
+            0,
+            0,
+            4.6,
+            #{slBillItem.handingCharge},
+            0,
+            0,
+            0,
+            #{slBillItem.remark},
+            0,
+            'BCP153101',
+            #{slBillItem.crtTime},
+            'BCP153101',
+            #{slBillItem.updTime},
+            'BCP153101',
+            #{slBillItem.actTime},
+            1)
+        </foreach>
+    </insert>
+
+    <select id="selectSellerCharging" resultType="com.msk.batch.cp.bean.BCP153101Bean">
+        SELECT
+            sp.USER_ID AS businessMainId,
+            sp.USER_NO AS businessMainCode,
+            sp.USER_NAME AS businessMainName,
+            sp.USER_ROLE AS businessMainRole,
+            <![CDATA[
+            IF(IFNULL(SUM(IFNULL(sc.PAID_AMOUNT, 0)), 0) > IFNULL(srtemp.REFUND_AMOUNT, 0),'2',
+               IF(IFNULL(SUM(IFNULL(sc.PAID_AMOUNT, 0)), 0) < IFNULL(srtemp.REFUND_AMOUNT, 0),'1','3')) AS settlementStatus,
+            ]]>
+            DATE_FORMAT(IFNULL(DATE_ADD(sp.LAST_PERIOD_END, INTERVAL 1 DAY), sp.COMM_DATE), '%Y-%m-%d') AS startDate,
+            DATE_ADD(DATE_FORMAT(IFNULL(DATE_ADD(sp.LAST_PERIOD_END, INTERVAL 1 DAY), sp.COMM_DATE), '%Y-%m-%d'), INTERVAL sp.PERIOD DAY) AS endDate,
+            st.SUPPLY_PLATFORM AS supplyPlatform,
+            IFNULL(SUM(IFNULL(sc.PAID_AMOUNT, 0)), 0) AS billAmount,
+            IFNULL(SUM(IFNULL(sc.PAID_AMOUNT, 0)), 0) AS receiveable,
+            IFNULL(srtemp.REFUND_AMOUNT, 0) AS refundable,
+            IFNULL(SUM(IFNULL(sc.PAID_AMOUNT, 0)), 0) * 4.6 / 100 AS handingCharge
+        FROM
+            so_cp_payment_period sp
+        LEFT JOIN so_cp_sel_charging sc ON sc.BUSINESS_MAIN_ID = sp.USER_ID
+        AND sc.DEL_FLG = 0
+        AND DATE_FORMAT(sc.DELIVERY_TIME, '%Y-%m-%d')
+            BETWEEN DATE_FORMAT(IFNULL(DATE_ADD(sp.LAST_PERIOD_END, INTERVAL 1 DAY), sp.COMM_DATE), '%Y-%m-%d')
+            AND DATE_ADD(DATE_FORMAT(IFNULL(DATE_ADD(sp.LAST_PERIOD_END, INTERVAL 1 DAY), sp.COMM_DATE), '%Y-%m-%d'), INTERVAL sp.PERIOD DAY)
+        LEFT JOIN so_cp_transaction st ON sc.TRANS_CODE = st.TRANS_CODE
+        AND sc.TRANS_TYPE = st.TRANS_TYPE
+        AND st.DEL_FLG = 0
+        LEFT JOIN (
+            SELECT
+                sptemp.USER_ID,
+                SUM(IFNULL(sr.REFUND_AMOUNT, 0)) AS REFUND_AMOUNT
+            FROM
+                so_cp_refund sr,
+                so_cp_payment_period sptemp
+            WHERE
+                sr.DEL_FLG = 0
+            AND sptemp.DEL_FLG = 0
+            AND sr.PAYEE_ID = sptemp.USER_ID
+            AND sr.REFUND_TYPE IN  (0,3)
+            AND DATE_FORMAT(sr.REFUND_TIME, '%Y-%m-%d')
+            BETWEEN DATE_FORMAT(IFNULL(DATE_ADD(sptemp.LAST_PERIOD_END, INTERVAL 1 DAY), sptemp.COMM_DATE), '%Y-%m-%d')
+            AND DATE_ADD(DATE_FORMAT(IFNULL(DATE_ADD(sptemp.LAST_PERIOD_END, INTERVAL 1 DAY), sptemp.COMM_DATE), '%Y-%m-%d'), INTERVAL sptemp.PERIOD DAY
+            )
+            GROUP BY
+                sr.PAYEE_ID
+        ) srtemp ON srtemp.USER_ID = sp.USER_ID
+        WHERE
+            sp.DEL_FLG = 0
+            <![CDATA[
+            AND DATE_FORMAT(NOW(), '%Y-%m-%d') > DATE_ADD(DATE_FORMAT(IFNULL(DATE_ADD(sp.LAST_PERIOD_END, INTERVAL 1 DAY), sp.COMM_DATE), '%Y-%m-%d'), INTERVAL sp.PERIOD DAY
+            )
+            ]]>
+        GROUP BY
+            sp.USER_ID
+        ORDER BY
+            sp.USER_ID
+    </select>
+
+    <select id="selectRefundId" resultType="com.msk.batch.cp.bean.BCP153101Bean">
+        SELECT
+            sr.REFUND_ID AS refundId,
+            sr.PAYEE_ID AS businessMainId
+        FROM
+            so_cp_refund sr,
+            so_cp_payment_period sptemp
+        WHERE
+            sr.DEL_FLG = 0
+        AND sptemp.DEL_FLG = 0
+        AND sr.PAYEE_ID = sptemp.USER_ID
+        AND sr.REFUND_TYPE IN (0,3)
+        AND DATE_FORMAT(sr.REFUND_TIME, '%Y-%m-%d')
+        BETWEEN DATE_FORMAT(IFNULL(DATE_ADD(sptemp.LAST_PERIOD_END, INTERVAL 1 DAY), sptemp.COMM_DATE), '%Y-%m-%d')
+	    AND DATE_ADD(DATE_FORMAT(IFNULL(DATE_ADD(sptemp.LAST_PERIOD_END, INTERVAL 1 DAY), sptemp.COMM_DATE), '%Y-%m-%d'), INTERVAL sptemp.PERIOD DAY
+        )
+        <![CDATA[
+        AND DATE_FORMAT(NOW(), '%Y-%m-%d') > DATE_ADD(DATE_FORMAT(IFNULL(DATE_ADD(sptemp.LAST_PERIOD_END, INTERVAL 1 DAY), sptemp.COMM_DATE), '%Y-%m-%d'), INTERVAL sptemp.PERIOD DAY
+        )
+        ]]>
+        ORDER BY sr.PAYEE_ID
+    </select>
+
+    <select id="selectChargingId" resultType="com.msk.batch.cp.bean.BCP153101Bean">
+        SELECT
+            sc.SEL_CHARGING_ID AS selChargingId,
+            sc.BUSINESS_MAIN_ID AS businessMainId
+        FROM
+            so_cp_payment_period sp,
+            so_cp_sel_charging sc
+        WHERE
+            sc.DEL_FLG = 0
+            AND sp.DEL_FLG = 0
+            AND sc.BUSINESS_MAIN_ID = sp.USER_ID
+            AND DATE_FORMAT(sc.DELIVERY_TIME, '%Y-%m-%d')
+            BETWEEN DATE_FORMAT(IFNULL(DATE_ADD(sp.LAST_PERIOD_END, INTERVAL 1 DAY), sp.COMM_DATE), '%Y-%m-%d')
+            AND DATE_ADD(DATE_FORMAT(IFNULL(DATE_ADD(sp.LAST_PERIOD_END, INTERVAL 1 DAY), sp.COMM_DATE), '%Y-%m-%d'), INTERVAL sp.PERIOD DAY
+            )
+            <![CDATA[
+            AND DATE_FORMAT(NOW(), '%Y-%m-%d') > DATE_ADD(DATE_FORMAT(IFNULL(DATE_ADD(sp.LAST_PERIOD_END, INTERVAL 1 DAY), sp.COMM_DATE), '%Y-%m-%d'), INTERVAL sp.PERIOD DAY
+            )
+            ]]>
+            ORDER BY sc.BUSINESS_MAIN_ID
+    </select>
+
+    <select id="selectSoCpSellerBill" resultType="com.msk.batch.cp.bean.BCP153101Bean"
+            parameterType="com.msk.batch.cp.bean.BCP153101Bean">
+        SELECT
+            max(SELLER_BILL_NO) AS sellerBillNo
+        FROM
+            so_cp_seller_bill
+        WHERE
+            SELLER_BILL_NO  LIKE  #{sellerBillNo}
+    </select>
+</mapper>

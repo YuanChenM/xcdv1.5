@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD142001Logic">
+
+    <!-- map返回 -->
+    <resultMap type="com.msk.product.bean.IPD142001RsResult" id="qltMap">
+        <result property="constantTypeName" column="CONSTANT_TYPE_NAME"/>
+        <collection property="commList" ofType="com.msk.product.bean.IPD142001ChildRsResult">
+            <result property="constantName" column="CONSTANT_NAME"/>
+            <result property="constantValue" column="CONSTANT_VALUE"/>
+        </collection>
+    </resultMap>
+    <!--
+        查询记录是否存在
+    -->
+    <select id="findOne" parameterType="BaseParam" resultMap="qltMap">
+          SELECT
+           CONSTANT_NAME,CONSTANT_VALUE,CONSTANT_TYPE_NAME
+           FROM comm_constant WHERE CONSTANT_TYPE = #{filterMap.constantType}
+           ORDER BY CONSTANT_VALUE
+    </select>
+</mapper>

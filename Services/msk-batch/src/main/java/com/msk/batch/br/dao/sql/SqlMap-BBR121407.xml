@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.br.logic.BBR121407Logic">
+    <select id="findHkGroup" parameterType="BaseParam" resultType="com.msk.core.entity.BrHkGroup">
+        SELECT
+          HK_GROUP_ID AS hkGroupId,
+          CLASSES_CODE AS classesCode,
+          MACHINING_CODE_U AS machiningCodeU,
+          BUYER_TYPE AS buyerType,
+          LGCS_AREA_CODE AS lgcsAreaCode,
+          CITY_CODE AS cityCode
+        FROM
+            br_hk_group
+        WHERE
+            DEL_FLG = 0
+    </select>
+    <select id="findPublicBuyerPool" parameterType="BaseParam" resultType="com.msk.batch.br.bean.BBR121407Bean">
+        SELECT
+          byPoolRs.BUYER_ID AS buyerId,
+          byPoolRs.BUYER_POOL_TYPE AS buyerPoolType
+        FROM
+          br_buyer_pool byPool INNER JOIN
+          br_buyer_pool_relationship byPoolRs ON byPool.BUYER_POOL_ID = byPoolRs.BUYER_POOL_ID AND byPool.DEL_FLG = 0 AND byPoolRs.DEL_FLG = 0
+        WHERE
+          byPool.CLASSES_CODE = #{filterMap.classesCode} AND
+          byPool.MACHINING_CODE_U = #{filterMap.machiningCodeU} AND
+          byPool.LGCS_AREA_CODE = #{filterMap.lgcsAreaCode} AND
+          byPool.CITY_CODE = #{filterMap.cityCode} AND
+          byPool.BUYER_TYPE = #{filterMap.buyerType} AND
+          byPoolRs.BUYER_POOL_TYPE = '0'
+    </select>
+    <select id="findHkSettingByGroupId" parameterType="BaseParam" resultType="com.msk.batch.br.bean.BBR121407Bean">
+        SELECT
+            hkInfo.SL_CODE AS slCode,
+            hkInfo.HOUSE_CODE AS houseCode,
+            hkOInfo.LOCK_MAX_BUYERS AS lockMaxBuyers,
+            hkOInfo.MARKETING_MAX_DAYS AS marketingMaxDays,
+            hkOInfo.VIP_MAX_BUYERS AS vipMaxBuyers,
+            hkOInfo.HOUSE_STAR AS houseStar,
+            COUNT(byOHkRs.BUYER_ID) AS byCount
+        FROM
+            br_hk_info hkInfo
+        LEFT JOIN br_o_hk_buyer_relationship byOHkRs ON hkInfo.SL_CODE = byOHkRs.SL_CODE
+        AND hkInfo.HOUSE_CODE = byOHkRs.HOUSE_CODE
+        AND hkInfo.DEL_FLG = 0
+        AND byOHkRs.DEL_FLG = 0
+        INNER JOIN br_o_hk_info hkOInfo ON hkInfo.SL_CODE = hkOInfo.SL_CODE
+        AND hkInfo.HOUSE_CODE = hkOInfo.HOUSE_CODE
+        AND hkOInfo.DEL_FLG = 0
+        WHERE
+            hkInfo.HK_GROUP_ID = #{filterMap.hkGroupId}
+        GROUP BY
+            hkInfo.HOUSE_CODE,
+            hkInfo.SL_CODE
+        ORDER BY
+            byCount
+    </select>
+    <select id="countCurrentBuyer" parameterType="BaseParam" resultType="int">
+        SELECT
+          COUNT(BUYER_ID)
+        FROM
+          br_buyer_hk_relationship
+        WHERE
+          SL_CODE = #{filterMap.slCode}
+        AND
+          HOUSE_CODE = #{filterMap.houseCode}
+        AND
+          RELATION_TYPE = #{filterMap.bindStatus}
+        AND
+          DEL_FLG = '0'
+    </select>
+    <select id="findBindBuyerByHk" parameterType="BaseParam" resultType="com.msk.batch.br.bean.BBR121407Bean">
+        SELECT
+          hkByRs.SL_CODE AS slCode,
+          hkByRs.HOUSE_CODE AS houseCode,
+          hkByRs.BUYER_ID AS buyerId,
+          hkByRs.RELATION_TYPE AS relationType,
+          hkByRs.START_TIME AS bindStartTime,
+          hkByRs.END_TIME AS bindEndTime
+        FROM
+            br_buyer_hk_relationship hkByRs
+        INNER JOIN br_o_hk_info hkInfo ON hkByRs.SL_CODE = hkInfo.SL_CODE
+        AND hkByRs.HOUSE_CODE = hkInfo.HOUSE_CODE AND hkByRs.DEL_FLG = '0' AND hkInfo.DEL_FLG = '0'
+        WHERE
+            hkByRs.SL_CODE = #{filterMap.slCode}
+        AND hkByRs.HOUSE_CODE = #{filterMap.houseCode}
+        AND hkByRs.RELATION_TYPE <![CDATA[<> '0']]>
+    </select>
+    <update id="modifyBuyerHkRsByHk" parameterType="com.msk.batch.br.bean.BBR121407Bean">
+        UPDATE
+          br_buyer_hk_relationship
+        SET
+          RELATION_TYPE = #{relationType},
+          END_TIME = #{bindEndTime},
+          UPD_ID = #{updId},
+          UPD_TIME = #{updTime}
+        WHERE
+          SL_CODE = #{slCode}
+        AND
+          HOUSE_CODE = #{houseCode}
+        AND
+          BUYER_ID = #{buyerId}
+        AND
+          DEL_FLG = '0'
+    </update>
+    <select id="findRelieveHkByBuyerId" resultType="com.msk.batch.br.bean.BBR121407Bean" parameterType="BaseParam">
+        SELECT
+          SL_CODE,
+          HOUSE_CODE
+        FROM
+          br_buyer_hk_relationship
+        WHERE
+          BUYER_ID = #{filterMap.buyerId}
+        AND RELATION_TYPE = '0'
+        AND DEL_FLG = 0
+        ORDER BY
+          UPD_TIME DESC
+        LIMIT 1
+    </select>
+    <update id="modifyBuyerPoolRsByBuyerId" parameterType="com.msk.batch.br.bean.BBR121407Bean">
+        UPDATE br_buyer_pool byPool
+        INNER JOIN br_buyer_pool_relationship byPoolRs ON byPool.BUYER_POOL_ID = byPoolRs.BUYER_POOL_ID
+        AND byPool.DEL_FLG = '0'
+        AND byPoolRs.DEL_FLG = '0'
+        SET byPoolRs.BUYER_POOL_TYPE = #{buyerPoolType},
+         byPoolRs.IS_DISTRIBUTION = '0',
+         byPoolRs.LEAVE_TIME = #{leaveTime},
+         byPoolRs.UPD_ID = #{updId},
+         byPoolRs.UPD_TIME = #{updTime}
+        WHERE
+            byPool.CLASSES_CODE = #{classesCode}
+        AND byPool.MACHINING_CODE_U = #{machiningCodeU}
+        AND byPool.BUYER_TYPE = #{buyerType}
+        AND byPool.LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND byPool.CITY_CODE = #{cityCode}
+        AND byPoolRs.BUYER_ID = #{buyerId}
+    </update>
+    <select id="findHkSettingByHk" parameterType="BaseParam" resultType="com.msk.batch.br.bean.BBR121407Bean">
+        SELECT
+          hkOInfo.SL_CODE AS slCode,
+          hkOInfo.HOUSE_CODE AS houseCode,
+          hkOInfo.LOCK_MAX_BUYERS AS lockMaxBuyers,
+          hkOInfo.MARKETING_MAX_DAYS AS marketingMaxDays,
+          hkOInfo.VIP_MAX_BUYERS AS vipMaxBuyers,
+          hkOInfo.HOUSE_STAR AS houseStar
+        FROM
+          br_o_hk_info hkOInfo
+        WHERE
+          hkOInfo.SL_CODE = #{filterMap.slCode}
+        AND
+          hkOInfo.HOUSE_CODE = #{filterMap.houseCode}
+        AND
+          hkOInfo.DEL_FLG = 0
+    </select>
+    <update id="addHkBuyerRelationShip" parameterType="com.msk.batch.br.bean.BBR121407Bean">
+        INSERT INTO br_buyer_hk_relationship (
+            ID,
+            HOUSE_CODE,
+            SL_CODE,
+            BUYER_ID,
+            RELATION_TYPE,
+            START_TIME,
+            END_TIME,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )VALUES(
+            #{byHkRsId},
+            #{houseCode},
+            #{slCode},
+            #{buyerId},
+            #{relationType},
+            #{bindStartTime},
+            #{bindEndTime},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1
+        )
+    </update>
+</mapper>

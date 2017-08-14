@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.SO153115Logic">
+    <update id="updateSoCpSellerBill" parameterType="com.msk.core.entity.SoCpBuyerBill">
+        UPDATE so_cp_seller_bill
+        SET
+            AJUST_AMOUNT = #{ajustAmount},
+            VER = VER + 1,
+            SETTLEMENT_STATUS = #{settlementStatus},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime}
+        WHERE
+            SELLER_BILL_ID=#{sellerBillId}
+    </update>
+
+    <insert id="saveSoCpSellerBillHis" parameterType="com.msk.core.entity.SoCpTransaction">
+        INSERT INTO so_cp_seller_bill_his
+        (
+            SELLER_BILL_HIS_ID,
+            SELLER_BILL_ID,
+            OPERATE_ID,
+            OPERATE_DATE,
+            AJUST_DATE,
+
+            AJUST_AMOUNT,
+            AJUST_TYPE,
+            SELLER_BILL_NO,
+            BUSINESS_MAIN_ID,
+            BUSINESS_MAIN_CODE,
+
+            BUSINESS_MAIN_NAME,
+            BUSINESS_MAIN_ROLE,
+            SETTLEMENT_STATUS,
+            SETTLEMENT_FLG,
+            START_DATE,
+
+            END_DATE,
+            PAYMENT_TYPE,
+            SUPPLY_PLATFORM,
+            BILL_TYPE,
+            BILL_AMOUNT,
+
+            RECEIVEABLE,
+            RECEIVED,
+            REFUNDABLE,
+            REAL_REFUND,
+            TRANS_PAID_STATUS,
+
+            CHARGE_RATE,
+            HANDING_CHARGE,
+            CHARGE_STATUS,
+            MATCH_VER_FLG,
+            STATEMENT_FLG,
+            REMARK,
+
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER
+        )
+        VALUES
+        (
+            #{sellerBillHisId},
+            #{sellerBillId},
+            #{operateId},
+            #{operateDate},
+            #{ajustDate},
+
+            #{ajustAmount},
+            #{ajustType},
+            #{sellerBillNo},
+            #{businessMainId},
+            #{businessMainCode},
+
+            #{businessMainName},
+            #{businessMainRole},
+            #{settlementStatus},
+            #{settlementFlg},
+            #{startDate},
+
+            #{endDate},
+            #{paymentType},
+            #{supplyPlatform},
+            #{billType},
+            #{billAmount},
+
+            #{receiveable},
+            #{received},
+            #{refundable},
+            #{realRefund},
+            #{transPaidStatus},
+
+            #{chargeRate},
+            #{handingCharge},
+            #{chargeStatus},
+            #{matchVerFlg},
+            #{statementFlg},
+            #{remark},
+
+            #{delFlg},
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            #{ver}
+        )
+    </insert>
+
+</mapper>

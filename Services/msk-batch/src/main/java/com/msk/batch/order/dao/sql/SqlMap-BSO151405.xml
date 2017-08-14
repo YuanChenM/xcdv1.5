@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.order.logic.BSO151405Logic">
+    <select id="findReturnList" parameterType="BaseParam" resultType="com.msk.batch.order.bean.BSO151405Result">
+        SELECT
+        sr.RETURN_ID as returnId,
+        sr.RETURN_CODE as returnCode,
+        sr.ORDER_ID as orderId,
+        IFNULL(sr.BUYER_CODE,'') as buyerCode,
+        IFNULL(sr.BUYER_NAME,'') as buyerName,
+        so.BUYER_ID as buyerId,
+        so.BUYER_TYPE as buyerType,
+        IFNULL(sr.SELLER_CODE,'') as sellerCode,
+        sr.VER as ver,
+        IFNULL(sr.RETURN_TYPE,'') as returnType,
+        date_format(sr.APPLY_TIME,'%Y-%m-%d %H:%i:%s') as returnTime
+        FROM
+        so_return sr
+        INNER JOIN so_order so
+        ON sr.ORDER_ID = so.ORDER_ID
+        AND so.DEL_FLG = 0
+        WHERE
+        (
+        sr.RETURN_STATUS = #{filterMap.waitProcessStatus}
+        OR sr.RETURN_STATUS = #{filterMap.lateReceiptStatus}
+        )
+        AND sr.DEL_FLG = 0
+    </select>
+
+    <select id="findReturnDetailList"  parameterType="BaseParam" resultType="com.msk.batch.order.bean.BSO151405DetailResult">
+        SELECT
+        srd.DETAIL_ID AS detailId,
+        IFNULL(srd.UNIT,'') AS unit,
+        IFNULL(srd.SKU_CODE,'') AS skuCode,
+        srd.RETURN_QTY AS returnQty,
+        IFNULL(srd.INBOUND_BATCH,'') as inboundBatch,
+        ssod.PD_PRICE AS pdPrice,
+        ssod.ORDER_QTY AS orderQty,
+        'RETURNED' AS inventoryStatus
+        FROM  so_return_detail srd
+        INNER JOIN so_order_ship_detail sosd
+        ON sosd.SHIP_DETAIL_ID = srd.SHIP_DETAIL_ID
+		AND sosd.DEL_FLG = 0
+        INNER JOIN so_sub_order_detail ssod
+        ON sosd.SUB_ORDER_DETAIL_ID = ssod.SUB_ORDER_DETAIL_ID
+        AND ssod.DEL_FLG = 0
+        WHERE srd.RETURN_ID = #{returnId}
+        AND srd.DEL_FLG = 0
+    </select>
+
+    <update id="updateReturnStatus" parameterType="BaseParam">
+        UPDATE SO_RETURN
+        SET RETURN_STATUS = #{returnStatus},
+        UPD_ID = #{updId} ,
+        UPD_TIME = #{updTime} ,
+        VER = VER + 1
+        WHERE RETURN_ID = #{returnId}
+        AND DEL_FLG = 0
+    </update>
+
+    <update id="updateSoReturnStatus" parameterType="BaseParam">
+        UPDATE SO_RETURN_STATUS
+        SET DEL_FLG = 1,
+        UPD_ID = #{updId} ,
+        UPD_TIME = #{updTime} ,
+        VER = VER + 1
+        WHERE RETURN_ID = #{returnId}
+        AND DEL_FLG = 0
+    </update>
+
+    <update id="updateReturnDetailStatus" parameterType="BaseParam">
+        UPDATE SO_RETURN_DETAIL
+        SET DETAIL_STATUS = #{returnStatus},
+        UPD_ID = #{updId} ,
+        UPD_TIME = #{updTime} ,
+        VER = VER + 1
+        WHERE RETURN_ID = #{returnId}
+        AND DEL_FLG = 0
+    </update>
+
+    <insert id="saveSoReturnStatus" parameterType="com.msk.core.entity.SoReturnStatus">
+        INSERT INTO SO_RETURN_STATUS (
+        STATUS_ID,
+        RETURN_ID,
+        RETURN_CODE,
+        RETURN_STATUS,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{statusId},
+        #{returnId},
+        #{returnCode},
+        #{returnStatus},
+        0,
+        #{crtId},
+        #{crtTime},
+        1
+        )
+    </insert>
+</mapper>

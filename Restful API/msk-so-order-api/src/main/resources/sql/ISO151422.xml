@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151422.getPdPriceAndBatch">
+        SELECT
+        sod.PD_PRICE AS pdPrice,
+        sosd.PURCHASE_BATCH AS purchaseBatch,
+        sosd.INBOUND_BATCH AS innerBatch
+        FROM
+        SO_RETURN_DETAIL srd
+        LEFT JOIN SO_ORDER_SHIP_DETAIL sosd
+        ON srd.SHIP_DETAIL_ID = sosd.SHIP_DETAIL_ID
+        LEFT JOIN SO_ORDER_DETAIL sod
+        on sod.ORDER_DETAIL_ID = sosd.ORDER_DETAIL_ID
+        WHERE
+    </sql>
+</sqlList>

@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171193Logic">
+    <select id="findWayDetail" resultType="com.msk.price.bean.SP171193Bean" parameterType="BaseParam">
+        SELECT
+	       swd.WAY_CODE as wayCode,
+	       swd.WAYGRADE_CODE as waygradeCode,
+	       swd.WAYGRADE_NAME as waygradeName,
+           swd.WAYGRADE_START as waygradeStart,
+           swd.WAYGRADE_END as waygradeEnd,
+           swd.WAYGRADE_PERCENT as waygradePercent,
+           swd.SELL_WAY_CODE as sellWayCode
+       FROM
+	       sp_wayg_detail swd
+       WHERE
+	       swd.DEL_FLG = 0
+	   ORDER BY swd.WAY_CODE
+		<if test="paging==true">
+			LIMIT #{startPos},#{pageSize};
+		</if>
+
+
+    </select>
+    <select id="getWayDetailCount" resultType="Integer" parameterType="BaseParam">
+        SELECT	count(1) FROM
+	      (SELECT
+		t.way_code AS wayCode,
+        tt.way_name AS wayName,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 0 THEN
+		concat("≥", t.WAYGRADE_START)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS supOrder,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 1 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order1,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 2 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order2,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 3 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order3,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 4 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order4,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 5 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order5,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 6 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order6,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 7 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order7,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 8 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order8,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 9 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order9
+		FROM
+		sp_wayg_detail t
+        INNER JOIN sp_way tt ON t.way_code=tt.way_code
+		WHERE	t.del_flg = 0 AND tt.del_flg = 0 GROUP BY t.way_code
+	      ) ttt
+
+    </select>
+	<select id="findWay" resultType="com.msk.price.bean.SP171193Result" parameterType="BaseParam">
+		SELECT
+		t.way_code AS wayCode,
+		tt.way_name AS wayName,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 0 THEN
+		concat("≥",CONVERT(t.WAYGRADE_START,UNSIGNED))
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS supOrder,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 1 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order1,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 2 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order2,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 3 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order3,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 4 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order4,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 5 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order5,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 6 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order6,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 7 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order7,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 8 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order8,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 9 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order9
+		FROM
+		sp_wayg_detail t
+		INNER JOIN sp_way tt ON t.way_code=tt.way_code
+		WHERE	t.del_flg = 0 AND tt.del_flg = 0 GROUP BY t.way_code
+		<if test="paging==true">
+			LIMIT #{startPos},#{pageSize};
+		</if>
+
+	</select>
+
+
+</mapper>

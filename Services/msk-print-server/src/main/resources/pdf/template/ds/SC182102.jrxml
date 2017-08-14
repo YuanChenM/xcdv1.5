@@ -1,0 +1,760 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SC182102" language="groovy" pageWidth="1295" pageHeight="1000" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1255" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3b8758a8-c333-4834-8065-895005606217">
+	<property name="ireport.zoom" value="1.2100000000000035"/>
+	<property name="ireport.x" value="309"/>
+	<property name="ireport.y" value="156"/>
+	<parameter name="182101Bean" class="com.msk.print.bean.SC182101Bean"/>
+	<field name="productName" class="java.lang.String"/>
+	<field name="productCode" class="java.lang.String"/>
+	<field name="productTypeName" class="java.lang.String"/>
+	<field name="productFeature" class="java.lang.String"/>
+	<field name="productLevel" class="java.lang.String"/>
+	<field name="productSpecifical" class="java.lang.String"/>
+	<field name="netWeight" class="java.lang.String"/>
+	<field name="packageCode" class="java.lang.String"/>
+	<field name="sendNum" class="java.math.BigDecimal"/>
+	<field name="sendActualNum" class="java.math.BigDecimal"/>
+	<field name="receiveNum" class="java.math.BigDecimal"/>
+	<field name="sendPlanQty" class="java.math.BigDecimal"/>
+	<field name="sendQty" class="java.math.BigDecimal"/>
+	<field name="recriveQty" class="java.math.BigDecimal"/>
+	<field name="differNum" class="java.math.BigDecimal"/>
+	<field name="differQty" class="java.math.BigDecimal"/>
+	<variable name="index" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$V{index}.valueOf(1)]]></variableExpression>
+		<initialValueExpression><![CDATA[1]]></initialValueExpression>
+	</variable>
+	<variable name="sumSendNum" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[new BigDecimal($F{sendNum})]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0000]]></initialValueExpression>
+	</variable>
+	<variable name="sumSendActualNum" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[new BigDecimal($F{sendActualNum})]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="sumReceiveNum" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[new BigDecimal($F{receiveNum})]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="sumSendQty" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[new BigDecimal($F{sendQty})]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="sumSendPlanQty" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[new BigDecimal($F{sendPlanQty})]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="sumDifferNum" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[new BigDecimal($F{differNum})]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="sumDifferQty" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[new BigDecimal($F{differQty})]]></variableExpression>
+		<initialValueExpression><![CDATA[0.0000]]></initialValueExpression>
+	</variable>
+	<variable name="sumReceiveQty" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[new BigDecimal($F{recriveQty})]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.lang.Integer(0)]]></initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="573" splitType="Stretch">
+			<staticText>
+				<reportElement x="32" y="366" width="95" height="20" uuid="dc154604-0fb5-4dbb-aa28-4b8e7cc3383c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[运抵仓库地址:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="7" y="346" width="120" height="20" uuid="ad44b966-0ba4-4b0c-9bcc-8782227aa7bc"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[发货入库时间要求:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="634" y="461" width="95" height="108" uuid="37fbea87-929e-40ff-8341-c2f1701684f4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[仓库收货备注:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="729" y="196" width="225" height="20" uuid="9d42735a-1b8e-4360-8330-c10b437f7152"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getDeliveryExecuteTel()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="156" width="227" height="20" uuid="de4a97e4-03ec-471a-8f18-fd88759c7154"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getDeliveryWarehouseAddr()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="311" width="1255" height="35" uuid="3f50098c-dea9-4b44-b8a2-792b541cb7ab"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14" isBold="false" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[仓库信息]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="729" y="406" width="225" height="20" uuid="27d26b70-21c2-4628-9f1d-b6e8f4314da3"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getStockExecuteTel()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="406" width="227" height="20" uuid="a0e3fbc7-473e-4cd9-b8bb-e97d16e1e205"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getStockExecuteName()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="632" y="80" width="95" height="20" uuid="0f6ac8b1-b2fe-453d-93e1-233b92fd5eb2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[地区:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="426" width="1255" height="35" uuid="d3891d0c-8afc-43bc-b1bd-26e3299404cd"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14" isBold="false" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[发货入库通知单备注]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="32" y="406" width="95" height="20" uuid="152072ae-a1fd-4680-8867-f3d3401703b2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[验收负责人:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="322" y="80" width="95" height="20" uuid="2391d712-56eb-427e-8d3e-1575e6ae3443"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[分销月度:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="729" y="461" width="526" height="108" uuid="2bc78b04-a824-4d8a-91ca-58451c98bd59"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getStockMemo()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="320" y="100" width="97" height="20" uuid="b5602516-e32e-4d31-b1b8-b3fbe4f7e0d9"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[状态:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="634" y="291" width="95" height="20" uuid="5eb52f72-f0f7-40de-ae44-20275d5dbf50"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[联系电话:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="32" y="386" width="95" height="20" uuid="9ebaf0ad-9902-4569-9a18-979b8c881b96"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[仓库负责人:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="17" y="291" width="110" height="20" uuid="b81cfd4f-37d0-4020-9ab1-3a10a129984c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[运输单位执行人:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="729" y="176" width="225" height="20" uuid="b1e7e200-9f00-4a60-9cf2-90b820cabb4c"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getDeliveryResponTel()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="1049" y="80" width="206" height="20" uuid="a0906878-46a6-4017-93c4-df566f15216d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getSuppName()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="954" y="80" width="95" height="20" uuid="9ec9f153-7d2a-47f6-a4a3-0fa64a2a65a4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[供应商:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="45" width="1255" height="35" uuid="2f40bb01-bd9c-4cfe-88e3-41b203071b9c"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14" isBold="false" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[发货入库基本信息]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="386" width="227" height="20" uuid="dcdae5a5-0815-4f04-a9a9-f224c849164f"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getStockResponName()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="120" width="1255" height="35" uuid="b25ee551-8654-460f-ba28-d301d55d74c3"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14" isBold="false" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[发货信息]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="634" y="196" width="95" height="20" uuid="762c834c-7969-43bd-8041-1409b8e7f599"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[联系电话:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="176" width="227" height="20" uuid="9ac9148d-a104-4cdc-96d5-3fc0827cdc3e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getDeliveryResponName()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="32" y="155" width="95" height="20" uuid="355afa02-33f6-4783-8af5-fa9fc9c1ca88"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[发货仓库地点:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="461" width="95" height="108" uuid="f9db81f1-cb69-46db-a24e-a6614f0e25a4"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[供应商发货备注:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="196" width="227" height="20" uuid="4a969ebc-8733-4a9c-9447-ba1f478b8fa2"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getDeliveryExecuteName()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="32" y="175" width="95" height="20" uuid="842a669a-291d-44b9-8585-6ba67f52b95b"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[发货责任人:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="729" y="291" width="225" height="20" uuid="14faa9b2-ff1d-4763-bfd1-ff14ac1fccd3"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getTransportUnitExecuteTel()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="80" width="227" height="20" uuid="f3a26478-4d30-4b3f-8e6a-757692ed9a08"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getDeliveryStockId()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="271" width="227" height="20" uuid="13650c60-ccb8-466a-a6f7-a692bf2c965c"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getTransportUnitResponName()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="32" y="251" width="95" height="20" uuid="9d15ee82-9c23-47a6-8fe7-e3bdcdb32935"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[运输单位名称:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="634" y="406" width="95" height="20" uuid="9e25ab33-49c8-48e3-8614-1b4b8b5434d2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[联系电话:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="729" y="271" width="225" height="20" uuid="147a7dbc-6e79-49bf-acdb-9225cfa413c0"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getTransportUnitResponTel()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="17" y="271" width="110" height="20" uuid="d7b5f53f-002f-452a-86c2-a9258e89b012"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[运输单位负责人:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="32" y="196" width="95" height="20" uuid="c57b2ebb-e8c0-4135-90ad-e38f847560fa"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[发货执行人:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="32" y="100" width="95" height="20" uuid="a63cf7f3-65eb-4f4f-a413-16d8406d42e2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[半旬:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="100" width="227" height="20" uuid="ae97aaa9-16c5-4605-9bea-c840d45ff059"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getHalfName()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="291" width="227" height="20" uuid="42061884-434c-434a-a0ca-6a64512019f6"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getTransportUnitExecuteName()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="729" y="386" width="225" height="20" uuid="8304226e-ebd5-43d6-a363-19477355ede0"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getStockResponTel()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="366" width="227" height="20" uuid="45c77b1e-9c78-49c5-a8b0-e1b0e81d452a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getStockAddr()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="7" y="80" width="120" height="20" uuid="bcd57a66-ee9a-44e2-a69b-c776d371fb69"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[发货入库申请单号:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="634" y="271" width="95" height="20" uuid="62aa6135-3cf0-4241-ae1f-2e78e1465413"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[联系电话:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="346" width="227" height="20" uuid="48116461-d151-435e-867f-18f482b60f01"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getDeliveryStockTimeReq()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="417" y="80" width="215" height="20" uuid="b7afc304-3a24-42cd-b673-8b32db0bbfaa"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getDistMonth()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="216" width="1255" height="35" uuid="d7a64750-d008-4483-adcf-8af19aecef24"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14" isBold="false" pdfEncoding="Identity-H"/>
+				</textElement>
+				<text><![CDATA[运输信息]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="634" y="386" width="95" height="20" uuid="164d5337-9f20-4efe-9046-5d1b6b8ed680"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[联系电话:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="417" y="100" width="215" height="20" uuid="67d2c8e3-b38f-4aea-a25b-dda4a1b7253e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getStatusName()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="727" y="80" width="227" height="20" uuid="fdc0a93f-47a6-425c-968a-369786fdec68"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getLgcsName()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="95" y="461" width="539" height="108" uuid="81495dfa-0755-49de-b62b-37e9440f6175"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getDeliveryMemo()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="132" y="251" width="227" height="20" uuid="cb369e18-9a7b-4fd8-9040-09648e833039"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{182101Bean}.getTransportUnitName()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="634" y="176" width="95" height="20" uuid="1a8f577b-41be-4db4-a596-3b42f50f637c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="none">
+					<font fontName="Arial Unicode MS" size="14"/>
+				</textElement>
+				<text><![CDATA[联系电话:]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="80" width="1255" height="1" uuid="5cf0e695-96ed-46aa-8b8c-61cf692c633d"/>
+			</line>
+			<line>
+				<reportElement x="0" y="45" width="1255" height="1" uuid="7d5f63f9-7c34-449a-83c3-a0e4c412c421"/>
+			</line>
+			<staticText>
+				<reportElement x="2" y="0" width="1253" height="45" uuid="8d071f6c-0b8c-4056-85e5-53bcae58b922"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="24"/>
+				</textElement>
+				<text><![CDATA[发货入库通知单明细管理]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="120" width="1255" height="1" uuid="5af46ff1-5c95-4a66-83d6-fbe6a288dcb9"/>
+			</line>
+			<line>
+				<reportElement x="0" y="155" width="1255" height="1" uuid="804d16a1-9908-4fb6-881d-eba9e50f7447"/>
+			</line>
+			<line>
+				<reportElement x="0" y="216" width="1255" height="1" uuid="e8b64557-bb46-49b3-a120-da7770043971"/>
+			</line>
+			<line>
+				<reportElement x="0" y="250" width="1255" height="1" uuid="fd335b12-87ad-492f-9e17-479b00d8adf5"/>
+			</line>
+			<line>
+				<reportElement x="0" y="311" width="1255" height="1" uuid="4fda4ad4-b9ba-4729-9dae-81c35977309a"/>
+			</line>
+			<line>
+				<reportElement x="0" y="346" width="1255" height="1" uuid="1a2a121d-e82a-450e-852c-810795f1e34c"/>
+			</line>
+			<line>
+				<reportElement x="0" y="426" width="1255" height="1" uuid="3f6c709a-932f-415f-a8ed-e1c26425b4c9"/>
+			</line>
+			<line>
+				<reportElement x="0" y="460" width="1255" height="1" uuid="565e9351-b595-412e-861e-45058a713fd2"/>
+			</line>
+			<line>
+				<reportElement x="0" y="567" width="1255" height="1" uuid="1083ae7e-6d7c-47aa-afa3-70221e3ba624"/>
+			</line>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement x="61" y="-2" width="57" height="20" uuid="0d482bfa-2622-4682-b679-b1e4b35bf10a"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[产品品种]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="148" y="-2" width="54" height="20" uuid="de6a7853-51c5-42dd-b05e-8b113562006b"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[产品特征]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="239" y="-2" width="55" height="20" uuid="63461ee2-b646-457e-906b-1d14bab94f6a"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[产品等级]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="436" y="-2" width="53" height="20" uuid="8dec73af-cccf-4e2a-9b69-a34622945446"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[净重]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="651" y="-2" width="85" height="20" uuid="cfc46eae-6d5a-4a46-bdef-9930e229b61a"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[实际发货箱数]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="843" y="-2" width="85" height="20" uuid="c1f6d939-b7a4-43f8-a4c6-520c1c7ad379"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[计划发货重量]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="928" y="-2" width="85" height="20" uuid="95d469c6-c929-4673-8ac2-489fdfe6b20d"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[实际发货重量]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1013" y="-2" width="85" height="20" uuid="cc16fb9a-5e39-4be6-9810-7118e29d0c3c"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[实际收货重量]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1175" y="-2" width="80" height="20" uuid="2e00548d-d54b-45ca-9419-4f3c1c4b4a7f"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[差异重量]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="-2" width="38" height="20" uuid="a95acf67-0b7d-435d-a142-54587dc8b2ee"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[编号]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="19" width="1255" height="1" uuid="41ddca48-ba18-40f0-8cf5-839becd972db"/>
+			</line>
+			<staticText>
+				<reportElement x="542" y="-2" width="85" height="20" uuid="09623075-573a-4905-bec1-cc6ee2271471"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[计划发货箱数]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="757" y="-2" width="85" height="20" uuid="3bedccce-68e1-45b9-800b-8d78490e5383"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[实际收货箱数]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1098" y="-2" width="77" height="20" uuid="f6074b9e-be88-4f8a-b24c-edf491f5c975"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[差异箱数]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="338" y="-2" width="62" height="20" uuid="486d6331-1c5f-4593-84d4-7d0888e79b7b"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Arial Unicode MS" size="13"/>
+				</textElement>
+				<text><![CDATA[外包装规格]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="36" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="65" y="0" width="46" height="20" uuid="786922dd-e585-47b0-9acd-ff540cb74234"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{productTypeName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="153" y="0" width="49" height="20" uuid="d0704893-e21d-457c-86f2-f53e55ecbe53"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{productFeature}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.0000" isBlankWhenNull="true">
+				<reportElement x="437" y="0" width="53" height="20" uuid="9db56a41-3dff-4baf-8377-32b9d9833e12"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{netWeight}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0;-#,##0" isBlankWhenNull="true">
+				<reportElement x="542" y="0" width="85" height="20" uuid="b66f10d0-957e-4f30-8599-9b3cc6f647e8"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sendNum}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0;-#,##0" isBlankWhenNull="true">
+				<reportElement x="757" y="0" width="85" height="20" uuid="eeae56db-a8f2-4df7-8a7d-205a1e45ff2d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{receiveNum}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement x="843" y="0" width="85" height="20" uuid="9b3b8d33-ca11-47b6-b99e-a795ec3b4ffa"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sendPlanQty}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement x="928" y="0" width="85" height="20" uuid="f415c760-7487-4934-b4b2-b6dac7195598"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sendQty}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement x="1175" y="0" width="80" height="20" uuid="91a4f09a-5494-44b9-9f50-395499f40276"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{differQty}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="38" height="20" uuid="be794665-a29e-4893-9b40-8f24c035dec7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{index}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0;-#,##0" isBlankWhenNull="true">
+				<reportElement x="651" y="0" width="85" height="20" uuid="0b2aeb3c-cef5-4f92-8b42-ca5e7dfdfae2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sendActualNum}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00" isBlankWhenNull="true">
+				<reportElement x="1013" y="0" width="85" height="20" uuid="e253f3b9-7b58-4c25-8cbc-f4dd87ee5c1a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{recriveQty}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0;-#,##0" isBlankWhenNull="true">
+				<reportElement x="1098" y="0" width="77" height="20" uuid="4243a0ae-7bad-46e3-9fff-e053e6e3cf65"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{differNum}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="238" y="0" width="55" height="20" uuid="9133cd3b-9e20-4f94-8870-4defec3662b6"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{productLevel}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="335" y="0" width="62" height="20" uuid="127fbe39-c967-40ec-97f4-7900a4e0e33d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{productSpecifical}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<textField pattern="#,##0;-#,##0">
+				<reportElement x="542" y="0" width="85" height="20" uuid="be26617f-fa52-46a7-9db2-91ca52fd0ba1"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sumSendNum}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0;-#,##0">
+				<reportElement x="651" y="0" width="85" height="20" uuid="8db8b2f2-8dbf-4e69-86e1-43094ce4b095"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sumSendActualNum}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0;-#,##0">
+				<reportElement x="757" y="0" width="85" height="20" uuid="3dc0ee08-f9b5-478f-bdc2-b42ea2f83772"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sumReceiveNum}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00">
+				<reportElement x="928" y="0" width="85" height="20" uuid="bb8cc9aa-d104-403c-a5ac-a09795fc3e1d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sumSendQty}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00">
+				<reportElement x="843" y="0" width="85" height="20" uuid="03f86031-2f2e-4b19-8908-8dae9e407ebb"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sumSendPlanQty}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00">
+				<reportElement x="1013" y="0" width="85" height="20" uuid="26f50a1b-c90c-49ed-ac98-2cb5eec26462"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sumReceiveQty}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0;-#,##0">
+				<reportElement x="1098" y="0" width="77" height="20" uuid="d54e2fe6-a527-4d26-82a4-95ca4f4be006"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sumDifferNum}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00;-#,##0.00">
+				<reportElement x="1175" y="0" width="80" height="20" uuid="ffce9c15-b61f-42c0-94cf-f67b1e3f07c6"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sumDifferQty}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="427" y="0" width="82" height="20" uuid="22ab3a11-d216-4ae7-b2d6-056ba425c4a5"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial Unicode MS" size="12"/>
+				</textElement>
+				<text><![CDATA[合计:]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

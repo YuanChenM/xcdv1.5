@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121417Logic">
+    <insert id="save" parameterType="com.msk.core.entity.BrOBuyerInfo">
+        INSERT INTO BR_O_BUYER_INFO (
+        BUYER_ID,
+        BUYER_CODE,
+        BUYER_NAME,
+        BUYER_ACCOUNT,
+        BUYER_TEL,
+        BUSI_TEL,
+        STORE_NO,
+        BUYER_WECHAT,
+        BUYER_QQ,
+        MARKET_CODE,
+        MARKET_NAME,
+        MARKET_LEVEL,
+        MARKET_LEVEL_NAME,
+        BUYER_TYPE,
+        BUYER_TYPE_NAME,
+        LGCS_AREA_CODE,
+        LGCS_AREA_NAME,
+        CITY_CODE,
+        CITY_NAME,
+        DISTRICT_CODE,
+        DISTRICT_NAME,
+        MARKETINGS_STATUS,
+        MARKETINGS_STATUS_NAME,
+        MARKET_EXCEPTION_STATUS,
+        MARKET_EXCEPTION_REMARK,
+        BOSS_NAME,
+        BOSS_TEL,
+        BOSS_QQ,
+        BOSS_WECHAT,
+        REC_PER_NAME,
+        REC_PER_TEL,
+        HABIT_REC_TIME,
+        EARLIEST_REC_TIME,
+        LATEST_REC_TIME,
+        DELIVERY_ADDR,
+        REFERENCE_ADDR,
+        MANAGE_ADDR,
+        PAYMENT_TYPE,
+        SALES_TARGET,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{buyerId},
+        #{buyerCode},
+        #{buyerName},
+        #{buyerAccount},
+        #{buyerTel},
+        #{busiTel},
+        #{storeNo},
+        #{buyerWechat},
+        #{buyerQq},
+        #{marketCode},
+        #{marketName},
+        #{marketLevel},
+        #{marketLevelName},
+        #{buyerType},
+        #{buyerTypeName},
+        #{lgcsAreaCode},
+        #{lgcsAreaName},
+        #{cityCode},
+        #{cityName},
+        #{districtCode},
+        #{districtName},
+        #{marketingsStatus},
+        #{marketingsStatusName},
+        #{marketExceptionStatus},
+        #{marketExceptionRemark},
+        #{bossName},
+        #{bossTel},
+        #{bossQq},
+        #{bossWechat},
+        #{recPerName},
+        #{recPerTel},
+        #{habitRecTime},
+        #{earliestRecTime},
+        #{latestRecTime},
+        #{deliveryAddr},
+        #{referenceAddr},
+        #{manageAddr},
+        #{paymentType},
+        #{salesTarget},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1)
+    </insert>
+
+    <select id="countOBuyerInfo" resultType="int" parameterType="com.msk.core.entity.BrOBuyerInfo">
+        SELECT
+           COUNT(1)
+           FROM
+        BR_O_BUYER_INFO
+        WHERE DEL_FLG = '0'
+        AND BUYER_ID = #{buyerId}
+    </select>
+    <insert id="saveBuyerPdCla" parameterType="com.msk.core.entity.BrOBuyerPdCla">
+        INSERT INTO BR_O_BUYER_PD_CLA (
+        ID,
+        BUYER_ID,
+        CLASSES_CODE,
+        CLASSES_NAME,
+        MACHINING_CODE,
+        MACHINING_NAME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+         (
+         #{id},
+         #{buyerId},
+         #{classesCode},
+         #{classesName},
+         #{machiningCode},
+         #{machiningName},
+         0,
+         #{crtId},
+         #{crtTime},
+         #{updId},
+         #{updTime},
+         #{actId},
+         #{actTime},
+         1)
+    </insert>
+
+    <select id="countOBuyerPdCla" resultType="int" parameterType="com.msk.core.entity.BrOBuyerPdCla">
+        SELECT
+           COUNT(1)
+           FROM
+        BR_O_BUYER_PD_CLA
+        WHERE DEL_FLG = '0'
+        AND BUYER_ID = #{buyerId}
+    </select>
+
+    <update id="modifyOBuyerInfo" parameterType="com.msk.core.entity.BrOBuyerInfo">
+        UPDATE BR_O_BUYER_INFO
+        SET
+        BUYER_CODE = #{buyerCode},
+        BUYER_NAME = #{buyerName},
+        BUYER_ACCOUNT = #{buyerAccount},
+        BUYER_TEL = #{buyerTel},
+        BUSI_TEL = #{busiTel},
+        STORE_NO = #{storeNo},
+        BUYER_WECHAT = #{buyerWechat},
+        BUYER_QQ = #{buyerQq},
+        MARKET_CODE = #{marketCode},
+        MARKET_NAME = #{marketName},
+        MARKET_LEVEL = #{marketLevel},
+        MARKET_LEVEL_NAME = #{marketLevelName},
+        BUYER_TYPE = #{buyerType},
+        BUYER_TYPE_NAME = #{buyerTypeName},
+        LGCS_AREA_CODE = #{lgcsAreaCode},
+        LGCS_AREA_NAME = #{lgcsAreaName},
+        CITY_CODE = #{cityCode},
+        CITY_NAME = #{cityName},
+        DISTRICT_CODE = #{districtCode},
+        DISTRICT_NAME = #{districtName},
+        MARKETINGS_STATUS = #{marketingsStatus},
+        MARKETINGS_STATUS_NAME = #{marketingsStatusName},
+        MARKET_EXCEPTION_STATUS = #{marketExceptionStatus},
+        MARKET_EXCEPTION_REMARK = #{marketExceptionRemark},
+        BOSS_NAME = #{bossName},
+        BOSS_TEL = #{bossTel},
+        BOSS_QQ = #{bossQq},
+        BOSS_WECHAT = #{bossWechat},
+        REC_PER_NAME = #{recPerName},
+        REC_PER_TEL = #{recPerTel},
+        HABIT_REC_TIME = #{habitRecTime},
+        EARLIEST_REC_TIME = #{earliestRecTime},
+        LATEST_REC_TIME = #{latestRecTime},
+        DELIVERY_ADDR = #{deliveryAddr},
+        REFERENCE_ADDR = #{referenceAddr},
+        MANAGE_ADDR = #{manageAddr},
+        PAYMENT_TYPE = #{paymentType},
+        SALES_TARGET = #{salesTarget}
+        WHERE DEL_FLG = '0'
+        AND BUYER_ID = #{buyerId}
+    </update>
+
+    <update id="modifyOBuyerPdCla" parameterType="com.msk.core.entity.BrOBuyerPdCla">
+        UPDATE BR_O_BUYER_PD_CLA
+        SET
+        CLASSES_CODE = #{classesCode},
+        CLASSES_NAME = #{classesName},
+        MACHINING_CODE = #{machiningCode},
+        MACHINING_NAME = #{machiningName}
+        WHERE DEL_FLG = '0'
+        AND BUYER_ID = #{buyerId}
+    </update>
+</mapper>

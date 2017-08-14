@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.br.logic.BBR12140303Logic">
+
+    <!--清除卖家基本数据-->
+    <delete id="deleteSlProduct" parameterType="BaseParam">
+       DELETE  FROM  BR_O_SL_PRODUCT
+    </delete>
+
+    <!--同步卖家产品数据-->
+    <insert id="addSlProduct" parameterType="BaseParam">
+        INSERT INTO
+          BR_O_SL_PRODUCT (
+				CLASSES_CODE,
+				MACHINING_CODE,
+				BREED_CODE,
+				FEATURE_CODE,
+				SL_RECORD,
+				DIST_FLG,
+				STATUS,
+
+				DEL_FLG,
+				CRT_ID,
+				CRT_TIME,
+				UPD_ID,
+				UPD_TIME,
+				ACT_ID,
+				ACT_TIME,
+				VER
+          ) SELECT
+				PD_CLASSES_CODE,
+				MACHINING_CODE,
+				PD_BREED_CODE,
+				PD_FEATURE_CODE,
+				'1',
+				DIST_FLG,
+				STATUS,
+				'0',
+
+				#{crtId},
+				#{crtTime},
+				#{updId},
+				#{updTime},
+				#{actId},
+				#{actTime},
+		 		1
+        FROM
+	        SL_PRODUCT
+       GROUP BY
+			PD_CLASSES_CODE,
+			MACHINING_CODE,
+			PD_BREED_CODE,
+			PD_FEATURE_CODE
+
+    </insert>
+
+</mapper>

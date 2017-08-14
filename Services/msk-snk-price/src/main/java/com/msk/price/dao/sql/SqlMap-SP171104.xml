@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171104Logic">
+
+    <update id="modifyDemandApply" parameterType="com.msk.price.bean.SP171104Param">
+        UPDATE SP_SELLER_PD_DEMANDAPPLY_NUM
+        SET
+        PASS_NUM = #{passNum}
+        ,IS_CONFIRM = #{isConfirm}
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        ,VER = VER + 1
+        WHERE
+        DEMAND_ID=#{demandId}
+        AND DEL_FLG=0
+    </update>
+
+    <insert id="save" parameterType="com.msk.price.bean.SP171104Param">
+        INSERT INTO SP_SELLER_PD_DEMANDAPPLY_NUM_HIS
+        (
+         DEMAND_HIS_ID
+         ,DEMAND_ID
+         ,DEMAND_DETAIL_ID
+         ,MODIFY_NUM
+         ,REMARK
+         ,ROLE
+         ,DEL_FLG
+         ,CRT_ID
+         ,CRT_TIME
+         ,UPD_ID
+         ,UPD_TIME
+         ,ACT_ID
+         ,ACT_TIME
+         ,VER
+          )
+          VALUES (
+           #{filterMap.demandHisId}
+          ,#{demandId}
+          ,#{filterMap.demandDetailId}
+          ,#{passNum}
+          ,#{remark}
+          ,1
+          ,0
+          ,#{crtId}
+          ,#{crtTime}
+          ,#{updId}
+          ,#{updTime}
+          ,#{actId}
+          ,#{actTime}
+          ,1
+          )
+    </insert>
+
+    <select id="findDemandDetailId" parameterType="com.msk.price.bean.SP171104Param" resultType="java.lang.Object">
+        SELECT
+        IFNULL(MAX(DEMAND_DETAIL_ID), 0) + 1
+        FROM
+        SP_SELLER_PD_DEMANDAPPLY_NUM_HIS
+        WHERE
+        DEMAND_ID=#{demandId}
+    </select>
+    
+    <select id="findDemandApply" parameterType="com.msk.price.bean.SP171104Param" resultType="com.msk.price.bean.SP171104Bean">
+        SELECT
+        APPLY_NUM AS applyNum
+        ,PASS_NUM AS passNum
+        ,IS_CONFIRM AS isConfirm
+        ,EP_NAME AS epName
+        ,VER AS ver
+        FROM
+        SP_SELLER_PD_DEMANDAPPLY_NUM
+        WHERE
+        DEMAND_ID = #{demandId}
+        AND DEL_FLG=0
+    </select>
+
+    <select id="findConstRatio" parameterType="com.msk.price.bean.SP171104Param" resultType="com.msk.price.bean.SP171104Bean">
+        SELECT
+        RATIO_TYPE_DETAIL AS ratioTypeDetail
+        ,RATIO_TYPE_DETAIL_VAL AS ratioTypeDetailVal
+        FROM
+        SP_CONST_RATIO
+        WHERE RATIO_TYPE = #{filterMap.ratioType}
+        AND DEL_FLG = 0
+    </select>
+
+    <select id="findDemandPublish" parameterType="com.msk.price.bean.SP171104Param" resultType="com.msk.price.bean.SP171104Bean">
+        SELECT
+        PUBLISH_TOTAL_NUM AS publishTotalNum
+        ,GRADE_RATIO1 AS gradeRatio1
+        ,GRADE_RATIO2 AS gradeRatio2
+        ,GRADE_RATIO3 AS gradeRatio3
+        FROM
+        SP_PD_DEMAND_PUBLISH
+        WHERE PUBLISH_YM = #{demandYearMonth}
+        AND  LGCS_CODE = #{lgcsCode}
+        AND PD_TYPE_CODE = #{filterMap.pdTypeCode}
+        AND DEL_FLG = 0
+    </select>
+
+    <select id="findList" resultType="com.msk.price.bean.SP171104Bean" parameterType="com.msk.price.bean.SP171104Param">
+        SELECT
+         LGCS_CODE AS districtCode,
+         SL_CODE AS sellerCode,
+         EP_NAME AS epName
+         FROM SP_SELLER_PD_DEMANDAPPLY_NUM
+          where LGCS_CODE=#{lgcsCode}
+          AND DEMAND_YEARMONTH=#{demandYearMonth}
+          AND IS_CONFIRM !=0 GROUP BY sellerCode;
+    </select>
+</mapper>

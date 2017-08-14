@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171192Logic">
+    <select id="findWayDetail" resultType="com.msk.price.bean.SP171192Bean" parameterType="BaseParam">
+        SELECT
+        swd.WAY_CODE as wayCode,
+        swd.WAYGRADE_CODE as waygradeCode,
+        swd.WAYGRADE_NAME as waygradeName,
+        swd.WAYGRADE_START as waygradeStart,
+        swd.WAYGRADE_END as waygradeEnd,
+        swd.WAYGRADE_PERCENT as waygradePercent,
+        swd.SELL_WAY_CODE as sellWayCode
+        FROM
+        sp_wayg_detail swd
+        WHERE
+        swd.DEL_FLG = 0
+        ORDER BY swd.WAY_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+
+
+    </select>
+    <select id="getWayDetailCount" resultType="Integer" parameterType="BaseParam">
+        SELECT	count(1) FROM
+        (SELECT
+		t.way_code AS wayCode,
+        tt.way_name AS wayName,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 0 THEN
+		concat("≥", t.WAYGRADE_START)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS supOrder,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 1 THEN
+		concat("≥", t.WAYGRADE_START)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order1,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 2 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order2,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 3 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order3,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 4 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order4,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 5 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order5,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 6 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order6,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 7 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order7,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 8 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order8,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 9 THEN
+		concat(
+		t.WAYGRADE_START,
+		"-",
+		t.WAYGRADE_END
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order9
+		FROM
+		sp_wayg_detail t
+    INNER JOIN sp_way tt ON t.way_code=tt.way_code
+		WHERE	t.del_flg = 0 AND tt.del_flg = 0 GROUP BY t.way_code
+        ) ttt
+
+    </select>
+
+
+    <update id="delWay" parameterType="BaseParam">
+        update sp_wayg_detail t set t.del_flg = 1
+		<!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+		,UPD_ID = #{updId},
+		UPD_TIME = #{updTime}
+		<!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+        where t.way_code=#{wayCode}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		AND  DEL_FLG='0'
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+	<update id="delMainWay" parameterType="BaseParam">
+		update sp_way t set t.del_flg = 1
+		<!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+		,UPD_ID = #{updId},
+		UPD_TIME = #{updTime}
+		<!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+		where t.way_code=#{wayCode}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		AND  DEL_FLG='0'
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+	</update>
+
+    <select id="findMaxCode" resultType="com.msk.price.bean.SP171192Bean" parameterType="BaseParam">
+        select MAX(t.WAY_CODE+0)+1 as wayCode from sp_wayg_detail t where t.DEL_FLG=0
+    </select>
+
+    <select id="findWay" resultType="com.msk.price.bean.SP171192Result" parameterType="BaseParam">
+		SELECT
+		t.way_code AS wayCode,
+		tt.way_name AS wayName,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 0 THEN
+		concat(t.waygrade_percent)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS supBlance,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 1 THEN
+		concat(t.waygrade_percent)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS blance1,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 2 THEN
+		concat(t.waygrade_percent)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS blance2,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 3 THEN
+		concat(t.waygrade_percent)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS blance3,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 4 THEN
+		concat(t.waygrade_percent)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS blance4,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 5 THEN
+		concat(t.waygrade_percent)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS blance5,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 6 THEN
+		concat(t.waygrade_percent)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS blance6,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 7 THEN
+		concat(t.waygrade_percent)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS blance7,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 8 THEN
+		concat(t.waygrade_percent)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS blance8,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 9 THEN
+		concat(t.waygrade_percent)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS blance9,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 0 THEN
+		concat("≥", CONVERT(t.WAYGRADE_START,UNSIGNED))
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS supOrder,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 1 THEN
+		concat(
+		<!--Modif for Bug#3345 at 2016/10/14 by ni_shaotang Start-->
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		<!--Modif for Bug#3345 at 2016/10/14 by ni_shaotang End-->
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order1,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 2 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order2,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 3 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order3,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 4 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order4,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 5 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order5,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 6 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order6,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 7 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order7,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 8 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order8,
+		REPLACE (
+		group_concat(
+		CASE
+		WHEN t.WAYGRADE_CODE = 9 THEN
+		concat(
+		CONVERT(t.WAYGRADE_START,UNSIGNED),
+		"-",
+		CONVERT(t.WAYGRADE_END,UNSIGNED)
+		)
+		ELSE
+		''
+		END
+		),
+		',',
+		''
+		) AS order9
+		FROM
+		sp_wayg_detail t
+		INNER JOIN sp_way tt ON t.way_code=tt.way_code
+		WHERE	t.del_flg = 0 AND tt.del_flg = 0 GROUP BY t.way_code
+    <if test="paging==true">
+        LIMIT #{startPos},#{pageSize};
+     </if>
+
+    </select>
+
+
+</mapper>

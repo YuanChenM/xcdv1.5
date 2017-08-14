@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241103000Logic">
+    <select id="findList" resultType="com.msk.core.entity.SlMstCert" parameterType="BaseParam">
+        SELECT
+        slMstCert.CERT_ID AS certId,
+        slMstCert.CERT_NAME AS certName,
+        slMstCert.REQ_FLG AS reqFlg,
+        slMstCert.SORT AS sort
+        from SL_MST_CERT slMstCert
+        WHERE  slMstCert.DEL_FLG = 0
+    </select>
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141137Logic">
+    <select id="count"  resultType="int">
+         SELECT
+            COUNT(DISTINCT(B.STANDARD_ID))
+            FROM PD_TSP_STD B
+            LEFT JOIN PD_STANDARD A ON A.STANDARD_ID = B.STANDARD_ID
+    </select>
+
+    <!-- map返回 -->
+    <resultMap type="com.msk.product.bean.IPD141137RsTspItemBean" id="qltMap">
+            <result property="tspStdClaId" column="PARENT_ID"/>
+            <result property="tspStdClaName" column="PARENT_NAME"/>
+            <collection property="tspStdSublist" ofType="com.msk.product.bean.IPD141137RsTspBean">
+                <result property="tspStdItemId" column="TSP_STD_ITEM_ID"/>
+                <result property="tspStdItemName" column="TSP_STD_ITEM_NAME"/>
+                <result property="okVal" column="TSP_OK_VAL"/>
+                <result property="ngVal" column="TSP_NG_VAL"/>
+            </collection>
+    </resultMap>
+
+    <select id="findList" parameterType="com.msk.product.bean.IPD141137RsParam" resultMap="qltMap">
+        SELECT
+         A.TSP_STD_ITEM_ID
+        ,C.TSP_STD_ITEM_NAME
+        ,A.TSP_OK_VAL
+        ,A.TSP_NG_VAL
+        ,C.PARENT_ID
+        ,C.PARENT_NAME
+        FROM
+        PD_TSP_STD AS A
+        LEFT JOIN PD_TSP_STD_ITEM C ON A.TSP_STD_ITEM_ID = C.TSP_STD_ITEM_ID
+        LEFT JOIN PD_STANDARD B ON A.STANDARD_ID = B.STANDARD_ID
+        WHERE  A.STANDARD_ID = #{filterMap.standardId}
+        ORDER BY A.STANDARD_ID,A.TSP_STD_ITEM_ID
+    </select>
+
+    <select id="getPageCount" parameterType="com.msk.product.bean.IPD141137RsParam" resultType="int">
+        SELECT
+            COUNT(DISTINCT(B.STANDARD_ID))
+            FROM PD_TSP_STD B
+            LEFT JOIN PD_STANDARD A ON A.STANDARD_ID = B.STANDARD_ID
+    </select>
+
+    <select id="findPageList" parameterType="com.msk.product.bean.IPD141137RsParam" resultType="com.msk.product.bean.IPD141137RsBean">
+        SELECT
+        DISTINCT(B.STANDARD_ID) AS standardId
+        ,A.CLASSES_CODE AS classesCode
+        ,A.BREED_CODE AS  breedCode
+        ,A.MACHINING_CODE AS machiningCode
+        ,A.FEATURE_CODE AS featureCode
+        FROM PD_TSP_STD B
+        LEFT JOIN PD_STANDARD A ON A.STANDARD_ID = B.STANDARD_ID
+        ORDER BY B.STANDARD_ID
+        <if test="startPos>=0 and pageCount>0">
+            LIMIT #{startPos}, #{pageCount}
+        </if>
+    </select>
+</mapper>
+
+
+
+
+
+
+

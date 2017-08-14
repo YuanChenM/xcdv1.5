@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101133RsLogic">
+
+    <select id="findHouseAccountByBuyer" resultType="int" parameterType="com.msk.core.entity.SlHouseAccount">
+      SELECT count(1)
+      FROM sl_house_account
+      <where>
+          (DEL_FLG IS NULL OR DEL_FLG =0)
+          <if test="slCode !=null and slCode !=''">
+              AND SL_CODE = #{slCode}
+          </if>
+          <if test="houseCode !=null and houseCode !=''">
+              AND HOUSE_CODE = #{houseCode}
+          </if>
+      </where>
+    </select>
+
+
+    <select id="findBuyerExist" resultType="com.msk.core.entity.SlBsBuyer" parameterType="BaseParam">
+        SELECT BUYER_ID AS buyerId
+        FROM `sl_bs_buyer`
+        WHERE (DEL_FLG IS NULL OR DEL_FLG =0)
+        AND BUYER_ID IN
+        <foreach collection="filterMap.hkBuyers.buyerIds" item="item" index="index" open="(" separator="," close=")" >
+          #{item.buyerId}
+        </foreach>
+    </select>
+
+    <select id="findBuyerIsDel" resultType="com.msk.core.entity.SlBsBuyer" parameterType="BaseParam">
+        SELECT
+        SL_CODE AS slCode,
+        HOUSE_CODE AS houseCode,
+        BUYER_ID AS buyerId,
+        START_TIME AS startTime,
+        END_TIME AS endTime,
+        APPLY_SIDE AS applySide,
+        APPLY_STATUS AS applyStatus,
+        APPLY_TIME AS applyTime,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+        FROM `sl_bs_buyer`
+        WHERE DEL_FLG = '1'
+        AND BUYER_ID IN
+        <foreach collection="filterMap.buyerList" item="item" index="index" open="(" separator="," close=")" >
+            #{item.buyerId}
+        </foreach>
+    </select>
+
+    <insert id="saveHkBuyer" parameterType="BaseParam">
+      INSERT INTO sl_bs_buyer
+      (
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        APPLY_SIDE,
+        APPLY_STATUS,
+        APPLY_TIME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+      )
+        VALUES
+        <foreach collection ="filterMap.buyerList" item ="item" index ="index" separator =",">
+            (
+            #{item.slCode},
+            #{item.houseCode},
+            #{item.buyerId},
+            #{item.startTime},
+            #{item.endTime},
+            #{item.applySide},
+            #{item.applyStatus},
+            #{item.applyTime},
+            #{item.delFlg},
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            #{item.actId},
+            #{item.actTime},
+            0
+            )
+        </foreach>
+    </insert>
+
+    <insert id="saveBuyerHis" parameterType="BaseParam">
+        INSERT INTO sl_bs_buyer_his
+        (
+        HIS_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        APPLY_SIDE,
+        APPLY_STATUS,
+        APPLY_TIME,
+        BUYER_REASON,
+        BUYERSHOP_REASON,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection ="filterMap.buyerHisList" item ="item" index ="index" separator =",">
+            (
+            #{item.hisId},
+            #{item.slCode},
+            #{item.houseCode},
+            #{item.buyerId},
+            #{item.startTime},
+            #{item.endTime},
+            #{item.applySide},
+            #{item.applyStatus},
+            #{item.applyTime},
+            #{item.buyerReason},
+            #{item.buyershopReason},
+            #{item.delFlg},
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            #{item.actId},
+            #{item.actTime},
+            #{item.ver}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateSlBsBuyer" parameterType="com.msk.core.entity.SlBsBuyer">
+      UPDATE sl_bs_buyer SET
+        SL_CODE = #{slCode},
+        HOUSE_CODE = #{houseCode},
+        BUYER_ID = #{buyerId},
+        START_TIME = #{startTime},
+        END_TIME = #{endTime},
+        APPLY_SIDE = #{applySide},
+        APPLY_STATUS = #{applyStatus},
+        APPLY_TIME = #{applyTime},
+        DEL_FLG = #{delFlg},
+        CRT_ID = #{crtId},
+        CRT_TIME = #{crtTime},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        ACT_ID = #{actId},
+        ACT_TIME = #{actTime},
+        VER = #{ver}
+        WHERE BUYER_ID = #{buyerId} AND DEL_FLG = '1'
+    </update>
+</mapper>

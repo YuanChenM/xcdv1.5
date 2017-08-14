@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="resources/js/BY121218.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>产品品类调研</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div style="width: 80%;margin-left:30px;" class="divCommon2">根据指标和标准,记录买家调研意见</div>
+            <div style="width: 85%;margin-left:25px;" class="divCommon2"><span style="padding-left:15px;">指标项目</span></div>
+            <div style="width: 85%;margin-left:25px;" class="divCommon3">
+                <div style="padding-left:25px;padding-top: 10px;">规划先产品需求规格(市场需求)</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <input id="demandFeature" name="demandFeature" type="text"/>
+                </div>
+                <div style="padding-left:20px;width:200px;">
+                    <input name="hasDemand" id="hasDemand" type="checkbox" data-mini="true" onchange="isDemand(this)"/>
+                    <label for="hasDemand" style="color:#52C2E9;background-color:#F0F2F5;border-style: none;font-size: 17px;">是否有需求</label>
+                </div>
+                <div style="padding-left:25px;">日需求量(箱)</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <input id="demandQty" name="demandQty" type="text" readonly="readonly"/>
+                </div>
+                <div style="padding-left:25px;">订货量(箱)</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <input id="orderQty" name="orderQty" type="text" />
+                </div>
+                <div style="padding-left:25px;">希望价格区间(元/箱)</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <input id="hopePrice" name="hopePrice" type="text" />
+                </div>
+                <div style="padding-left:25px;">配送时间</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <input id="delivery" name="delivery" type="text" />
+                </div>
+            </div>
+            <div style="width: 85%;margin-left:25px;" class="divCommon3"><span style="padding-left:25px;">备注</span></div>
+            <div style="width: 85%;margin-left:25px;" class="divCommon3">
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea id="remark" name="remark" ></textarea>
+                </div>
+            </div>
+            <div style="width: 85%;margin-left:25px;margin-top:20px;" class="ui-grid-a">
+                <div style="width: 40%;" class="ui-block-a" onclick="skip()"><div style="width: 100%;" class="buttonDiv2" onmouseover="javascript:this.style.backgroundColor='#4169E1'">跳过</div></div>
+                <div style="width: 40%;margin-left:60px;" class="ui-block-b" onclick="categorySubmit()"><div style="width: 100%;" class="buttonDiv2" onmouseover="javascript:this.style.backgroundColor='#4169E1'">保存</div></div>
+            </div>
+            <br/>
+        </div>
+    </body>
+</html>

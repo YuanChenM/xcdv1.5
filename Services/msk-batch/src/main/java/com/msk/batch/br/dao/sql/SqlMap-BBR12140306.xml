@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.br.logic.BBR12140306Logic">
+    <delete id="remove" parameterType="BaseParam">
+        DELETE
+          FROM
+	    BR_O_HK_BUYER_RELATIONSHIP
+    </delete>
+
+    <insert id="save" parameterType="com.msk.batch.br.bean.IBBR12140306RsBean">
+      INSERT INTO BR_O_HK_BUYER_RELATIONSHIP
+        (
+        RS_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        BIND_STATUS,
+        BIND_TIME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES
+            (
+            #{rsId},
+            #{slCode},
+            #{houseCode},
+            #{buyerId},
+            #{startTime},
+            #{endTime},
+            #{applyStatus},
+            #{applyTime},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1)
+    </insert>
+</mapper>

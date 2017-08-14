@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link href="css/css.css" type="text/css" rel="stylesheet"/>
+    <link href="css/BA2141191.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="js/constantDef.js"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+    <title>城市选择</title>
+</head>
+
+<body style="font-family:'微软雅黑'">
+<!--页眉开始-->
+<div class="wapp-head">城市选择
+    <a href="javascript:void(0);" class="head-back">返回</a>
+</div>
+<!--页眉结束/-->
+<!--列表信息主体开始-->
+<div class="city-list" style="margin: 44px 0px 50px 0px">
+    <div class="maxPosition">
+    <div id="sb-search" class="searchDiv">
+            <input type="search" id="searchCity" class="searchClass" placeholder="请输入城市名称或者拼音" style="border: 1px solid lightslategray" >
+            <button type="submit" id="searchBtn" class="searchBtn">Search</button>
+    </div>
+    <div><span>当前所属城市：</span> <span class="cityName"></span></div>
+    </div>
+    <div class="main">
+    <ul id="cityInfo">
+        <li class="detailClass" style="display: none;"><span class="right"></span></li>
+    </ul>
+    </div>
+</div>
+<!--列表信息主体结束-->
+
+</body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<script src="js/BA2141191.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

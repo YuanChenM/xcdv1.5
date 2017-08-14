@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231169RsLogic">
+    <insert id="save" parameterType="com.msk.core.entity.SlProduct">
+		INSERT INTO sl_product (
+			SL_CODE,
+			SL_PD_ID,
+			PROD_EP_ID,
+			BRAND_EP_ID,
+			BRAND_ID,
+			PD_CLASSES_CODE,
+			PD_BREED_CODE,
+			PD_FEATURE_CODE,
+			DIST_FLG,
+			CRT_ID,
+			CRT_TIME,
+			UPD_ID,
+			UPD_TIME,
+			ACT_ID,
+			ACT_TIME,
+		   	DEL_FLG,
+			VER
+		)
+		VALUES
+			(
+				#{slCode},
+				#{slPdId},
+				#{prodEpId},
+				#{brandEpId},
+				#{brandId},
+				#{pdClassesCode},
+				#{pdBreedCode},
+				#{pdFeatureCode},
+				#{distFlg},
+		        #{crtId},
+	    	    #{crtTime},
+	    		#{crtId},
+	    		#{crtTime},
+	    		#{crtId},
+				#{crtTime},
+				0,
+				1
+			)
+	</insert>
+
+	<update id="modify" parameterType="com.msk.core.entity.SlProduct">
+		UPDATE sl_product
+		SET SL_CODE = #{slCode},
+		SL_PD_ID = #{slPdId},
+		PROD_EP_ID = #{prodEpId},
+		BRAND_EP_ID = #{brandEpId},
+		BRAND_ID = #{brandId},
+		PD_CLASSES_CODE = #{pdClassesCode},
+		PD_BREED_CODE = #{pdBreedCode},
+		PD_FEATURE_CODE = #{pdFeatureCode},
+		DIST_FLG = #{distFlg},
+		VER = VER+1,
+		UPD_ID = #{updId},
+		UPD_TIME = #{updTime}
+		WHERE
+		SL_CODE = #{slCode}
+		AND SL_PD_ID = #{slPdId}
+	</update>
+
+	<delete id="remove" parameterType="BaseParam">
+		DELETE FROM sl_product WHERE
+		SL_PD_ID = #{filterMap.slPdId}
+		AND SL_CODE = #{filterMap.slCode}
+	</delete>
+
+	<delete id="removeSlPdPkg" parameterType="BaseParam">
+		DELETE FROM sl_pd_pkg WHERE
+		SL_PD_ID = #{filterMap.slPdId}
+		AND SL_CODE = #{filterMap.slCode}
+	</delete>
+
+	<delete id="removeSLPdMctStdNew" parameterType="BaseParam">
+		DELETE FROM sl_pd_mct_std_new WHERE
+		SL_PD_ID = #{filterMap.slPdId}
+		AND SL_CODE = #{filterMap.slCode}
+	</delete>
+
+	<delete id="removePdTncStdOther" parameterType="BaseParam">
+		DELETE FROM sl_pd_tnc_std_other WHERE
+		SL_PD_ID = #{filterMap.slPdId}
+		AND SL_CODE = #{filterMap.slCode}
+	</delete>
+
+	<delete id="removeSLPdTncStdNew" parameterType="BaseParam">
+		DELETE FROM sl_pd_tnc_std_new WHERE
+		SL_PD_ID = #{filterMap.slPdId}
+		AND SL_CODE = #{filterMap.slCode}
+	</delete>
+
+</mapper>
+
+

@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.br.logic.BBR121402Logic">
+    <!-- 条件语句 -->
+
+    <!-- 查询所有条件 -->
+    <select id="findAllParams" resultType="com.msk.batch.br.bean.BBR12140201Bean"
+            parameterType="java.util.Map">
+        SELECT
+        <!-- flag 1为查询所有物流区 2为查询所有地区 3查询所有区县菜场 4物流区菜场 4地区菜场-->
+        <if test="flag == 1">
+            1 AS flag,
+            info.MACHINING_CODE AS machiningCode,
+            info.MACHINING_NAME AS machiningName,
+        </if>
+        <if test="flag == 2">
+            2 AS flag,
+            info.BUYER_CITY_CODE AS buyerCityCode,
+            info.BUYER_CITY_NAME AS buyerCityName,
+            info.MACHINING_CODE AS machiningCode,
+            info.MACHINING_NAME AS machiningName,
+        </if>
+        <if test="flag == 3">
+            3 AS flag,
+            info.BUYER_CITY_CODE AS buyerCityCode,
+            info.BUYER_CITY_NAME AS buyerCityName,
+            info.BUYER_DISTRICT_CODE AS buyerDistrictCode,
+            info.BUYER_DISTRICT_NAME AS buyerDistrictName,
+        </if>
+        <if test="flag == 4">
+            4 AS flag,
+        </if>
+        <if test="flag == 5">
+            5 AS flag,
+            info.BUYER_CITY_CODE AS buyerCityCode,
+            info.BUYER_CITY_NAME AS buyerCityName,
+        </if>
+        info.CLASSES_CODE AS classesCode,
+        info.CLASSES_NAME AS classesName,
+        info.BUYER_LGCS_AREA_NAME AS buyerLgcsAreaName,
+        info.BUYER_LGCS_AREA_CODE AS buyerLgcsAreaCode,
+        info.BUYER_TYPE AS buyerType
+        FROM
+        br_pd_pool_info info
+        <where>
+            info.BUYER_LGCS_AREA_CODE IS NOT NULL
+            <if test="flag == 1">
+                AND info.BUYER_TYPE = '01'
+            </if>
+            <if test="flag == 2">
+                AND info.BUYER_CITY_CODE IS NOT NULL
+                AND info.BUYER_TYPE = '01'
+            </if>
+            <if test="flag == 3">
+                AND info.BUYER_DISTRICT_CODE IS NOT NULL
+                AND info.BUYER_TYPE = '02'
+            </if>
+            <if test="flag == 4">
+                AND info.BUYER_TYPE = '02'
+            </if>
+            <if test="flag == 5">
+                AND info.BUYER_CITY_CODE IS NOT NULL
+                AND info.BUYER_TYPE = '02'
+            </if>
+        </where>
+        GROUP BY
+        <if test="flag == 1">
+            machiningCode,
+        </if>
+        <if test="flag == 2">
+            buyerCityCode,
+            machiningCode,
+        </if>
+        <if test="flag == 3">
+            buyerCityCode,
+            buyerDistrictCode,
+        </if>
+        <if test="flag == 5">
+            buyerCityCode,
+        </if>
+        classesCode,
+        buyerLgcsAreaCode
+    </select>
+
+    <!-- 查询所有产品池-->
+    <select id="findAllPdPool" resultType="com.msk.batch.br.bean.BBR12140202Bean"
+            parameterType="com.msk.batch.br.bean.BBR12140201Param">
+        <!--查询所有区域内已上线已购买的商品合计 -->
+        SELECT
+        i.SALES_NAME AS salesName,
+        i.SCIENTIFIC_NAME AS scientificName,
+        i.LOCAL_NAME AS localName,
+        i.DEMAND_FEATURE AS demandFeature,
+        i.SL_RECORD_FEATURE AS slRecordFeature,
+        i.OEM_ONLINE_FEATURE AS oemOnlineFeature,
+        i.SL_ONLINE_FEATURE AS slOnlineFeature,
+        i.GRADE_CODE AS gradeCode,
+        i.STANDARD_CODE AS standardCode,
+        i.GRADE_CODE_NAME AS gradeCodeName,
+        SUM(i.ORDER_COUNT) AS orderCount,
+        SUM(i.SELL_QTY) AS sellQty,
+        claInfo.SCIENTIFIC_NAME AS scienceName,
+        claInfo.LOCAL_NAME AS traditionalName,
+        claInfo.SALES_NAME AS saleName,
+        claInfo.PLACE_ORIGIN AS placeOrigin,
+        claInfo.PLACE_CURRENT AS placeCurrent,
+        claInfo.SOURCE AS source,
+        claInfo.CHILD_TYPE AS childType,
+        claInfo.FEED_TYPE AS feedType,
+        claInfo.FEED_PERIOD AS feedPeriod
+        FROM BR_PD_POOL_INFO i
+        LEFT JOIN br_o_cla_machining_info claInfo
+        ON i.CLASSES_CODE = claInfo.CLASSES_CODE
+        AND i.MACHINING_CODE = claInfo.MACHINING_CODE
+        WHERE
+        i.BUYER_LGCS_AREA_CODE = #{buyerLgcsAreaCode}
+        <if test="flag == 1">
+            AND i.MACHINING_CODE = #{machiningCode}
+            AND i.CLASSES_CODE = #{classesCode}
+        </if>
+        <if test="flag == 2">
+            AND i.CLASSES_CODE = #{classesCode}
+            AND i.BUYER_CITY_CODE = #{buyerCityCode}
+            AND i.MACHINING_CODE = #{machiningCode}
+        </if>
+        <if test="flag == 3">
+            AND i.CLASSES_CODE = #{classesCode}
+            AND i.BUYER_CITY_CODE = #{buyerCityCode}
+            AND i.BUYER_DISTRICT_CODE = #{buyerDistrictCode}
+        </if>
+        <if test="flag == 4">
+            AND i.CLASSES_CODE = #{classesCode}
+        </if>
+        <if test="flag == 5">
+            AND i.CLASSES_CODE = #{classesCode}
+            AND i.BUYER_CITY_CODE = #{buyerCityCode}
+        </if>
+        AND i.BUYER_TYPE = #{buyerType}
+        GROUP BY standardCode
+        UNION ALL
+        <!--查询所有区域内已上线商品-->
+        SELECT
+        inf.SALES_NAME AS salesName,
+        inf.SCIENTIFIC_NAME AS scientificName,
+        inf.LOCAL_NAME AS localName,
+        inf.DEMAND_FEATURE AS demandFeature,
+        inf.SL_RECORD_FEATURE AS slRecordFeature,
+        inf.OEM_ONLINE_FEATURE AS oemOnlineFeature,
+        inf.SL_ONLINE_FEATURE AS slOnlineFeature,
+        inf.GRADE_CODE AS gradeCode,
+        inf.STANDARD_CODE AS standardCode,
+        inf.GRADE_CODE_NAME AS gradeCodeName,
+        inf.ORDER_COUNT AS orderCount,
+        inf.SELL_QTY AS sellQty,
+        claInfo.SCIENTIFIC_NAME AS scienceName,
+        claInfo.LOCAL_NAME AS traditionalName,
+        claInfo.SALES_NAME AS saleName,
+        claInfo.PLACE_ORIGIN AS placeOrigin,
+        claInfo.PLACE_CURRENT AS placeCurrent,
+        claInfo.SOURCE AS source,
+        claInfo.CHILD_TYPE AS childType,
+        claInfo.FEED_TYPE AS feedType,
+        claInfo.FEED_PERIOD AS feedPeriod
+        FROM BR_PD_POOL_INFO inf
+        LEFT JOIN br_o_cla_machining_info claInfo
+        ON inf.CLASSES_CODE = claInfo.CLASSES_CODE
+        AND inf.MACHINING_CODE = claInfo.MACHINING_CODE
+        WHERE
+        inf.STANDARD_CODE IS NOT NULL
+        <if test="flag == 1 or flag == 2">
+            AND inf.CLASSES_CODE = #{classesCode}
+            AND inf.MACHINING_CODE = #{machiningCode}
+        </if>
+        <if test="flag == 3 or flag == 4 or flag == 5">
+            AND inf.CLASSES_CODE = #{classesCode}
+        </if>
+        AND inf.BUYER_ID IS NULL
+        AND EXISTS(
+        SELECT 1 FROM br_pd_logiarea lg
+        WHERE
+        lg.LGCS_CODE = #{buyerLgcsAreaCode}
+        <if test="flag == 1 or flag == 2">
+           AND lg.CLASSES_CODE = #{classesCode}
+           AND lg.MACHINING_CODE = #{machiningCode}
+        </if>
+        <if test="flag == 3 or flag == 4 or flag == 5">
+           AND lg.CLASSES_CODE = #{classesCode}
+           AND lg.MACHINING_CODE = inf.MACHINING_CODE
+        </if>
+        <if test="flag == 0">
+            AND lg.CLASSES_CODE = inf.CLASSES_CODE
+            AND lg.MACHINING_CODE = inf.MACHINING_CODE
+        </if>
+        AND lg.BREED_CODE = inf.BREED_CODE
+        AND lg.FEATURE_CODE = inf.FEATURE_CODE
+        AND lg.GRADE_CODE = inf.GRADE_CODE
+        )
+        UNION ALL
+        <!--查询所有区域内买家提出的商品-->
+        SELECT
+        info.SALES_NAME AS salesName,
+        info.SCIENTIFIC_NAME AS scientificName,
+        info.LOCAL_NAME AS localName,
+        info.DEMAND_FEATURE AS demandFeature,
+        info.SL_RECORD_FEATURE AS slRecordFeature,
+        info.OEM_ONLINE_FEATURE AS oemOnlineFeature,
+        info.SL_ONLINE_FEATURE AS slOnlineFeature,
+        info.GRADE_CODE AS gradeCode,
+        info.STANDARD_CODE AS standardCode,
+        info.GRADE_CODE_NAME AS gradeCodeName,
+        info.ORDER_COUNT AS orderCount,
+        info.SELL_QTY sellQty,
+        claInfo.SCIENTIFIC_NAME AS scienceName,
+        claInfo.LOCAL_NAME AS traditionalName,
+        claInfo.SALES_NAME AS saleName,
+        claInfo.PLACE_ORIGIN AS placeOrigin,
+        claInfo.PLACE_CURRENT AS placeCurrent,
+        claInfo.SOURCE AS source,
+        claInfo.CHILD_TYPE AS childType,
+        claInfo.FEED_TYPE AS feedType,
+        claInfo.FEED_PERIOD AS feedPeriod
+        FROM BR_PD_POOL_INFO info
+        LEFT JOIN br_o_cla_machining_info claInfo
+        ON info.CLASSES_CODE = claInfo.CLASSES_CODE
+        AND info.MACHINING_CODE = claInfo.MACHINING_CODE
+        WHERE
+        info.STANDARD_CODE IS NULL
+        <if test="flag == 1 or flag == 2">
+            AND info.CLASSES_CODE = #{classesCode}
+            AND info.MACHINING_CODE = #{machiningCode}
+        </if>
+        <if test="flag == 3 or flag == 4 or flag == 5">
+            AND info.CLASSES_CODE = #{classesCode}
+        </if>
+        AND info.BUYER_ID IS NULL
+        ORDER BY sellQty DESC
+     </select>
+    <!-- 查询所有买家池 -->
+    <select id="findAllBuyerPool" resultType="com.msk.batch.br.bean.BBR121404Bean"
+            parameterType="com.msk.batch.br.bean.BBR12140201Param">
+        SELECT
+        i.BUYER_ID AS buyerId,
+        i.BUYER_CODE AS buyerCode,
+        i.BUYER_NAME AS buyerName,
+        i.MARKET_CODE AS marketCode,
+        i.MARKET_NAME AS marketName,
+        i.MARKET_LEVEL AS marketLevel,
+        i.MARKET_LEVEL_NAME AS marketLevelName,
+        i.BUYER_TYPE AS buyerType,
+        i.BUYER_TYPE_NAME AS buyerTypeName,
+        i.LGCS_AREA_CODE AS lgcsAreaCode,
+        i.LGCS_AREA_NAME AS lgcsAreaName,
+        i.CITY_CODE AS cityCode,
+        i.CITY_NAME AS cityName,
+        i.DISTRICT_CODE AS districtCode,
+        i.DISTRICT_NAME AS districtName,
+        i.MARKETINGS_STATUS AS marketingsStatus,
+        i.MARKETINGS_STATUS_NAME AS marketingsStatusName,
+        i.OTHER_PD_CODE AS otherPdCode
+        FROM
+        br_buyer_pool_info i
+        INNER JOIN
+        br_pd_pool_info pd
+        ON pd.BUYER_ID = i.BUYER_ID
+        <where>
+            pd.BUYER_LGCS_AREA_CODE = #{buyerLgcsAreaCode}
+            <if test="buyerCityCode != null">
+                AND pd.BUYER_CITY_CODE = #{buyerCityCode}
+            </if>
+            <if test="buyerDistrictCode != null">
+                AND pd.BUYER_DISTRICT_CODE = #{buyerDistrictCode}
+            </if>
+            AND i.BUYER_TYPE = #{buyerType}
+        </where>
+        GROUP BY buyerId
+        ORDER BY cityCode,marketLevel,marketCode
+    </select>
+
+    <!-- 根据一二级分类查询所有产品分类 -->
+    <select id="findMachiningInfoByClasses" resultType="com.msk.core.entity.BrOClaMachiningInfo"
+            parameterType="com.msk.batch.br.bean.BBR12140201Param">
+        SELECT
+        i.CLASSES_CODE AS classesCode,
+        i.CLASSES_NAME AS classesName,
+        i.MACHINING_CODE AS machiningCode,
+        i.MACHINING_NAME AS machiningName,
+        i.SCIENTIFIC_NAME AS scientificName,
+        i.LOCAL_NAME AS localName,
+        i.SALES_NAME AS salesname,
+        i.PLACE_ORIGIN AS placeOrigin,
+        i.PLACE_CURRENT AS placeCurrent,
+        i.SOURCE AS source,
+        i.CHILD_TYPE AS childType,
+        i.FEED_TYPE AS feedType,
+        i.FEED_PERIOD AS feedPeriod
+        FROM
+        br_o_cla_machining_info i
+        <where>
+            <if test="flag != 0">
+                i.CLASSES_CODE = #{classesCode}
+                <if test="machiningCode != null">
+                    AND i.MACHINING_CODE = #{machiningCode}
+                </if>
+            </if>
+        </where>
+    </select>
+    <!-- 查询需求等级配置 -->
+    <select id="findSettingByType" resultType="com.msk.core.entity.BrSetting"
+            parameterType="BaseParam">
+        SELECT
+        b.SETTING_TYPE AS settingType,
+        b.SETTING_NAME AS settingName,
+        b.SETTING_START_VALUE AS settingStartValue,
+        b.SETTING_END_VALUE AS settingEndValue,
+        b.SETTING_VALUE AS settingValue
+        FROM
+        br_setting b
+        <where>
+            b.Setting_Type = "1"
+            AND
+            b.DEL_FLG = "0"
+        </where>
+    </select>
+    <!-- 插入EXCEL文件信息表信息 -->
+    <insert id="insertFileInfo" parameterType = "com.msk.core.entity.BrByPoolFileInfo">
+        INSERT INTO BR_BY_POOL_FILE_INFO
+        (
+        FILE_ID,
+        FILE_SERVER_ID,
+        FILE_SERVER_IP,
+        FILE_NAME,
+        FILE_SUF,
+        FILE_START_TIME,
+        FILE_END_TIME,
+        FILE_CREATE_TIME,
+        FILE_STATUS,
+        LGCS_AREA_CODE,
+        CITY_CODE,
+        DISTRICT_CODE,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        BUYER_TYPE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{fileId},
+        #{fileServerId},
+        #{fileServerIp},
+        #{fileName},
+        #{fileSuf},
+        #{fileStartTime},
+        #{fileEndTime},
+        #{fileCreateTime},
+        1,
+        #{lgcsAreaCode},
+        #{cityCode},
+        #{districtCode},
+        #{classesCode},
+        #{machiningCode},
+        #{buyerType},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+
+    <!-- 查询文件是否被生成 -->
+    <select id="isFileExist" resultType="Integer"
+            parameterType="java.util.Map">
+        SELECT
+        COUNT(1)
+        FROM
+        BR_BY_POOL_FILE_INFO i
+        <where>
+            i.FILE_NAME = #{fileName}
+        </where>
+    </select>
+
+    <!-- 删除之前生成好的当月数据-->
+    <delete id="deleteFileInfo" parameterType="BaseParam">
+        DELETE FROM
+        BR_BY_POOL_FILE_INFO
+        WHERE
+        FILE_START_TIME = #{crtTime}
+        AND FILE_END_TIME = #{updTime}
+    </delete>
+
+</mapper>

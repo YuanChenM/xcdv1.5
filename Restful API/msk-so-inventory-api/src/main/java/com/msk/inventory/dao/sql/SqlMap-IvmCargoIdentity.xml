@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.CargoIdentityServiceImpl">
+	<sql id="selectSql">
+		DATE_CODE AS  dateCode,
+		SEQ AS seq,
+		DEL_FLG AS delFlg,
+		CRT_ID AS crtId,
+		DATE_FORMAT(CRT_TIME,'%Y-%m-%d %H:%i:%s') AS crtTime,
+		UPD_ID AS updId,
+		DATE_FORMAT(UPD_TIME,'%Y-%m-%d %H:%i:%s') AS updTime,
+		ACT_ID AS actId,
+		DATE_FORMAT(ACT_TIME,'%Y-%m-%d %H:%i:%s') AS actTime,
+		VER AS ver
+	</sql>
+					<sql id="whereCondition">
+		<where>
+			<if test="dateCode!=null and dateCode!=''">
+				AND DATE_CODE=#{dateCode}
+			</if>
+			<if test="seq!=null and seq!=''">
+				AND SEQ=#{seq}
+			</if>
+		</where>
+	</sql>
+
+    <insert id="insertOneCargo" parameterType="com.msk.inventory.bean.IvmCargoIdentityBean">
+        INSERT INTO ivm_cargo_identity
+		(
+			DATE_CODE,
+			SEQ,
+			DEL_FLG,
+			CRT_ID,
+			CRT_TIME,
+			VER
+		)
+		VALUES
+		(
+			#{dateCode},
+			1,
+			0,
+            #{crtId},
+            #{crtTime},
+            1
+		)
+    </insert>
+					<select id="selectCargoIdentity" resultType="com.msk.inventory.bean.IvmCargoIdentityBean">
+		SELECT
+		<include refid="selectSql"/>
+		FROM  ivm_cargo_identity
+		<include refid="whereCondition"/>
+	</select>
+
+	<select id="countCargoIdentity" resultType="Integer" parameterType="com.msk.inventory.bean.IvmCargoIdentityBean">
+		select count(1) as pageCount
+		from ivm_cargo_identity
+		<include refid="whereCondition"/>
+	</select>
+
+	<update id="updateCargoIdentity" parameterType="com.msk.inventory.bean.IvmCargoIdentityBean">
+		update ivm_cargo_identity
+		set
+		SEQ=#{seq},
+		<if test="delFlg!=null and delFlg!=''">
+		DEL_FLG=#{delFlg},
+		</if>
+		UPD_ID=#{updId},
+		UPD_TIME=#{updTime}
+		WHERE
+		DATE_CODE=#{dateCode}
+	</update>
+</mapper>

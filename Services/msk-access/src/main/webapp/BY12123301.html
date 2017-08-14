@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+    <meta http-equiv=Content-Language content=en-US>
+    <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+    <link rel="stylesheet" href="./resources/css/com/common.css">
+    <script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+    <script type="text/javascript" src="./resources/js/BY12123301.js"></script>
+    <script type="text/javascript" src="./resources/js/com/common.js"></script>
+    <title>新增收货地址</title>
+</head>
+<body>
+<div width="100%">
+    <div style="width:100%;">
+        <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+            <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+            </div>
+            <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+            <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+            </div>
+        </div>
+        <div id="titleDiv" style="width: 80%;margin-left:20px;" class="divCommon1">新增收货地址</div>
+    </div>
+    <!--买家收货地址更新/新增-->
+    <div id="receiveAddrEditDiv" style="background-color:#ffffff;width: 100%;margin-left:35px">
+        <div >
+            <table>
+                <tr>
+                    <td>省:<td>
+                    <td><select id="s_province" onchange="proChange()">
+                        </select></td>
+                </tr>
+                <tr>
+                    <td>市:<td>
+                    <td><select id="s_city" onchange="cityChange()"></select></td>
+                </tr>
+                <tr>
+                    <td>区(县):<td>
+                    <td><select id="s_district" ></select></td>
+                </tr>
+                <tr>
+                    <td>买家配送详细地址:<td>
+                    <td><input type="text" value="" id="deliveryAddr"/></td>
+                </tr>
+                <tr>
+                    <td>买家配送参考地址:<td>
+                    <td><input type="text" value="" id="referenceAddr"/></td>
+                </tr>
+                <tr>
+                    <td>买家经营地址:<td>
+                    <td><input type="text" value="" id="manageAddr" /></td>
+                </tr>
+                <tr>
+                    <td>收货联系人:<td>
+                    <td><input type="text" value="" id="recPerName" /></td>
+                </tr>
+                <tr>
+                    <td>联系电话:<td>
+                    <td><input type="text" value="" id="recPerTel" /></td>
+                </tr>
+                <tr>
+                    <td>微信账号:<td>
+                    <td><input type="text" value="" id="recPerWechat"/></td>
+                </tr>
+                <tr>
+                    <td>QQ账号:<td>
+                    <td><input type="text" value="" id="recPerQq" /></td>
+                </tr>
+                <tr>
+                    <td>设为默认地址:</td>
+                    <td><input type="checkbox" value="" id="isDefault" /></td>
+                </tr>
+            </table>
+        </div>
+        <br/>
+        <div id="errorMessage" class="errorMessageDiv" style="width: 75%;margin-left:30px;display:none;"></div>
+        <div style="width:60px;margin-left:30px;" class="buttonDiv2" onclick="receiveAddrSave(this)" onmouseover="javascript:this.style.backgroundColor='#4169E1'">保存</div>
+    </div>
+
+</body>
+</html>

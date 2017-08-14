@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24110100Logic">
+    <select id="findSlEnterprise" parameterType="BaseParam" resultType="com.msk.core.entity.SlEnterprise">
+    SELECT
+    EP_NAME AS epName
+    FROM SL_ENTERPRISE
+    WHERE EP_ID = #{filterMap.brandEpId}
+    AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+    <select id="findPdBrand" parameterType="BaseParam" resultType="com.msk.seller.bean.SL2411030073Bean">
+        SELECT
+        slPdBrand.SL_CODE AS slCode,
+        slPdBrand.BRAND_EP_ID AS brandEpId,
+        slPdBrand.BRAND_ID AS brandId,
+        slPdBrand.BRAND_NAME AS brandName,
+        slPdBrand.BRAND_TYPE AS brandType,
+        slPdBrand.BRAND_CLASS AS brandClass,
+        slPdBrand.CONTRACT_NO AS contractNo,
+        slPdBrand.TERM_BEGIN AS termBegin,
+        slPdBrand.TERM_END AS termEnd
+        FROM SL_PD_BRAND slPdBrand
+        WHERE
+        slPdBrand.SL_CODE =#{filterMap.slCode}
+        AND slPdBrand.BRAND_TYPE=2
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+    <select id="selectBrandType" parameterType="java.util.HashMap" resultType="com.msk.seller.bean.SL2411030073Bean">
+        select
+        B.BRAND_TYPE AS brandType,
+        B.SL_CODE AS slCode,B.BRAND_EP_ID AS brandEpId,
+        B.BRAND_ID AS brandId,B.BRAND_NAME AS brandName
+        from sl_pd_brand AS B
+        WHERE
+        B.SL_CODE=#{slCode} AND B.BRAND_TYPE=2  AND B.DEL_FLG=#{delFlg}
+    </select>
+    <select id="selectTeam" parameterType="java.util.HashMap" resultType="com.msk.seller.bean.SL241103070Bean">
+        select
+        B.SL_CODE AS eslCode,
+        B.MEMBER_ID AS ememberId,
+        B.LEADER_FLG AS eleaderFlg,
+        B.MEMBER_NAME AS ememberName,B.MEMBER_AGE AS ememberAge,
+        B.MEMBER_EDUC AS ememberEduc,B.MEMBER_TEL AS ememberTel
+        from sl_ec_team AS B
+        WHERE
+        B.SL_CODE=#{eslCode}  AND B.DEL_FLG=#{delFlg}
+    </select>
+
+    <select id="selectPp" parameterType="java.util.HashMap" resultType="com.msk.seller.bean.SL2411030033Bean">
+      SELECT
+      A.EP_ID AS epId,
+      A.BRAND_ID AS brandId,
+      B.HONOR_ID AS honorId,
+      A.BRAND_NO AS brandNo,
+      A.BRAND_NAME AS brandName,
+      B.HONOR_NO AS honorNo,
+      B.CERT_DATE AS certDate,
+      B.CERT_ISSUER AS certIssuer,
+      B.HONOR_DES AS honorDes,
+      A.BRAND_CLASS AS brandClass,
+      A.BRAND_TERM_BEGIN AS brandTermBegin,
+      A.BRAND_TERM_END AS brandTermEnd
+      FROM sl_ep_brand A LEFT JOIN sl_ep_brand_honor B
+      ON A.EP_ID = B.EP_ID AND A.BRAND_ID = B.BRAND_ID
+      WHERE A.EP_id = #{epId} AND A.DEL_FLG=#{delFlg}
+    </select>
+
+<select id="findEpById" resultType="com.msk.core.entity.SlEnterprise"
+        parameterType="com.hoperun.core.bean.BaseParam">
+            SELECT
+            IFNULL(A.EP_ID,'') AS epId,
+            IFNULL(A.EP_NAME,'') AS epName,
+            IFNULL(A.LIC_TYPE,'') AS licType,
+            IFNULL(A.LIC_NAME,'') AS licName,
+            IFNULL(A.LIC_NO,'') AS licNo,
+            IFNULL(A.LIC_ADDR,'') AS licAddr,
+            IFNULL(A.LIC_BUSI_TYPE,'') AS licBusiType,
+            IFNULL(A.LIC_BUSI_SCOPE,'') AS licBusiScope,
+            IFNULL(A.LIC_LEGAL_PERSON,'') AS licLegalPerson,
+            IFNULL(A.LIC_REG_CAPITAL,'') AS licRegCapital,
+            IFNULL(A.LIC_PAIDIN_CAPITAL,'') AS licPaidinCapital,
+            A.LIC_CRT_DATE AS licCrtDate,
+            A.LIC_TERM_BEGIN AS licTermBegin,
+            A.LIC_TERM_END AS licTermEnd,
+            IFNULL(A.LIC_TERM_UNLIIMITED,'') AS licTermUnliimited,
+            IFNULL(A.TAX_NO,'') AS taxNo,
+            IFNULL(A.TAX_VAT_NO,'') AS taxVatNo,
+            IFNULL(A.ORG_NO,'') AS orgNo,
+            A.ORG_TERM_BEGIN AS orgTermBegin,
+            A.ORG_TERM_END AS orgTermEnd,
+            IFNULL(A.BAL_LEGAL_PERSON,'') AS balLegalPerson,
+            IFNULL(A.BAL_BANK,'') AS balBank,
+            IFNULL(A.BAL_ACCOUNT,'') AS balAccount,
+            IFNULL(A.FDL_NO,'') AS fdlNo,
+            A.FDL_TERM_BEGIN AS fdlTermBegin,
+            A.FDL_TERM_END AS fdlTermEnd
+            FROM
+            sl_enterprise AS A
+            WHERE
+            A.EP_ID = #{filterMap.epId}
+            AND A.DEL_FLG=#{filterMap.delFlg}
+</select>
+    <select id="findSlByAc" resultType="com.msk.seller.bean.ISL231181RegionParam"
+            parameterType="BaseParam">
+        SELECT
+        IFNULL(slSeller.SL_CODE,'') AS slCode,
+        IFNULL(slSeller.SL_ACCOUNT,'') AS slAccount,
+        IFNULL(slSeller.SL_CODE_DIS,'') AS slCodeDis,
+        IFNULL(slSeller.SL_CON_FLG,'') AS slConFlg,
+
+        IFNULL(slSeller.AREA_CODE,'') AS areaCode,
+        IFNULL(slSeller.AREA_NAME,'') AS areaName,
+        IFNULL(slSeller.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(slSeller.LGCS_AREA_NAME,'') AS lgcsAreaName,
+        IFNULL(slSeller.PROVINCE_CODE,'') AS provinceCode,
+        IFNULL(slSeller.PROVINCE_NAME,'') AS provinceName,
+        IFNULL(slSeller.CITY_CODE,'') AS cityCode,
+        IFNULL(slSeller.CITY_NAME,'') AS cityName,
+        IFNULL(slSeller.DISTRICT_CODE,'') AS districtCode,
+        IFNULL(slSeller.DISTRICT_NAME,'') AS districtName,
+
+        IFNULL(slSeller.EP_ID,'') AS epId,
+        IFNULL(slSeller.SL_MAIN_CLASS,'') AS slMainClass,
+        IFNULL(slSeller.SNK_FLG,'') AS snkFlg,
+        IFNULL(slSeller.SELF_FLG,'') AS selfFlg,
+        IFNULL(slSeller.AGENT_FLG,'') AS agentFlg,
+        IFNULL(slSeller.OEM_FLG,'') AS oemFlg,
+        IFNULL(slSeller.BUYER_FLG,'') AS buyerFlg,
+        IFNULL(slSeller.SQA_STATUS,'') AS sqaStatus,
+        IFNULL(slSeller.DIST_QUA,'') AS distQua,
+        IFNULL(slSeller.SHOP_QUA,'') AS shopQua,
+        IFNULL(slSeller.MEMO1,'') AS memo1,
+        IFNULL(slSeller.MEMO2,'') AS memo2,
+        IFNULL(slSeller.MEMO3,'') AS memo3,
+        IFNULL(slSeller.MEMO4,'') AS memo4,
+        IFNULL(slSeller.MEMO5,'') AS memo5,
+        IFNULL(slSeller.MEMO6,'') AS memo6,
+        IFNULL(slSeller.MEMO7,'') AS memo7,
+        IFNULL(slSeller.MEMO8,'') AS memo8,
+        IFNULL(slSeller.MEMO9,'') AS memo9,
+        IFNULL(slSeller.MEMO10,'') AS memo10,
+        IFNULL(slSeller.MEMO11,'') AS memo11,
+        IFNULL(slSeller.MEMO12,'') AS memo12,
+        IFNULL(slSeller.MEMO13,'') AS memo13,
+        IFNULL(slSeller.MEMO14,'') AS memo14,
+        IFNULL(slSeller.MEMO15,'') AS memo15,
+        IFNULL(slSeller.MEMO16,'') AS memo16,
+        IFNULL(slSeller.MEMO17,'') AS memo17,
+        IFNULL(slSeller.MEMO18,'') AS memo18,
+        IFNULL(slSeller.MEMO19,'') AS memo19,
+        IFNULL(slSeller.MEMO20,'') AS memo20
+        FROM  SL_SELLER AS slSeller
+        WHERE
+        slSeller.SL_ACCOUNT=#{filterMap.slAccount}
+        AND slSeller.DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <select id="findList" parameterType="BasePageParam" resultType="com.msk.core.entity.SlEpCertItem">
+        SELECT
+        slEpCertItem.CERT_ITEM_VALUE AS certItemValue,
+        slEpCertItem.CERT_ITEM_NAME AS certItemName,
+        slEpCertItem.CERT_ID AS certId
+        FROM SL_EP_CERT_ITEM slEpCertItem
+        WHERE slEpCertItem.EP_ID = #{filterMap.slEpId}
+        AND DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <select id="selectMa" resultType="com.msk.seller.bean.SL24110306Bean"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        select
+        A.EP_ID AS epId,
+        A.MEMBER_ID AS memberId,A.MEMBER_DUTIES AS memberDuties,
+        A.MEMBER_NAME AS memberName,A.MEMBER_AGE AS memberAge,
+        A.MEMBER_EDUC AS memberEduc,A.MEMBER_TEL AS memberTel
+        from sl_ep_manager AS A
+        WHERE
+        A.EP_ID=#{epId}
+        AND A.DEL_FLG=#{delFlg}
+    </select>
+
+    <select id="findSLEpManager" resultType="com.msk.core.entity.SlEpManager"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        SELECT
+            A.EP_ID AS epId,
+            A.MEMBER_ID AS memberId,
+            A.MEMBER_DUTIES AS memberDuties,
+            A.MEMBER_NAME AS memberName,
+            A.MEMBER_AGE AS memberAge,
+            A.MEMBER_EDUC AS memberEduc,
+            A.MEMBER_TEL AS memberTel,
+            A.UPD_ID AS updId,
+            A.VER AS ver
+        FROM
+            sl_ep_manager AS A
+        WHERE
+	    A.EP_ID = #{filterMap.epId}
+	    <if test="filterMap.memberId != null and filterMap.memberId != ''">
+          AND A.MEMBER_ID = #{filterMap.memberId}
+        </if>
+        AND A.DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <select id="findMaById" resultType="com.msk.seller.bean.SL24110306Bean"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        select
+        A.EP_ID AS epId,
+        A.MEMBER_ID AS memberId,A.MEMBER_DUTIES AS memberDuties,
+        A.MEMBER_NAME AS memberName,A.MEMBER_AGE AS memberAge,
+        A.MEMBER_EDUC AS memberEduc,A.MEMBER_TEL AS memberTel
+        from sl_ep_manager AS A
+        WHERE
+        A.EP_ID=#{filterMap.epId}
+        AND A.DEL_FLG=#{filterMap.delFlg}
+    </select>
+    <select id="findTmBySCode" resultType="com.msk.seller.bean.SL241103070Bean"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        select
+        B.SL_CODE AS eslCode,
+        B.MEMBER_ID AS ememberId,B.LEADER_FLG AS eleaderFlg,
+        B.MEMBER_NAME AS ememberName,B.MEMBER_AGE AS ememberAge,
+        B.MEMBER_EDUC AS ememberEduc,B.MEMBER_TEL AS ememberTel
+        from sl_ec_team AS B
+        WHERE
+        B.SL_CODE=#{filterMap.eslCode}
+        AND B.DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <select id="selectBrandList" parameterType="java.util.HashMap" resultType="com.msk.seller.bean.SL241103081Bean">
+        SELECT
+        A.EP_ID AS epId,
+        A.BRAND_ID AS brandId,
+        A.BRAND_NAME AS brandName,
+        A.BRAND_NO AS brandNo,
+        A.BRAND_TERM_BEGIN AS brandBegin,
+        A.BRAND_TERM_END AS brandEnd
+        FROM
+        sl_ep_brand AS A
+        WHERE
+        A.EP_ID = #{epId}
+        AND A.DEL_FLG=#{delFlg}
+    </select>
+    <select id="selectHonorList" parameterType="java.util.HashMap" resultType="com.msk.seller.bean.SL241103082Bean">
+        SELECT
+        A.EP_ID AS epId,
+        A.BRAND_ID AS brandId,
+        A.HONOR_ID AS honorId,
+        A.HONOR_NO AS honorNo,
+        A.CERT_DATE AS certDate,
+        A.CERT_ISSUER AS certIssuer
+        FROM
+        sl_ep_brand_honor AS A
+        WHERE
+        A.EP_ID = #{epId}
+        AND A.DEL_FLG=#{delFlg}
+    </select>
+
+    <select id="findEpHonor" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpHonor">
+        SELECT
+        slEpHonor.CERT_DATE AS certDate,
+        IFNULL(slEpHonor.EP_ID,'') AS epId,
+        IFNULL(slEpHonor.HONOR_ID,'') AS honorId,
+        IFNULL(slEpHonor.HONOR_DESC,'') AS honorDesc,
+        IFNULL(slEpHonor.CERT_ISSUER,'') AS certIssuer
+        FROM
+        SL_EP_HONOR AS slEpHonor
+        WHERE
+        slEpHonor.EP_ID =#{filterMap.epId}
+        AND slEpHonor.DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <select id="findCertList" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpCert">
+        SELECT
+        slEpCert.CERT_ID AS certId,
+        slEpCert.CERT_NAME AS certName
+        FROM
+        SL_EP_CERT AS slEpCert
+        WHERE
+        slEpCert.EP_ID =#{filterMap.slEpId}
+        AND slEpCert.DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+    <select id="findSlEpCapOne" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpCap">
+        SELECT
+        IFNULL(slEpCap.EP_ID,'') AS epId,
+        IFNULL(slEpCap.FTY_ASSET,'') AS ftyAsset,
+        IFNULL(slEpCap.FTY_REG_CAPITAL,'') AS ftyRegCapital,
+        IFNULL(slEpCap.FTY_LAND_AREA,'') AS ftyLandArea,
+        IFNULL(slEpCap.FTY_FLOOR_AREA,'') AS ftyFloorArea,
+        IFNULL(slEpCap.FTY_EQUIPMENT,'') AS ftyEquipment,
+        IFNULL(slEpCap.FTY_DESIGN_CAP,'') AS ftyDesignCap,
+        IFNULL(slEpCap.FTY_ACTUAL_CAP,'') AS ftyActualCap,
+        IFNULL(slEpCap.FTY_FT_RATE,'') AS ftyFtRate,
+        IFNULL(slEpCap.FTY_DS_RATE,'') AS ftyDsRate,
+        IFNULL(slEpCap.FTY_AS_RATE,'') AS ftyAsRate,
+        IFNULL(slEpCap.SCAP_MATERIAL,'') AS scapMaterial,
+        IFNULL(slEpCap.SCAP_PRODUCT,'') AS scapProduct,
+        IFNULL(slEpCap.LAB_AREA,'') AS labArea,
+        IFNULL(slEpCap.LAB_FUNCTION,'') AS labFunction,
+        IFNULL(slEpCap.LAB_INVESTMENT,'') AS labInvestment,
+        IFNULL(slEpCap.LAB_MEMBER,'') AS labMember,
+        IFNULL(slEpCap.DD_EQUIPMENT,'') AS ddEquipment
+        FROM
+        SL_EP_CAP AS slEpCap
+        WHERE
+        slEpCap.EP_ID =#{filterMap.epId}
+        AND slEpCap.DEL_FLG=#{filterMap.delFlg}
+    </select>
+
+
+    <select id="findSlEpWorkshop" parameterType="BaseParam" resultType="com.msk.core.entity.SlEpWorkshop">
+        SELECT
+        IFNULL(slEpWorkshop.EP_ID,'') AS epId,
+        IFNULL(slEpWorkshop.WORKSHOP_ID,'') AS workshopId,
+        IFNULL(slEpWorkshop.WORKSHOP_NAME,'') AS workshopName,
+        IFNULL(slEpWorkshop.PRODUCT,'') AS product,
+        IFNULL(slEpWorkshop.PROCESS,'') AS process
+        FROM
+        SL_EP_WORKSHOP AS slEpWorkshop
+        WHERE
+        slEpWorkshop.EP_ID =#{filterMap.epId}
+        AND slEpWorkshop.DEL_FLG=#{filterMap.delFlg}
+    </select>
+</mapper>

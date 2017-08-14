@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.msk.so.logic.SO153113Logic">
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        SEL_CHARGING_ID       AS selChargingId,
+        SELLER_BILLING_ID     AS sellerBillingId,
+        IFNULL(TRANS_CODE,'') AS transCode,
+        IFNULL(TRANS_TYPE,'') AS transType,
+        BUSINESS_ASSISTANT_ID AS businessAssistantId,
+        BUSINESS_ASSISTANT_CODE  AS businessAssistantCode,
+        BUSINESS_ASSISTANT_NAME  AS businessAssistantName,
+        BUSINESS_ASSISTANT_ROLE  AS businessAssistantRole,
+        DELIVERY_CODE   AS deliveryCode,
+        DELIVERY_TIME   AS deliveryTime,
+        SHIPPING_AMOUNT AS shippingAmount,
+        PAID_AMOUNT     AS paidAmount,
+        IFNULL(CHARGE_FLG,'')  AS chargeFlg,
+        IFNULL(REMARK  ,'')    AS remark
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.sellerBillId!=null and filterMap.sellerBillId!=''">
+                AND SELLER_BILLING_ID = #{filterMap.sellerBillId}
+            </if>
+            <if test="filterMap.businessAssistantCode!=null and filterMap.businessAssistantCode!=''">
+                AND BUSINESS_ASSISTANT_CODE LIKE  #{filterMap.businessAssistantCode}
+            </if>
+            <if test="filterMap.businessAssistantName!=null and filterMap.businessAssistantName!=''">
+                AND BUSINESS_ASSISTANT_NAME LIKE  #{filterMap.businessAssistantName}
+            </if>
+            <if test="filterMap.businessAssistantRole!=null and filterMap.businessAssistantRole!=''">
+                AND BUSINESS_ASSISTANT_ROLE LIKE  #{filterMap.businessAssistantRole}
+            </if>
+            <if test="filterMap.transCode!=null and filterMap.transCode!=''">
+                AND TRANS_CODE LIKE  #{filterMap.transCode}
+            </if>
+            <if test="filterMap.transTypes!=null">
+                AND TRANS_TYPE IN
+                <foreach collection="filterMap.transTypes" item="transType" open="(" separator="," close=")">
+                    #{transType}
+                </foreach>
+            </if>
+            <if test="filterMap.chargeFlgs!=null">
+                AND CHARGE_FLG IN
+                <foreach collection="filterMap.chargeFlgs" item="chargeFlg" open="(" separator="," close=")">
+                    #{chargeFlg}
+                </foreach>
+            </if>
+            <if test="filterMap.remark!=null and filterMap.remark!=''">
+                AND REMARK LIKE  #{filterMap.remark}
+            </if>
+            AND DEL_FLG = 0
+        </where>
+    </sql>
+
+    <select id="findPageList" parameterType="BasePageParam" resultType="com.msk.core.entity.SoCpSelCharging">
+        select
+        <include refid="selectSql"/>
+        from SO_CP_SEL_CHARGING
+        <include refid="whereCondition" />
+        ORDER BY SEL_CHARGING_ID DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BasePageParam">
+        select count(1)
+        from SO_CP_SEL_CHARGING
+        <include refid="whereCondition"/>
+    </select>
+
+    <select id="findById" parameterType="BaseParam" resultType="com.msk.core.entity.SoCpSelCharging">
+     SELECT
+        <include refid="selectSql"/>
+        from SO_CP_SEL_CHARGING
+        WHERE SEL_CHARGING_ID = #{filterMap.selChargingId}
+    </select>
+
+</mapper>

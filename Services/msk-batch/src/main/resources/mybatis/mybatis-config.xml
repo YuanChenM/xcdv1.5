@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <!--<setting name="logImpl" value="STDOUT_LOGGING"/>-->
+        <setting name="logPrefix" value="sql."/>
+    </settings>
+    <typeAliases>
+        <typeAlias type="com.hoperun.core.bean.BasePageParam" alias="BasePageParam"/>
+        <typeAlias type="com.hoperun.core.bean.BaseParam" alias="BaseParam"/>
+        <typeAlias type="com.msk.core.entity.BaseEntity" alias="BaseEntity"/>
+    </typeAliases>
+</configuration>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISLSellerRsLogic">
+
+    <update id="updateSlSeller" parameterType="com.msk.core.entity.SlSeller">
+        update sl_seller
+        set
+        <if test="slCodeDis != null and slCodeDis != ''">
+            SL_CODE_DIS=#{slCodeDis},
+        </if>
+        <if test="slCodeManufacture != null and slCodeManufacture != ''">
+            SL_CODE_MANUFACTURE=#{slCodeManufacture},
+        </if>
+        <if test="slCodeSelf != null and slCodeSelf != ''">
+            SL_CODE_SELF=#{slCodeSelf},
+        </if>
+        <if test="slCodeAgent != null and slCodeAgent != ''">
+            SL_CODE_AGENT=#{slCodeAgent},
+        </if>
+        <if test="slCodeOem != null and slCodeOem != ''">
+            SL_CODE_OEM=#{slCodeOem},
+        </if>
+        <if test="slConFlg != null and slConFlg != ''">
+            SL_CON_FLG=#{slConFlg},
+        </if>
+        <if test="areaCode != null and areaCode != ''">
+            AREA_CODE=#{areaCode},
+        </if>
+        <if test="lgcsAreaCode != null and lgcsAreaCode != ''">
+            LGCS_AREA_CODE=#{lgcsAreaCode},
+        </if>
+        <if test="provinceCode != null and provinceCode != ''">
+            PROVINCE_CODE=#{provinceCode},
+        </if>
+        <if test="cityCode != null and cityCode != ''">
+            CITY_CODE=#{cityCode},
+        </if>
+        <if test="districtCode != null and districtCode != ''">
+            DISTRICT_CODE=#{districtCode},
+        </if>
+        <if test="epId != null and epId != ''">
+            EP_ID=#{epId},
+        </if>
+        <if test="slMainClass != null and slMainClass != ''">
+            SL_MAIN_CLASS=#{slMainClass},
+        </if>
+        <if test="snkFlg != null and snkFlg != ''">
+            SNK_FLG=#{snkFlg},
+        </if>
+        <if test="selfFlg != null and selfFlg != ''">
+            SELF_FLG=#{selfFlg},
+        </if>
+        <if test="agentFlg != null and agentFlg != ''">
+            AGENT_FLG=#{agentFlg},
+        </if>
+        <if test="oemFlg != null and oemFlg != ''">
+            OEM_FLG=#{oemFlg},
+        </if>
+        <if test="buyerFlg != null and buyerFlg != ''">
+            BUYER_FLG=#{buyerFlg},
+        </if>
+        <if test="sqaStatus != null and sqaStatus != ''">
+            SQA_STATUS=#{sqaStatus},
+        </if>
+        <if test="distQua != null and distQua != ''">
+            DIST_QUA=#{distQua},
+        </if>
+        <if test="shopQua != null and shopQua != ''">
+            SHOP_QUA=#{shopQua},
+        </if>
+        <if test="memo1 != null and memo1 != ''">
+            MEMO1=#{memo1},
+        </if>
+        <if test="memo2 != null and memo2 != ''">
+            MEMO2=#{memo2},
+        </if>
+        <if test="memo3 != null and memo3 != ''">
+            MEMO3=#{memo3},
+        </if>
+        <if test="memo4 != null and memo4 != ''">
+            MEMO4=#{memo4},
+        </if>
+        <if test="memo5 != null and memo5 != ''">
+            MEMO5=#{memo5},
+        </if>
+        <if test="memo6 != null and memo6 != ''">
+            MEMO6=#{memo6},
+        </if>
+        <if test="memo7 != null and memo7 != ''">
+            MEMO7=#{memo7},
+        </if>
+        <if test="memo8 != null and memo8 != ''">
+            MEMO8=#{memo8},
+        </if>
+        <if test="memo9 != null and memo9 != ''">
+            MEMO9=#{memo9},
+        </if>
+        <if test="memo10 != null and memo10 != ''">
+            MEMO10=#{memo10},
+        </if>
+        <if test="memo11 != null and memo11 != ''">
+            MEMO11=#{memo11},
+        </if>
+        <if test="memo12 != null and memo12 != ''">
+            MEMO12=#{memo12},
+        </if>
+        <if test="memo13 != null and memo13 != ''">
+            MEMO13=#{memo13},
+        </if>
+        <if test="memo14 != null and memo14 != ''">
+            MEMO14=#{memo14},
+        </if>
+        <if test="memo15 != null and memo15 != ''">
+            MEMO15=#{memo15},
+        </if>
+        <if test="memo16 != null and memo16 != ''">
+            MEMO16=#{memo16},
+        </if>
+        <if test="memo17 != null and memo17 != ''">
+            MEMO17=#{memo17},
+        </if>
+        <if test="memo18 != null and memo18 != ''">
+            MEMO18=#{memo18},
+        </if>
+        <if test="memo19 != null and memo19 != ''">
+            MEMO19=#{memo19},
+        </if>
+        <if test="memo20 != null and memo20 != ''">
+            MEMO20=#{memo20},
+        </if>
+        <if test="areaName != null and areaName != ''">
+            AREA_NAME=#{areaName},
+        </if>
+        <if test="lgcsAreaName != null and lgcsAreaName != ''">
+            LGCS_AREA_NAME=#{lgcsAreaName},
+        </if>
+        <if test="provinceName != null and provinceName != ''">
+            PROVINCE_NAME=#{provinceName},
+        </if>
+        <if test="cityName != null and cityName != ''">
+            CITY_NAME=#{cityName},
+        </if>
+        <if test="districtName != null and districtName != ''">
+            DISTRICT_NAME=#{districtName},
+        </if>
+        <if test="updId != null and updId != ''">
+            UPD_ID = #{updId},
+        </if>
+        <if test="delFlg != null and delFlg != ''">
+            DEL_FLG = #{delFlg},
+        </if>
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        SL_CODE=#{slCode}
+    </update>
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.seller.bean.ISLSellerRsResult">
+         SELECT
+          b.SL_CODE AS slCode,
+          b.SL_CODE_DIS AS slCodeDis,
+          a.SL_SHOW_NAME AS slShowName
+        FROM
+           sl_account  a
+        INNER JOIN  sl_seller  b ON  a.SL_ACCOUNT =b.SL_ACCOUNT
+        WHERE  a.DEL_FLG = 0
+               AND b.DEL_FLG = 0
+               AND b.SL_CODE IN
+            <foreach item="item" index="index" collection="filterMap.sellCodeList" open="(" separator="," close=")">
+               #{item}
+            </foreach>
+    </select>
+
+</mapper>

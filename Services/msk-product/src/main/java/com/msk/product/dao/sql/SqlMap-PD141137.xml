@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141137Logic">
+
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestreeMat">
+        SELECT
+        SCIENTIFIC_NAME AS scientificName
+        ,LOCAL_NAME AS localName
+        ,SALES_NAME AS salesName
+        ,PLACE_ORIGIN AS placeOrigin
+        ,PLACE_CURRENT AS placeCurrent
+        ,SOURCE AS source
+        ,CHILD_TYPE AS childType
+        ,FEED_TYPE AS feedType
+        ,FEED_PERIOD AS feedPeriod
+        from PD_CLASSESTREE_MAT
+        <where>
+            <if test="filterMap.classestreeCode!=null and filterMap.classestreeCode!=''">
+                AND CLASSESTREE_CODE=#{filterMap.classestreeCode}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND DEL_FLG=#{filterMap.delFlg}
+            </if>
+        </where>
+    </select>
+
+    <!--获取卖家类型-->
+    <select id="findSlTypeName" parameterType="BaseParam" resultType="com.msk.product.bean.PD141136Bean">
+           SELECT
+           (CASE
+           WHEN SL_MAIN_CLASS='0' THEN '生产商卖家'
+           WHEN SL_MAIN_CLASS='1' THEN '自产型卖家'
+           WHEN SL_MAIN_CLASS='2' THEN '代理型卖家'
+           WHEN SL_MAIN_CLASS='3' THEN 'OEM型卖家'
+           ELSE '无' END) AS slMainClass
+            ,(CASE
+           WHEN SL_CON_FLG='0' THEN '国产'
+           WHEN SL_CON_FLG='1' THEN '进口'
+           ELSE '无' END) AS slConFlg
+           FROM SL_SELLER
+           WHERE SL_CODE = #{filterMap.slCode}
+    </select>
+
+
+    <!--查询列表数据-->
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.PD141137Bean">
+        SELECT
+         A.PD_CLASSES_CODE AS classesCode
+        ,A.MACHINING_CODE AS machiningCode
+        ,A.PD_BREED_CODE AS breedCode
+        ,A.SL_CODE AS slCode
+        ,A.BRAND_EP_ID AS brandEpId
+        ,A.BRAND_ID AS brandId
+        ,A.PROD_EP_ID AS prodEpId
+        ,B.SALES_NAME AS salesName
+        ,B.SCIENTIFIC_NAME AS scientificName
+        ,B.LOCAL_NAME AS localName
+        ,B.REMARK AS  remark
+        FROM SL_PRODUCT_STATUS_HIS AS A
+        LEFT JOIN pd_classestree_mat AS B ON B.CLASSESTREE_CODE = CONCAT(A.PD_CLASSES_CODE,A.MACHINING_CODE,IFNULL(A.PD_BREED_CODE,''))
+        WHERE
+        A.PD_CLASSES_CODE = #{filterMap.classesCode}
+        AND A.MACHINING_CODE = #{filterMap.machiningCode}
+        <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+            AND A.PD_BREED_CODE = #{filterMap.breedCode}
+        </if>
+        AND A.SL_CODE = #{filterMap.slCode}
+        AND A.PD_BREED_CODE IS NOT NULL
+        AND A.PD_BREED_CODE != ''
+
+        group by classesCode,machiningCode,breedCode
+        UNION
+        SELECT
+        A.PD_CLASSES_CODE AS classesCode
+        ,A.MACHINING_CODE AS machiningCode
+        ,A.PD_BREED_CODE AS breedCode
+        ,A.SL_CODE AS slCode
+        ,A.BRAND_EP_ID AS brandEpId
+        ,A.BRAND_ID AS brandId
+        ,A.PROD_EP_ID AS prodEpId
+        ,B.SALES_NAME AS salesName
+        ,B.SCIENTIFIC_NAME AS scientificName
+        ,B.LOCAL_NAME AS localName
+        ,B.REMARK AS  remark
+        FROM SL_PRODUCT AS A
+        LEFT JOIN pd_classestree_mat AS B ON B.CLASSESTREE_CODE = CONCAT(A.PD_CLASSES_CODE,A.MACHINING_CODE,IFNULL(A.PD_BREED_CODE,''))
+        WHERE
+        A.PD_CLASSES_CODE = #{filterMap.classesCode}
+        AND A.MACHINING_CODE = #{filterMap.machiningCode}
+        <if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+            AND A.PD_BREED_CODE = #{filterMap.breedCode}
+        </if>
+        AND A.SL_CODE = #{filterMap.slCode}
+        AND A.PD_BREED_CODE IS NOT NULL
+        AND A.PD_BREED_CODE != ''
+
+        group by classesCode,machiningCode,breedCode
+        ORDER BY classesCode,machiningCode,breedCode
+    </select>
+
+
+    <!--获取卖家类型-->
+    <select id="findSlList" parameterType="BaseParam" resultType="com.msk.product.bean.PD141137StautsBean">
+        SELECT
+         A.PD_CLASSES_CODE AS classesCode
+        ,A.MACHINING_CODE AS machiningCode
+        ,A.PD_BREED_CODE AS breedCode
+        ,A.PD_FEATURE_CODE AS featureCode
+        ,A.STATUS_MONITOR_DATE AS statusMonitorDate
+        ,B.FEATURE_NAME AS featureName
+        FROM SL_PRODUCT_STATUS_HIS AS A
+        LEFT JOIN PD_FEATURE B ON A.PD_FEATURE_CODE = B.FEATURE_CODE
+        AND A.PD_CLASSES_CODE = B.CLASSES_CODE
+        AND A.MACHINING_CODE = B.MACHINING_CODE
+        AND A.PD_BREED_CODE = B.BREED_CODE
+        WHERE
+        A.PD_CLASSES_CODE = #{filterMap.classesCode}
+        AND A.MACHINING_CODE = #{filterMap.machiningCode}
+        AND A.PD_BREED_CODE = #{filterMap.breedCode}
+        AND A.PD_FEATURE_CODE IS NOT NULL
+        AND A.PD_FEATURE_CODE != ''
+        AND B.FEATURE_NAME IS NOT NULL
+        AND B.FEATURE_NAME != ''
+        AND A.SL_CODE = #{filterMap.slCode}
+        <if test="filterMap.statusTwo==null or filterMap.statusTwo==''">
+            AND A.STATUS = #{filterMap.status}
+        </if>
+        <if test="filterMap.statusTwo!=null and filterMap.statusTwo!=''">
+            AND (A.STATUS = #{filterMap.status} or A.STATUS = #{filterMap.statusTwo})
+        </if>
+        GROUP by classesCode,machiningCode,breedCode,featureCode
+        UNION
+        SELECT
+        A.PD_CLASSES_CODE AS classesCode
+        ,A.MACHINING_CODE AS machiningCode
+        ,A.PD_BREED_CODE AS breedCode
+        ,A.PD_FEATURE_CODE AS featureCode
+        ,A.STATUS_MONITOR_DATE AS statusMonitorDate
+        ,B.FEATURE_NAME AS featureName
+        FROM SL_PRODUCT AS A
+        LEFT JOIN PD_FEATURE B ON A.PD_FEATURE_CODE = B.FEATURE_CODE
+        AND A.PD_CLASSES_CODE = B.CLASSES_CODE
+        AND A.MACHINING_CODE = B.MACHINING_CODE
+        AND A.PD_BREED_CODE = B.BREED_CODE
+        WHERE
+        A.PD_CLASSES_CODE = #{filterMap.classesCode}
+        AND A.MACHINING_CODE = #{filterMap.machiningCode}
+        AND A.PD_BREED_CODE = #{filterMap.breedCode}
+        AND A.PD_FEATURE_CODE IS NOT NULL
+        AND A.PD_FEATURE_CODE != ''
+        AND B.FEATURE_NAME IS NOT NULL
+        AND B.FEATURE_NAME != ''
+        AND A.SL_CODE = #{filterMap.slCode}
+        <if test="filterMap.statusTwo==null or filterMap.statusTwo==''">
+            AND A.STATUS = #{filterMap.status}
+        </if>
+        <if test="filterMap.statusTwo!=null and filterMap.statusTwo!=''">
+            AND (A.STATUS = #{filterMap.status} or A.STATUS = #{filterMap.statusTwo})
+        </if>
+        GROUP by classesCode,machiningCode,breedCode,featureCode
+        ORDER BY classesCode,machiningCode,breedCode,featureCode
+    </select>
+
+    <!--查询产品品牌数据-->
+    <select id="findPdSlBlank" parameterType="BaseParam" resultType="com.msk.product.bean.PD141137Bean">
+        SELECT
+          IFNULL(A.BRAND_NAME,'无') AS brandName
+         ,(CASE
+           WHEN A.BRAND_CLASS='0' THEN '卖家独立品牌'
+           WHEN A.BRAND_CLASS='1' THEN '神农先生联合'
+           WHEN A.BRAND_CLASS='2' THEN '神农客联合'
+           WHEN A.BRAND_CLASS='3' THEN '神农人家联合'
+           ELSE '无' END)AS brandClass
+           FROM sl_pd_brand AS A
+           WHERE A.SL_CODE = #{filterMap.slCode} AND A.BRAND_EP_ID = #{filterMap.brandEpId} AND A.BRAND_ID = #{filterMap.brandId}
+    </select>
+       <!-- 获取卖家企业名称-->
+        <select id="findEpProName" parameterType="BaseParam" resultType="com.msk.product.bean.PD141137Bean">
+            SELECT
+            A.EP_NAME AS epName
+            FROM SL_ENTERPRISE A
+            WHERE A.EP_ID = #{filterMap.prodEpId}
+        </select>
+    <!--获取卖家国籍-->
+    <select id="findSlCity" parameterType="BaseParam" resultType="com.msk.product.bean.PD141137Bean">
+        SELECT
+        B.CITY_NAME AS cityName
+        FROM SL_SELLER AS A
+        LEFT JOIN md_city AS B ON A.CITY_CODE = B.CITY_CODE
+        WHERE A.SL_CODE = #{filterMap.slCode}
+    </select>
+
+
+    <!--查询树形结构 查询四级所有-->
+    <select id="findListLevel4List" parameterType="BaseParam" resultType="com.msk.product.bean.PD141137FeatureListBean">
+        SELECT
+        A.PD_CLASSES_CODE AS classesCode
+        ,A.MACHINING_CODE AS machiningCode
+        ,A.PD_BREED_CODE AS breedCode
+        ,A.PD_FEATURE_CODE AS featureCode
+        ,B.FEATURE_NAME AS featureName
+        ,CONCAT(A.PD_CLASSES_CODE,A.MACHINING_CODE,A.PD_BREED_CODE,A.PD_FEATURE_CODE) AS classestreeCode
+        FROM SL_PRODUCT_STATUS_HIS AS A
+        LEFT JOIN PD_FEATURE B ON A.PD_FEATURE_CODE = B.FEATURE_CODE
+        AND A.PD_CLASSES_CODE = B.CLASSES_CODE
+        AND A.MACHINING_CODE = B.MACHINING_CODE
+        AND A.PD_BREED_CODE = B.BREED_CODE
+        WHERE
+        A.PD_CLASSES_CODE = #{filterMap.classesCode}
+        AND A.MACHINING_CODE = #{filterMap.machiningCode}
+        AND A.PD_BREED_CODE = #{filterMap.breedCode}
+        AND A.SL_CODE = #{filterMap.slCode}
+        AND A.PD_FEATURE_CODE IS NOT NULL
+        AND A.PD_FEATURE_CODE != ''
+        GROUP by classesCode,machiningCode,breedCode,featureCode
+        UNION
+        SELECT
+        A.PD_CLASSES_CODE AS classesCode
+        ,A.MACHINING_CODE AS machiningCode
+        ,A.PD_BREED_CODE AS breedCode
+        ,A.PD_FEATURE_CODE AS featureCode
+        ,B.FEATURE_NAME AS featureName
+         ,CONCAT(A.PD_CLASSES_CODE,A.MACHINING_CODE,A.PD_BREED_CODE,A.PD_FEATURE_CODE) AS classestreeCode
+        FROM SL_PRODUCT AS A
+        LEFT JOIN PD_FEATURE B ON A.PD_FEATURE_CODE = B.FEATURE_CODE
+        AND A.PD_CLASSES_CODE = B.CLASSES_CODE
+        AND A.MACHINING_CODE = B.MACHINING_CODE
+        AND A.PD_BREED_CODE = B.BREED_CODE
+        WHERE
+        A.PD_CLASSES_CODE = #{filterMap.classesCode}
+        AND A.MACHINING_CODE = #{filterMap.machiningCode}
+        AND A.PD_BREED_CODE = #{filterMap.breedCode}
+        AND A.SL_CODE = #{filterMap.slCode}
+        AND A.PD_FEATURE_CODE IS NOT NULL
+        AND A.PD_FEATURE_CODE != ''
+        GROUP by classesCode,machiningCode,breedCode,featureCode
+        ORDER BY classesCode,machiningCode,breedCode,featureCode
+    </select>
+   <!-- 查询五级所有-->
+    <select id="findListLevel5List" parameterType="BaseParam" resultType="com.msk.product.bean.PD141137WeightListBean">
+        SELECT
+         A.PD_CLASSES_CODE AS classesCode
+        ,A.MACHINING_CODE AS machiningCode
+        ,A.PD_BREED_CODE AS breedCode
+        ,A.PD_FEATURE_CODE AS featureCode
+        ,A.WEIGHT_CODE AS weightCode
+        ,B.WEIGHT_NAME AS weightName
+        ,CONCAT(A.PD_CLASSES_CODE,A.MACHINING_CODE,A.PD_BREED_CODE,A.PD_FEATURE_CODE,A.WEIGHT_CODE) AS classestreeCode
+        FROM SL_PRODUCT_STATUS_HIS AS A
+        LEFT JOIN PD_WEIGHT B ON A.WEIGHT_CODE = B.WEIGHT_CODE
+        AND A.PD_CLASSES_CODE = B.CLASSES_CODE
+        AND A.MACHINING_CODE = B.MACHINING_CODE
+        AND A.PD_BREED_CODE = B.BREED_CODE
+        AND A.PD_FEATURE_CODE = B.FEATURE_CODE
+        WHERE
+         A.PD_CLASSES_CODE = #{filterMap.classesCode}
+        AND A.MACHINING_CODE = #{filterMap.machiningCode}
+        AND A.PD_BREED_CODE = #{filterMap.breedCode}
+        AND A.PD_FEATURE_CODE = #{filterMap.featureCode}
+        AND A.SL_CODE = #{filterMap.slCode}
+        AND A.WEIGHT_CODE IS NOT NULL
+        AND A.WEIGHT_CODE != ''
+        GROUP by classesCode,machiningCode,breedCode,featureCode,weightCode
+        UNION
+        SELECT
+         A.PD_CLASSES_CODE AS classesCode
+        ,A.MACHINING_CODE AS machiningCode
+        ,A.PD_BREED_CODE AS breedCode
+        ,A.PD_FEATURE_CODE AS featureCode
+        ,A.WEIGHT_CODE AS weightCode
+        ,B.WEIGHT_NAME AS weightName
+        ,CONCAT(A.PD_CLASSES_CODE,A.MACHINING_CODE,A.PD_BREED_CODE,A.PD_FEATURE_CODE,A.WEIGHT_CODE) AS classestreeCode
+        FROM SL_PRODUCT AS A
+        LEFT JOIN PD_WEIGHT B ON A.WEIGHT_CODE = B.WEIGHT_CODE
+        AND A.PD_CLASSES_CODE = B.CLASSES_CODE
+        AND A.MACHINING_CODE = B.MACHINING_CODE
+        AND A.PD_BREED_CODE = B.BREED_CODE
+        AND A.PD_FEATURE_CODE = B.FEATURE_CODE
+        WHERE
+        A.PD_CLASSES_CODE = #{filterMap.classesCode}
+        AND A.MACHINING_CODE = #{filterMap.machiningCode}
+        AND A.PD_BREED_CODE = #{filterMap.breedCode}
+        AND A.PD_FEATURE_CODE = #{filterMap.featureCode}
+        AND A.SL_CODE = #{filterMap.slCode}
+        AND A.WEIGHT_CODE IS NOT NULL
+        AND A.WEIGHT_CODE != ''
+        GROUP by classesCode,machiningCode,breedCode,featureCode,weightCode
+        ORDER BY classesCode,machiningCode,breedCode,featureCode,weightCode
+    </select>
+
+    <!-- 查询六级所有-->
+    <select id="findListLevel6List" parameterType="BaseParam" resultType="com.msk.product.bean.PD141137NormsListBean">
+        SELECT
+        A.NORMS_CODE AS normsCode
+        ,A.NORMS_OUT AS normsName
+        FROM pd_norms_std AS A
+        WHERE A.STANDARD_ID = (select STANDARD_ID FROM  pd_standard B WHERE
+        B.CLASSES_CODE = #{filterMap.classesCode}
+        AND B.MACHINING_CODE = #{filterMap.machiningCode}
+        AND B.BREED_CODE = #{filterMap.breedCode}
+        AND B.FEATURE_CODE = #{filterMap.featureCode}
+        AND B.WEIGHT_CODE = #{filterMap.weightCode})
+        ORDER BY A.NORMS_CODE
+    </select>
+
+    <!--获取库存数量-->
+    <select id="findListsqy" parameterType="BaseParam" resultType="com.msk.product.bean.PD141137SlNumberBean">
+        SELECT
+        SUM(STOCK_QTY) AS stockQty
+        ,CONCAT(CLASSES_CODE,MACHINING_CODE,BREED_CODE) AS slCodeName
+        FROM  SO_STOCK_SP
+        WHERE
+          CLASSES_CODE = #{filterMap.classesCode}
+        AND MACHINING_CODE = #{filterMap.machiningCode}
+        AND BREED_CODE = #{filterMap.breedCode}
+        AND A.SL_CODE = #{filterMap.slCode}
+    </select>
+</mapper>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171105Logic">
+
+    <!--查询list页面信息-->
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.price.bean.SP171105Bean">
+        SELECT * FROM (SELECT
+        IFNULL(a.LGCS_CODE,'-') AS lgcsCode,
+        IFNULL(e.LGCS_NAME,'-') AS lgcsName,
+        IFNULL(a.PD_TYPE_CODE,'-') AS pdTypeCode,
+        IFNULL(e.PD_NAME,'-') AS pdName,
+        IFNULL(e.CLASSES_CODE,'-') AS classesCode,
+        IFNULL(e.CLASSES,'-') AS classesName,
+        IFNULL(e.MACHINING_CODE,'-') AS machiningCode,
+        IFNULL(e.MACHINING,'-') AS machiningName,
+        IFNULL(e.FEATURE_CODE,'-') AS featureCode,
+        IFNULL(e.FEATURE,'-') AS featureName,
+        IFNULL(e.BREED,'-') AS breedName,
+        IFNULL(e.BREED_CODE,'-') AS breedCode,
+        IFNULL(e.WEIGHT_CODE,'-') AS weightCode,
+        IFNULL(e.WEIGHT,'-') AS weight,
+        IFNULL(a.PUBLISH_TOTAL_NUM,0) AS publishTotalNum,
+        IFNULL(a.PUBLISH_YM,'-') AS demandYearMonth,
+        a.DEMAND_STARTDATE AS startDate,
+        a.DEMAND_ENDDATE AS endDate,
+        IFNULL(b.PD_CODE,'-') AS pdCode,
+        IFNULL(b.GRADE_CODE,'-') AS gradeCode,
+        IFNULL(e.GRADE,'-') AS gradeName,
+        IFNULL(b.PUBLISH_NUM,'-') AS publishNum,
+        IFNULL(c.DEMAND_ID,0) AS demandId,
+        IFNULL(c.APPLY_NUM,'-') AS applyQty,
+        IFNULL(c.IS_CONFIRM,0) AS isConfirm,
+        IFNULL(d.FORECAST_NUM,'-') AS foreCastNum,
+        '-' AS stockQty
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        GROUP BY a.LGCS_CODE,a.PD_TYPE_CODE,d.GRADE_CODE,d.FORECAST_YM
+        ORDER BY a.LGCS_CODE,a.PD_TYPE_CODE
+        ) as t
+        <include refid="whereIsConfirm"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        SELECT COUNT(1) FROM(
+        SELECT * FROM(SELECT
+        IFNULL(a.LGCS_CODE,'-') AS lgcsCode,
+        IFNULL(e.LGCS_NAME,'-') AS lgcsName,
+        IFNULL(a.PD_TYPE_CODE,'-') AS pdTypeCode,
+        IFNULL(e.PD_NAME,'-') AS pdName,
+        IFNULL(e.CLASSES_CODE,'-') AS classesCode,
+        IFNULL(e.CLASSES,'-') AS classesName,
+        IFNULL(e.MACHINING_CODE,'-') AS machiningCode,
+        IFNULL(e.MACHINING,'-') AS machiningName,
+        IFNULL(e.FEATURE_CODE,'-') AS featureCode,
+        IFNULL(e.FEATURE,'-') AS featureName,
+        IFNULL(e.WEIGHT_CODE,'-') AS weightCode,
+        IFNULL(e.WEIGHT,'-') AS weight,
+        IFNULL(a.PUBLISH_TOTAL_NUM,0) AS publishTotalNum,
+        IFNULL(a.PUBLISH_YM,'-') AS demandYearMonth,
+        a.DEMAND_STARTDATE AS startDate,
+        a.DEMAND_ENDDATE AS endDate,
+        IFNULL(b.PD_CODE,'-') AS pdCode,
+        IFNULL(b.GRADE_CODE,'-') AS gradeCode,
+        IFNULL(e.GRADE,'-') AS gradeName,
+        IFNULL(b.PUBLISH_NUM,'-') AS publishNum,
+        IFNULL(c.DEMAND_ID,0) AS demandId,
+        IFNULL(c.APPLY_NUM,'-') AS applyQty,
+        IFNULL(c.IS_CONFIRM,0) AS isConfirm,
+        IFNULL(d.FORECAST_NUM,'-') AS foreCastNum,
+        '-' AS stockQty
+            <include refid="selectFrom"/>
+            <include refid="whereCondition"/>
+        GROUP BY a.LGCS_CODE,a.PD_TYPE_CODE,d.GRADE_CODE,d.FORECAST_YM
+        ORDER BY a.LGCS_CODE,a.PD_TYPE_CODE
+        )as t
+        <include refid="whereIsConfirm"/>
+        ) AS ct
+    </select>
+
+    <select id="findYearMonthList" parameterType="BaseParam" resultType="com.msk.price.bean.SP171105Bean">
+        SELECT
+        PUBLISH_YM AS demandYearMonth,
+        DEMAND_STARTDATE AS startDate,
+        DEMAND_ENDDATE AS endDate
+        FROM SP_PD_DEMAND_PUBLISH
+        WHERE DEL_FLG = 0
+        GROUP BY
+        demandYearMonth
+        ORDER BY demandYearMonth DESC
+    </select>
+
+    <sql id="selectFrom">
+        FROM sp_pd_demand_publish AS a
+        INNER JOIN sp_pd_demand_publish_detail AS b
+        ON b.PUBLISH_ID=a.PUBLISH_ID
+        LEFT JOIN sp_seller_pd_demandapply_num AS c
+        ON c.LGCS_CODE = a.LGCS_CODE
+        AND c.PD_CODE = b.PD_CODE
+        AND c.DEL_FLG = 0  AND a.PUBLISH_YM = c.DEMAND_YEARMONTH
+        <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+            AND c.SL_CODE = #{filterMap.slCode}
+        </if>
+        LEFT JOIN sp_pd_demand_seller AS d
+        ON d.LGCS_CODE = a.LGCS_CODE
+        AND d.PD_CODE = b.PD_CODE AND a.PUBLISH_YM = d.FORECAST_YM
+        LEFT JOIN sp_logs_product e on e.PD_CODE = b.PD_CODE AND e.LGCS_CODE = a.LGCS_CODE
+    </sql>
+
+    <sql id="whereCondition">
+        WHERE a.DEL_FLG = 0
+        AND b.DEL_FLG = 0
+        AND b.PUBLISH_NUM > 0
+        <if test="filterMap.demandYearMonth!=null and filterMap.demandYearMonth!=''">
+            AND a.PUBLISH_YM = #{filterMap.demandYearMonth}
+        </if>
+        <if test="filterMap.pdTypeCodeList!=null and filterMap.pdTypeCodeList.size()!=0">
+            AND
+            <foreach collection="filterMap.pdTypeCodeList" index="index" item="item"  open="(" separator=" OR " close=")">
+                (a.PD_TYPE_CODE=#{item.pdCode} AND a.LGCS_CODE = #{item.lgcsAreaCode} AND b.GRADE_CODE = #{item.slQltGradeCode})
+            </foreach>
+        </if>
+        <if test="filterMap.lgcsCodes!=null and filterMap.lgcsCodes!=''">
+            AND A.LGCS_CODE IN
+            <foreach collection="filterMap.lgcsCodes" item="lgcsCode" open="(" separator="," close=")">
+                #{lgcsCode}
+            </foreach>
+        </if>
+        <if test="filterMap.pdName!=null and filterMap.pdName!=''">
+            AND e.PD_NAME like #{filterMap.pdName}
+        </if>
+        <if test="filterMap.classesName!=null and filterMap.classesName!=''">
+            AND e.CLASSES like #{filterMap.classesName}
+        </if>
+        <if test="filterMap.machiningName!=null and filterMap.machiningName!=''">
+            AND e.MACHINING like #{filterMap.machiningName}
+        </if>
+        <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+            AND e.BREED like #{filterMap.breedName}
+        </if>
+        <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+            AND e.FEATURE like #{filterMap.featureName}
+        </if>
+        <if test="filterMap.weight!=null and filterMap.weight!=''">
+            AND e.WEIGHT like #{filterMap.weight}
+        </if>
+        <if test="filterMap.pdTypeCode!=null and filterMap.pdTypeCode!=''">
+            AND a.PD_TYPE_CODE like #{filterMap.pdTypeCode}
+        </if>
+        <if test="filterMap.gradeCodes!=null and filterMap.gradeCodes!=''">
+            AND b.GRADE_CODE IN
+            <foreach collection="filterMap.gradeCodes" item="gradeCode" open="(" separator="," close=")">
+                #{gradeCode}
+            </foreach>
+        </if>
+
+    </sql>
+    <sql id="whereIsConfirm">
+        <if test="filterMap.isConfirms!=null and filterMap.isConfirms!=''">
+            WHERE isConfirm IN
+            <foreach collection="filterMap.isConfirms" item="isConfirm" open="(" separator="," close=")">
+                #{isConfirm}
+            </foreach>
+        </if>
+    </sql>
+</mapper>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="./resources/js/BY121214.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>选择品种或添加新品种</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div style="width: 80%;margin-left:20px;" class="divCommon1">选择产品品种</div>
+            <div style="width: 80%;margin-left:30px;" class="divCommon2">从已注册的品种,或新调研品种中选取一个品种,点击条目开始调研</div>
+            <div id="selectedPdClass" style="width: 80%;margin-left:30px;" class="divCommon1"></div>
+            <div style="width:100%;">
+                <div style="margin-left:30px;width:80%;height:40px;background-color: #CCCCCC;color: #FFFFFF;text-align:center;text-shadow:none;line-height:45px;margin-top:10px;">
+                    <div style="width: 100%" class="ui-grid-a">
+                        <div style="width: 80%;text-align: left" class="ui-block-a"><span style="padding-left: 10px;">已注册品种,共有</span></div>
+                        <div id="totalBreedCount" style="width: 20%" class="ui-block-b"></div>
+                    </div>
+                </div>
+                <div style="width: 100%">
+                    <div id="breedInfoDiv" style="width: 100%;"></div>
+                    <div id="breedOtherInfoDiv" style="width: 100%;display:none;"></div>
+                    <div style="display:none;width: 80%;" class="listDiv" onclick="breedOtherOpen()" id="breedOtherOpen"><span style="padding-left:20px;">展开更多</span></div>
+                </div>
+            </div>
+            <div style="width:100%;">
+                <div style="margin-left:30px;width:80%;height:40px;background-color: #CCCCCC;color: #FFFFFF;text-align:center;text-shadow:none;line-height:45px;margin-top:10px;">
+                    <div style="width: 100%" class="ui-grid-a">
+                        <div style="width: 80%;text-align: left" class="ui-block-a"><span style="padding-left: 10px;">新调研品种,共有</span></div>
+                        <div id="newBreedCount" style="width: 20%" class="ui-block-b"></div>
+                    </div>
+                </div>
+                <div style="width: 100%">
+                    <div id="newBreedInfoDiv" style="width: 100%;"></div>
+                    <div id="newbreedOtherInfoDiv" style="width: 100%;display:none;"></div>
+                    <div style="display:none;width: 80%;" class="listDiv" onclick="newBreedOtherOpen()" id="newBreedOtherOpen"><span style="padding-left:20px;">展开更多</span></div>
+                </div>
+            </div>
+            <div onclick="addNewBreed()" style="width: 150px;margin-left:30px;" class="buttonDiv" onmouseover="javascript:this.style.backgroundColor='#4169E1'">添加新调研品种</div>
+        </div>
+	</body>
+</html>

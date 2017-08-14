@@ -1,0 +1,22 @@
+spring:
+  mail:
+    from: "oms-admin <root@xianchida.com>"
+    host: 10.20.10.100            #SMTP server host. For instance `smtp.example.com`
+    username: root@xianchida.com  #Login user of the SMTP server.
+    password: 123456              #Login password of the SMTP server.
+    port: 25                      #SMTP server port
+    proxy:
+      enable: false
+      proxyHost: 
+      proxyPort: 
+    properties:
+      mail:
+        smtp:
+          auth: false
+          ssl:
+            enable: false
+server:
+  port: 8095
+  context-path: /mail-server/
+
+#append.mail.cc: xxxxx

@@ -1,0 +1,25 @@
+package com.msk.product.bean;
+
+import com.msk.core.entity.BaseEntity;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+import java.util.List;
+
+/**
+ * Created by gao_min on 2016/10/9.
+ */
+@ApiModel(value = "IPD1411214RsResult", description = "result")
+public class IPD1411214RsResult extends BaseEntity {
+
+    @ApiModelProperty(value = "举报一览")
+    private List<IPD1411214RsBean> reportList;
+
+    public List<IPD1411214RsBean> getReportList() {
+        return reportList;
+    }
+
+    public void setReportList(List<IPD1411214RsBean> reportList) {
+        this.reportList = reportList;
+    }
+}

@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>冻品管家注册详情</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link rel="stylesheet" href="css/BA2141120.css"/>
+    <link href="css/common.css" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/swiper-3.3.1.min.css">
+    <link href="css/animate.min.css" rel="stylesheet">
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="jquery/jquery-html5Validate.js?v=14"></script>
+    <script src="js/constantDef.js"></script>
+    <script src="jquery/Popt.js"></script>
+    <script src="jquery/citySet.js"></script>
+    <script src="js/commonUtil.js"></script>
+    <script src="jquery/houseType.js"></script>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+</head>
+
+<div>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<div class="Container">
+    <form id="houseForm">
+        <input type="hidden" id="img1"/>
+        <input type="hidden" id="img2"/>
+        <div class="header">
+            <div class="fanhui" id="BA2141208_return"></div>
+            <div class="title">
+                <span class="title_span">冻品管家注册详情</span>
+            </div>
+        </div>
+        <div class="Content">
+            <ul>
+                <!--<a class="checkSex" name="male" href="javascript:void(0);"><span class="sex_span">男</span></a><a class="checkSex on" name="female" href="javascript:void(0);"><span class="sex_span">女</span></a>-->
+                <li>
+                    <div class="account">
+                        <div class="left"><span class="font-account"><span style="color: red">*</span>姓名</span></div>
+                        <div class="right"><input type="text" placeholder="请输入姓名" required class="accountInfo"
+                                                  id="name"/></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="account">
+                        <div class="left"><span class="font-account"><span style="color: red">*</span>性别</span></div>
+                        <div class="right">
+                            <div class="radio-div">
+                                <div class="sex-div">
+                                    <label>
+                                        <input type="radio" checked name="sex" value="2"/>
+
+                                        <div class="option"></div>
+                                        <span class="opt-text">男</span>
+                                    </label>
+                                </div>
+                                <div class="sex-div">
+                                    <label>
+                                        <input type="radio" name="sex" value="1"/>
+
+                                        <div class="option"></div>
+                                        <span class="opt-text">女</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="account">
+                        <div class="left"><span class="font-account"><span style="color: red">*</span>身份证号</span></div>
+                        <div class="right"><input type="text" data-max="30" data-min="18" placeholder="请输入身份证号" required
+                                                  class="accountInfo" id="idCard"></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="account">
+                        <div class="address-jsj" id="r"><span class="font-account" style="width: 40%"><span style="color: red">*</span>户籍地址</span><input
+                                class="wl_input addressr" type="text" id="houseAddress" required readonly="readonly"/>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="account">
+                        <div class="left"><span class="font-account"><span style="color: red">*</span>街道乡镇</span></div>
+                        <div class="right"><input type="text" placeholder="请输入详细地址" data-max="70" class="accountInfo"
+                                                  id="rhouseAdress"></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="account">
+                        <div class="left"><span class="font-account">&nbsp照片</span></div>
+                        <div class="right" style="display:flex;flex-flow: column;position: relative">
+                            <span class="jia"  style="background: none; height: 30px;width: 78px;display: inline-block;margin:auto 0px;line-height: 30px;text-align: center;background-color: #002e62;color: white;font-size: 1.3rem;border-radius: 5px;position:absolute ;left: 0%;top: 41%;margin-left:10px;margin-top: -10px;">
+                                选择文件
+                            </span>
+                             <span class="beforeLook"  style="background: none; height: 30px;width: 78px;display: none;margin:auto 0px;line-height: 30px;text-align: center;background-color: #002e62;color: white;font-size: 1.3rem;border-radius: 5px;position:absolute ;left: 44%;top: 41%;margin-left:10px;margin-top: -10px;">
+                                预览
+                            </span>
+                            <!--<input type="file" c class="accountInfo" accept="image/*" name="" value="">-->
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="account">
+                        <div class="addresst-js" id="v"><span class="font-account" style="width: 39%"><span style="color: red">*</span>虚拟经营地址</span>
+                            <input class="wl_input address" required type="text" id="city" required readonly="readonly"/></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="account">
+                        <div class="left"><span class="font-account"><span style="color: red">*</span>街道乡镇</span></div>
+                        <div class="right"><input type="text" data-max="70" placeholder="请输入详细地址" class="accountInfo"
+                                                  id="vhouseAdress"></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="account">
+                        <div class="typeZeroEight" id="208" style="height: 44px">
+                        <div class="left"><span class="font-account"><span style="color: red">*</span>冻品管家分类</span>
+                        </div>
+                        <div class="right"><input style="margin-left: 0px;width: 100%;text-indent: 7px;" class="wl_input accountInfo" required type="text" id="category" readonly="readonly"/></div>
+                        </div>
+                        </div>
+                </li>
+                <!--<li>-->
+                    <!--<div class="account">-->
+                        <!--<div class="left"><span class="font-account"><span style="color: red">*</span>二级分类</span></div>-->
+                        <!--<div class="right"><select style="margin-left: 0px;width: 100%;text-indent: 7px;" class="accountInfo" required id="categorySub"></select></div>-->
+                    <!--</div>-->
+                <!--</li>-->
+                <li>
+                    <div class="account">
+                        <div class="left"><span class="font-account"><span style="color: red">*</span>绑定手机号</span></div>
+                        <div class="right"><input name="BA2141208" type="tel|xxxx" placeholder="请输入手机号码" required
+                                                  class="accountInfo" id="tel"></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="account">
+                        <div class="left"><span class="font-account">&nbsp微信号</span></div>
+                        <div class="right"><input type="text" placeholder="请输入微信号" data-max="50" class="accountInfo"
+                                                  id="wechat"></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="account">
+                        <div class="left"><span class="font-account">&nbspQQ号</span></div>
+                        <div class="right"><input type="text" placeholder="请输入QQ号" data-max="50" class="accountInfo"
+                                                  id="QQ"></div>
+                    </div>
+                </li>
+                <li>
+                    <div class="account">
+                        <div class="left"><span class="font-account"><span style="color: red">*</span>买手签署</span></div>
+                        <div class="right">
+                            <div class="chk-div">
+                                <label>
+                                    <input type="checkbox" required checked name="sure" value="1"/>
+
+                                    <div class="option"></div>
+                                    <span class="opt-text"
+                                          style="width:83%;line-height: 50px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis">同意该冻品管家为该买手的冻品管家</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li style="height:50px;"></li>
+            </ul>
+        </div>
+        <div class="footer">
+            <button disabled type="submit" class="sure" id="accept"><span class="span-sure">确定</span></button>
+        </div>
+        </form>
+</div>
+<div class="gadChoose" style="display: none">
+    <div class="footerbottom one">
+        <div class="carded fornt">身份证正面</div>
+        <div class="carded rear">身份证反面</div>
+        <div class="cancel">取消</div>
+    </div>
+</div>
+<div class="gad" style="display: none">
+    <div class="footerbottom tow">
+        <div class="photo" onclick="loadImageLocal();">从相册选取</div>
+        <div class="camera" onclick="loadImage()">打开相机</div>
+        <div class="cancel cancelTow">取消</div>
+    </div>
+</div>
+<div class="bigCion" style="display: none">
+    <div class="swiper-container" style="margin: auto auto;width: 100%">
+        <div class="swiper-wrapper" style="background: white">
+
+        </div>
+        <!-- 如果需要导航按钮 -->
+        <div class="swiper-button-prev swiper-button-white"></div>
+        <div class="swiper-button-next swiper-button-white"></div>
+    </div>
+</div>
+</div>
+</body>
+<script src="js/BA2141208.js"></script>
+<script src="js/BA2141120.js"></script>
+<script src="js/commonBack.js"></script>
+<script src="jquery/swiper-3.3.1.min.js"></script>
+<script>
+    var mySwiper = new Swiper ('.swiper-container', {
+        nextButton: '.swiper-button-next',
+        prevButton: '.swiper-button-prev',
+        observer: true,//修改swiper自己或子元素时，自动初始化swiper
+        slidesPerView: 1,
+        paginationClickable: true,
+        observeParents: true,//修改swiper的父元素时，自动初始化swiper
+        spaceBetween: 30,
+        loop: false
+    })
+</script>
+</html>

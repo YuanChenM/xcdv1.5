@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231153RsLogic">
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.core.entity.SlPdBrand">
+        SELECT
+         B.BRAND_ID AS brandId,
+         B.BRAND_NAME AS brandName,
+         B.BRAND_CLASS AS  brandClass
+        FROM
+        sl_product  A
+        INNER JOIN  sl_pd_brand B  ON  A.SL_CODE = B.SL_CODE
+                                    AND A.BRAND_ID = B.BRAND_ID
+                                    AND A.BRAND_EP_ID = B.BRAND_EP_ID
+        WHERE
+        A.DEL_FLG = 0
+        AND  B.DEL_FLG = 0
+        <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+            AND A.SL_CODE = #{filterMap.slCode}
+        </if>
+        <if test="filterMap.pdClassesCode!=null and filterMap.pdClassesCode!=''">
+            AND A.PD_CLASSES_CODE = #{filterMap.pdClassesCode}
+        </if>
+        <if test="filterMap.machiningCode!=null and filterMap.machiningCode!=''">
+            AND A.MACHINING_CODE = #{filterMap.machiningCode}
+        </if>
+        <if test="filterMap.pdBreedCode!=null and filterMap.pdBreedCode!=''">
+            AND A.PD_BREED_CODE = #{filterMap.pdBreedCode}
+        </if>
+        <if test="filterMap.pdFeatureCode!=null and filterMap.pdFeatureCode!=''">
+            AND A.PD_FEATURE_CODE = #{filterMap.pdFeatureCode}
+        </if>
+        <if test="filterMap.weightCode!=null and filterMap.weightCode!=''">
+            AND A.WEIGHT_CODE = #{filterMap.weightCode}
+        </if>
+        group by B.BRAND_ID,B.BRAND_NAME,B.BRAND_CLASS
+    </select>
+</mapper>

@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD14114701Logic">
+    <select id="findOne" parameterType="com.msk.core.entity.PdQltStd" resultType="com.msk.core.entity.PdStandard">
+        SELECT
+        A.STANDARD_ID AS standardId
+        FROM PD_STANDARD AS A
+        WHERE A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+    </select>
+
+    <select id="checkPic" parameterType="BaseParam" resultType="com.msk.product.bean.PD141147Bean">
+        SELECT
+	STANDARD_ID AS standardId,
+	FED_STD_ITEM_ID AS fedStdItemId,
+	FED_GOOD_VAL_FILE1 AS fGoodValFile1,
+	FED_GOOD_VAL_FILETYPE1 AS fedGoodValFileType1,
+	FED_GOOD_VAL_FILE2 AS fGoodValFile2,
+	FED_GOOD_VAL_FILETYPE2 AS fedGoodValFileType2,
+	FED_GOOD_VAL_FILE3 AS fGoodValFile3,
+	FED_GOOD_VAL_FILETYPE3 AS fedGoodValFileType3,
+	FED_GOOD_VAL_FILE4 AS fGoodValFile4,
+	FED_GOOD_VAL_FILETYPE4 AS fedGoodValFileType4,
+	FED_NORMAL_VAL_FILE1 AS fNormalValFile1,
+	FED_NORMAL_VAL_FILETYPE1 AS fedNormalValFileType1,
+	FED_NORMAL_VAL_FILE2 AS fNormalValFile2,
+	FED_NORMAL_VAL_FILETYPE2 AS fedNormalValFileType2,
+	FED_NORMAL_VAL_FILE3 AS fNormalValFile3,
+	FED_NORMAL_VAL_FILETYPE3 AS fedNormalValFileType3,
+	FED_NORMAL_VAL_FILE4 AS fNormalValFile4,
+	FED_NORMAL_VAL_FILETYPE4 AS fedNormalValFileType4,
+	FED_BAD_VAL_FILE1 AS fBadValFile1,
+	FED_BAD_VAL_FILETYPE1 AS fedBadValFileType1,
+	FED_BAD_VAL_FILE2 AS fBadValFile2,
+	FED_BAD_VAL_FILETYPE2 AS fedBadValFileType2,
+	FED_BAD_VAL_FILE3 AS fBadValFile3,
+	FED_BAD_VAL_FILETYPE3 AS fedBadValFileType3,
+	FED_BAD_VAL_FILE4 AS fBadValFile4,
+	FED_BAD_VAL_FILETYPE4 AS fedBadValFileType4
+FROM
+	pd_fed_std_img
+WHERE
+	STANDARD_ID = #{filterMap.standardId}
+	AND FED_STD_ITEM_ID =#{filterMap.fedStdItemId}
+
+    </select>
+
+    <update id="modifyPic" parameterType="BaseParam">
+        UPDATE pd_fed_std_img
+SET FED_GOOD_VAL_FILE1 = #{filterMap.fedGoodValFile1},
+FED_GOOD_VAL_FILETYPE1 = #{filterMap.fedGoodValFileType1},
+FED_GOOD_VAL_FILE2 = #{filterMap.fedGoodValFile2},
+FED_GOOD_VAL_FILETYPE2 = #{filterMap.fedGoodValFileType2},
+FED_GOOD_VAL_FILE3 = #{filterMap.fedGoodValFile3},
+FED_GOOD_VAL_FILETYPE3 = #{filterMap.fedGoodValFileType3},
+FED_GOOD_VAL_FILE4 = #{filterMap.fedGoodValFile4},
+FED_GOOD_VAL_FILETYPE4 = #{filterMap.fedGoodValFileType4},
+FED_NORMAL_VAL_FILE1 = #{filterMap.fedNormalValFile1},
+FED_NORMAL_VAL_FILETYPE1 = #{filterMap.fedNormalValFileType1},
+FED_NORMAL_VAL_FILE2 = #{filterMap.fedNormalValFile2},
+FED_NORMAL_VAL_FILETYPE2 = #{filterMap.fedNormalValFileType2},
+FED_NORMAL_VAL_FILE3 = #{filterMap.fedNormalValFile3},
+FED_NORMAL_VAL_FILETYPE3 = #{filterMap.fedNormalValFileType3},
+FED_NORMAL_VAL_FILE4 = #{filterMap.fedNormalValFile4},
+FED_NORMAL_VAL_FILETYPE4 = #{filterMap.fedNormalValFileType4},
+FED_BAD_VAL_FILE1 = #{filterMap.fedBadValFile1},
+FED_BAD_VAL_FILETYPE1 = #{filterMap.fedBadValFileType1},
+FED_BAD_VAL_FILE2 = #{filterMap.fedBadValFile2},
+FED_BAD_VAL_FILETYPE2 = #{filterMap.fedBadValFileType2},
+FED_BAD_VAL_FILE3 = #{filterMap.fedBadValFile3},
+FED_BAD_VAL_FILETYPE3 = #{filterMap.fedBadValFileType3},
+FED_BAD_VAL_FILE4 = #{filterMap.fedBadValFile4},
+FED_BAD_VAL_FILETYPE4 = #{filterMap.fedBadValFileType4}
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  Start -->
+		,UPD_ID = #{updId},
+		UPD_TIME = #{updTime}
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  End -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+WHERE
+	STANDARD_ID = #{filterMap.standardId}
+AND FED_STD_ITEM_ID = #{filterMap.fedStdItemId}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.PD141147Bean">
+        SELECT
+	A.FED_STD_ITEM_ID AS fedStdItemId,
+	B.FED_STD_ITEM_NAME AS fedStdItemName,
+	A.FED_GOOD_VAL AS fedGoodVal,
+	A.FED_NORMAL_VAL AS fedNormalVal,
+	A.FED_BAD_VAL AS fedBadVal,
+	C.FED_GOOD_VAL_FILE1 AS fGoodValFile1,
+	C.FED_GOOD_VAL_FILETYPE1 AS fedGoodValFileType1,
+	C.FED_GOOD_VAL_FILE2 AS fGoodValFile2,
+	C.FED_GOOD_VAL_FILETYPE2 AS fedGoodValFileType2,
+	C.FED_GOOD_VAL_FILE3 AS fGoodValFile3,
+	C.FED_GOOD_VAL_FILETYPE3 AS fedGoodValFileType3,
+	C.FED_GOOD_VAL_FILE4 AS fGoodValFile4,
+	C.FED_GOOD_VAL_FILETYPE4 AS fedGoodValFileType4,
+	C.FED_NORMAL_VAL_FILE1 AS fNormalValFile1,
+	C.FED_NORMAL_VAL_FILETYPE1 AS fedNormalValFileType1,
+	C.FED_NORMAL_VAL_FILE2 AS fNormalValFile2,
+	C.FED_NORMAL_VAL_FILETYPE2 AS fedNormalValFileType2,
+	C.FED_NORMAL_VAL_FILE3 AS fNormalValFile3,
+	C.FED_NORMAL_VAL_FILETYPE3 AS fedNormalValFileType3,
+	C.FED_NORMAL_VAL_FILE4 AS fNormalValFile4,
+	C.FED_NORMAL_VAL_FILETYPE4 AS fedNormalValFileType4,
+	C.FED_BAD_VAL_FILE1 AS fBadValFile1,
+	C.FED_BAD_VAL_FILETYPE1 AS fedBadValFileType1,
+	C.FED_BAD_VAL_FILE2 AS fBadValFile2,
+	C.FED_BAD_VAL_FILETYPE2 AS fedBadValFileType2,
+	C.FED_BAD_VAL_FILE3 AS fBadValFile3,
+	C.FED_BAD_VAL_FILETYPE3 AS fedBadValFileType3,
+	C.FED_BAD_VAL_FILE4 AS fBadValFile4,
+	C.FED_BAD_VAL_FILETYPE4 AS fedBadValFileType4
+FROM
+	PD_FED_STD AS A
+LEFT JOIN PD_FED_STD_ITEM AS B ON A.FED_STD_ITEM_ID = B.FED_STD_ITEM_ID
+LEFT JOIN pd_fed_std_img AS C ON A.STANDARD_ID = C.STANDARD_ID
+AND
+A.FED_STD_ITEM_ID = C.FED_STD_ITEM_ID
+WHERE
+	A.STANDARD_ID = #{filterMap.standardId}
+ORDER BY
+	A.FED_STD_ITEM_ID
+
+    </select>
+    <select id="findPicList" parameterType="BaseParam" resultType="com.msk.product.bean.PD141147Bean">
+        SELECT
+  STANDARD_ID AS standardId,
+	FED_STD_ITEM_ID AS fedStdItemId,
+	FED_GOOD_VAL_FILE1 AS fGoodValFile1,
+	FED_GOOD_VAL_FILETYPE1 AS fedGoodValFileType1,
+	FED_GOOD_VAL_FILE2 AS fGoodValFile2,
+	FED_GOOD_VAL_FILETYPE2 AS fedGoodValFileType2,
+	FED_GOOD_VAL_FILE3 AS fGoodValFile3,
+	FED_GOOD_VAL_FILETYPE3 AS fedGoodValFileType3,
+	FED_GOOD_VAL_FILE4 AS fGoodValFile4,
+	FED_GOOD_VAL_FILETYPE4 AS fedGoodValFileType4,
+
+	FED_NORMAL_VAL_FILE1 AS fNormalValFile1,
+	FED_NORMAL_VAL_FILETYPE1 AS fedNormalValFileType1,
+	FED_NORMAL_VAL_FILE2 AS fNormalValFile2,
+	FED_NORMAL_VAL_FILETYPE2 AS fedNormalValFileType2,
+	FED_NORMAL_VAL_FILE3 AS fNormalValFile3,
+	FED_NORMAL_VAL_FILETYPE3 AS fedNormalValFileType3,
+	FED_NORMAL_VAL_FILE4 AS fNormalValFile4,
+	FED_NORMAL_VAL_FILETYPE4 AS fedNormalValFileType4,
+
+	FED_BAD_VAL_FILE1 AS fBadValFile1,
+	FED_BAD_VAL_FILETYPE1 AS fedBadValFileType1,
+	FED_BAD_VAL_FILE2 AS fBadValFile2,
+	FED_BAD_VAL_FILETYPE2 AS fedBadValFileType2,
+	FED_BAD_VAL_FILE3 AS fBadValFile3,
+	FED_BAD_VAL_FILETYPE3 AS fedBadValFileType3,
+	FED_BAD_VAL_FILE4 AS fBadValFile4,
+	FED_BAD_VAL_FILETYPE4 AS fedBadValFileType4
+    FROM pd_fed_std_img
+        WHERE A.STANDARD_ID = #{filterMap.standardId}
+    </select>
+
+    <select id="findFedStdList" parameterType="BaseParam" resultType="com.msk.product.bean.PD141147Bean">
+        SELECT
+        A.FED_STD_ITEM_ID AS fedStdItemId
+        ,A.FED_STD_ITEM_NAME AS fedStdItemName
+        FROM PD_FED_STD_ITEM AS A
+        ORDER BY A.FED_STD_ITEM_ID
+    </select>
+
+    <!--数据插入操作-->
+    <insert id="save" parameterType="com.msk.product.bean.PD141147Bean">
+        INSERT INTO PD_FED_STD (
+        STANDARD_ID,
+        FED_STD_ITEM_ID,
+        FED_GOOD_VAL,
+        FED_NORMAL_VAL,
+        FED_BAD_VAL,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES(
+        #{standardId},
+        #{fedStdItemId},
+        #{fedGoodVal},
+        #{fedNormalVal},
+        #{fedBadVal},
+        NULL,
+        '0',
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        #{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+		<!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+		 #{actId},
+		<!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+		#{actTime},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        '1'
+        );
+    </insert>
+
+    <!--数据更新操作-->
+    <update id="modify" parameterType="com.msk.product.bean.PD141147Bean">
+        UPDATE PD_FED_STD SET
+        FED_GOOD_VAL = #{fedGoodVal},
+        FED_NORMAL_VAL = #{fedNormalVal},
+        FED_BAD_VAL = #{fedBadVal},
+        UPD_ID = #{updId},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME = #{updTime}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+        WHERE STANDARD_ID = #{standardId}
+        AND  FED_STD_ITEM_ID = #{fedStdItemId}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		AND  DEL_FLG='0'
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+
+    <!-- 获取产品品种名称和品种下的特征名称-->
+    <select id="findName" parameterType="BaseParam" resultType="com.msk.product.bean.PD141124showNameBean">
+        SELECT
+        LEVEL_NAME AS featureNames
+        FROM  PD_CLASSESTREE
+        WHERE PARENT_CODE = #{filterMap.classestreeCode}
+        ORDER BY LEVEL_CODE
+    </select>
+
+    <!-- 修改产品标准标准表中数据-->
+    <update id="modifyStdFlg" parameterType="BaseParam" >
+        UPDATE PD_STANDARD SET
+        FED_FLG = #{filterMap.flg},
+        UPD_ID = #{filterMap.updId},
+		<!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+		UPD_ID = #{updId},
+		<!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME = #{updTime}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+        WHERE STANDARD_ID = #{filterMap.standardId}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		AND  DEL_FLG='0'
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+
+    <!--数据插入操作-->
+    <insert id="savepic" parameterType="BaseParam">
+        INSERT INTO pd_fed_std_img(
+	STANDARD_ID,
+	FED_STD_ITEM_ID,
+	FED_GOOD_VAL_FILE1,
+	FED_GOOD_VAL_FILETYPE1,
+	FED_GOOD_VAL_FILE2,
+	FED_GOOD_VAL_FILETYPE2,
+	FED_GOOD_VAL_FILE3,
+	FED_GOOD_VAL_FILETYPE3,
+	FED_GOOD_VAL_FILE4,
+	FED_GOOD_VAL_FILETYPE4,
+	FED_NORMAL_VAL_FILE1,
+	FED_NORMAL_VAL_FILETYPE1,
+	FED_NORMAL_VAL_FILE2,
+	FED_NORMAL_VAL_FILETYPE2,
+	FED_NORMAL_VAL_FILE3,
+	FED_NORMAL_VAL_FILETYPE3,
+	FED_NORMAL_VAL_FILE4,
+	FED_NORMAL_VAL_FILETYPE4,
+	FED_BAD_VAL_FILE1,
+	FED_BAD_VAL_FILETYPE1,
+	FED_BAD_VAL_FILE2,
+	FED_BAD_VAL_FILETYPE2,
+	FED_BAD_VAL_FILE3,
+	FED_BAD_VAL_FILETYPE3,
+	FED_BAD_VAL_FILE4,
+	FED_BAD_VAL_FILETYPE4
+	<!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+	,DEL_FLG,
+      CRT_ID,
+       CRT_TIME,
+       UPD_ID,
+       UPD_TIME,
+       ACT_ID,
+       ACT_TIME,
+	   VER
+	<!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+	)
+VALUES(
+#{filterMap.standardId},
+#{filterMap.fedStdItemId},
+#{filterMap.fedGoodValFile1},
+#{filterMap.fedGoodValFileType1},
+#{filterMap.fedGoodValFile2},
+#{filterMap.fedGoodValFileType2},
+#{filterMap.fedGoodValFile3},
+#{filterMap.fedGoodValFileType3},
+#{filterMap.fedGoodValFile4},
+#{filterMap.fedGoodValFileType4},
+#{filterMap.fedNormalValFile1},
+#{filterMap.fedNormalValFileType1},
+#{filterMap.fedNormalValFile2},
+#{filterMap.fedNormalValFileType2},
+#{filterMap.fedNormalValFile3},
+#{filterMap.fedNormalValFileType3},
+#{filterMap.fedNormalValFile4},
+#{filterMap.fedNormalValFileType4},
+#{filterMap.fedBadValFile1},
+#{filterMap.fedBadValFileType1},
+#{filterMap.fedBadValFile2},
+#{filterMap.fedBadValFileType2},
+#{filterMap.fedBadValFile3},
+#{filterMap.fedBadValFileType3},
+#{filterMap.fedBadValFile4},
+#{filterMap.fedBadValFileType4}
+<!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+		,0,
+		#{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+		#{actId},
+		#{actTime},
+		0
+<!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+)
+</insert>
+
+</mapper>

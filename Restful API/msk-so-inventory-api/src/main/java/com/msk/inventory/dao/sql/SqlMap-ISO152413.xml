@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.ISO152413ServiceImpl">
+
+    <select id="findSlProductIvList" parameterType="com.msk.inventory.bean.ISO152413ParamBean" resultType="com.msk.inventory.bean.ISO152413PdStockResultBean">
+        select
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/CLS_C') as classesCode,
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/MACH_C') as machiningCode,
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/BRE_C') as breedCode,
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/FEAT_C') as featureCode,
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/GRAD_C') as pdGradeCode,
+        CONCAT(
+        EXTRACTVALUE(B.PM_EXTERNAL_XML,'/CLS_C'),
+        EXTRACTVALUE(B.PM_EXTERNAL_XML,'/MACH_C'),
+        EXTRACTVALUE(B.PM_EXTERNAL_XML,'/BRE_C'),
+        EXTRACTVALUE(B.PM_EXTERNAL_XML,'/FEAT_C'),
+        EXTRACTVALUE(B.PM_EXTERNAL_XML,'/WEI_C'),
+        EXTRACTVALUE(B.PM_EXTERNAL_XML,'/GRAD_C')
+        ) as pdCode,
+        A.QTY as stockQty,
+        A.QTY - A.ALLOCATED_QTY as availableQty,
+        A.ALLOCATED_QTY AS allocatedQty,
+        A.OWNER_CODE as supplierCode,
+        CONCAT(
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/SL_C'),
+        EXTRACTVALUE(B.PM_EXTERNAL_XML, '/SL_P_C')
+        ) as skuCode,
+        C.PUCHARSE_BATCH as purchaseBatch
+        from IVM_INVENTORY_BY_OWNER A
+        inner join ivm_parts_master B on A.pm_id= B.pm_id
+        inner join ivm_inventory_detail C on C.pm_id= B.pm_id
+        where 1=1
+        <if test="salePlatform!=null and salePlatform!=''">
+        AND EXTRACTVALUE(C.BELONE_XML,'/PLT')=#{salePlatform}
+        </if>
+        <if test="slCode!=null and slCode!=''">
+        AND EXTRACTVALUE(C.BELONE_XML,'/SLT')=#{slCode}
+        </if>
+        <if test="lgcsCode!=null and lgcsCode!=''">
+        AND EXTRACTVALUE(C.BELONE_XML,'/AREA')=#{lgcsCode}
+        </if>
+        <if test="iso152413ProductParamBeanList !=null">
+            <foreach collection="iso152413ProductParamBeanList" item="item" open="AND (" close=")" separator="OR">
+                ( CONCAT(
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/CLS_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/MACH_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/BRE_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/FEAT_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/WEI_C'),
+                EXTRACTVALUE(B.PM_EXTERNAL_XML,'/GRAD_C')
+                ) = #{item.pdcode}
+                AND EXTRACTVALUE(B.PM_EXTERNAL_XML, '/CLS_C') =#{item.classesCode}
+                AND EXTRACTVALUE(B.PM_EXTERNAL_XML, '/BRE_C')=#{item.breedCode}
+                )
+            </foreach>
+        </if>
+        <if test="supplierCodeList !=null">
+            <foreach collection="supplierCodeList" item="supplierCode" open="AND (" close=")" separator="OR">
+                A.OWNER_CODE=#{supplierCode}
+            </foreach>
+        </if>
+        <if test="pageCount !=0">
+        limit #{pageNo},#{pageCount}
+    </if>
+    </select>
+
+</mapper>

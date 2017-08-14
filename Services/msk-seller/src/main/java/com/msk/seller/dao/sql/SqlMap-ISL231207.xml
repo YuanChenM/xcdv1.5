@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231207RsLogic">
+	<!-- 表字段映射 -->
+	<sql id="selectSql">
+		  a.EP_ID AS  epId,
+		  a.EP_NAME AS  epName,
+		  IFNULL(a.BAL_BANK,'') AS  balBank,
+		  IFNULL(a.BAL_ACCOUNT,'') AS  balAccount,
+		  IFNULL(a.BAL_LEGAL_PERSON,'') AS  balLegalPerson,
+
+		  IFNULL(b.SL_CODE,'') AS  slCode,
+		  IFNULL(b.SL_ACCOUNT,'') AS  slAccount,
+		  IFNULL(b.SL_MAIN_CLASS,'')AS slMainClass,
+		  IFNULL(CONCAT(b.AREA_NAME,' ',b.PROVINCE_NAME,' ',b.CITY_NAME,' ',b.DISTRICT_NAME),'') AS cityName,
+		  IFNULL(b.LGCS_AREA_NAME,'') AS lgcsAreaName,
+
+		  IFNULL(c.SL_CONTACT,'') AS slContact,
+		  IFNULL(c.SL_TEL,'') AS slTel,
+		  IFNULL(c.SL_SHOW_NAME,'') AS slShowName
+	</sql>
+	<!--条件 -->
+	<sql id="whereCondition">
+		<where>
+			a.DEL_FLG = 0
+			AND  b.SL_MAIN_CLASS IN (0,1,2,3)
+			<if test="filterMap.epId!=null and filterMap.epId!=''">
+				AND a.EP_ID = #{filterMap.epId}
+			</if>
+			<if test="filterMap.slCode!=null and filterMap.slCode!=''">
+				AND b.SL_CODE = #{filterMap.slCode}
+			</if>
+			<if test="filterMap.slAccount!=null and filterMap.slAccount!=''">
+				AND b.SL_ACCOUNT like #{filterMap.slAccount}
+			</if>
+			<if test="filterMap.epName!=null and filterMap.epName!=''">
+				AND a.EP_NAME like #{filterMap.epName}
+			</if>
+			<if test="filterMap.slContact!=null and filterMap.slContact!=''">
+				AND c.SL_CONTACT like #{filterMap.slContact}
+			</if>
+			<if test="filterMap.slTel!=null and filterMap.slTel!=''">
+				AND c.SL_TEL like #{filterMap.slTel}
+			</if>
+			<if test="filterMap.cityName!=null and filterMap.cityName!=''">
+				AND CONCAT(b.AREA_NAME,' ',b.PROVINCE_NAME,' ',b.CITY_NAME,' ',b.DISTRICT_NAME) like #{filterMap.cityName}
+			</if>
+			<if test="filterMap.lgcsAreaName!=null and filterMap.lgcsAreaName!=''">
+				AND b.LGCS_AREA_NAME like #{filterMap.lgcsAreaName}
+			</if>
+			<if test="filterMap.slShowName!=null and filterMap.slShowName!=''">
+				AND c.SL_SHOW_NAME like #{filterMap.slShowName}
+			</if>
+			<if test="filterMap.slMainClasss!=null">
+				AND b.SL_MAIN_CLASS IN
+				<foreach item="item" index="index" collection="filterMap.slMainClasss" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</sql>
+	<select id="findPageList" parameterType="BaseParam"
+			resultType="com.msk.seller.bean.ISL231207Result">
+		select
+		<include refid="selectSql" />
+		FROM
+		sl_enterprise  a
+		LEFT JOIN sl_seller  b ON  a.EP_ID  =  b.EP_ID    AND  b.DEL_FLG  = 0
+		LEFT JOIN sl_account c ON  b.SL_ACCOUNT = c.SL_ACCOUNT 	AND  c.DEL_FLG = 0
+		<include refid="whereCondition" />
+		ORDER BY b.EP_ID
+		<if test="paging==true">
+			LIMIT #{startPos},#{pageSize};
+		</if>
+	</select>
+	<select id="getPageCount" resultType="Integer"
+			parameterType="BaseParam">
+		select COUNT(1)
+		FROM
+		sl_enterprise  a
+		LEFT JOIN sl_seller  b ON  a.EP_ID  =  b.EP_ID     AND  b.DEL_FLG  = 0
+		LEFT JOIN sl_account c ON  b.SL_ACCOUNT = c.SL_ACCOUNT 	AND  c.DEL_FLG = 0
+		<include refid="whereCondition" />
+	</select>
+</mapper>

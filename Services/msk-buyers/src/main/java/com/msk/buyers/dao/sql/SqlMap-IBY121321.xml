@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121321Logic">
+    <update id="modifyMarketStatusByBuyerId" parameterType="com.msk.br.bean.IBR121412RsBean">
+        UPDATE by_buyer_basic_info
+        SET
+          BUYER_CODE = CONCAT(LEFT(BUYER_CODE,13),#{marketingsStatus},'-',RIGHT(CONCAT('0',CAST((CAST(RIGHT(BUYER_CODE,2) AS SIGNED) + 1) AS CHAR)),2)),
+          MARKETINGS_STATUS = #{marketingsStatus}
+        WHERE
+            BUYER_ID = #{buyerId}
+        AND DEL_FLG = '0'
+        AND SUPERIOR_TYPE = '01'
+    </update>
+</mapper>

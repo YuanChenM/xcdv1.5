@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL241119Logic">
+      <!-- 根据卖家代码、产品ID和标准ID，查询包装代码。Created by xia_xiaojie on 2016/6/24. -->
+    <select id="findPkgCodes"  resultType="com.msk.core.entity.SlPdPkg" parameterType="BaseParam">
+        SELECT
+            PKG_CODE as pkgCode
+        FROM
+            sl_pd_pkg
+        WHERE
+            SL_CODE = #{filterMap.slCode}
+        AND SL_PD_ID = #{filterMap.slPdId}
+        AND STANDARD_ID = #{filterMap.standardId}
+        AND DEL_FLG = 0
+    </select>
+
+    <select id="findslPkgList" resultType="com.msk.seller.bean.SL241119Bean"
+            parameterType="com.hoperun.core.bean.BasePageParam">
+        select
+            <!-- Modified by xia_xiaojie on 2016/7/1. Modified start. -->
+            A.IN_SGL_NW AS normsSuttle,
+            A.IN_SGL_NW_RANGE AS normsError,
+            A.IN_NUMBER AS normsNumber,
+            A.IN_SIZE AS normsSize,
+            A.IN_MTS AS normsTexture,
+            A.OUT_SPEC AS normsOut,
+            A.OUT_GW AS normsKg,
+            A.OUT_SIZE AS normsOutSize,
+            A.OUT_MTS AS normsOutTexture,
+            <!-- Modified end. -->
+
+            A.SL_PD_PKG_ID AS slPdPkgId,
+            (
+                CASE
+                WHEN A.SL_PD_PKG_ID IS NOT NULL THEN
+                    '1'
+                ELSE
+                    '0'
+                END
+            ) AS checkFlag,
+            A.PKG_CODE as normsCode,
+            A.STANDARD_ID as standardId
+        from sl_pd_pkg AS A
+        <where>
+            A.DEL_FLG=0
+            <if test="filterMap.slCodes!='' and filterMap.slCodes!=null">
+                AND A.SL_CODE in
+                <foreach collection="filterMap.slCodes" item="slCode" separator="," open="(" close=")">
+                    #{slCode}
+                </foreach>
+            </if>
+            <if test="filterMap.slPdIds!='' and filterMap.slPdIds!=null">
+                AND A.SL_PD_ID in
+                <foreach collection="filterMap.slPdIds" item="slPdId" separator="," open="(" close=")">
+                    #{slPdId}
+                </foreach>
+            </if>
+
+            <!-- Modified by xia_xiaojie on 2016/7/1. Modified start. -->
+            <if test="filterMap.slCode != '' and filterMap.slCode != null">
+                AND A.SL_CODE = #{filterMap.slCode}
+            </if>
+            <if test="filterMap.slPdId != '' and filterMap.slPdId != null">
+                AND A.SL_PD_ID = #{filterMap.slPdId}
+            </if>
+            <if test="filterMap.standardId != '' and filterMap.standardId != null">
+                AND A.STANDARD_ID = #{filterMap.standardId}
+            </if>
+            <if test="filterMap.normsCode != '' and filterMap.normsCode != null">
+                AND A.PKG_CODE = #{filterMap.normsCode}
+            </if>
+            <!-- Modified end. -->
+        </where>
+        GROUP BY A.SL_PD_PKG_ID,A.SL_PD_PKG_ID,A.PKG_CODE,A.STANDARD_ID
+    </select>
+</mapper>

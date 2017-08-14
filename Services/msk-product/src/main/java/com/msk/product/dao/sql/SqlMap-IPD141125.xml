@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141125Logic">
+
+    <select id="findSecondLevel" parameterType="BaseParam"
+            resultType="com.msk.product.bean.IPD141125Bean">
+        SELECT
+	    b.GNQ_STD_ITEM_ID gnqStdItemId,
+	    b.GNQ_STD_ITEM_NAME gnqStdItemName,
+	    a.GNQ_OK_VAL okVal,
+	    a.GNQ_NG_VAL ngVal
+        FROM
+	    pd_gnq_std a
+        INNER JOIN pd_gnq_std_item b
+        ON a.GNQ_STD_ITEM_ID = b.GNQ_STD_ITEM_ID
+        AND a.STANDARD_ID = #{filterMap.standardId}
+        AND b.PARENT_ID= #{filterMap.parentId}
+    </select>
+
+    <select id="findFirstLevel" parameterType="BaseParam"
+            resultType="com.msk.product.bean.IPD141125RsResult">
+        SELECT
+	    b.GNQ_STD_ITEM_ID gnqStdClaId,
+	    b.GNQ_STD_ITEM_NAME gnqStdClaName
+        FROM
+	    pd_gnq_std_item b
+        WHERE
+	    b.LEVEL_ID = #{filterMap.levelId}
+    </select>
+
+    <select id="findPdStandard" parameterType="BaseParam"
+            resultType="com.msk.core.entity.PdStandard">
+        SELECT
+        A.STANDARD_ID AS standardId
+        FROM pd_standard AS A
+        WHERE A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+    </select>
+
+</mapper>

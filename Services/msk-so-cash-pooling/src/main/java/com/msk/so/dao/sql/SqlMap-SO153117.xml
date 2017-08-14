@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.SO153117Logic">
+    <update id="updateSoCpSellerBill" parameterType="com.msk.core.entity.SoCpSellerBill">
+        UPDATE so_cp_seller_bill
+        SET
+            AJUST_AMOUNT = #{ajustAmount},
+            VER = VER + 1,
+            SETTLEMENT_STATUS = #{settlementStatus},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime}
+        WHERE
+            SELLER_BILL_ID=#{sellerBillId}
+    </update>
+
+    <update id="updateSoCpSellerBillHis" parameterType="com.msk.core.entity.SoCpSellerBillHis">
+        UPDATE so_cp_seller_bill_his
+        SET
+        OPERATE_ID = #{operateId},
+        OPERATE_DATE = #{operateDate},
+        AJUST_DATE = #{ajustDate},
+        AJUST_AMOUNT = #{ajustAmount},
+        AJUST_TYPE = #{ajustType},
+        REMARK = #{remark},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        SELLER_BILL_HIS_ID = #{sellerBillHisId}
+    </update>
+
+    <select id="findOneSoCpSellerBillHis" parameterType="com.msk.so.bean.SOCp153117Param"
+            resultType="com.msk.core.entity.SoCpSellerBillHis">
+        SELECT
+        SELLER_BILL_HIS_ID AS sellerBillHisId,
+        SELLER_BILL_ID AS sellerBillId,
+        OPERATE_ID AS operateId,
+        OPERATE_DATE AS operateDate,
+        AJUST_DATE AS ajustDate,
+        AJUST_AMOUNT AS ajustAmount,
+        AJUST_TYPE AS ajustType,
+        SELLER_BILL_NO AS sellerBillNo,
+        BUSINESS_MAIN_ID AS businessMainId,
+        BUSINESS_MAIN_CODE AS businessMainCode,
+        BUSINESS_MAIN_NAME AS businessMainName,
+        BUSINESS_MAIN_ROLE AS businessMainRole,
+        SETTLEMENT_STATUS AS settlementStatus,
+        SETTLEMENT_FLG AS settlementFlg,
+        START_DATE AS startDate,
+        END_DATE AS endDate,
+        PAYMENT_TYPE AS paymentType,
+        SUPPLY_PLATFORM AS supplyPlatform,
+        BILL_TYPE AS billType,
+        BILL_AMOUNT AS billAmount,
+        RECEIVEABLE AS receiveable,
+        RECEIVED AS received,
+        REFUNDABLE AS refundable,
+        REAL_REFUND AS realRefund,
+        TRANS_PAID_STATUS AS transPaidStatus,
+        CHARGE_RATE AS chargeRate,
+        HANDING_CHARGE AS handingCharge,
+        CHARGE_STATUS AS chargeStatus,
+        MATCH_VER_FLG AS matchVerFlg,
+        STATEMENT_FLG AS statementFlg,
+        REMARK AS remark,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtID,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+        FROM
+        so_cp_seller_bill_his
+        WHERE
+        SELLER_BILL_HIS_ID = #{sellerBillHisId}
+    </select>
+
+    <select id="findOneSoCpBuyerBill" parameterType="com.msk.so.bean.SOCp153117Param"
+            resultType="com.msk.so.bean.SoCpBuyerBillBean">
+        SELECT
+        bb.BUYER_BILL_ID AS buyerBillId,
+        bb.TRANS_CODE AS transCode,
+        bb.TRANS_TYPE AS transType,
+        bb.SETTLEMENT_STATUS AS settlementStatus,
+        bb.DUE AS due,
+        bb.REFUND_FLG AS refundFlg,
+        bb.PAID AS paid,
+        bb.REFUNDABLE AS refundable,
+        bb.REAL_REFUND AS realRefund,
+        bb.MATCH_VER_FLG AS matchVerFlg,
+        bb.STATEMENT_FLG AS statementFlg,
+        bb.REMARK AS remark,
+        bb.DEL_FLG AS delFlg,
+        bb.CRT_ID AS crtId,
+        bb.CRT_TIME AS crtTime,
+        bb.UPD_ID AS updId,
+        bb.UPD_TIME AS updTime,
+        bb.ACT_ID AS actId,
+        bb.ACT_TIME AS actTime,
+        bb.VER AS ver,
+        bb.TRANS_ID AS transId,
+        bb.RELIEF_AMOUNT AS reliefAmount,
+        bb.ORDER_ID AS orderId,
+        t.TRANS_FLG AS transFlg
+        FROM SO_CP_BUYER_BILL bb
+        LEFT JOIN SO_CP_REFUND r ON bb.TRANS_CODE = r.TRANS_CODE
+        LEFT JOIN SO_CP_TRANSACTION t ON bb.TRANS_ID = t.TRANS_ID
+        WHERE r.REFUND_ID = #{refundId}
+    </select>
+
+    <update id="updateSoCpBuyerBill" parameterType="com.msk.core.entity.SoCpBuyerBill">
+        UPDATE so_cp_buyer_bill
+        SET
+        <if test="reliefAmount!=null">
+            RELIEF_AMOUNT = #{reliefAmount},
+        </if>
+        VER = VER + 1,
+        SETTLEMENT_STATUS = #{settlementStatus},
+        <if test="refundable!=null">
+            REFUNDABLE = #{refundable},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        BUYER_BILL_ID=#{buyerBillId}
+    </update>
+</mapper>

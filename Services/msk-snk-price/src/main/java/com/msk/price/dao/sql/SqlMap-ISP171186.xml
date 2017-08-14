@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.ISP171186Logic">
+
+    <select id="getSupplierListByPricePeriod" resultType="com.msk.price.bean.ISP171186Bean" parameterType="com.msk.price.bean.ISP171186Param">
+        SELECT
+          price.LGCS_CODE AS lgcsCode,
+          price.SL_CODE AS supplierCode  ,
+          price.PD_CODE AS pdCode,
+          wDetail.SELL_WAY_CODE AS sellWayCode
+        FROM
+            sp_seller_pd_price price
+        LEFT JOIN sp_seller_pd_price_detail priceDetail
+        ON
+            price.PRICE_ID = priceDetail.PRICE_ID
+        LEFT JOIN sp_wayg_detail wDetail
+        ON priceDetail.WAYGRADE_CODE = wDetail.WAYGRADE_CODE
+          AND priceDetail.WAY_CODE = wDetail.WAY_CODE
+
+        WHERE price.PRICE_PERIOD = #{pricePeriod} and priceDetail.IS_VALID=1
+            and price.DEL_FLG = 0 and priceDetail.DEL_FLG=0 and wDetail.DEL_FLG=0
+        GROUP BY   wDetail.SELL_WAY_CODE
+
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101125RsLogic">
+
+
+    <select id="count" parameterType="BaseParam" resultType="int">
+        SELECT  count(1) from sl_house_bypraise_rec where sl_Code = #{slCode} and house_code = #{houseCode}
+        and BY_ID = #{byId} AND PRAISE_YM = #{praiseYm} AND DEL_FLG='0'
+
+    </select>
+
+    <update id="modify" parameterType="BaseParam">
+        UPDATE
+        sl_house_bypraise_rec
+        SET
+        <!--Modify 去除不必要的字段 2016/10/09 任强 Start-->
+           PRAISE_TOTAL = PRAISE_TOTAL+1
+             , PRAISE_YM = #{praiseYm}
+               , UPD_ID= #{updId}
+                , UPD_TIME = #{updTime}
+                 , VER= VER+1
+        <!--Modify 去除不必要的字段 2016/10/09 任强 Start-->
+        WHERE
+        SL_CODE = #{slCode} AND HOUSE_CODE = #{houseCode}
+        AND BY_ID = #{byId} AND PRAISE_YM = #{praiseYm}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  DEL_FLG ='0'
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+
+    <insert id="save" parameterType="BaseParam">
+        INSERT INTO sl_house_bypraise_rec
+            (PRAISE_ID,SL_CODE,HOUSE_CODE,
+            BY_ID, PRAISE_TOTAL,
+             PRAISE_YM,BACK_UP,DEL_FLG,
+             CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,
+             ACT_ID,ACT_TIME,VER)
+        VALUES (
+                    #{praiseId},
+                    #{slCode} ,
+                    #{houseCode},
+                    #{byId} ,
+                    1,
+                    #{praiseYm},
+                    '',
+                    '0',
+                    #{crtId},
+                    #{crtTime},
+                    #{updId},
+                    #{updTime},
+                    #{actId},
+                    #{actTime},
+                    0
+                      )
+    </insert>
+</mapper>
+

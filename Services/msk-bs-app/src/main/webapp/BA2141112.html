@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>管理收货地址</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <script src="./resources/js/com/common.js"></script>
+    <script src="resources/js/com/jquery-1.7.1.min.js"></script>
+    <link href="resources/css/BA2141112.css" type="text/css" rel="stylesheet"/>
+</head>
+
+<body>
+<div class="top_header" >
+    <div class="header">
+        <div class="header_d1">
+            <div class="fanhui" onclick="window.location.href = 'BA2141110.html'"></div>
+            <div class="title" name="shopCar">
+                <p><span class="title_span">收货地址选择</span></p>
+            </div>
+        </div>
+    </div>
+</div >
+<div>
+    <ul id="addresses">
+        <li style=" display: none;list-style:none;">
+            <div class="addr">
+                <div class="full_info" >
+                    <p style="padding-top: 42px;">
+                        <span class="featureClass"></span>
+                        <span class="telNum" ></span>
+                    </p>
+                    <p>
+                        <span class="fullAddr"></span>
+                    </p>
+                </div>
+
+                <!-- Unnamed (水平线) -->
+                <div class="ba12_line"  >
+                </div>
+
+                <div class="edit_del_container">
+                    <span class="edit_container" ><a class="edit12" href="javascript:void(0);"> <img src="resources/images/edit.png"/><span class="word_edit" >编辑</span></a></span>
+                    <span class="del_container" ><a class="delete12" href="javascript:void(0);"><img src="resources/images/delete.png"/><span class="word_edit" >删除</span></a></span>
+                </div>
+                <!-- Unnamed (Shape) -->
+                <div class="ba12_gray" >
+                </div>
+            </div>
+        </li>
+    </ul>
+
+
+</div>
+
+
+<!-- Unnamed (动态面板) -->
+<div id="u0">
+    <div id="u0_state0"  data-label="State1">
+        <div id="u0_state0_content" >
+
+            <div id="address">
+
+            </div>
+            <!-- Unnamed (图片) -->
+            <div  class="bottom_add">
+                <div class="add_address_contain" onclick="returnAddManagement()">
+                    <span id="bottom_add_words" >添加新地址</span>
+                </div>
+                <!-- Unnamed () --><!--  <img id="u35_img" class="img " src="resources/images/BA2141112/u35.png" onclick="returnAddManagement()"/>-->
+                <div id="u36" class="text">
+                    <p><span style="font-family:'Applied Font Regular', 'Applied Font';">&nbsp;</span></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+<script src="static/js/BA2141112.js"></script>
+</html>

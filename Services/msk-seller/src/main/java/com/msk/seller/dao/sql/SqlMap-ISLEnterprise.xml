@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISLEnterpriseRsLogic">
+    <select id="getSlEnterprise" resultType="com.msk.seller.bean.ISLEnterpriseRsResult" parameterType="BaseParam">
+        SELECT
+        DISTINCT
+        A.SL_CODE AS slCode,
+        A.EP_ID AS epId,
+        IFNULL(B.EP_NAME,'') AS epName,
+        A.SL_MAIN_CLASS AS slMainClass
+        FROM
+        sl_seller A
+        INNER JOIN sl_enterprise B ON A.EP_ID = B.EP_ID
+        WHERE
+        A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+        <if test="filterMap.slMainClassList!=null and filterMap.slMainClassList.size()> 0">
+            AND A.SL_MAIN_CLASS IN
+            <foreach item="item" index="index" collection="filterMap.slMainClassList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="filterMap.slCode != null and filterMap.slCode != ''">
+            AND A.SL_CODE = #{filterMap.slCode}
+        </if>
+    </select>
+
+    <sql id="whereSqlFir">
+        <where>
+            agent.SL_CODE = #{slCode}
+            AND agent.DEL_FLG = 0
+            AND seller2.SL_CODE != #{slCode}
+            AND seller2.SL_MAIN_CLASS IN  (0,1,2,3)
+        </where>
+    </sql>
+
+    <sql id="whereSqlSec">
+        <where>
+            oem.SL_CODE = #{slCode}
+            AND oem.DEL_FLG = 0
+            AND seller2.SL_CODE != #{slCode}
+            AND seller2.SL_MAIN_CLASS IN  (0,1,2,3)
+        </where>
+    </sql>
+
+    <select id="count" resultType="Integer" parameterType="com.msk.seller.bean.ISLEnterpriseRsParam">
+        SELECT COUNT(1) FROM (
+        SELECT
+        IFNULL(seller2.SL_CODE, '') AS slCode,
+        agent.PRODUCER_EP_ID AS epId,
+        agent.AUTH_TERM_BEGIN AS authTermBegin,
+        agent.AUTH_TERM_END AS authTermEnd
+        FROM
+        sl_ep_agent_auth agent
+        LEFT JOIN sl_enterprise enterprise ON agent.PRODUCER_EP_ID = enterprise.EP_ID AND enterprise.DEL_FLG = 0
+        LEFT JOIN sl_seller seller2 ON agent.PRODUCER_EP_ID = seller2.EP_ID AND seller2.DEL_FLG = 0
+        <include refid="whereSqlFir"/>
+        UNION
+        SELECT
+        IFNULL(seller2.SL_CODE, '') AS slCode,
+        oem.PRODUCER_EP_ID AS epId,
+        oem.AUTH_TERM_BEGIN AS authTermBegin,
+        oem.AUTH_TERM_END AS authTermEnd
+        FROM
+        sl_ep_oem_auth oem
+        LEFT JOIN sl_enterprise enterprise ON oem.PRODUCER_EP_ID = enterprise.EP_ID AND enterprise.DEL_FLG = 0
+        LEFT JOIN sl_seller seller2 ON oem.PRODUCER_EP_ID = seller2.EP_ID AND seller2.DEL_FLG = 0
+        <include refid="whereSqlSec"/>
+        ) aac
+    </select>
+
+
+    <select id="findPageList" resultType="com.msk.seller.bean.ISLEnterpriseRsResult"
+            parameterType="com.msk.seller.bean.ISLEnterpriseRsParam">
+        SELECT
+        IFNULL(seller2.SL_CODE, '') AS slCode,
+        IFNULL(seller2.SL_ACCOUNT, '') AS slAccount,
+        IFNULL(seller2.SL_CODE_DIS, '')  AS  slCodeDis,
+        agent.PRODUCER_EP_ID AS epId,
+        IFNULL(enterprise.EP_NAME, '') AS epName,
+        IFNULL(seller2.SL_CODE_MANUFACTURE,'') AS slCodeManufacture,
+        IFNULL(CONCAT(seller2.PROVINCE_NAME,' ',seller2.CITY_NAME,' ',seller2.DISTRICT_NAME),'') AS slAreaCode,
+        IFNULL(enterprise.LIC_ADDR, '') AS licAddr,
+        agent.AUTH_TERM_BEGIN AS authTermBegin,
+        agent.AUTH_TERM_END AS authTermEnd,
+        IFNULL(seller2.SL_MAIN_CLASS, '') AS slMainClass
+        FROM
+        sl_ep_agent_auth agent
+        LEFT JOIN sl_enterprise enterprise ON agent.PRODUCER_EP_ID = enterprise.EP_ID AND enterprise.DEL_FLG = 0
+        LEFT JOIN sl_seller seller2 ON agent.PRODUCER_EP_ID = seller2.EP_ID AND seller2.DEL_FLG = 0
+        <include refid="whereSqlFir"/>
+        UNION
+        SELECT
+        IFNULL(seller2.SL_CODE, '') AS slCode,
+        IFNULL(seller2.SL_ACCOUNT, '') AS slAccount,
+        IFNULL(seller2.SL_CODE_DIS, '')  AS  slCodeDis,
+        oem.PRODUCER_EP_ID AS epId,
+        IFNULL(enterprise.EP_NAME, '') AS epName,
+        IFNULL(seller2.SL_CODE_MANUFACTURE,'') AS slCodeManufacture,
+        IFNULL(CONCAT(seller2.PROVINCE_NAME,' ',seller2.CITY_NAME,' ',seller2.DISTRICT_NAME),'') AS slAreaCode,
+        IFNULL(enterprise.LIC_ADDR, '') AS licAddr,
+        oem.AUTH_TERM_BEGIN AS authTermBegin,
+        oem.AUTH_TERM_END AS authTermEnd,
+        IFNULL(seller2.SL_MAIN_CLASS, '') AS slMainClass
+        FROM
+        sl_ep_oem_auth oem
+        LEFT JOIN sl_enterprise enterprise ON oem.PRODUCER_EP_ID = enterprise.EP_ID AND enterprise.DEL_FLG = 0
+        LEFT JOIN sl_seller seller2 ON oem.PRODUCER_EP_ID = seller2.EP_ID AND seller2.DEL_FLG = 0
+        <include refid="whereSqlSec"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+    <sql id="whereSqlThr">
+        <where>
+            seller.DEL_FLG = 0
+            AND  agent.DEL_FLG = 0
+            AND  seller.SL_CODE = #{slCode}
+            AND  b.SL_CODE != #{slCode}
+            AND  b.SL_MAIN_CLASS IN  (0,1,2,3)
+        </where>
+    </sql>
+
+    <sql id="whereSqlFou">
+        <where>
+            seller.DEL_FLG = 0
+            AND  oem.DEL_FLG = 0
+            AND  seller.SL_CODE = #{slCode}
+            AND  b.SL_CODE != #{slCode}
+            AND  b.SL_MAIN_CLASS IN  (0,1,2,3)
+        </where>
+    </sql>
+
+
+    <select id="getSlEnterpriseSlCount" resultType="Integer" parameterType="com.msk.seller.bean.ISLEnterpriseRsParam">
+       SELECT COUNT(1) FROM (
+        SELECT
+        b.SL_CODE AS  slCode,
+        c.EP_ID AS epId,
+        agent.AUTH_TERM_BEGIN AS authTermBegin,
+        agent.AUTH_TERM_END AS authTermEnd
+        FROM
+        sl_seller seller
+        INNER JOIN sl_ep_agent_auth agent ON  seller.EP_ID = agent.PRODUCER_EP_ID
+        LEFT JOIN sl_seller  b  ON  agent.SL_CODE = b.SL_CODE AND  b.DEL_FLG = 0
+        LEFT JOIN  sl_enterprise  c ON  b.EP_ID = c.EP_ID AND  c.DEL_FLG = 0
+        <include refid="whereSqlThr"/>
+        UNION
+        SELECT
+        b.SL_CODE AS  slCode,
+        c.EP_ID AS epId,
+        oem.AUTH_TERM_BEGIN AS authTermBegin,
+        oem.AUTH_TERM_END AS authTermEnd
+        FROM
+        sl_seller seller
+        INNER JOIN sl_ep_oem_auth oem ON  seller.EP_ID = oem.PRODUCER_EP_ID
+        LEFT JOIN sl_seller  b  ON   oem.SL_CODE = b.SL_CODE AND  b.DEL_FLG = 0
+        LEFT JOIN  sl_enterprise  c ON  b.EP_ID = c.EP_ID AND  c.DEL_FLG = 0
+        <include refid="whereSqlFou"/>
+        ) aac
+    </select>
+    <select id="getSlEnterpriseSl" resultType="com.msk.seller.bean.ISLEnterpriseRsResult"
+            parameterType="com.msk.seller.bean.ISLEnterpriseRsParam">
+        SELECT
+        b.SL_CODE AS  slCode,
+        IFNULL(b.SL_CODE_DIS, '')  AS  slCodeDis,
+        b.SL_ACCOUNT AS  slAccount,
+        c.EP_ID AS epId,
+        IFNULL(c.EP_NAME, '') AS epName,
+        IFNULL(b.SL_CODE_MANUFACTURE,'') AS slCodeManufacture,
+        IFNULL(CONCAT(b.PROVINCE_NAME,' ',b.CITY_NAME,' ',b.DISTRICT_NAME),'') AS slAreaCode,
+        IFNULL(c.LIC_ADDR, '') AS licAddr,
+        agent.AUTH_TERM_BEGIN AS authTermBegin,
+        agent.AUTH_TERM_END AS authTermEnd,
+        IFNULL(b.SL_MAIN_CLASS, '') AS slMainClass
+        FROM
+        sl_seller seller
+        INNER JOIN sl_ep_agent_auth agent ON  seller.EP_ID = agent.PRODUCER_EP_ID
+        LEFT JOIN sl_seller  b  ON  agent.SL_CODE = b.SL_CODE AND  b.DEL_FLG = 0
+        LEFT JOIN  sl_enterprise  c ON  b.EP_ID = c.EP_ID AND  c.DEL_FLG = 0
+        <include refid="whereSqlThr"/>
+        UNION
+        SELECT
+        b.SL_CODE AS  slCode,
+        IFNULL(b.SL_CODE_DIS, '')  AS  slCodeDis,
+        b.SL_ACCOUNT AS  slAccount,
+        c.EP_ID AS epId,
+        IFNULL(c.EP_NAME, '') AS epName,
+        IFNULL(b.SL_CODE_MANUFACTURE,'') AS slCodeManufacture,
+        IFNULL(CONCAT(b.PROVINCE_NAME,' ',b.CITY_NAME,' ',b.DISTRICT_NAME),'') AS slAreaCode,
+        IFNULL(c.LIC_ADDR, '') AS licAddr,
+        oem.AUTH_TERM_BEGIN AS authTermBegin,
+        oem.AUTH_TERM_END AS authTermEnd,
+        IFNULL(b.SL_MAIN_CLASS, '') AS slMainClass
+        FROM
+        sl_seller seller
+        INNER JOIN sl_ep_oem_auth oem ON  seller.EP_ID = oem.PRODUCER_EP_ID
+        LEFT JOIN sl_seller  b  ON   oem.SL_CODE = b.SL_CODE AND  b.DEL_FLG = 0
+        LEFT JOIN  sl_enterprise  c ON  b.EP_ID = c.EP_ID AND  c.DEL_FLG = 0
+        <include refid="whereSqlFou"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+</mapper>

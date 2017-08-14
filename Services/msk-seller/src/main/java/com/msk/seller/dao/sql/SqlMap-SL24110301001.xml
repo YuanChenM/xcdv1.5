@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24110301001Logic">
+    <!--查询企业 -->
+    <select id="findPageList" resultType="com.msk.seller.bean.SL24110301001Bean" parameterType="com.hoperun.core.bean.BasePageParam">
+        SELECT
+        IFNULL(A.EP_ID,'') AS epId,
+        IFNULL(A.EP_NAME,'') AS epName,
+        IFNULL(B.SL_MAIN_CLASS,'') AS slMainClass
+        FROM
+        sl_enterprise AS A
+        LEFT JOIN sl_seller AS B ON A.EP_ID=B.EP_ID AND  B.DEL_FLG = 0
+        <where>
+            A.DEL_FLG = 0
+            AND B.SL_MAIN_CLASS='0'
+        <if test="filterMap.epName!=null and filterMap.epName!=''">
+            AND A.EP_NAME like #{filterMap.epName}
+        </if>
+        </where>
+        ORDER BY A.EP_ID
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+    <select id="getPageCount" resultType="Integer"
+            parameterType="com.hoperun.core.bean.BasePageParam">
+        SELECT COUNT(1)
+        FROM
+        sl_enterprise AS A
+        LEFT JOIN sl_seller AS B ON A.EP_ID=B.EP_ID AND  B.DEL_FLG = 0
+        <where>
+            A.DEL_FLG = 0
+            AND B.SL_MAIN_CLASS='0'
+            <if test="filterMap.epName!=null and filterMap.epName!=''">
+                AND A.EP_NAME like #{filterMap.epName}
+            </if>
+        </where>
+        ORDER BY A.EP_ID
+    </select>
+</mapper>

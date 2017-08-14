@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11315Logic">
+    <!--根据发货确认单编号查询发货确认单信息-->
+    <select id="findDeliveryConfirm" resultType="com.msk.ssc.bean.SSC11315DeliveryConfirmRsBean"
+            parameterType="com.msk.ssc.bean.SSC11315Param">
+        SELECT
+        a.DELIVERY_CONFIRM_ID AS deliveryConfirmId,
+        a.DELIVERY_CONFIRM_CODE AS deliveryConfirmCode,
+        a.CONTRACT_CODE AS contractCode,
+        a.DELIVERY_CODE AS deliveryCode,
+        a.DELIVERY_BATCH AS deliveryBatch,
+        a.DELIVERY_ID AS deliveryId,
+        a.SUPPLIER_NAME AS supplierName,
+        a.PURCHASER_NAME AS purchaserName,
+        a.DELIVERY_WAREHOUSE AS deliveryWarehouse,
+        ifnull(a.DELIVERY_WAREHOUSE_ADDR, '') AS deliveryWarehouseAddr,
+        a.ARRIVE_WAREHOUSE AS arriveWarehouse,
+        ifnull(a.ARRIVE_WAREHOUSE_ADDR, '') AS arriveWarehouseAddr,
+        a.BY_CONFIRM_ID AS byConfirmId,
+        a.BY_CONFIRM_NAME AS byConfirmName,
+        a.BY_CONFIRM_TIME AS byConfirmTime,
+        a.WH_CONFIRM_ID AS whConfirmId,
+        a.WH_CONFIRM_NAME AS whConfirmName,
+        a.WH_CONFIRM_TIME AS whConfirmTime,
+        a.PD_CONFIRM_ID AS pdConfirmId,
+        a.PD_CONFIRM_NAME AS pdConfirmName,
+        a.PD_CONFIRM_TIME AS pdConfirmTime,
+        a.ETD AS etd,
+        a.ETA AS eta,
+        IFNULL(a.BY_CONFIRM_STATUS, '0') AS byConfirmStatus,
+        a.BY_CONFIRM_REASON AS byConfirmReason,
+        IFNULL(a.WH_CONFIRM_STATUS, '0') AS whConfirmStatus,
+        a.WH_CONFIRM_REASON AS whConfirmReason,
+        IFNULL(a.PD_CONFIRM_STATUS, '0') AS pdConfirmStatus,
+        a.PD_CONFIRM_REASON AS pdConfirmReason,
+        a.DELIVERY_CONFIRM_STATUS AS deliveryConfirmStatus,
+        a.DELIVERY_BATCH AS deliveryBatach,
+        b.LGCS_AREA_CODE AS lgcsAreaCode,
+        b.LGCS_AREA_NAME AS lgcsAreaName,
+        a.VER AS ver
+        FROM SSC_DELIVERY_CONFIRM_BASIC AS a LEFT JOIN ssc_delivery_order_basic AS b
+        ON
+        a.DELIVERY_CODE=b.DELIVERY_CODE
+        WHERE 1=1
+        <if test="deliveryConfirmCode!=null and deliveryConfirmCode!=''">
+            AND a.DELIVERY_CONFIRM_CODE = #{deliveryConfirmCode}
+        </if>
+        <if test="deliveryCode!=null and deliveryCode!=''">
+            AND a.DELIVERY_CODE = #{deliveryCode}
+            AND a.DEL_FLG = 0
+        </if>
+    </select>
+
+    <!--根据发货确认单编号查询发货确认产品信息总计-->
+    <select id="findDeliveryConfirmDetailTotal" resultType="com.msk.ssc.bean.SSC11315DeliveryConfirmDetailRsBean"
+            parameterType="com.msk.ssc.bean.SSC11315Param">
+        SELECT
+        SUM(PRODUCT_CONFIRM_BOX) AS productConfirmBox,
+        SUM(PRODUCT_QUA) AS productQua,
+        SUM(PRODUCT_VALUE) AS productValue
+        FROM SSC_DELIVERY_CONFIRM_PR_DETAIL
+        WHERE DELIVERY_CONFIRM_ID = #{deliveryConfirmId}
+        AND  DEL_FLG = 0
+    </select>
+
+    <!--更新发货确认信息-->
+    <update id="modifyDeliveryConfirm" parameterType="com.msk.ssc.bean.SSC11315Param">
+        UPDATE
+        SSC_DELIVERY_CONFIRM_BASIC
+        SET
+        <if test="contractId != null and contractId != ''">
+            CONTRACT_ID = #{contractId},
+        </if>
+        <if test="contractCode != null and contractCode != ''">
+            CONTRACT_CODE = #{contractCode},
+        </if>
+        <if test="etd != null and etd !=''">
+            ETD = #{etd},
+        </if>
+        <if test="eta != null and eta !=''">
+            ETA = #{eta},
+        </if>
+        <if test="deliveryConfirmStatus != null and deliveryConfirmStatus !=''">
+            DELIVERY_CONFIRM_STATUS = #{deliveryConfirmStatus},
+        </if>
+        <if test="byConfirmReason != null and byConfirmReason !=''">
+            BY_CONFIRM_REASON = #{byConfirmReason},
+        </if>
+        <if test="whConfirmReason != null and whConfirmReason !=''">
+            WH_CONFIRM_REASON = #{whConfirmReason},
+        </if>
+        <if test="pdConfirmReason != null and pdConfirmReason !=''">
+            PD_CONFIRM_REASON = #{pdConfirmReason},
+        </if>
+        <if test="byConfirmStatus != null and byConfirmStatus !=''">
+            BY_CONFIRM_STATUS = #{byConfirmStatus},
+        </if>
+        <if test="whConfirmStatus != null and whConfirmStatus !=''">
+            WH_CONFIRM_STATUS = #{whConfirmStatus},
+        </if>
+        <if test="pdConfirmStatus != null and pdConfirmStatus !=''">
+            PD_CONFIRM_STATUS = #{pdConfirmStatus},
+        </if>
+        <if test="arriveWarehouse != null and arriveWarehouse !=''">
+            ARRIVE_WAREHOUSE = #{arriveWarehouse},
+        </if>
+        <if test="arriveWarehouseAddr != null and arriveWarehouseAddr !=''">
+            ARRIVE_WAREHOUSE_ADDR = #{arriveWarehouseAddr},
+        </if>
+        <if test="byConfirmId != null and byConfirmId !=''">
+            BY_CONFIRM_ID = #{byConfirmId},
+        </if>
+        <if test="byConfirmName != null and byConfirmName !=''">
+            BY_CONFIRM_NAME = #{byConfirmName},
+        </if>
+        <if test="byConfirmTime != null and byConfirmTime !=''">
+            BY_CONFIRM_TIME = #{byConfirmTime},
+        </if>
+
+        <if test="whConfirmId != null and whConfirmId !=''">
+            WH_CONFIRM_ID = #{whConfirmId},
+        </if>
+        <if test="whConfirmName != null and whConfirmName !=''">
+            WH_CONFIRM_NAME = #{whConfirmName},
+        </if>
+        <if test="whConfirmTime != null and whConfirmTime !=''">
+            WH_CONFIRM_TIME = #{whConfirmTime},
+        </if>
+
+        <if test="pdConfirmId != null and pdConfirmId !=''">
+            PD_CONFIRM_ID = #{pdConfirmId},
+        </if>
+        <if test="pdConfirmName != null and pdConfirmName !=''">
+            PD_CONFIRM_NAME = #{pdConfirmName},
+        </if>
+        <if test="pdConfirmTime != null and pdConfirmTime !=''">
+            PD_CONFIRM_TIME = #{pdConfirmTime},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        DEL_FLG = 0
+        <if test="deliveryConfirmCode != null and deliveryConfirmCode != ''">
+            AND DELIVERY_CONFIRM_CODE = #{deliveryConfirmCode}
+        </if>
+        <if test="deliveryId != null and deliveryId != ''">
+            AND DELIVERY_ID = #{deliveryId}
+        </if>
+    </update>
+
+    <!--更新发货确认产品信息-->
+    <update id="modifyDeliveryConfirmDetail" parameterType="com.msk.ssc.bean.SSC11315Param">
+        UPDATE
+        SSC_DELIVERY_CONFIRM_PR_DETAIL
+        SET
+        SETTKEMENT_STANDARD_PRICE = #{settkementStandardPrice},
+        PRODUCT_CONFIRM_BOX = #{productConfirmBox},
+        PRODUCT_QUA = #{productQua},
+        PRODUCT_VALUE = #{productValue},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        DETAIL_ID = #{detailId}
+        AND DEL_FLG = 0
+    </update>
+
+    <select id="findPageList" resultType="com.msk.ssc.bean.SSC11315DeliveryConfirmDetailRsBean"
+            parameterType="com.msk.ssc.bean.SSC11315Param">
+        SELECT
+        ifnull(PD_DESC, '') AS pdName,
+        PRODUCT_CONFIRM_BOX AS productConfirmBox,
+        PRODUCT_QUA AS productQua,
+        SETTKEMENT_STANDARD_PRICE AS settkementStandardPrice,
+        PRODUCT_VALUE as productValue,
+        DETAIL_ID AS detailId,
+        VER AS ver,
+        WEIGHT_NAME AS weightName,
+        IFNULL(WEIGHT_VAL,'') AS weightVal
+        FROM SSC_DELIVERY_CONFIRM_PR_DETAIL
+        WHERE DELIVERY_CONFIRM_CODE = #{deliveryConfirmCode}
+        AND  DEL_FLG = 0
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        SELECT COUNT(1)
+        FROM SSC_DELIVERY_CONFIRM_PR_DETAIL
+        WHERE DELIVERY_CONFIRM_CODE = #{deliveryConfirmCode}
+        AND  DEL_FLG = 0
+    </select>
+
+    <!--查询发货确认单待装车产品列表-->
+    <select id="findList" resultType="com.msk.ssc.bean.SSC11315DeliveryConfirmDetailRsBean"
+            parameterType="com.msk.ssc.bean.SSC11315Param">
+        SELECT
+        A.DELIVERY_CONFIRM_ID AS deliveryConfirmId,
+        A.PD_CODE AS pdCode,
+        IFNULL(A.PD_DESC, '') AS pdName,
+        (IFNULL(A.PRODUCT_CONFIRM_BOX ,0) - IFNULL(BB.planBox ,0) ) AS productConfirmBox
+        FROM SSC_DELIVERY_CONFIRM_PR_DETAIL A
+        LEFT JOIN (
+            SELECT
+            B.PD_CODE,
+            SUM(IFNULL(B.PRODUCT_PLAN_BOX,0)) AS planBox
+            FROM
+            SSC_DELIVERY_PRE_PD B
+            WHERE B.DEL_FLG = 0
+            AND B.DELIVERY_PRE_INTO_CODE IN (
+             SELECT DELIVERY_PRE_INTO_CODE FROM SSC_DELIVERY_PRE_INTO WHERE DELIVERY_CONFIRM_ID = #{deliveryConfirmId} AND DEL_FLG = 0
+            )
+            GROUP BY B.PD_CODE
+        ) AS BB ON A.PD_CODE = BB.PD_CODE
+        WHERE A.DELIVERY_CONFIRM_ID = #{deliveryConfirmId}
+        AND (IFNULL(A.PRODUCT_CONFIRM_BOX ,0) - IFNULL(BB.planBox ,0)) > 0
+        AND  A.DEL_FLG = 0
+    </select>
+
+    <!--CHECK是否所有产品已经装车-->
+    <select id="checkPdPlanBox" parameterType="com.msk.ssc.bean.SSC11315Param" resultType="com.msk.ssc.bean.SSC11315DeliveryConfirmDetailRsBean">
+        SELECT
+        IFNULL(AA.confirmBox,0) - IFNULL(BB.planBox,0) AS su,
+        AA.PD_CODE AS pdCode
+        from (
+        SELECT
+        C.PD_CODE,
+        C.PRODUCT_CONFIRM_BOX AS confirmBox
+        FROM
+        SSC_DELIVERY_CONFIRM_PR_DETAIL C
+        WHERE
+        C.DELIVERY_CONFIRM_ID = #{deliveryConfirmId}
+        ) AA
+        LEFT JOIN
+        (
+        SELECT
+        B.PD_CODE,
+        SUM(IFNULL(B.PRODUCT_PLAN_BOX,0)) AS planBox
+        FROM
+        SSC_DELIVERY_PRE_INTO A
+        LEFT JOIN SSC_DELIVERY_PRE_PD B ON A.DELIVERY_PRE_INTO_CODE = B.DELIVERY_PRE_INTO_CODE
+        WHERE A.DELIVERY_CONFIRM_ID = #{deliveryConfirmId}
+        AND A.DEL_FLG = 0
+        GROUP BY B.PD_CODE
+        ) BB on AA.PD_CODE = BB.PD_CODE
+    </select>
+
+    <!--查询发货预入库单-->
+    <select id="findDeliveryPreInto" resultType="com.msk.ssc.bean.SSC11315DeliveryConfirmRsBean" parameterType="com.msk.ssc.bean.SSC11315Param">
+        SELECT DELIVERY_PRE_INTO_ID as deliveryPreIntoId,
+        DELIVERY_CONFIRM_CODE as deliveryConfirmCode
+        FROM SSC_DELIVERY_PRE_INTO
+        WHERE DELIVERY_CONFIRM_ID = #{deliveryConfirmId}
+        AND  DEL_FLG = 0
+    </select>
+
+    <!--查询发货确认单信息(插入发货预入库单)-->
+    <select id="findDeliveryConfirmPre" resultType="com.msk.core.entity.SscDeliveryPreInto" parameterType="com.msk.ssc.bean.SSC11315Param">
+        SELECT CONTRACT_ID as contractId,
+        CONTRACT_CODE as contractCode,
+        DELIVERY_CONFIRM_ID as deliveryConfirmId,
+        DELIVERY_CONFIRM_CODE as deliveryConfirmCode,
+        DELIVERY_ID as deliveryId,
+        DELIVERY_CODE as deliveryCode,
+        DELIVERY_BATCH as deliveryBatch,
+        SUPPLIER_ID as supplierId,
+        SUPPLIER_NAME as supplierName,
+        SUPPLIER_CODE as supplierCode,
+        PURCHASER_ID as purchaserId,
+        PURCHASER_NAME as purchaserName,
+        PURCHASER_CODE as purchaserCode,
+        ETD as etd,
+        ETA as eta,
+        DELIVERY_WAREHOUSE as deliveryWarehouse,
+        DELIVERY_WAREHOUSE_ADDR as deliveryWarehouseAddr,
+        ARRIVE_WAREHOUSE as arriveWarehouse,
+        ARRIVE_WAREHOUSE_ADDR as arriveWarehouseAddr,
+        MILEAGE as mileage,
+        REMARK as remark
+        FROM SSC_DELIVERY_CONFIRM_BASIC
+        WHERE DELIVERY_CONFIRM_ID = #{deliveryConfirmId}
+        AND  DEL_FLG = 0
+    </select>
+
+    <!--插入发货预入库单-->
+    <insert id="save" parameterType="com.msk.core.entity.SscDeliveryPreInto">
+        INSERT INTO SSC_DELIVERY_PRE_INTO (
+        DELIVERY_PRE_INTO_ID,
+        DELIVERY_PRE_INTO_CODE,
+        CONTRACT_ID,
+        CONTRACT_CODE,
+        DELIVERY_CONFIRM_ID,
+        DELIVERY_CONFIRM_CODE,
+        DELIVERY_ID,
+        DELIVERY_CODE,
+        DELIVERY_BATCH,
+        VEHICLE_NUMBER,
+        SUPPLIER_ID,
+        SUPPLIER_NAME,
+        SUPPLIER_CODE,
+        PURCHASER_ID,
+        PURCHASER_NAME,
+        PURCHASER_CODE,
+        ETD,
+        ETA,
+        DELIVERY_DATE,
+        DELIVERY_WAREHOUSE,
+        DELIVERY_WAREHOUSE_ADDR,
+        ARRIVE_WAREHOUSE,
+        ARRIVE_WAREHOUSE_ADDR,
+        MILEAGE,
+        PRODUCT_RECV_STATUS,
+        DRIVER_NAME,
+        DRIVER_TEL,
+        LIC_PLATE_NUMBER,
+        VEHICLE_TYPE,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{deliveryPreIntoId},
+        #{deliveryPreIntoCode},
+        #{contractId},
+        #{contractCode},
+        #{deliveryConfirmId},
+        #{deliveryConfirmCode},
+        #{deliveryId},
+        #{deliveryCode},
+        #{deliveryBatch},
+        #{vehicleNumber},
+        #{supplierId},
+        #{supplierName},
+        #{supplierCode},
+        #{purchaserId},
+        #{purchaserName},
+        #{purchaserCode},
+        #{etd},
+        #{eta},
+        #{deliveryDate},
+        #{deliveryWarehouse},
+        #{deliveryWarehouseAddr},
+        #{arriveWarehouse},
+        #{arriveWarehouseAddr},
+        #{mileage},
+        0,
+        #{driverName},
+        #{driverTel},
+        #{licPlateNumber},
+        #{vehicleType},
+        #{remark},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+
+    <!--查询发货确认产品信息（发货预入库产品信息）-->
+    <select id="findDeliveryConfirmDetailPre" resultType="com.msk.core.entity.SscDeliveryPrePd" parameterType="com.msk.ssc.bean.SSC11315Param">
+        SELECT
+        PD_CODE AS pdCode,
+        PD_DESC AS pdDesc,
+        CLASSES_CODE AS classesCode,
+        CLASSES_NAME AS classesName,
+        MACHINING_CODE AS machiningCode,
+        MACHINING_NAME AS machiningName,
+        BREED_CODE AS breedCode,
+        BREED_NAME AS breedName,
+        FEATURE_CODE AS featureCode,
+        FEATURE_NAME AS featureName,
+        WEIGHT_CODE AS weightCode,
+        WEIGHT_NAME AS weightName,
+        WEIGHT_VAL AS weightVal,
+        NORMS_CODE AS normsCode,
+        NORMS_NAME AS normsName,
+        GRADE_CODE AS gradeCode,
+        GRADE_NAME AS gradeName,
+        PRODUCT_QUA AS productPlanWeight,
+        PRODUCT_CONFIRM_BOX  AS productPlanBox,
+        REMARK AS remark
+        FROM SSC_DELIVERY_CONFIRM_PR_DETAIL
+        WHERE DELIVERY_CONFIRM_ID = #{deliveryConfirmId}
+        <if test="pdCodes !=null and pdCodes.length>0">
+            AND PD_CODE in
+            <foreach item="pdCode" index="index" collection="pdCodes"
+                     open="(" separator="," close=")">
+                #{pdCode}
+            </foreach>
+        </if>
+        AND DEL_FLG = 0
+    </select>
+
+    <!--插入发货预入库产品信息-->
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO SSC_DELIVERY_PRE_PD (
+        DETAIL_ID,
+        DELIVERY_PRE_INTO_ID,
+        DELIVERY_PRE_INTO_CODE,
+        PD_CODE,
+        PD_DESC,
+        CLASSES_CODE,
+        CLASSES_NAME,
+        MACHINING_CODE,
+        MACHINING_NAME,
+        BREED_CODE,
+        BREED_NAME,
+        FEATURE_CODE,
+        FEATURE_NAME,
+        WEIGHT_CODE,
+        WEIGHT_NAME,
+        WEIGHT_VAL,
+        NORMS_CODE,
+        NORMS_NAME,
+        GRADE_CODE,
+        GRADE_NAME,
+        PRODUCT_PLAN_WEIGHT,
+        PRODUCT_PLAN_BOX,
+        REMARK,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (
+            #{item.detailId},
+            #{item.deliveryPreIntoId},
+            #{item.deliveryPreIntoCode},
+            #{item.pdCode},
+            #{item.pdDesc},
+            #{item.classesCode},
+            #{item.classesName},
+            #{item.machiningCode},
+            #{item.machiningName},
+            #{item.breedCode},
+            #{item.breedName},
+            #{item.featureCode},
+            #{item.featureName},
+            #{item.weightCode},
+            #{item.weightName},
+            #{item.weightVal},
+            #{item.normsCode},
+            #{item.normsName},
+            #{item.gradeCode},
+            #{item.gradeName},
+            #{item.productPlanWeight},
+            #{item.productPlanBox},
+            #{item.remark},
+            0,
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            1
+            )
+        </foreach>
+    </insert>
+
+
+    <!--查询本次发货批次的最大车次-->
+    <select id="getMaxVehicleNumberByDeliveryCode" parameterType="com.msk.ssc.bean.SSC11315Param" resultType="Integer">
+      SELECT MAX(VEHICLE_NUMBER) AS vehicleNumber  FROM ssc_delivery_pre_into WHERE
+       DELIVERY_CODE =#{deliveryCode}
+       AND DELIVERY_BATCH=#{deliveryBatch}
+    </select>
+
+</mapper>

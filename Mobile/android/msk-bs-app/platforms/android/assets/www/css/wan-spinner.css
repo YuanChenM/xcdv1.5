@@ -1,0 +1,36 @@
+/*********** spinner start *************/
+
+.wan-spinner {
+  border: cornsilk;
+  display: inline-block;
+  width: 101px;
+  background:url("../img/spinner-sf0d5bd965c.png") no-repeat;
+}
+
+.wan-spinner .minus,
+.wan-spinner .plus,
+.wan-spinner input {
+  height: 11px;
+  float: left;
+  line-height: 1em;
+  padding: 5px;
+  text-align: center;
+}
+
+.wan-spinner input {
+  border: none;
+  margin: 0;
+  width: 45px;
+  BACKGROUND-COLOR: transparent;
+}
+
+.wan-spinner .minus,
+.wan-spinner .plus {
+  color: #333333;
+  cursor: pointer;
+  text-decoration: none;
+  width: 12px;
+}
+
+
+/*********** spinner end *************/

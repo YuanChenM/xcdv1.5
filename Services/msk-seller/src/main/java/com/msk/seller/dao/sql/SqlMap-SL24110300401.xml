@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24110300401Logic">
+    <insert id="saveSlEpHonor" parameterType="com.msk.core.entity.SlEpHonor">
+        <!-- Modified by xia_xiaojie on 2016/6/22. Modified start.
+        INSERT INTO SL_EP_HONOR
+        (EP_ID,HONOR_ID,HONOR_DESC,CERT_DATE,CERT_ISSUER,DEL_FLG,CRT_ID,CRT_TIME,VER)
+        VALUES (#{epId},#{honorId},#{honorDesc},#{certDate},#{certIssuer},#{delFlg},#{crtId},#{crtTime},#{ver}) -->
+        INSERT INTO SL_EP_HONOR
+            (EP_ID, HONOR_ID, HONOR_DESC, CERT_DATE, CERT_ISSUER, DEL_FLG, CRT_ID, CRT_TIME, UPD_ID, UPD_TIME, ACT_ID, ACT_TIME, VER)
+        VALUES
+            (#{epId}, #{honorId}, #{honorDesc}, #{certDate}, #{certIssuer}, 0, #{crtId}, #{crtTime}, #{crtId}, #{crtTime}, #{crtId}, #{crtTime}, 1)
+        <!-- Modified end. -->
+    </insert>
+    <select id="selectHonorDes" resultType="com.msk.core.entity.SlEpHonor" parameterType="BaseParam">
+        SELECT
+        slEpHonor.EP_ID AS epId
+        FROM  SL_EP_HONOR slEpHonor
+        WHERE slEpHonor.EP_ID=#{filterMap.epId}
+        AND slEpHonor.HONOR_DESC=#{filterMap.honorDes}
+        AND slEpHonor.DEL_FLG = 0
+    </select>
+</mapper>

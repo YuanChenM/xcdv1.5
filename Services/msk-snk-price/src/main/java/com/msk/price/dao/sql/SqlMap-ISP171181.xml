@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.ISP171181Logic">
+
+    <sql id="constDef">
+        <bind name = "oem" value="@com.msk.common.consts.BussinessConst$SlMainClass$OEM"/>
+    </sql>
+    <!--获取分销数量-->
+    <!--<select id="getDistNum" resultType="DOUBLE" parameterType="BaseParam">
+        &lt;!&ndash;<bind name="isConfirm" value="@com.msk.common.consts.BussinessConst$ISCONFIRM$CONFIRM"/>
+        <bind name="isAgree" value="@com.msk.common.consts.BussinessConst$ISAGREE$AGREE"/>&ndash;&gt;
+        &lt;!&ndash;<bind name="oem" value="@com.msk.common.consts.BussinessConst$SlMainClass$OEM"/>&ndash;&gt;
+        <include refid="constDef" />
+        SELECT sp.PASS_NUM
+        FROM sp_seller_pd_demandapply_num sp
+        WHERE
+        sp.IS_CONFIRM = #{oem}
+        AND sp.DEL_FLG = 0
+        AND sp.IS_AGREE = #{isAgree}
+        <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+            AND sp.SL_CODE = #{filterMap.slCode}
+        </if>
+        <if test="filterMap.demandMonth!=null and filterMap.demandMonth!=''">
+            AND sp.DEMAND_YEARMONTH = #{filterMap.demandMonth}
+        </if>
+        <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+            AND SUBSTRING(sp.PD_CODE,1,9) = #{filterMap.pdCode}
+        </if>
+        <if test="filterMap.lgcsCode!=null and filterMap.lgcsCode!=''">
+            AND sp.LGCS_CODE = #{filterMap.lgcsCode}
+        </if>
+    </select>-->
+
+    <select id="getDistNum" resultType="DOUBLE" parameterType="BaseParam">
+        SELECT sp.PASS_NUM
+        FROM sp_seller_pd_demandapply_num sp
+        WHERE
+        sp.IS_CONFIRM = #{filterMap.isConfirm}
+        AND sp.DEL_FLG = 0
+        AND sp.IS_AGREE = #{filterMap.isAgree}
+        <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+            AND sp.SL_CODE = #{filterMap.slCode}
+        </if>
+        <if test="filterMap.demandMonth!=null and filterMap.demandMonth!=''">
+            AND sp.DEMAND_YEARMONTH = #{filterMap.demandMonth}
+        </if>
+        <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+            AND SUBSTRING(sp.PD_CODE,1,9) = #{filterMap.pdCode}
+        </if>
+        <if test="filterMap.lgcsCode!=null and filterMap.lgcsCode!=''">
+            AND sp.LGCS_CODE = #{filterMap.lgcsCode}
+        </if>
+    </select>
+
+</mapper>

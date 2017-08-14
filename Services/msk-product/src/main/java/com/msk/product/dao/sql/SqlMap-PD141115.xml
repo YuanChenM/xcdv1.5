@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141115Logic">
+    <sql id="selectFiled">
+            PDR.PD_STD_ID AS pdStdId
+            ,PDR.PD_RLT_MSR_ID AS pdRltMsrId
+            ,PDR.CLASSES_CODE AS classesCode
+            ,PDR.BREED_CODE AS breedCode
+            ,PDR.SELLER_CODE AS sellerCode
+            ,PDB.BREED_NAME AS breedName
+            ,PDC.CLASSES_NAME AS classesName
+            ,'神农客' AS sellerName
+            ,PDR.PD_BATCH_CODE AS pdBatchCode
+            ,PDR.PD_CODE AS pdCode
+    </sql>
+    <sql id="selectFrom">
+        FROM PD_REALITY_MEASURE AS PDR
+        INNER JOIN PD_BREED AS PDB ON PDR.BREED_CODE = PDB.BREED_CODE
+        INNER JOIN PD_CLASSES AS PDC ON PDR.CLASSES_CODE = PDC.CLASSES_CODE
+    </sql>
+    <sql id="whereCondtion">
+        WHERE 1= 1
+        <if test="classesCode!=null and classesCode!=''">
+            AND PDR.CLASSES_CODE = #{classesCode}
+        </if>
+        <if test="breedCode!=null and breedCode!=''">
+            AND PDR.BREED_CODE = #{breedCode}
+        </if>
+    </sql>
+    <select id="getPageCount" resultType="int" parameterType="BasePageParam">
+        SELECT
+            COUNT(1)
+        <include refid="selectFrom"/>
+        <include refid="whereCondtion"/>
+    </select>
+    <select id="findPageList" resultType="com.msk.product.bean.PD141115Bean" parameterType="BasePageParam">
+        SELECT
+            <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondtion"/>
+        <if test="paging==true">
+            LIMIT ${startPos},${pageSize};
+        </if>
+    </select>
+</mapper>

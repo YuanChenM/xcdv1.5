@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141102Logic">
+	<!-- 表字段 -->
+	<sql id="selectSql">
+		A.CLASSES_CODE AS classesCode,
+		A.CLASSES_NAME AS classesName,
+		A.DEL_FLG AS delFlg,
+		A.CRT_ID AS crtId,
+		A.CRT_TIME AS crtTime,
+		A.UPD_ID AS updId,
+		A.UPD_TIME AS updTime,
+		A.ACT_ID AS actId,
+		A.ACT_TIME AS actTime,
+		A.VER AS ver
+	</sql>
+	<sql id="selectBreed">
+		A.CLASSES_CODE AS classesCode,
+		A.BREED_CODE AS breedCode,
+		A.BREED_NAME AS breedName,
+		A.DEL_FLG AS delFlg,
+		A.CRT_ID AS crtId,
+		A.CRT_TIME AS crtTime,
+		A.UPD_ID AS updId,
+		A.UPD_TIME AS updTime,
+		A.ACT_ID AS actId,
+		A.ACT_TIME AS actTime,
+		A.VER AS ver
+	</sql>
+	<!--条件 --><!--未使用-->
+	<sql id="whereBreed">
+		<where>
+			<if test="filterMap.breedCode!=null and filterMap.breedCode!=''">
+				AND (A.BREED_CODE like #{filterMap.breedCode}
+				or A.BREED_NAME like #{filterMap.breedCode})
+			</if>
+			<if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+				AND (A.CLASSES_CODE like #{filterMap.classesCode})
+			</if>
+		</where>
+	</sql>
+	<insert id="save" parameterType="com.msk.core.entity.PdClasses">
+		INSERT INTO
+		PD_CLASSES(CLASSES_CODE,CLASSES_NAME,DEL_FLG,CRT_ID,CRT_TIME,
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  Start -->
+		UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  End -->
+		VER)
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		VALUES(#{classesCode},#{classesName},'0',#{crtId},#{crtTime},
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  Start -->
+		#{updId},#{updTime},#{actId},#{actTime},
+		<!--Modify: 添加公共属性 2016/09/26   BY  任强  End -->
+		#{ver})
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+	</insert>
+
+	<update id="modify" parameterType="com.msk.core.entity.PdClasses">
+		UPDATE PD_CLASSES SET
+		CLASSES_NAME=#{classesName},
+		UPD_ID=#{updId},
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		UPD_TIME=#{updTime}
+		<!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		,VER = VER+1
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		WHERE
+		CLASSES_CODE=#{classesCode}
+		<!--Modify delflag横展开 2016/10/10 任强 Start-->
+		AND  DEL_FLG='0'
+		<!--Modify delflag横展开 2016/10/10 任强 End-->
+	</update>
+
+	<select id="findOne" resultType="com.msk.core.entity.PdClasses"
+		parameterType="com.hoperun.core.bean.BaseParam">
+		select
+		<include refid="selectSql" />
+		from PD_CLASSES AS A
+		WHERE
+		CLASSES_CODE=#{filterMap.classesCode}
+	</select>
+	<select id="findByName" resultType="com.msk.core.entity.PdClasses"
+		parameterType="com.hoperun.core.bean.BaseParam">
+		select
+		<include refid="selectSql" />
+		from PD_CLASSES AS A
+		WHERE
+		CLASSES_NAME=#{filterMap.classesName}
+	</select>
+	<select id="findMaxNo" resultType="com.msk.core.entity.PdClasses">
+		select
+		MAX(A.CLASSES_CODE) AS classesCode,
+		A.CLASSES_NAME AS classesName
+		from PD_CLASSES AS A
+	</select>
+	 <update id="modifyFlgByCode" parameterType="com.msk.core.entity.PdBreed">
+        UPDATE PD_BREED SET
+        DEL_FLG='1',
+		 <!--Modify: 添加公共属性 2016/09/20   BY  任强  Start -->
+		 UPD_ID = #{updId},
+		 UPD_TIME =  #{updTime},
+		 VER = VER + 1
+		 <!--Modify: 添加公共属性 2016/09/20  BY  任强  Start -->
+        WHERE
+            CLASSES_CODE=#{classesCode} AND
+            BREED_CODE=#{breedCode}
+    </update>
+  <!--  <delete id="remove" parameterType="com.msk.core.entity.PdBreed">
+         DELETE from PD_BREED 
+        WHERE
+            CLASSES_CODE=#{classesCode} AND
+            BREED_CODE=#{breedCode}
+    </delete>-->
+    <!-- 品种查询 --><!--未使用-->
+    <select id="findPageList" parameterType="com.hoperun.core.bean.BasePageParam"
+        resultType="com.msk.product.bean.ProductBreed">
+        select
+        <include refid="selectBreed" />
+        from PD_BREED AS A
+        <include refid="whereBreed" />
+        <if test="paging!=null and paging==true">
+            LIMIT ${startPos},${pageSize};
+        </if>
+    </select>
+
+
+	<!-- 获取产品特征所有数据 -->
+	<select id="findListFeature" parameterType="com.hoperun.core.bean.BaseParam"
+			resultType="com.msk.core.entity.PdFeature">
+		SELECT
+		A.CLASSES_CODE AS classesCode,
+		A.BREED_CODE AS breedCode,
+		A.FEATURE_CODE AS featureCode
+		FROM PD_FEATURE AS A
+		WHERE
+		A.CLASSES_CODE=#{filterMap.classesCode} AND
+		A.BREED_CODE=#{filterMap.breedCode}
+	</select>
+
+
+	<!-- 查询标准id  xhy-->
+	<select id="findStandarId" resultType="com.msk.core.entity.PdStandard" parameterType="com.hoperun.core.bean.BaseParam">
+		SELECT A.STANDARD_ID AS standardId
+		FROM PD_STANDARD AS A
+		WHERE
+		A.CLASSES_CODE=#{filterMap.classesCode}
+		AND A.BREED_CODE=#{filterMap.breedCode}
+		AND A.FEATURE_CODE=#{filterMap.featureCode}
+	</select>
+
+	<!--删除产品技术表中数据  xhy-->
+	<delete id="deleteTnc" parameterType="com.msk.core.entity.PdStandard">
+		DELETE FROM PD_TNC_STD
+		WHERE
+		STANDARD_ID=#{standardId}
+	</delete>
+
+	<!--删除产品包装表中数据  xhy-->
+	<delete id="deleteNorms" parameterType="com.msk.core.entity.PdStandard">
+		DELETE FROM PD_NORMS_STD
+		WHERE
+		STANDARD_ID=#{standardId}
+	</delete>
+
+	<!--删除产品质量标准数据  xhy-->
+	<delete id="deleteQlt" parameterType="com.msk.core.entity.PdStandard">
+		DELETE FROM PD_QLT_STD
+		WHERE
+		STANDARD_ID=#{standardId}
+	</delete>
+
+	<!--删除产品标准数据数据  xhy-->
+	<delete id="deleteStd" parameterType="com.msk.core.entity.PdStandard">
+		DELETE FROM PD_STANDARD
+		WHERE
+		STANDARD_ID=#{standardId}
+	</delete>
+	<!-- 删除产品特征数据 -->
+	<delete id="deleteFea" parameterType="com.hoperun.core.bean.BaseParam">
+		DELETE FROM PD_FEATURE
+		WHERE
+		CLASSES_CODE=#{filterMap.classesCode}
+		AND BREED_CODE=#{filterMap.breedCode}
+		AND FEATURE_CODE=#{filterMap.featureCode}
+	</delete>
+	<!-- 删除产品品种数据 -->
+	<delete id="deleteBreed" parameterType="com.hoperun.core.bean.BaseParam">
+        DELETE FROM PD_BREED
+		WHERE
+		CLASSES_CODE=#{filterMap.classesCode}
+		AND BREED_CODE=#{filterMap.breedCode}
+	</delete>
+
+</mapper>

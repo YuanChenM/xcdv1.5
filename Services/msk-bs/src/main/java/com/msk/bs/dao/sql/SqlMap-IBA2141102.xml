@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBA2141102Logic">
+
+    <select id="findOne" parameterType="com.msk.bs.bean.IBA2141102Param" resultType="com.msk.bs.bean.IBA2141102RsResult">
+        SELECT
+        account.SL_ACCOUNT AS slAccount,
+        account.SL_TEL AS slTel,
+        account.SL_SHOW_NAME AS slShowName,
+        account.SL_CONTACT AS slContact,
+        account.ACCOUNT_IMG AS accountImg,
+        basic.SL_CODE AS slCode,
+        basic.SL_CODE_DIS AS slCodeDis,
+        basic.PROVINCE_CODE AS provinceCode,
+        basic.LGCS_AREA_CODE AS lgcsCode,
+        basic.CITY_CODE AS cityCode,
+        basic.LGCS_AREA_NAME AS lgcsName
+        FROM
+        sl_bs_account account LEFT JOIN sl_bs_basic_info basic ON account.SL_ACCOUNT = basic.SL_ACCOUNT
+        WHERE
+        account.AUTH_STATUS = 2
+        <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 start-->
+        AND (account.DEL_FLG = 0 OR account.DEL_FLG IS NULL) AND (basic.DEL_FLG = 0 OR basic.DEL_FLG IS NULL)
+        <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 end-->
+        AND (account.SL_TEL =  #{slTel} OR account.SL_ACCOUNT = #{slTel})
+        <if test="accountPsd !=null and accountPsd !=''">
+            AND account.ACCOUNT_PSD = #{accountPsd}
+        </if>
+    </select>
+</mapper>
+

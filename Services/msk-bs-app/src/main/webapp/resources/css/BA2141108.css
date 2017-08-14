@@ -1,0 +1,65 @@
+﻿body a:link {TEXT-DECORATION: none;}
+body a:visited {TEXT-DECORATION: none;}
+body a:hover {TEXT-DECORATION: none;}
+body a:active {TEXT-DECORATION: none;}
+a:focus{outline:none;}
+li{list-style-type:none}
+.container{
+  width:100%;
+}
+
+.header .bianji{
+  width:93px; height: 24px;float: right;
+}
+.bianji_span{
+  font-family:'Applied Font Regular', 'Applied Font';
+  font-weight:200;
+  font-style:normal;
+  color: white;
+  font-size:36px;
+  line-height: 53px;
+}
+
+
+.main
+{
+  margin:5px;
+  float:left;
+}
+.main .main_d1{margin:0 auto; border:1px solid #e8e8e8;height:1600px; }
+
+
+
+.content .tupian{
+  margin-left:50px;width:50px; height:70px; float:left;padding-top: 3px;
+}
+.content .product{
+  margin:1px auto;
+}
+.product .breed{margin-left:117px;width:65%; height:20px; float:left;}
+.product .neirong{margin-left:117px;padding-top:5px;width:63%; height:100px; float:left;word-wrap:break-word;}
+.product .price{margin-left:260px;width:65%; height:25px; float: left;}
+.product .num{margin-left:260px;width:10%; height:20px; float: right;margin:-33px 19px 5px 5px;}
+.product .shownum{margin-left:260px;width:20%; height:20px; float: right;margin:-55px -70px 5px 5px;}
+
+.main ul{ width:100%; float:left; border:1px dashed #d8d8d8; border-top:0px;margin:0px 0px 5px 0px;}
+.main ul li{ width:100%; height:150px; float:left; border-bottom:1px dashed #d8d8d8; margin:20px 0px 0px 5px; position:relative;}
+ul li .checkbox { width:40px; height:60px; float:left; margin:5px 0px 5px 5px;}
+ul li .checkbox a{ width:50px; height:40px; line-height:25px; font-size:14px; color:#595757;background:url('../images/choose1.png') no-repeat left center; text-align:left; text-indent:30px; float:left; margin:0px;}
+ul li .checkbox a.on{ width:50px; height:40px; line-height:25px; font-size:14px; color:#595757; background:url('../images/choose2.png') no-repeat left center; text-align:left; text-indent:30px; float:left; margin:0px;}
+
+.footer .checkAll{width:12%; height:47px; float: left;margin: 34px 0px 0px 12px;}
+.footer .checkAll .chkAll_span{color:#3D3837;padding: 20px;width: 24px;font-size: 24px;line-height: 38px;}
+.footer .checkAll a{ width:120px; height:40px; line-height:25px; font-size:14px; color:#595757;background:url('../images/choose1.png') no-repeat left center; text-align:left; text-indent:30px; float:left; margin:6px;}
+.footer .checkAll a.on{ width:120px; height:40px; line-height:25px; font-size:14px; color:#595757; background:url('../images/choose2.png') no-repeat left center; text-align:left; text-indent:30px; float:left; margin:6px;}
+.footer .heji{width:62%; height:47px; float: left;margin: 0px 0px 0px 12px;}
+.footer .buy{width:22%; height:135px; float: right;margin: 0px 0px 0px 12px;text-align: center;background:url("../images/buy_2.png") no-repeat left center;}
+.footer .buy .buy_span{
+  font-family:'Applied Font Regular', 'Applied Font';
+  font-weight:400;
+  font-style:normal;
+  color: white;
+  font-size:65px;
+  line-height: 120px;
+ }
+

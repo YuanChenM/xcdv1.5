@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121401Logic">
+    <select id="findPageList" resultType ="com.msk.core.entity.ByMarketTerminalBasic" parameterType ="com.msk.buyers.bean.BY121401Param">
+        SELECT
+        IFNULL(ID,'') AS id,
+        IFNULL(MARKET_ID,'') AS marketId,
+        IFNULL(MARKET_CODE,'') AS marketCode,
+        IFNULL(LGCS_AREA_NAME,'') AS  lgcsAreaName,
+        IFNULL(CITY_NAME,'') AS  cityName,
+        IFNULL(MARKET_NAME,'') AS  marketName,
+        IFNULL(MARKET_ADDR,'') AS  marketAddr,
+        IFNULL(MARKET_LEVEL_NAME,'') AS  marketLevelName,
+        IFNULL(TARGET_BUYER,'') AS  targetBuyer,
+        IFNULL(TARGET_ANNUAL_TURNOVER,'')  AS  targetAnnualTurnover,
+        IFNULL(RESEARCH_PHASE_NAME,'') AS  researchPhaseName,
+        IFNULL(MARKET_STATUS,'') AS marketStatus
+        FROM BY_MARKET_TERMINAL_BASIC
+        WHERE IS_MARKET_NEW = '1'
+        AND IS_PHASE_NEW = '1'
+        <if test="filterMap.lgcsAreaName != null and filterMap.lgcsAreaName != '' ">
+            AND LGCS_AREA_NAME like #{filterMap.lgcsAreaName}
+        </if>
+        <if test="filterMap.cityName != null and filterMap.cityName != '' ">
+            AND CITY_NAME like #{filterMap.cityName}
+        </if>
+        <if test="filterMap.marketName != null and filterMap.marketName != '' ">
+            AND MARKET_NAME like #{filterMap.marketName}
+        </if>
+        <if test="filterMap.marketAddr != null and filterMap.marketAddr != '' ">
+            AND MARKET_ADDR like #{filterMap.marketAddr}
+        </if>
+        <if test="filterMap.marketCode != null and filterMap.marketCode != '' ">
+            AND MARKET_CODE like #{filterMap.marketCode}
+        </if>
+        <if test="filterMap.marketStatuss != null and filterMap.marketStatuss.length > 0 ">
+            AND MARKET_STATUS IN
+            <foreach collection="filterMap.marketStatuss" item="marketStatuss" open="(" separator="," close=")">
+                #{marketStatuss}
+            </foreach>
+        </if>
+        AND DEL_FLG = 0
+        ORDER BY marketId
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+
+    </select>
+    <select id="getPageCount" resultType="int" parameterType="com.msk.buyers.bean.BY121401Param">
+        SELECT
+        COUNT(1)
+        FROM BY_MARKET_TERMINAL_BASIC
+        WHERE IS_MARKET_NEW = '1'
+        AND IS_PHASE_NEW = '1'
+        <if test="filterMap.lgcsAreaName != null and filterMap.lgcsAreaName != '' ">
+            AND LGCS_AREA_NAME like #{filterMap.lgcsAreaName}
+        </if>
+        <if test="filterMap.cityName != null and filterMap.cityName != '' ">
+            AND CITY_NAME like #{filterMap.cityName}
+        </if>
+        <if test="filterMap.marketName != null and filterMap.marketName != '' ">
+            AND MARKET_NAME like #{filterMap.marketName}
+        </if>
+        <if test="filterMap.marketAddr != null and filterMap.marketAddr != '' ">
+            AND MARKET_ADDR like #{filterMap.marketAddr}
+        </if>
+        <if test="filterMap.marketCode != null and filterMap.marketCode != '' ">
+            AND MARKET_CODE like #{filterMap.marketCode}
+        </if>
+        <if test="filterMap.marketStatuss != null and filterMap.marketStatuss.length > 0 ">
+            AND MARKET_STATUS IN
+            <foreach collection="filterMap.marketStatuss" item="marketStatuss" open="(" separator="," close=")">
+                #{marketStatuss}
+            </foreach>
+        </if>
+        AND DEL_FLG = 0
+    </select>
+    <update id="deleteDataBase" parameterType="com.msk.core.entity.ByMarketTerminalBasic">
+        UPDATE BY_MARKET_TERMINAL_BASIC
+        SET DEL_FLG = '1'
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        WHERE MARKET_ID = #{marketId}
+    </update>
+
+    <update id="deleteStoreByMarketId" parameterType="com.msk.core.entity.ByMarketTerminalBasic">
+        UPDATE BY_MARKET_TERMINAL_BR_SEARCH
+        SET DEL_FLG = '1'
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE MARKET_ID = #{marketId}
+    </update>
+
+    <select id="findStoreByMarketId" parameterType="com.msk.buyers.bean.BY121401Param" resultType="com.msk.buyers.bean.BY121413Bean">
+        SELECT STORE_ID  AS storeId
+        FROM  BY_MARKET_TERMINAL_BR_SEARCH
+        WHERE MARKET_ID = #{marketId}
+        AND  DEL_FLG = '0'
+    </select>
+
+
+    <update id="deleteSalePd" parameterType="com.msk.buyers.bean.BY121401Param">
+        UPDATE BY_MARKET_TERMINAL_BR_SALE_PD
+        SET   DEL_FLG = '1'
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        WHERE
+              STORE_ID IN
+            <foreach collection="filterMap.storeIdList" item="storeId" open="(" separator="," close=")">
+                #{storeId.storeId}
+            </foreach>
+    </update>
+
+</mapper>

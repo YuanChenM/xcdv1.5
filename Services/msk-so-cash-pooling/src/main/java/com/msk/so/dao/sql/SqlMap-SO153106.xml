@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.so.logic.SO153106Logic">
+    <update id="modify" parameterType="com.msk.core.entity.SoCpBuyerBill">
+        UPDATE so_cp_buyer_bill
+        SET
+            <if test="paid!=null">
+            PAID = #{paid},
+            </if>
+            <if test="realRefund!=null">
+            REAL_REFUND = #{realRefund},
+            </if>
+            VER = VER + 1,
+            SETTLEMENT_STATUS = #{settlementStatus},
+            UPD_ID = #{updId},
+            UPD_TIME = #{updTime}
+        WHERE
+        BUYER_BILL_ID=#{buyerBillId}
+    </update>
+</mapper>

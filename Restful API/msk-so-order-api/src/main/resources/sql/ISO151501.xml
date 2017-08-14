@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151501.Search">
+        SELECT
+        subOrder.ORDER_ID AS orderID,
+        subOrder.ORDER_CODE AS orderCode,
+        soOrder.ORDER_TYPE AS orderType,
+        date_format(soOrder.ORDER_TIME, '%Y-%m-%d') AS orderDate,
+        date_format(soOrder.ORDER_TIME, '%H:%i:%s') AS orderTime,
+        subOrder.SUB_ORDER_STATUS AS orderStatus,
+        soOrder.BUYER_CODE AS buyerCode,
+        soOrder.BUYER_NAME AS buyerName,
+        soOrder.BUYER_MARKET_NAME AS buyerMarketName,
+        CONCAT(
+        odeDemand.RECEIVER_PROVINCE,
+        odeDemand.RECEIVER_CITY,
+        odeDemand.RECEIVER_DISTRICT,
+        odeDemand.RECEIVER_ADDR
+        ) AS receiverAddr,
+        odeDemand.RECEIVER_TEL AS receiverTel,
+        IFNULL((soOrder.SA_NAME), '') AS saName,
+        IFNULL(soOrder.ORDER_AMOUNT, '') AS orderAmount,
+        subOrder.SUB_ORDER_ID AS subOrderId,
+        subOrder.SUB_ORDER_CODE AS subOrderCode,
+        subOrder.SUB_ORDER_STATUS AS subOrderStatus,
+        subOrderDetail.SUB_ORDER_DETAIL_ID AS subOrderDetailId,
+        soDetail.CLASSES_CODE AS classesCode,
+        soDetail.CLASSES_NAME AS classesName,
+        soDetail.BREED_CODE AS breedCode,
+        soDetail.BREED_NAME AS breedName,
+        soDetail.FEATURE_CODE AS featureCode,
+        soDetail.FEATURE_NAME AS featureName,
+        soDetail.NORMS_NAME AS normsName,
+        soDetail.PD_CODE AS pdCode,
+        soDetail.PD_NAME AS pdName,
+        soDetail.PD_GRADE_NAME AS pdGradeName,
+        IFNULL((soDetail.PD_PRICE), '') AS price,
+        FORMAT(soDetail.ORDER_QTY, 0) AS orderQty,
+        FORMAT(
+        (
+        soDetail.PD_PRICE * soDetail.ORDER_QTY
+        ),
+        2
+        ) AS orderDetailAmount,
+        shipDetail.SUPPLIER_NAME AS supplierName,
+        FORMAT(shipDetail.SUPP_QTY, 0) AS suppQty,
+        FORMAT(shipDetail.SEND_QTY, 0) AS sendQty,
+        FORMAT(shipDetail.RECEIVE_QTY, 0) AS receiveQty,
+        FORMAT(shipDetail.CANCEL_QTY, 0) AS cancelQty,
+        FORMAT(shipDetail.RETURN_QTY, 0) AS returnQty,
+        FORMAT(shipDetail.REJECTION_QTY, 0) AS rejectionQty,
+        date_format(
+        shipDetail.SEND_TIME,
+        '%Y-%c-%d %h:%i:%s'
+        ) AS sendTime,
+        date_format(
+        shipDetail.RECEIVED_TIME,
+        '%Y-%c-%d %h:%i:%s'
+        ) AS RecevicedTime
+        FROM
+        so_sub_order subOrder
+        LEFT JOIN SO_ORDER_RECEIVE_DEMAND odeDemand
+        ON subOrder.order_id = odeDemand.order_id
+        INNER JOIN so_order soOrder
+        ON soOrder.ORDER_ID = subOrder.ORDER_ID
+        LEFT JOIN so_sub_order_detail subOrderDetail
+        ON subOrder.SUB_ORDER_ID = subOrderDetail.SUB_ORDER_ID
+        LEFT JOIN SO_ORDER_DETAIL soDetail
+        ON subOrder.SUB_ORDER_ID = soDetail.ORDER_DETAIL_ID
+        LEFT JOIN SO_ORDER_SHIP_DETAIL shipDetail
+        ON subOrderDetail.SUB_ORDER_DETAIL_ID= shipDetail.SUB_ORDER_DETAIL_ID
+        WHERE
+        soOrder.DEL_FLG = 0
+        and soOrder.DEL_FLG=0
+    </sql>
+
+    <sql id="ISO151501.page">
+        SELECT
+        subOrder.ORDER_ID as orderId,
+        subOrder.SUB_ORDER_ID as subOrderId,
+        subOrder.ORDER_CODE as orderCode,
+        soOrder.DISTRICT_NAME as districtName,
+        soOrder.BUYER_TYPE as buyerType,
+        soOrder.ORDER_SOURCE as orderSource,
+        subOrder.ORDER_TYPE as orderType,
+        soOrder.BUYER_CODE as buyerCode,
+        soOrder.BUYER_NAME as buyerName,
+        soOrder.SA_NAME as saName,
+        date_format(soOrder.ORDER_TIME, '%Y-%m-%d') AS orderTimeStr,
+        subOrder.SUB_ORDER_STATUS as orderStatus
+        from
+        so_sub_order subOrder
+        INNER JOIN so_order soOrder
+        on subOrder.ORDER_ID=soOrder.ORDER_ID
+        WHERE subOrder.DEL_FLG=0
+        and soOrder.DEL_FLG=0
+    </sql>
+
+
+    <sql id="ISO151501.pageCount">
+        SELECT
+        count(1)
+        from
+        so_sub_order subOrder
+        INNER JOIN so_order soOrder
+        on subOrder.ORDER_ID=soOrder.ORDER_ID
+        WHERE subOrder.DEL_FLG=0
+        and  soOrder.DEL_FLG=0
+    </sql>
+
+    <sql id="ISO151501.total">
+        SELECT
+        SUM(detail.ORDER_QTY) AS totalQty,
+        SUM(
+        detail.ORDER_QTY * detail.PD_PRICE
+        ) AS totalAmount
+        FROM
+        so_sub_order_detail detail
+        INNER JOIN so_sub_order subOrder
+        on detail.SUB_ORDER_ID=subOrder.SUB_ORDER_ID
+        INNER JOIN so_order soOrder
+        on soOrder.ORDER_ID=detail.ORDER_ID
+        WHERE subOrder.DEL_FLG=0
+        and detail.DEL_FLG=0
+        and soOrder.DEL_FLG=0
+    </sql>
+
+</sqlList>

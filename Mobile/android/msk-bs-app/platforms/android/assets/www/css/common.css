@@ -1,0 +1,135 @@
+html {font: normal 62.5% "Microsoft YaHei", Arial, sans-serif;}
+body{margin: 0;padding: 0;}
+body a:link {TEXT-DECORATION: none; color: #000000;/*链接颜色*/text-decoration: none;/*无下划线*/}
+body a:visited {TEXT-DECORATION: none;text-decoration: none;/*无下划线*/color: #FF0000;/*已访问过颜色*/}
+body a:hover {TEXT-DECORATION: none; text-decoration: none;/*无下划线*/ color: #000000;/*鼠标经过颜色*/}
+body a:active {TEXT-DECORATION: none;text-decoration: none;/*无下划线*/color: #000000;/*活动链接颜色*/}
+a:focus{outline:none;}
+ul, ol, li {list-style-type:none}
+a img {border:0}
+.header
+{
+    width: 100%;
+    margin:0px auto;
+    text-align: center;
+    height:44px;
+    background-color: #002e62;
+    position:fixed;
+    top: 0px;
+    z-index: 9999;
+    font-size: 1.5rem;
+}
+.header .fanhui{
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    background: url("../img/arrow.png") no-repeat;
+    background-size: 9px;
+    background-position: 52% 50%;
+}
+.header .title{
+    height: 44px;
+    width: 100%;
+}
+.title_span{
+    line-height: 44px;
+    font-family:'Applied Font Regular', 'Applied Font';
+    font-weight:400;
+    font-style:normal;
+    color: white;
+    font-size:1.5rem;
+    width: 100%;
+    text-align: center;
+}
+
+
+.footer{ margin:0px;
+    width:100%;
+    height:50px;
+    position: fixed;
+    background: url('../img/buy_1.png') repeat;
+    bottom:0px;
+    line-height:60px;
+}
+
+.footer1{ margin:0px;
+    width:100%;
+    height:50px;
+    position: fixed;
+    background: url('../img/buy_1.png') repeat;
+    bottom:50px;
+    line-height:60px;
+}
+.bottom {
+    bottom: 35px;
+    width: 100%;
+    height: 50px;
+    font-size: 18px;
+    line-height: 40px;
+    position: fixed;
+    color: #FFFFFF;
+    bottom: 0;
+    background-color: #002E62;
+    z-index:999;
+    overflow:hidden;
+}
+.bottom span {
+    width: 25%;
+    background-color: #002E62;
+    float: left;
+    text-align: center;
+    padding-top: 10px;
+}
+.bottom span div{
+    height: 28px;
+    line-height: 1px;
+    font-size:1rem;
+}
+
+.bottom span div img{
+    height: 17px;
+}
+.bottom .current {
+    background-color: #81C800;
+}
+.bottom .unusable{
+    background-color: #bbbbbb;
+}
+.footerMain{ margin:0px;
+    width:100%;
+    height:45px;
+    position: fixed;
+    background: url('../img/buy_1.png') repeat;
+    bottom:0px;
+    line-height:42px;
+}
+/*加载指示器*/
+#messageLoading{
+    display: inline-block;
+    width: 76%;
+    height: 94px;
+    border-radius: 3px;
+    margin: auto;
+    background-color: #eaeaee;
+    display: flex;
+    flex-flow: column;
+}
+#simplemodal-overlay{
+    background:#595757;
+}
+#messageLoadingText{
+    height: 50%;
+    text-align: center;
+    line-height: 55px;
+    font-size: 1.7rem;
+    color: #737373;
+    font-weight: bold;
+}
+.loader-inner{
+    height: 50%;
+    display: flex;
+    flex-flow: column;
+}
+.loader-inner div{
+   margin: 0px auto 10px auto;
+}

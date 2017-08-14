@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2101107Logic">
+
+    <sql id="selectFiled">
+        IFNULL(SL_CODE,'') AS slCode,
+        IFNULL(HOUSE_ACCOUNT,'') AS houseAccount,
+        IFNULL(HOUSE_CODE,'') AS houseCode,
+        IFNULL(HOUSE_CODE_DIS,'') AS houseCodeDis,
+        IFNULL(HOUSE_TEL,'') AS houseTel,
+        IFNULL(HOUSE_SHOW_NAME,'') AS houseShowName,
+        IFNULL(HOUSE_CONTACT,'') AS houseContact,
+        IFNULL(ACCOUNT_PSD,'') AS accountPsd,
+        IFNULL(AUTH_STATUS,'') AS authStatus,
+        IFNULL(SL_IDCARD,'') AS slIdcard,
+        IFNULL(SL_CON_FLG,'') AS slConFlg,
+        IFNULL(R_AREA_CODE,'') AS rareaCode,
+        IFNULL(R_LGCS_AREA_CODE,'') AS rlgcsAreaCode,
+        IFNULL(R_PROVINCE_CODE,'') AS rprovinceCode,
+        IFNULL(R_CITY_CODE,'') AS rcityCode,
+        IFNULL(R_DISTRICT_CODE,'') AS rdistrictCode,
+        IFNULL(R_HOUSE_ADDRESS,'') AS  rhouseAddress,
+        IFNULL(AREA_CODE,'') AS areaCode,
+        IFNULL(LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(PROVINCE_CODE,'') AS provinceCode,
+        IFNULL(CITY_CODE,'') AS cityCode,
+        IFNULL(DISTRICT_CODE,'') AS districtCode,
+        IFNULL(HOUSE_ADDRESS,'') AS houseAddress,
+        IFNULL(V_AREA_CODE,'') AS   vareaCode,
+        IFNULL(V_LGCS_AREA_CODE,'') AS vlgcsAreaCode,
+        IFNULL(V_PROVINCE_CODE,'') AS vprovinceCode,
+        IFNULL(V_CITY_CODE,'') AS vcityCode,
+        IFNULL(V_DISTRICT_CODE,'') AS vdistrictCode,
+        IFNULL(V_HOUSE_ADDRESS,'') AS vhouseAddress,
+        IFNULL(LAT,'') AS lat,
+        IFNULL(LON,'') AS lon ,
+        IFNULL(V_LAT,'') AS vlat,
+        IFNULL(V_LON,'') AS vlon,
+        IFNULL(LICENSES,'') AS licenses,
+        IFNULL(BUYER_ASIGN,'') AS buyerAsign,
+        IFNULL(WECHAT,'') AS wechat,
+        IFNULL(QQ,'') AS qq,
+        IFNULL(EMAIL,'') AS email,
+        IFNULL(FIXED_TEL,'') AS fixedTel,
+        IFNULL(FAX,'') AS fax,
+        IFNULL(FLAG20,'') AS flag20,
+        IFNULL(FLAG19,'') AS flag19,
+        IFNULL(FLAG18,'') AS flag18,
+        IFNULL(FLAG17,'') AS flag17,
+        IFNULL(FLAG16,'') AS flag16,
+        IFNULL(FLAG15,'') AS flag15,
+        IFNULL(FLAG14,'') AS flag14,
+        IFNULL(FLAG13,'') AS flag13,
+        IFNULL(FLAG12,'')AS flag12,
+        IFNULL(FLAG11,'') AS flag11,
+        IFNULL(FLAG10,'') AS flag10,
+        IFNULL(FLAG9,'') AS flag9 ,
+        IFNULL(FLAG8,'') AS flag8 ,
+        IFNULL(FLAG7,'') AS flag7 ,
+        IFNULL(FLAG6,'') AS flag6 ,
+        IFNULL(FLAG5,'') AS flag5 ,
+        IFNULL(FLAG4,'') AS flag4 ,
+        IFNULL(FLAG3,'') AS flag3 ,
+        IFNULL(FLAG2,'') AS flag2 ,
+        IFNULL(FLAG1,'') AS flag1 ,
+        IFNULL(HOUSE_INTRODUCE,'') AS houseIntroduce,
+        IFNULL(HOUSE_CLASS,'') AS   houseClass,
+        IFNULL(HOUSE_CATEGORY,'') AS houseCategory,
+        IFNULL(HOUSE_CATEGORY_SUB,'') AS houseCategorySub,
+        IFNULL(HOUSE_CATEGORY0,'') AS houseCategory0,
+        IFNULL(HOUSE_CATEGORY1,'') AS houseCategory1,
+        IFNULL(HOUSE_CATEGORY2,'') AS houseCategory2,
+        IFNULL(HOUSE_CATEGORY3,'') AS houseCategory3,
+        IFNULL(HOUSE_CATEGORY4,'') AS houseCategory4,
+        IFNULL(HOUSE_CATEGORY5,'') AS houseCategory5,
+        IFNULL(HOUSE_CATEGORY6,'') AS houseCategory6,
+        IFNULL(HOUSE_CATEGORY7,'') AS houseCategory7,
+        IFNULL(HOUSE_CATEGORY8,'') AS houseCategory8,
+        IFNULL(HOUSE_GREADE,'') AS houseGreade ,
+        IFNULL(HOUSE_STAR,'3') AS houseStar
+    </sql>
+    <!--保存数据-->
+    <insert id="findSaveData" parameterType="com.msk.core.entity.SlHouseAccount">
+        INSERT INTO sl_house_account (
+            SL_CODE,
+            HOUSE_ACCOUNT,
+            HOUSE_CODE,
+            HOUSE_CODE_DIS,
+            HOUSE_TEL,
+            HOUSE_SHOW_NAME,
+            HOUSE_CONTACT,
+            ACCOUNT_PSD,
+            AUTH_STATUS,
+            SL_IDCARD,
+            SL_CON_FLG,
+            AREA_CODE,
+            LGCS_AREA_CODE,
+            PROVINCE_CODE,
+            CITY_CODE,
+            DISTRICT_CODE,
+            HOUSE_ADDRESS,
+            V_AREA_CODE,
+            V_LGCS_AREA_CODE,
+            V_PROVINCE_CODE,
+            V_CITY_CODE,
+            V_DISTRICT_CODE,
+            V_HOUSE_ADDRESS,
+            LAT,
+            LON,
+            V_LAT,
+            V_LON,
+            LICENSES,
+            BUYER_ASIGN,
+            WECHAT,
+            QQ,
+            EMAIL,
+            FIXED_TEL,
+            FAX,
+            FLAG20,
+            FLAG19,
+            FLAG18,
+            FLAG17,
+            FLAG16,
+            FLAG15,
+            FLAG14,
+            FLAG13,
+            FLAG12,
+            FLAG11,
+            FLAG10,
+            FLAG9,
+            FLAG8,
+            FLAG7,
+            FLAG6,
+            FLAG5,
+            FLAG4,
+            FLAG3,
+            FLAG2,
+            FLAG1,
+            HOUSE_INTRODUCE,
+            HOUSE_CLASS,
+            HOUSE_CATEGORY,
+            HOUSE_CATEGORY0,
+            HOUSE_CATEGORY1,
+            HOUSE_CATEGORY2,
+            HOUSE_CATEGORY3,
+            HOUSE_CATEGORY4,
+            HOUSE_CATEGORY5,
+            HOUSE_CATEGORY6,
+            HOUSE_CATEGORY7,
+            HOUSE_CATEGORY8,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            VER
+        )
+          VALUE (
+            #{slCode},
+            #{houseAccount},
+            #{houseCode},
+            #{houseCodeDis},
+            #{houseTel},
+            #{houseShowName},
+            #{houseContact},
+            #{accountPsd},
+            #{authStatus},
+            #{slIdcard},
+            #{slConFlg},
+            #{areaCode},
+            #{lgcsAreaCode},
+            #{provinceCode},
+            #{cityCode},
+            #{districtCode},
+            #{houseAddress},
+            #{vareaCode},
+            #{vlgcsAreaCode},
+            #{vprovinceCode},
+            #{vcityCode},
+            #{vdistrictCode},
+            #{vhouseAddress},
+            #{lat},
+            #{lon},
+            #{vlat},
+            #{vlon},
+            #{licenses},
+            #{buyerAsign},
+            #{wechat},
+            #{qq},
+            #{email},
+            #{fixedTel},
+            #{fax},
+            #{flag20},
+            #{flag19},
+            #{flag18},
+            #{flag17},
+            #{flag16},
+            #{flag15},
+            #{flag14},
+            #{flag13},
+            #{flag12},
+            #{flag11},
+            #{flag10},
+            #{flag9},
+            #{flag8},
+            #{flag7},
+            #{flag6},
+            #{flag5},
+            #{flag4},
+            #{flag3},
+            #{flag2},
+            #{flag1},
+            #{houseIntroduce},
+            #{houseClass},
+            #{houseCategory},
+            #{houseCategory0},
+            #{houseCategory1},
+            #{houseCategory2},
+            #{houseCategory3},
+            #{houseCategory4},
+            #{houseCategory5},
+            #{houseCategory6},
+            #{houseCategory7},
+            #{houseCategory8},
+            #{delFlg},
+            #{crtId},
+            #{crtTime},
+            #{ver}
+            )
+    </insert>
+    <select id="findHouseType" parameterType="com.msk.core.entity.SlHouseType"
+            resultType="com.msk.core.entity.SlHouseType">
+        SELECT
+        TYPE_CODE AS typeCode,
+        TYPE_NAME AS typeName
+        FROM
+        sl_bs_house_type
+        WHERE DEL_FLG = 0
+        AND ROLE_TYPE = 1
+        <if test="filterMap.typeLever!=null and filterMap.typeLever!=''">
+            AND TYPE_LEVER = #{filterMap.typeLever}
+        </if>
+        <if test="filterMap.parentTypeCode!=null and filterMap.parentTypeCode!=''">
+            AND PARENT_TYPE_CODE = #{filterMap.parentTypeCode}
+        </if>
+    </select>
+
+
+    <select id="findHouseAccount" resultType="com.msk.core.entity.SlHouseAccount"                                                                                     parameterType="com.msk.core.entity.SlHouseAccount">
+      SELECT
+        <include refid="selectFiled"/>
+        FROM sl_house_account
+        WHERE SL_CODE = #{slCode}
+        AND HOUSE_CODE = #{houseCode}
+        AND (DEL_FLG IS NULL OR DEL_FLG = 0)
+    </select>
+
+    <select id="findBasicInfoBySlCode" resultType="com.msk.core.entity.BsBasicInfo"                                                                                     parameterType="com.msk.core.entity.SlHouseAccount">
+      SELECT SL_CODE AS  slCode,SL_CODE_DIS AS slCodeDis
+      FROM sl_bs_basic_info
+      WHERE SL_CODE = #{slCode}
+      AND (DEL_FLG IS NULL OR DEL_FLG = 0)
+    </select>
+
+    <select id="findIntroduceInfoByHouseCode" resultType="com.msk.core.entity.SlHouseIntroduce"
+            parameterType="com.msk.core.entity.SlHouseIntroduce">
+        SELECT
+        HOUSE_CODE AS houseCode,
+        INTRODUCE AS introduce,
+        SERVICE_COMMIT AS serviceCommit,
+        UPLOAD_URL1 AS uploadUrl1,
+        UPLOAD_URL2 AS uploadUrl2
+        FROM sl_house_introduce
+        WHERE HOUSE_CODE = #{houseCode}
+        AND (DEL_FLG IS NULL OR DEL_FLG = 0)
+    </select>
+
+</mapper>

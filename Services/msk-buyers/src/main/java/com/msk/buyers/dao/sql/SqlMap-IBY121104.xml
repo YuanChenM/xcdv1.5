@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121104Logic">
+
+    <!--查询菜场列表-->
+    <select id="findMarkerFoodList" resultType="com.msk.buyers.bean.IBY121104Bean" parameterType="com.msk.buyers.bean.IBY121104RsParam">
+        SELECT
+        FOD_MARKET_ID AS marketId,
+        MARKET_CODE AS marketCode,
+        MARKET_NAME AS marketName,
+        MARKET_ADDR AS marketAddress,
+        LGCS_AREA_CODE AS lgcsCode,
+        CITY_CODE AS cityCode,
+        DISTRICT_CODE AS districtCode
+        FROM
+        by_market_food
+        WHERE
+        DEL_FLG = 0
+        <if test="filterMap.lgcsCode != null and filterMap.lgcsCode != ''">
+            AND LGCS_AREA_CODE = #{lgcsCode}
+        </if>
+        <if test="filterMap.cityCode != null and filterMap.cityCode != ''">
+            AND CITY_CODE = #{cityCode}
+        </if>
+        <if test="filterMap.districtCode != null and filterMap.districtCode != ''">
+            AND DISTRICT_CODE = #{districtCode}
+        </if>
+    </select>
+
+</mapper>

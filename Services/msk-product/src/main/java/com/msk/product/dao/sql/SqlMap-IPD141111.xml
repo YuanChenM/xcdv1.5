@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141111Logic">
+    <!-- 条件语句 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.classesCode!=null and filterMap.classesCode!=''">
+                AND CLASSES_CODE = #{filterMap.classesCode}
+                AND MACHINING_CODE = #{filterMap.machiningCode}
+                AND BREED_CODE = #{filterMap.breedCode}
+                AND FEATURE_CODE = #{filterMap.featureCode}
+                AND WEIGHT_CODE = #{filterMap.weightCode}
+                AND GRADE_CODE = #{filterMap.gradeCode}
+                AND LOGIAREA_CODE = #{filterMap.logiAreaCode}
+            </if>
+        </where>
+    </sql>
+    <!-- 查询产品价盘数据 -->
+    <select id="findPriceCycle" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141111PriceCycle">
+		SELECT
+		ORDERLEVEL_CODE AS orderLevel,
+		PRICEOFKG AS priceOfKg,
+		PRICEOFBOX AS priceOfBox
+		FROM pd_priceprd_logiarea
+		WHERE
+		 PDT_MIXCODE = #{filterMap.productId}
+         AND GRADE_CODE = #{filterMap.gradeCode}
+         AND LOGIAREA_CODE = #{filterMap.logiAreaCode}
+         AND PRICECYCLE_PERIOD = #{filterMap.pricePeriod}
+         order by ORDERLEVEL_CODE
+	</select>
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141111RsResult">
+        SELECT
+        DISTINCT
+        PDT_MIXCODE AS productId,
+        GRADE_CODE AS gradeCode,
+        LOGIAREA_CODE AS logiAreaCode,
+        PRICECYCLE_PERIOD AS pricePeriod
+        FROM pd_priceprd_logiarea
+        <include refid="whereCondition"/>
+    </select>
+</mapper>

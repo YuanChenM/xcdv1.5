@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121302Logic">
+    <select id="findPageList" resultType="com.msk.buyers.bean.BY121309Bean" parameterType="com.msk.buyers.bean.BY121309Param">
+        SELECT
+          cla.CLASSES_NAME AS classesName,
+          cla.MACHINING_NAME AS machiningName,
+          fea.BREED_NAME AS breedName,
+          fea.FEATURE_NAME AS featureName,
+		  wei.WEIGHT_VAL AS weightVal,
+		  wei.NORMS_NAME AS normsName,
+          fea.GRADE_NAME AS gradeName
+          FROM BR_O_ORDER_INFO ord
+          LEFT JOIN BR_O_CLA_MACHINING_INFO cla ON cla.CLASSES_CODE = ord.CLASSES_CODE AND cla.MACHINING_CODE = ord.MACHINING_CODE AND  cla.DEL_FLG = ord.DEL_FLG
+          LEFT JOIN BR_O_BREED_FEA_INFO fea ON fea.CLA_ID = cla.CLA_ID  AND fea.GRADE_CODE = ord.GRADE_CODE  AND  cla.DEL_FLG = fea.DEL_FLG
+		  LEFT JOIN BR_O_WEI_NOR_INFO wei ON wei.ID = cla.CLA_ID AND cla.DEL_FLG = wei.DEL_FLG
+          WHERE ord.BUYER_ID = #{buyerId}
+        ORDER BY classesName,machiningName,breedName,featureName
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" parameterType="com.msk.buyers.bean.BY121309Param" resultType="int">
+        SELECT COUNT(1)
+         FROM BR_O_ORDER_INFO  ord
+         LEFT JOIN BR_O_CLA_MACHINING_INFO cla ON cla.CLASSES_CODE = ord.CLASSES_CODE AND cla.MACHINING_CODE = ord.MACHINING_CODE AND  cla.DEL_FLG = ord.DEL_FLG
+         LEFT JOIN BR_O_BREED_FEA_INFO fea ON fea.CLA_ID = cla.CLA_ID  AND fea.GRADE_CODE = ord.GRADE_CODE AND  cla.DEL_FLG = fea.DEL_FLG
+		 LEFT JOIN BR_O_WEI_NOR_INFO wei ON wei.ID = cla.CLA_ID AND cla.DEL_FLG = wei.DEL_FLG
+		 WHERE ord.BUYER_ID = #{buyerId}
+    </select>
+
+</mapper>

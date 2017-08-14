@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>管理收货地址</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <link href="css/css.css" type="text/css" rel="stylesheet"/>
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="js/constantDef.js"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+</head>
+
+<body>
+    <!--页眉开始-->
+    <div class="wapp-head">选择收货地址
+        <a href="javascript:void(0);" class="head-back">返回</a>
+    </div>
+    <!--页眉结束/-->
+
+    <!--列表信息主体开始-->
+    <div class="adder-box">
+        <ul id="addresses">
+            <li style=" display: none;list-style:none;">
+                <div class="full_info">
+                    <span class="name"></span>
+                    <span class="phone">18</span>
+                    <span class="text"></span>
+                </div>
+                <div class="del_container">
+                    <a href="javascript:void(0);" class="del">删除</a>
+                </div>
+                <div class="edit_container">
+                    <a href="javascript:void(0);" class="edit">编辑</a>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+    <!--列表信息主体结束-->
+
+    <!--页尾开始-->
+    <div class="wapp-footer"><a href="javascript:void(0);" class="all">添加新地址</a></div>
+    <!--页尾结束/-->
+
+</body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<script src="js/BA2141112.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

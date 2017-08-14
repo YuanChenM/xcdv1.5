@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ds.logic.SC182206Logic">
+
+    <select id="getDsInformation"  parameterType="com.msk.ds.bean.SC182206Param" resultType="com.msk.ds.bean.SC182206Bean">
+        SELECT
+        PD_CODE as pdCode,
+        SL_CODE_MANUFACTURE as slCodeManufacture,
+        DATE_CODE as dateCode,
+        SL_CODE as slCode,
+        LOT_ID as lotId
+        FROM
+        ds_sl_pd_lot
+        WHERE
+        PD_CODE in
+        <foreach item="item" index="index" collection="params" open="(" separator="," close=")">
+            #{item.pdCode}
+        </foreach>
+        AND DEL_FLG = 0
+    </select>
+
+</mapper>

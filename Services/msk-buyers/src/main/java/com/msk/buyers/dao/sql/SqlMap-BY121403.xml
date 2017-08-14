@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121403Logic">
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.ByMarketTerminalBasic">
+        SELECT
+           MARKET_ID AS marketId,
+           MARKET_CODE AS marketCode,
+           MARKET_NAME AS marketName,
+           MARKET_ADDR AS marketAddr,
+           MARKET_LEVEL AS marketLevel,
+           MARKET_LEVEL_NAME AS marketLevelName,
+           AREA_COVERED AS areaCovered,
+           AREA_COVERED_LEVEL AS areaCoveredLevel,
+           IS_LARGE_STORAGE AS isLargeStorage,
+           RADIATION_RANGE_TYPE_NAME AS radiationRangeTypeName,
+           RADIATION_RANGE_LEVEL AS radiationRangeLevel,
+           FACE_BUYER_TYPE_NAME AS faceBuyerTypeName,
+           FACE_BUYER_LEVEL AS faceBuyerLevel,
+           MARKET_NATURE AS marketNature,
+           MARKET_NATURE_EMOHASIS AS marketNatureEmohasis,
+           LGCS_AREA_CODE AS lgcsAreaCode,
+           LGCS_AREA_NAME AS lgcsAreaName,
+           CITY_CODE AS cityCode,
+           CITY_NAME AS cityName,
+           MAX_CLASS_BUYER_TYPE AS maxClassBuyerType,
+           MAX_CLASS_BUYER_NUM AS maxClassBuyerNum,
+           MAX_CLASS_BUYER_LEVEL AS maxClassBuyerLevel,
+           ifnull(TARGET_BUYER,0) AS targetBuyer,
+           TARGET_BUYER_LEVEL AS targetBuyerLevel,
+           ifnull(TARGET_ANNUAL_TURNOVER,0) AS targetAnnualTurnover,
+           TARGET_ANNUAL_TURNOVER_LEVEL AS targetAnnualTurnoverLevel,
+           IS_MERCHANT_NEW AS isMerchantNew,
+           IS_PHASE_NEW AS isPhaseNew,
+           IS_MARKET_NEW AS isMarketNew,
+           RESEARCH_PHASE AS researchPhase,
+           RESEARCH_PHASE_NAME AS researchPhaseName,
+           MARKET_STATUS AS marketStatus
+        FROM
+           by_market_terminal_basic
+        WHERE
+           MARKET_ID = #{filterMap.marketId}
+           AND IS_MARKET_NEW = 1
+           AND IS_PHASE_NEW = 1
+           AND DEL_FLG = 0
+    </select>
+    <select id="count" resultType="int" parameterType="BaseParam">
+        SELECT
+           count(1)
+        FROM
+           by_market_terminal_basic
+        WHERE
+           MARKET_NAME = #{filterMap.marketName}
+           AND LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+           AND CITY_CODE = #{filterMap.cityCode}
+    </select>
+    <!--获取批发市场目标买家信息 -->
+    <select id="findQueryMarkerFoodList" resultType="com.msk.core.entity.ByMarketFood" parameterType="BaseParam">
+        SELECT
+        ID AS id,
+        MARKET_ID AS marketId,
+        MERCHANT_NAME AS merchantName,
+        MERCHANT_TYPE AS merchantType,
+        ifnull(SALE_PD_CODE,'') AS salePdCode,
+        ifnull(SALE_PD,'') AS salePd,
+        ifnull(TOTAL_MERCHANT,0) AS totalMerchant,
+        ifnull(ANNUAL_TURNOVER,0) AS annualTurnover,
+        IS_TARGET_MERCHANT AS isTargetMerchant
+        FROM by_market_terminal_by_info
+        WHERE
+        MARKET_ID = #{filterMap.marketId}
+        AND IS_TARGET_MERCHANT =1
+        AND DEL_FLG = 0
+        ORDER BY CRT_TIME, marketId
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="findPageList" resultType="com.msk.buyers.bean.BY121403TotalBean" parameterType="BaseParam">
+        SELECT
+        ID AS id,
+        MARKET_ID AS marketId,
+        MERCHANT_NAME AS merchantName,
+        MERCHANT_TYPE AS merchantType,
+        ifnull(SALE_PD_CODE,'') AS salePdCode,
+        ifnull(SALE_PD,'') AS salePd,
+        ifnull(TOTAL_MERCHANT,0) AS totalMerchant,
+        ifnull(ANNUAL_TURNOVER,0) AS annualTurnover,
+        IS_TARGET_MERCHANT AS isTargetMerchant
+        FROM by_market_terminal_by_info
+        WHERE
+        MARKET_ID = #{filterMap.marketId}
+        <if test="filterMap.isTargetMerchant != null and filterMap.isTargetMerchant != ''">
+            AND IS_TARGET_MERCHANT = #{filterMap.isTargetMerchant}
+        </if>
+        <if test="filterMap.merchantTypes != null and filterMap.merchantTypes != ''">
+            AND MERCHANT_TYPE IN
+            <foreach collection="filterMap.merchantTypes" item="merchantType" open="(" separator="," close=")">
+                #{merchantType}
+            </foreach>
+        </if>
+        <if test="filterMap.merchantName != null and filterMap.merchantName != ''">
+            AND MERCHANT_NAME LIKE #{filterMap.merchantName}
+        </if>
+        <if test="filterMap.totalMerchant != null and filterMap.totalMerchant != ''">
+            AND TOTAL_MERCHANT <![CDATA[ >= #{filterMap.totalMerchant}]]>
+        </if>
+        AND DEL_FLG = 0
+        ORDER BY marketId
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        from by_market_terminal_by_info
+        WHERE
+        MARKET_ID = #{filterMap.marketId}
+        <if test="filterMap.isTargetMerchant != null and filterMap.isTargetMerchant != ''">
+            AND IS_TARGET_MERCHANT = #{filterMap.isTargetMerchant}
+        </if>
+        <if test="filterMap.merchantTypes != null and filterMap.merchantTypes != ''">
+            AND MERCHANT_TYPE IN
+            <foreach collection="filterMap.merchantTypes" item="merchantType" open="(" separator="," close=")">
+                #{merchantType}
+            </foreach>
+        </if>
+        <if test="filterMap.merchantName != null and filterMap.merchantName != ''">
+            AND MERCHANT_NAME LIKE #{filterMap.merchantName}
+        </if>
+        <if test="filterMap.totalMerchant != null and filterMap.totalMerchant != ''">
+            AND TOTAL_MERCHANT <![CDATA[ >= #{filterMap.totalMerchant}]]>
+        </if>
+        AND DEL_FLG = 0
+    </select>
+
+    <insert id="save" parameterType="com.msk.buyers.bean.BY121403Bean">
+        INSERT INTO
+           by_market_terminal_basic(
+            ID,
+            MARKET_ID,
+            MARKET_CODE,
+            MARKET_NAME,
+            MARKET_ADDR,
+            MARKET_LEVEL,
+            MARKET_LEVEL_NAME,
+            AREA_COVERED,
+            AREA_COVERED_LEVEL,
+            IS_LARGE_STORAGE,
+            RADIATION_RANGE_TYPE_NAME,
+            RADIATION_RANGE_LEVEL,
+            FACE_BUYER_TYPE_NAME,
+            FACE_BUYER_LEVEL,
+            MARKET_NATURE,
+            MARKET_NATURE_EMOHASIS,
+            LGCS_AREA_CODE,
+            LGCS_AREA_NAME,
+            CITY_CODE,
+            CITY_NAME,
+            MAX_CLASS_BUYER_TYPE,
+            MAX_CLASS_BUYER_NUM,
+            MAX_CLASS_BUYER_LEVEL,
+            N_TARGET_BUYER,
+            N_TARGET_ANNUAL_TURNOVER,
+            TARGET_BUYER,
+            TARGET_BUYER_LEVEL,
+            TARGET_ANNUAL_TURNOVER,
+            TARGET_ANNUAL_TURNOVER_LEVEL,
+            IS_MERCHANT_NEW,
+            IS_PHASE_NEW,
+            IS_MARKET_NEW,
+            RESEARCH_PHASE,
+            RESEARCH_PHASE_NAME,
+            MARKET_STATUS,
+            DEL_FLG,
+
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+
+
+            VER
+           )VALUES (
+           #{id},
+           #{marketId},
+           #{marketCode},
+           #{marketName},
+           #{marketAddr},
+           #{marketLevel},
+           #{marketLevelName},
+           #{areaCovered},
+           #{areaCoveredLevel},
+           #{isLargeStorage},
+           #{radiationRangeTypeName},
+           #{radiationRangeLevel},
+           #{faceBuyerTypeName},
+           #{faceBuyerLevel},
+           #{marketNature},
+           #{marketNatureEmohasis},
+           #{lgcsAreaCode},
+           #{lgcsAreaName},
+           #{cityCode},
+           #{cityName},
+           #{maxClassBuyerType},
+           #{maxClassBuyerNum},
+           #{maxClassBuyerLevel},
+           #{ntargetBuyer},
+           #{ntargetAnnualTurnover},
+           #{targetBuyer},
+           #{targetBuyerLevel},
+           #{targetAnnualTurnover},
+           #{targetAnnualTurnoverLevel},
+           0,
+           1,
+           1,
+           #{researchPhase},
+           #{researchPhaseName},
+           #{marketStatus},
+           0,
+
+
+           #{crtId},
+           #{crtTime},
+
+
+           #{updId},
+           #{updTime},
+           #{actId},
+           #{actTime},
+
+           1
+           )
+    </insert>
+    <update id="modifyOldPhase" parameterType="com.msk.buyers.bean.BY121403Bean">
+        UPDATE
+        by_market_terminal_basic
+        SET
+        IS_PHASE_NEW = 0
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+
+        WHERE
+        MARKET_ID = #{marketId}
+        AND RESEARCH_PHASE = #{oldResearchPhase}
+        AND IS_PHASE_NEW = 1
+        AND DEL_FLG = 0
+    </update>
+    <update id="modifyNewPhase" parameterType="com.msk.buyers.bean.BY121403Bean">
+        UPDATE
+        by_market_terminal_basic
+        SET
+        IS_PHASE_NEW = 0
+         ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE
+        MARKET_ID = #{marketId}
+        AND RESEARCH_PHASE = #{researchPhase}
+        AND IS_MARKET_NEW = 0
+        AND DEL_FLG = 0
+    </update>
+
+    <update id="modify" parameterType="com.msk.buyers.bean.BY121403Bean">
+        UPDATE
+        by_market_terminal_basic
+        SET
+        IS_MARKET_NEW = 0,
+        IS_PHASE_NEW = #{isPhaseNew}
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE
+           MARKET_ID = #{marketId}
+           AND IS_MARKET_NEW = 1
+           AND DEL_FLG = 0
+    </update>
+    <update id="modifyMaxTagerBuyerInfo" parameterType="com.msk.core.entity.ByMarketTerminalBasic">
+        UPDATE
+        by_market_terminal_basic
+        SET
+        <if test="maxClassBuyerType != null and maxClassBuyerType != ''">
+            MAX_CLASS_BUYER_TYPE = #{maxClassBuyerType},
+        </if>
+        MAX_CLASS_BUYER_NUM =#{maxClassBuyerNum},
+        TARGET_BUYER =#{targetBuyer}
+
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+
+        WHERE
+        MARKET_ID = #{marketId}
+        AND IS_MARKET_NEW = 1
+        AND IS_PHASE_NEW = 1
+        AND DEL_FLG = 0
+    </update>
+    <select id="synchMarketInfo" resultType="com.msk.core.entity.ByMarketTerminalByInfo" parameterType="BaseParam">
+        SELECT
+          s.MARKET_ID AS marketId,
+          s.BUYER_STORE_NO,
+          CASE s.MERCHANT_TYPE
+           WHEN '1' THEN  '单一产品买家'
+           WHEN '2' THEN  '组合产品买家'
+           WHEN '3' THEN  '综合产品买家'
+           ELSE '' END AS merchantName,
+          s.MERCHANT_TYPE AS merchantType,
+          COUNT(p.SALE_PD_CODE) AS totalMerchant,
+          p.SALE_PD_CODE AS salePdCode,
+          p.SALE_PD AS salePd,
+          s.IS_TARGET_MERCHANT AS isTargetMerchant
+        FROM
+          by_market_terminal_br_search s
+          INNER JOIN by_market_terminal_br_sale_pd p
+            ON p.STORE_ID = s.STORE_ID AND s.DEL_FLG = p.DEL_FLG AND p.DEL_FLG = '0'
+          WHERE s.IS_TARGET_MERCHANT = '1' AND s.MARKET_ID = #{filterMap.marketId}
+        GROUP BY s.MARKET_ID,p.SALE_PD_CODE,s.IS_TARGET_MERCHANT
+        UNION
+        SELECT
+          s.MARKET_ID AS marketId,
+          s.BUYER_STORE_NO,
+          '' AS merchantName,
+          s.MERCHANT_TYPE AS merchantType,
+          0 AS totalMerchant,
+          p.SALE_PD_CODE AS salePdCode,
+          p.SALE_PD AS salePd,
+          s.IS_TARGET_MERCHANT AS isTargetMerchant
+        FROM
+          by_market_terminal_br_search s
+          INNER JOIN by_market_terminal_br_sale_pd p
+            ON p.STORE_ID = s.STORE_ID AND s.DEL_FLG = p.DEL_FLG AND p.DEL_FLG = '0'
+          WHERE s.IS_TARGET_MERCHANT = '0'  AND s.MARKET_ID = #{filterMap.marketId}
+        GROUP BY s.MARKET_ID,p.SALE_PD_CODE,s.IS_TARGET_MERCHANT,s.BUYER_STORE_NO
+    </select>
+
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO BY_MARKET_TERMINAL_BY_INFO(
+        ID,
+        MARKET_ID,
+        MERCHANT_NAME,
+        MERCHANT_TYPE,
+        SALE_PD_CODE,
+        SALE_PD,
+        TOTAL_MERCHANT,
+        IS_TARGET_MERCHANT,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.id}, #{item.marketId}, #{item.merchantName}, #{item.merchantType},#{item.salePdCode},
+            #{item.salePd},#{item.totalMerchant},#{item.isTargetMerchant},0,#{item.crtId},#{item.crtTime},#{item.updId},#{item.updTime},#{item.actId},#{item.actTime},1)
+        </foreach>
+    </insert>
+    <update id="updateMarketInfos" parameterType="com.msk.core.entity.ByMarketTerminalByInfo">
+        update
+          by_market_terminal_by_info
+        set
+          ANNUAL_TURNOVER=#{annualTurnover},
+          UPD_ID = 'BY121403',
+          UPD_TIME = #{updTime}
+        WHERE
+          ID = #{id}
+          AND DEL_FLG = 0
+    </update>
+    <update id="deleteMarketInfo" parameterType="BaseParam">
+        update
+        by_market_terminal_by_info
+        set
+        DEL_FLG = 1
+        WHERE
+        MARKET_ID = #{filterMap.marketId}
+    </update>
+
+    <select id="getTotalNumber" resultType="com.msk.buyers.bean.BY121403TotalBean" parameterType="BaseParam">
+        SELECT
+        IFNULL(SUM(t.TOTAL_MERCHANT),0) AS currentNumber,
+        IFNULL(SUM(t.ANNUAL_TURNOVER),0) AS currentAmount
+        FROM
+        (
+        SELECT
+        MARKET_ID,
+        TOTAL_MERCHANT,
+        ANNUAL_TURNOVER
+        FROM
+        by_market_terminal_by_info
+        WHERE DEL_FLG = '0'
+        AND IS_TARGET_MERCHANT = #{filterMap.isTargetMerchant}
+        AND MARKET_ID = #{filterMap.marketId}
+        <if test="filterMap.merchantName != null and filterMap.merchantName != ''">
+            AND MERCHANT_NAME LIKE #{filterMap.merchantName}
+        </if>
+        <if test="filterMap.totalMerchant != null and filterMap.totalMerchant != ''">
+            AND TOTAL_MERCHANT <![CDATA[ >= #{filterMap.totalMerchant}]]>
+        </if>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+        ) t
+    </select>
+
+    <update id="updateBrMarketInfo" parameterType="com.msk.core.entity.ByMarketTerminalByInfo">
+        update
+        by_market_terminal_by_info
+        set
+        TOTAL_MERCHANT = #{totalMerchant},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        MARKET_ID = #{marketId}
+        AND DEL_FLG = '0'
+        <if test="isTargetMerchant == 0">
+            AND IS_TARGET_MERCHANT = #{isTargetMerchant}
+            AND MERCHANT_TYPE = #{merchantType}
+        </if>
+        <if test="isTargetMerchant == 1">
+            AND IS_TARGET_MERCHANT = #{isTargetMerchant}
+            AND MERCHANT_TYPE = #{merchantType}
+            AND SALE_PD_CODE = #{salePdCode}
+        </if>
+    </update>
+
+    <select id="getMarketInfoCount" resultType="int" parameterType="com.msk.core.entity.ByMarketTerminalByInfo">
+        select
+        count(1)
+        from
+        by_market_terminal_by_info
+        WHERE
+        MARKET_ID = #{marketId}
+        AND DEL_FLG = '0'
+        <if test="isTargetMerchant == 0">
+            AND IS_TARGET_MERCHANT = #{isTargetMerchant}
+            AND MERCHANT_TYPE = #{merchantType}
+        </if>
+        <if test="isTargetMerchant == 1">
+            AND IS_TARGET_MERCHANT = #{isTargetMerchant}
+            AND MERCHANT_TYPE = #{merchantType}
+            AND SALE_PD_CODE = #{salePdCode}
+        </if>
+    </select>
+    <update id="deleteMarkets" parameterType="BaseParam">
+        update
+        by_market_terminal_by_info
+        set
+        DEL_FLG = 1
+        WHERE
+        MARKET_ID = #{filterMap.marketId}
+        AND DEL_FLG = '0'
+        <if test="filterMap.reList != null and filterMap.reList != ''">
+            AND
+            <foreach collection="filterMap.reList" item="item" open="(" separator=" OR " close=")">
+                (IS_TARGET_MERCHANT = #{item.isTargetMerchant}
+                AND MERCHANT_TYPE = #{item.merchantType}
+                <if test="item.isTargetMerchant == 1">
+                    AND (SALE_PD_CODE = #{item.salePdCode} or SALE_PD_CODE is null)
+                </if>
+                )
+            </foreach>
+        </if>
+    </update>
+
+
+   <!-- Add for Bug #2464号 at 2016/09/06 by zhao_chen Start-->
+    <select id="regExistence" resultType="Integer" parameterType="com.msk.buyers.bean.BY121403Bean">
+        SELECT  count(1) FROM  BY_MARKET_TERMINAL_BASIC
+        WHERE  MARKET_ID=#{marketId}
+        AND  DEL_FLG = '0'
+    </select>
+
+    <update id="deleteMarketStatus" parameterType="com.msk.buyers.bean.BY121403Bean">
+        UPDATE  BY_MARKET_TERMINAL_BASIC
+        SET DEL_FLG = '1'
+       ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE  MARKET_ID=#{marketId}
+    </update>
+
+    <update id="deleteStoreInfo" parameterType="com.msk.buyers.bean.BY121403Bean">
+        UPDATE  by_market_terminal_br_search
+        SET DEL_FLG = '1'
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        WHERE  MARKET_ID=#{marketId}
+    </update>
+
+    <update id="deleteByInfo" parameterType="com.msk.buyers.bean.BY121403Bean">
+        UPDATE  by_market_terminal_by_info
+        SET DEL_FLG = '1'
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        WHERE  MARKET_ID=#{marketId}
+    </update>
+
+    <update id="deleteFileInfo" parameterType="com.msk.buyers.bean.BY121403Bean">
+        UPDATE  by_market_terminal_file_info
+        SET DEL_FLG = '1'
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+        WHERE  MARKET_ID=#{marketId}
+    </update>
+    <!-- Add for Bug #2464号 at 2016/09/06 by zhao_chen End-->
+
+</mapper>

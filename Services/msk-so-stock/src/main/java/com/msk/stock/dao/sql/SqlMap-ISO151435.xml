@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.stock.logic.ISO151435Logic">
+<!--修改卖家可用库存-->
+	<update id="updateSLStock" parameterType="BaseParam">
+		UPDATE so_stock_sl
+		SET ENABLED_STOCK_QTY=ENABLED_STOCK_QTY-#{filterMap.orderQty} ,VER=VER+1
+		WHERE SL_CODE=#{filterMap.slCode} and  LGCS_CODE=#{filterMap.lgcsCode} and  PD_CODE=#{filterMap.pdCode}
+		and SALE_PLATFORM=#{filterMap.supplyPatform}
+		and DEL_FLG=0
+	</update>
+	<!--修改供应商可用库存-->
+	<update id="updateSPStock" parameterType="BaseParam">
+		UPDATE so_stock_sp
+		SET ENABLED_STOCK_QTY=ENABLED_STOCK_QTY-#{filterMap.orderQty},VER=VER+1
+		WHERE SL_CODE=#{filterMap.slCode} and  LGCS_CODE=#{filterMap.lgcsCode} and  PD_CODE=#{filterMap.pdCode}
+		and SUPPLY_PLATFORM=#{filterMap.supplyPatform}
+		and SUPPLIER_CODE =#{filterMap.supplierCode} and DEL_FLG=0
+	</update>
+
+
+	<!--减少买手可用库存  sl-->
+	<update id="minusSLBuyerStock" parameterType="BaseParam">
+		UPDATE so_stock_sl
+		SET ENABLED_STOCK_QTY=ENABLED_STOCK_QTY-#{filterMap.orderQty},VER=VER+1
+		WHERE SL_CODE=#{filterMap.buyCode} and  LGCS_CODE=#{filterMap.lgcsCode} and  PD_CODE=#{filterMap.pdCode}
+
+		and DEL_FLG=0
+	</update>
+
+
+
+	<!--减少买手可用库存  sp-->
+	<update id="minusSPBuyerStock" parameterType="BaseParam">
+		UPDATE so_stock_sp
+		SET ENABLED_STOCK_QTY=ENABLED_STOCK_QTY-#{filterMap.orderQty},VER=VER+1
+		WHERE  LGCS_CODE=#{filterMap.lgcsCode} and  PD_CODE=#{filterMap.pdCode}
+		and SUPPLIER_CODE=#{filterMap.supplierCode}
+		and SUPPLY_PLATFORM=#{filterMap.supplyPatform}
+		and SL_CODE=#{filterMap.slCode}
+		and DEL_FLG=0
+	</update>
+
+
+
+	<!--添加买手可用库存  sl-->
+	<update id="plusSLBuyerStock" parameterType="BaseParam">
+		UPDATE so_stock_sl
+		SET ENABLED_STOCK_QTY=ENABLED_STOCK_QTY+#{filterMap.orderQty},VER=VER+1
+		WHERE SL_CODE=#{filterMap.buyCode} and  LGCS_CODE=#{filterMap.lgcsCode} and  PD_CODE=#{filterMap.pdCode}
+		and SALE_PLATFORM=#{filterMap.supplyPatform}
+		and DEL_FLG=0
+	</update>
+
+
+	<!--添加买手（供应商）可用库存  sl-->
+	<update id="plusSPBuyerStock" parameterType="BaseParam">
+		UPDATE so_stock_sl
+		SET ENABLED_STOCK_QTY=ENABLED_STOCK_QTY+#{filterMap.orderQty},VER=VER+1
+		WHERE SOURCE_SL_CODE=#{filterMap.buyCode} and  LGCS_CODE=#{filterMap.lgcsCode} and  PD_CODE=#{filterMap.pdCode}
+		and SALE_PLATFORM=#{filterMap.supplyPatform}
+		and DEL_FLG=0
+	</update>
+
+
+
+
+
+
+
+
+
+
+
+	<!--检查买手库存  sl-->
+	<select  id="checkSLBuyerStock" parameterType="BaseParam"  resultType="Integer">
+		SELECT  COUNT(1) from   so_stock_sl
+		where   SL_CODE= #{filterMap.slCode}  and  LGCS_CODE=#{filterMap.lgcsCode}  and DEL_FLG=0  and PD_CODE=#{filterMap.pdCode}
+	</select>
+
+
+
+	<!--检查 买手库存  sp-->
+	<select  id="checkSPBuyerStock" parameterType="BaseParam"  resultType="Integer">
+		SELECT  COUNT(1) from   so_stock_sp
+		where   SOURCE_SL_CODE= #{filterMap.slCode}  and  LGCS_CODE=#{filterMap.lgcsCode}  and DEL_FLG=0  and PD_CODE=#{filterMap.pdCode}
+	</select>
+
+
+	<insert id ="addSLBuyerStock" parameterType="BaseParam">
+	INSERT INTO so_stock_sl(
+	so_stock_sl.STOCK_ID,
+	so_stock_sl.SL_CODE,
+	so_stock_sl.LGCS_CODE,
+	so_stock_sl.PD_CODE,
+	so_stock_sl.STOCK_QTY,
+	so_stock_sl.ENABLED_STOCK_QTY,
+	DEL_FLG,
+	so_stock_sl.VER)
+	VALUES (
+	#{filterMap.sl_stock_id},
+	#{filterMap.slCode},
+	#{filterMap.lgcsCode},
+	#{filterMap.pdCode},
+	0,
+	0,
+	0,
+	1)
+</insert>
+
+
+	<insert id ="addSPBuyerStock" parameterType="BaseParam">
+		INSERT INTO so_stock_sp(
+		so_stock_sp.STOCK_ID,
+		so_stock_sp.SL_CODE,
+		so_stock_sp.LGCS_CODE,
+		so_stock_sp.PD_CODE,
+		so_stock_sp.SUPPLIER_CODE,
+		so_stock_sp.STOCK_QTY,
+		so_stock_sp.ENABLED_STOCK_QTY,
+		DEL_FLG,
+		so_stock_sp.VER)
+		VALUES (
+		#{filterMap.sp_stock_id},
+		#{filterMap.slCode},
+		#{filterMap.lgcsCode},
+		#{filterMap.pdCode},
+		#{filterMap.supplierCode},
+		0,
+		0,
+		0,
+		1)
+	</insert>
+</mapper>

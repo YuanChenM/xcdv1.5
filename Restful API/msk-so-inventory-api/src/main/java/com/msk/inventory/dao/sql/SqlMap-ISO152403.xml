@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.ISO152403ServiceImpl">
+    <select id="getIso152403StockList" parameterType="com.msk.inventory.bean.ISO152403ParamBean" resultType="com.msk.inventory.bean.ISO152403StockResultBean">
+        SELECT
+        A.PM_NAME AS pdName,
+        B.QTY - B.ALLOCATED_QTY as pdTypeSumStock,
+        EXTRACTVALUE(B.BELONE_XML,'/AREA') AS lgcsCode,
+        EXTRACTVALUE(B.BELONE_XML,'/PLT') AS salePlatform,
+        B.QTY as onhandQty,
+        B.ALLOCATED_QTY AS allocatedQty
+        FROM
+                ivm_parts_master A
+        INNER JOIN
+                ivm_inventory_by_owner B
+        ON A.PM_ID=B.PM_ID
+        WHERE 1=1
+        <if test="pdList !=null">
+            <foreach collection="pdList" item="item" open="AND (" close=")" separator="OR">
+                (CONCAT(
+                    EXTRACTVALUE(A.PM_EXTERNAL_XML,'/CLS_C'),
+                    EXTRACTVALUE(A.PM_EXTERNAL_XML,'/MACH_C'),
+                    EXTRACTVALUE(A.PM_EXTERNAL_XML,'/BRE_C'),
+                    EXTRACTVALUE(A.PM_EXTERNAL_XML,'/FEAT_C'),
+                    EXTRACTVALUE(A.PM_EXTERNAL_XML,'/WEI_C')
+                  )=#{item.pdTypeCode}
+                AND EXTRACTVALUE(B.BELONE_XML,'/AREA')=#{item.lgcsCode}
+                AND EXTRACTVALUE(B.BELONE_XML,'/PLT')=#{item.salePlatform}
+                )
+            </foreach>
+        </if>
+        <if test="pageCount !=0">
+        limit #{pageNo},#{pageCount}
+    </if>
+    </select>
+</mapper>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.ISP171183Logic">
+
+    <!--获取神农客产品价盘-->
+    <select id="getPriceCycle" resultType="com.msk.price.bean.ISP171183Bean"  parameterType="com.msk.price.bean.ISP171183Param" >
+        SELECT
+        PD_CODE as productId,
+        right(PD_CODE,1) as gradeCode,
+        LGCS_CODE as logiAreaCode,
+        PRICE_PERIOD as pricePeriod
+        FROM  sp_seller_pd_priceplate
+        WHERE
+        PRICE_PERIOD = (
+        SELECT MAX(a.pricePeriod)
+        FROM (
+        SELECT PRICE_PERIOD AS pricePeriod
+        FROM sp_seller_pd_priceplate
+        WHERE DEL_FLG = 0
+        <if test="pricePeriod != null and pricePeriod !=''">
+            AND PRICE_PERIOD = #{pricePeriod}
+        </if>
+        GROUP BY PD_CODE,LGCS_CODE,PRICE_PERIOD
+        ) a)
+        AND DEL_FLG = 0
+        <if test="classesCode != null and classesCode !=''">
+            AND left(PD_CODE,2) = #{classesCode}
+        </if>
+        <if test="machiningCode != null and machiningCode !=''">
+            AND substring(PD_CODE,3,1) = #{machiningCode}
+        </if>
+        <if test="breedCode != null and breedCode !=''">
+            AND substring(PD_CODE,4,2) = #{breedCode}
+        </if>
+        <if test="featureCode != null and featureCode !=''">
+            AND substring(PD_CODE,6,2) = #{featureCode}
+        </if>
+        <if test="weightCode != null and weightCode !=''">
+            AND substring(PD_CODE,8,2) = #{weightCode}
+        </if>
+        <if test="gradeCode != null and gradeCode !=''">
+            AND right(PD_CODE,1) = #{gradeCode}
+        </if>
+        <if test="logiAreaCode != null and logiAreaCode !=''">
+            AND LGCS_CODE= #{logiAreaCode}
+        </if>
+        GROUP BY PD_CODE,LGCS_CODE,PRICE_PERIOD
+    </select>
+
+    <select id="getPriceList" resultType="com.msk.price.bean.ISP171183Bean"  parameterType="com.msk.price.bean.ISP171183Param" >
+        SELECT
+        PD_CODE as productId,
+        right(PD_CODE,1) as gradeCode,
+        LGCS_CODE as logiAreaCode,
+        PRICE_PERIOD as pricePeriod,
+        WAYGRADE_CODE as orderLevel,
+        convert(WAYGRADE_PRICE,decimal(10,2))  as priceOfKg,
+        WAYGRADE_PRICE_BOX as priceOfBox
+        FROM  sp_seller_pd_priceplate
+        WHERE
+        DEL_FLG = 0
+        <if test="productId != null and productId !=''">
+            AND PD_CODE = #{productId}
+        </if>
+        <if test="logiAreaCode != null and logiAreaCode !=''">
+            AND LGCS_CODE = #{logiAreaCode}
+        </if>
+        <if test="pricePeriod != null and pricePeriod !=''">
+            AND PRICE_PERIOD = #{pricePeriod}
+        </if>
+    </select>
+
+</mapper>

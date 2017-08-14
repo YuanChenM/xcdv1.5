@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141134Logic">
+    <select id="count" resultType="int">
+        SELECT
+            COUNT(DISTINCT(B.STANDARD_ID))
+            FROM PD_TNC_STD B
+            LEFT JOIN PD_STANDARD A ON A.STANDARD_ID = B.STANDARD_ID
+    </select>
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.product.bean.IPD141134RsTncBean">
+        SELECT
+         A.TNC_STD_ITEM_ID AS tncStdItemId
+        ,C.TNC_STD_ITEM_NAME AS tncStdItemName
+        ,A.TNC_STD_VAL1 AS goodVal
+        ,A.TNC_STD_VAL2 AS normalVal
+        ,A.TNC_STD_VAL3 AS badVal
+        FROM
+        PD_TNC_STD AS A
+        LEFT JOIN PD_TNC_STD_ITEM C ON A.TNC_STD_ITEM_ID = C.TNC_STD_ITEM_ID
+        WHERE  A.STANDARD_ID = #{filterMap.standardId}
+        ORDER BY A.TNC_STD_ITEM_ID
+    </select>
+
+    <select id="getPageCount" resultType="int">
+       SELECT
+            COUNT(DISTINCT(B.STANDARD_ID))
+            FROM PD_TNC_STD B
+            LEFT JOIN PD_STANDARD A ON A.STANDARD_ID = B.STANDARD_ID
+    </select>
+
+    <select id="findPageList" parameterType="com.msk.product.bean.IPD141134RsParam"
+            resultType="com.msk.product.bean.IPD141134RsBean">
+        SELECT
+        DISTINCT(B.STANDARD_ID) AS standardId
+        ,A.CLASSES_CODE AS classesCode
+        ,A.BREED_CODE AS breedCode
+        ,A.MACHINING_CODE AS machiningCode
+        ,A.FEATURE_CODE AS featureCode
+        FROM PD_TNC_STD B
+        LEFT JOIN PD_STANDARD A ON A.STANDARD_ID = B.STANDARD_ID
+        ORDER BY B.STANDARD_ID
+        <if test="startPos>=0 and pageCount>0">
+            LIMIT #{startPos}, #{pageCount}
+        </if>
+    </select>
+
+</mapper>
+
+
+
+
+
+
+

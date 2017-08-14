@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-/   SELECT STANDARD_ID AS standardId
+        FROM pd_standard
+        WHERE CLASSES_CODE = /ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121219Logic">
+    <select id="countResearchNor" parameterType="BaseParam" resultType="int">
+        SELECT count(1)
+        FROM by_research_std_nor
+        WHERE BUYER_ID = #{filterMap.buyerId}
+        AND STANDARD_ID = #{filterMap.standardId}
+        AND NORMS_CODE = #{filterMap.normsCode}
+    </select>
+
+    <select id="getPdNor" resultType="com.msk.core.entity.ByResearchStdNor" parameterType="BaseParam">
+        SELECT
+               NORMS_CODE AS normsCode
+             , NORMS_SUTTLE AS normsSuttle
+             , NORMS_ERROR AS normsError
+             , NORMS_NUMBER AS normsNumber
+             , NORMS_SIZE AS normsSize
+             , NORMS_TEXTURE AS normsTexture
+             , NORMS_OUT AS normsOut
+             , NORMS_KG AS normsKg
+             , NORMS_OUT_SIZE AS normsOutSize
+             , NORMS_OUT_TEXTURE AS normsOutTexture
+             , '0' AS isResearch
+         FROM pd_norms_std
+         WHERE STANDARD_ID = #{filterMap.standardId}
+         AND NORMS_CODE = #{filterMap.normsCode}
+    </select>
+
+    <select id="getResearchNor" resultType="com.msk.core.entity.ByResearchStdNor" parameterType="BaseParam">
+        SELECT ID AS id
+             , BUYER_ID AS buyerId
+             , CLASSES_CODE AS classesCode
+             , MACHINING_CODE AS machiningCode
+             , BREED_CODE AS breedCode
+             , STANDARD_ID AS standardId
+             , NORMS_CODE AS normsCode
+             , NORMS_SUTTLE AS normsSuttle
+             , NORMS_ERROR AS normsError
+             , NORMS_NUMBER AS normsNumber
+             , NORMS_SIZE AS normsSize
+             , NORMS_TEXTURE AS normsTexture
+             , NORMS_OUT AS normsOut
+             , NORMS_KG AS normsKg
+             , NORMS_OUT_SIZE AS normsOutSize
+             , NORMS_OUT_TEXTURE AS normsOutTexture
+             , NORMS_SUTTLE_R AS normsSuttleR
+             , NORMS_ERROR_R AS normsErrorR
+             , NORMS_NUMBER_R AS normsNumberR
+             , NORMS_SIZE_R AS normsSizeR
+             , NORMS_TEXTURE_R AS normsTextureR
+             , NORMS_OUT_R AS normsOutR
+             , NORMS_KG_R AS normsKgR
+             , NORMS_OUT_SIZE_R AS normsOutSizeR
+             , NORMS_OUT_TEXTURE_R AS normsOutTextureR
+             , IS_RESEARCH AS isResearch
+        FROM by_research_std_nor
+        WHERE BUYER_ID = #{filterMap.buyerId}
+        AND STANDARD_ID = #{filterMap.standardId}
+        AND NORMS_CODE = #{filterMap.normsCode}
+    </select>
+
+    <update id="modify" parameterType="com.msk.core.entity.ByResearchStdNor">
+        UPDATE by_research_std_nor
+        SET NORMS_SUTTLE = #{normsSuttle}
+         , NORMS_ERROR = #{normsError}
+         , NORMS_NUMBER = #{normsNumber}
+         , NORMS_SIZE = #{normsSize}
+         , NORMS_TEXTURE = #{normsTexture}
+         , NORMS_OUT = #{normsOut}
+         , NORMS_KG = #{normsKg}
+         , NORMS_OUT_SIZE = #{normsOutSize}
+         , NORMS_OUT_TEXTURE = #{normsOutTexture}
+         , NORMS_SUTTLE_R = #{normsSuttleR}
+         , NORMS_ERROR_R = #{normsErrorR}
+         , NORMS_NUMBER_R = #{normsNumberR}
+         , NORMS_SIZE_R = #{normsSizeR}
+         , NORMS_TEXTURE_R = #{normsTextureR}
+         , NORMS_OUT_R = #{normsOutR}
+         , NORMS_KG_R = #{normsKgR}
+         , NORMS_OUT_SIZE_R = #{normsOutSizeR}
+         , NORMS_OUT_TEXTURE_R = #{normsOutTextureR}
+         , IS_RESEARCH = #{isResearch}
+         , UPD_ID = #{updId}
+         , UPD_TIME = #{updTime}
+        WHERE BUYER_ID = #{buyerId}
+        AND STANDARD_ID = #{standardId}
+        AND NORMS_CODE = #{normsCode}
+        AND DEL_FLG = '0'
+    </update>
+
+    <insert id="save" parameterType="com.msk.core.entity.ByResearchStdNor">
+        INSERT INTO by_research_std_nor
+        (
+        ID,
+        BUYER_ID,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        BREED_CODE,
+        STANDARD_ID,
+        NORMS_CODE,
+        NORMS_SUTTLE,
+        NORMS_ERROR,
+        NORMS_NUMBER,
+        NORMS_SIZE,
+        NORMS_TEXTURE,
+        NORMS_OUT,
+        NORMS_KG,
+        NORMS_OUT_SIZE,
+        NORMS_OUT_TEXTURE,
+        NORMS_SUTTLE_R,
+        NORMS_ERROR_R,
+        NORMS_NUMBER_R,
+        NORMS_SIZE_R,
+        NORMS_TEXTURE_R,
+        NORMS_OUT_R,
+        NORMS_KG_R,
+        NORMS_OUT_SIZE_R,
+        NORMS_OUT_TEXTURE_R,
+        IS_RESEARCH,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        VER
+        )
+        VALUES (
+               #{id},
+               #{buyerId},
+               #{classesCode},
+               #{machiningCode},
+               #{breedCode},
+               #{standardId},
+               #{normsCode},
+               #{normsSuttle},
+               #{normsError},
+               #{normsNumber},
+               #{normsSize},
+               #{normsTexture},
+               #{normsOut},
+               #{normsKg},
+               #{normsOutSize},
+               #{normsOutTexture},
+               #{normsSuttleR},
+               #{normsErrorR},
+               #{normsNumberR},
+               #{normsSizeR},
+               #{normsTextureR},
+               #{normsOutR},
+               #{normsKgR},
+               #{normsOutSizeR},
+               #{normsOutTextureR},
+               #{isResearch},
+               0,
+               #{updId},
+               #{updTime},
+               1
+           )
+    </insert>
+</mapper>

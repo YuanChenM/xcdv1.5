@@ -1,0 +1,11 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<table style="width: 100%">
+	<tr>
+		<td width="50px">神农客</td>
+		<td width="50px">类别名称</td>
+		<td width="15%">${classes.classesName}</td>
+		<td width="50px">品种名称</td>
+		<td width="15%">${breed.breedName}</td>
+		<td></td>
+	</tr>
+</table>

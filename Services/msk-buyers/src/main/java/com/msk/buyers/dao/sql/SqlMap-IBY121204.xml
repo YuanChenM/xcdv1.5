@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121204Logic">
+    <select id="findSalesTarget" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerSalestarget">
+        SELECT
+           ID AS id,
+           BUYER_ID AS buyerId,
+           SALES_TARGET_TYPE AS salesTargetType,
+           SALES_TARGET_NAME AS salesTargetName
+        FROM
+           by_buyer_salestarget
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+           <if test="filterMap.salesTargetType != null">
+           AND SALES_TARGET_TYPE = #{filterMap.salesTargetType}
+           </if>
+           <if test="filterMap.salesTargetName != null">
+           AND SALES_TARGET_NAME = #{filterMap.salesTargetName}
+           </if>
+           AND DEL_FLG = #{filterMap.delFlg}
+    </select>
+    <update id="buyerSalesTargetModify" parameterType="BaseEntity">
+        UPDATE
+           by_buyer_salestarget
+        SET
+        <if test="buyerId!=null and buyerId!=''">
+            BUYER_ID=#{buyerId},
+        </if>
+        <if test="salesTargetType!=null and salesTargetType!=''">
+            SALES_TARGET_TYPE=#{salesTargetType},
+        </if>
+        <if test="salesTargetName!=null and salesTargetName!=''">
+            SALES_TARGET_NAME=#{salesTargetName},
+        </if>
+           UPD_ID = #{updId},
+           UPD_TIME = #{updTime},
+           DEL_FLG = 0
+        WHERE
+           ID = #{id}
+    </update>
+    <insert id="buyerSalesTargetInsert" parameterType="BaseEntity">
+        INSERT INTO
+           by_buyer_salestarget(
+               ID,
+               BUYER_ID,
+               SALES_TARGET_TYPE,
+               SALES_TARGET_NAME,
+               DEL_FLG,
+               CRT_ID,
+               CRT_TIME,
+               UPD_ID,
+               UPD_TIME,
+               ACT_ID,
+               ACT_TIME,
+               VER
+           )VALUES (
+               #{id},
+               #{buyerId},
+               #{salesTargetType},
+               #{salesTargetName},
+               0,
+               #{crtId},
+               #{crtTime},
+               #{updId},
+               #{updTime},
+               #{actId},
+               #{actTime},
+               1
+           )
+    </insert>
+    <update id="buyerSalesTargetDelete" parameterType="BaseEntity">
+        UPDATE by_buyer_salestarget
+        SET DEL_FLG = 1
+        ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE BUYER_ID = #{buyerId}
+    </update>
+
+    <select id="findSalesTargetList" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerSalestarget">
+        SELECT
+        ID AS id,
+        BUYER_ID AS buyerId,
+        SALES_TARGET_TYPE AS salesTargetType,
+        SALES_TARGET_NAME AS salesTargetName
+        FROM
+        by_buyer_salestarget
+        WHERE
+        DEL_FLG = 0
+        <if test="buyerIdList !=null and buyerIdList.size()>0">
+            AND BUYER_ID in
+            <foreach item="buyerId" index="index" collection="buyerIdList"
+                     open="(" separator="," close=")">
+                #{buyerId}
+            </foreach>
+        </if>
+        <if test="filterMap.salesTargetType != null">
+            AND SALES_TARGET_TYPE = #{filterMap.salesTargetType}
+        </if>
+        <if test="filterMap.salesTargetName != null">
+            AND SALES_TARGET_NAME = #{filterMap.salesTargetName}
+        </if>
+    </select>
+
+    <select id="testBuyerId" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        from BY_BUYER_BASIC_INFO
+        WHERE BUYER_ID = #{filterMap.buyerId}
+        AND DEL_FLG=0
+    </select>
+
+</mapper>

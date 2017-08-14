@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11302Logic">
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+            BID_ID      AS bidId,
+            BID_PROJECT_NO   AS bidProjectNo,
+            BID_PROJECT_NAME AS bidProjectName,
+            SUPPLIER_ID   AS  supplierId,
+            SUPPLIER_NAME   AS supplierName,
+            SUPPLIER_CODE   AS supplierCode,
+            PURCHASER_ID   AS purchaserId,
+            PURCHASER_NAME  AS purchaserName,
+            PURCHASER_CODE  AS purchaserCode,
+            BID_OPEN_DATE  AS bidOpenDate,
+            BID_STATUS       AS bidStatus,
+            BID_START_DATE   AS bidStartDate,
+            BID_END_DATE   AS bidEndDate,
+            DEL_FLG        AS delFlg,
+            CRT_ID         AS crtId,
+            CRT_TIME       AS crtTime,
+            UPD_ID        AS updId,
+            UPD_TIME      AS updTime,
+            ACT_ID        AS actId,
+            ACT_TIME      AS actTime,
+            VER           AS ver
+    </sql>
+
+
+    <select id="findList" resultType="com.msk.ssc.bean.SSC11302RsBeen" parameterType="com.msk.ssc.bean.SSC11302Param">
+        SELECT
+        DETAIL_ID AS detailId
+        ,WEIGHT_VAL AS weightVal
+        ,BID_ID AS bidId
+        ,IFNULL(PD_DESC,'') AS pdDesc
+        ,(IFNULL(PRODUCT_QUA,0))/1000 AS productQua
+         <!--- ,concat(ifnull(CLASSES_CODE, ''), '/', ifnull(MACHINING_CODE, ''), '/', ifnull(BREED_CODE, ''), '/', ifnull(FEATURE_CODE, ''), '/', ifnull(WEIGHT_CODE, ''), '/', ifnull(NORMS_CODE, ''), '/', ifnull(GRADE_CODE, ''))-->
+        ,pd_code AS pdCode
+        <!--  ,concat(ifnull(CLASSES_NAME, ''), '/', ifnull(MACHINING_NAME, ''), '/', ifnull(BREED_NAME, ''), '/', ifnull(FEATURE_NAME, ''), '/', ifnull(WEIGHT_NAME, ''), '/', ifnull(NORMS_NAME, ''), '/', ifnull(GRADE_NAME, ''))-->
+        ,pd_desc AS pdName
+        ,IFNULL(GRADE_NAME,'') AS gradeName
+        ,IFNULL(GRADE_CODE,'') AS gradeCode
+        ,IFNULL(WEIGHT_NAME,'') AS weightName
+        ,IFNULL(WEIGHT_CODE,'') AS weightCode
+        ,IFNULL(PRODUCT_BOX,'') AS productBox
+        ,FOB_FREE_PACKAGE AS fobFreePackage
+        ,PACKAGE_COST AS packageCost
+        ,FOB_INCLUDE_PACKAGE AS fobIncludePackage
+        ,TRUNK_FREIGHT AS trunkFreight
+        ,CIF AS cif
+        ,SETTKEMENT_STANDARD_PRICE AS settkementStandardPrice
+        ,PRODUCT_VALUE AS productValue
+        ,IFNULL(REMARK,'') AS remark
+        ,IFNULL(NORMS_NAME,'') AS normsName
+        ,IFNULL(NORMS_CODE,'') AS normsCode
+        ,IFNULL(FEATURE_NAME,'') AS featureName
+        ,IFNULL(FEATURE_CODE,'') AS featureCode
+        ,IFNULL(CLASSES_CODE,'') AS classesCode
+        ,IFNULL(MACHINING_CODE,'') AS machiningCode
+        ,IFNULL(BREED_CODE,'') AS breedCode
+        ,IFNULL(VER,'') AS ver
+        FROM SSC_BID_PRODUCT_DETAIL
+        WHERE
+        DEL_FLG = 0
+        AND BID_ID = #{bidId}
+        ORDER BY crt_time asc
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.ssc.bean.SSC11302Param">
+        select count(1)
+        FROM
+        SSC_BID_PRODUCT_DETAIL
+        WHERE
+        DEL_FLG = 0
+        AND  BID_ID = #{bidId}
+    </select>
+
+    <update id="deleteProduct" parameterType="com.msk.ssc.bean.SSC11302Param">
+        UPDATE SSC_BID_PRODUCT_DETAIL
+        SET DEL_FLG = '1',
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime},
+        VER = VER+1
+        WHERE DETAIL_ID = #{detailId}
+    </update>
+
+    <!--中标确认书详细页面编辑产品数据接口-->
+    <update id="modifyProduct" parameterType="com.msk.ssc.bean.SSC11302RsBeen">
+        UPDATE SSC_BID_PRODUCT_DETAIL
+        SET
+        PD_DESC = #{pdDesc},
+        GRADE_NAME = #{gradeName},
+        PRODUCT_QUA =#{productQua},
+        PRODUCT_BOX =#{productBox},
+        FOB_FREE_PACKAGE = #{fobFreePackage},
+        PACKAGE_COST = #{packageCost},
+        FOB_INCLUDE_PACKAGE = #{fobIncludePackage},
+        TRUNK_FREIGHT = #{trunkFreight},
+        CIF = #{cif},
+        SETTKEMENT_STANDARD_PRICE = #{settkementStandardPrice},
+        PRODUCT_VALUE = #{productValue},
+        REMARK = #{remark},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        DETAIL_ID= #{detailId}
+        AND DEL_FLG= 0
+    </update>
+
+    <!--中标确认书状态修改-->
+    <update id="modifyBidStatus" parameterType="com.msk.ssc.bean.SSC11301RsBean">
+        UPDATE SSC_BID_BASIC_INFO
+        SET
+        <if test="purchaserConfirmId != null and purchaserConfirmId !=''">
+            PURCHASER_CONFIRM_ID  = #{purchaserConfirmId},
+        </if>
+        <if test="purchaserConfirmName != null and purchaserConfirmName !=''">
+            PURCHASER_CONFIRM_NAME  = #{purchaserConfirmName},
+        </if>
+        <if test="purchaserConfirmTime != null and purchaserConfirmTime !=''">
+            PURCHASER_CONFIRM_TIME  = #{purchaserConfirmTime},
+        </if>
+        <if test="supplierConfirmId != null and supplierConfirmId !=''">
+            SUPPLIER_CONFIRM_ID  = #{supplierConfirmId},
+        </if>
+        <if test="supplierConfirmName != null and supplierConfirmName !=''">
+            SUPPLIER_CONFIRM_NAME  = #{supplierConfirmName},
+        </if>
+        <if test="supplierConfirmTime != null and supplierConfirmTime !=''">
+            SUPPLIER_CONFIRM_TIME  = #{supplierConfirmTime},
+        </if>
+        BID_STATUS = #{bidStatus},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER+1
+        WHERE
+        BID_ID= #{bidId}
+        AND DEL_FLG= 0
+    </update>
+
+    <!-- ssc11302-->
+    <insert id="insertBidBasicInfo" parameterType="com.msk.ssc.bean.SSC11301RsParam">
+        INSERT INTO SSC_BID_BASIC_INFO
+        (
+        BID_PROJECT_NO,
+        PURCHASER_NAME,
+        BID_ID,
+        BID_PROJECT_NAME,
+        SUPPLIER_NAME,
+        BID_START_DATE,
+        BID_END_DATE,
+        PURCHASER_CODE,
+        SUPPLIER_CODE,
+        BID_STATUS,
+        PURCHASER_ID,
+        SUPPLIER_ID,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{bidProjectNo},
+        #{purchaserName},
+        #{bidId},
+        #{bidProjectName},
+        #{supplierName},
+        #{bidStartDate},
+        #{bidEndDate},
+        #{purchaserCode},
+        #{supplierCode},
+        '0',
+        #{purchaserId},
+        #{supplierId},
+        0,
+         #{crtId},
+         #{crtTime},
+         #{updId},
+         #{updTime},
+        1
+        )
+    </insert>
+
+
+    <!--  GRADE_CODE, WEIGHT_CODE,FEATURE_CODE , NORMS_CODE ,-->
+    <insert id="insertBidProductDetail" parameterType="com.msk.ssc.bean.SSC11302RsBeen">
+        INSERT INTO SSC_BID_PRODUCT_DETAIL
+        (
+        PD_CODE
+        ,CLASSES_CODE
+        ,CLASSES_NAME
+        ,MACHINING_CODE
+        ,MACHINING_NAME
+        ,BREED_CODE
+        ,BREED_NAME
+        ,FEATURE_CODE
+        ,FEATURE_NAME
+        ,WEIGHT_CODE
+        ,WEIGHT_NAME
+        ,GRADE_CODE
+        ,GRADE_NAME
+        ,NORMS_CODE
+        ,NORMS_NAME
+        ,DETAIL_ID
+        ,WEIGHT_VAL
+        ,BID_ID
+        ,PD_DESC
+        ,PRODUCT_QUA
+        ,PRODUCT_BOX
+        ,FOB_FREE_PACKAGE
+        ,PACKAGE_COST
+        ,FOB_INCLUDE_PACKAGE
+        ,TRUNK_FREIGHT
+        ,CIF
+        ,SETTKEMENT_STANDARD_PRICE
+        ,PRODUCT_VALUE
+        ,remark
+        ,BRAND_EP_ID
+        ,BRAND_ID
+        ,BRAND_NAME
+        ,DEL_FLG
+        ,CRT_ID
+        ,CRT_TIME
+        ,UPD_ID
+        ,UPD_TIME
+        ,VER
+        )
+        VALUES
+        (
+         #{pdCode}
+        ,#{classesCode}
+        ,#{classesName}
+        ,#{machiningCode}
+        ,#{machiningName}
+        ,#{breedCode}
+        ,#{breedName}
+        ,#{featureCode}
+        ,#{featureName}
+        ,#{weightCode}
+        ,#{weightName}
+        ,#{gradeCode}
+        ,#{gradeName}
+        ,#{normsCode}
+        ,#{normsName}
+        ,#{detailId}
+        ,#{weightVal}
+        ,#{bidId}
+        ,#{pdDesc}
+        ,#{productQua}
+        ,#{productBox}
+        ,#{fobFreePackage}
+        ,#{packageCost}
+        ,#{fobIncludePackage}
+        ,#{trunkFreight}
+        ,#{cif}
+        ,#{settkementStandardPrice}
+        ,#{productValue}
+        ,#{remark}
+        ,#{brandEpId}
+        ,#{brandId}
+        ,#{brandName}
+        , 0
+        ,#{crtId}
+        ,#{crtTime}
+        ,#{updId}
+        ,#{updTime}
+        ,1
+        )
+
+    </insert>
+
+
+    <update id="modifyBidProductDetail" parameterType="com.msk.ssc.bean.SSC11302RsBeen">
+          UPDATE  SSC_BID_PRODUCT_DETAIL
+          SET
+         <if test="classesCode != null and classesCode !=''">
+             CLASSES_CODE  = #{classesCode},
+         </if>
+        <if test="classesName != null and classesName !=''">
+            CLASSES_NAME = #{classesName},
+        </if>
+        <if test="machiningCode != null and machiningCode !=''">
+            MACHINING_CODE = #{machiningCode},
+        </if>
+        <if test="machiningName != null and machiningName !=''">
+            MACHINING_NAME = #{machiningName},
+        </if>
+        <if test="breedCode != null and breedCode !=''">
+            BREED_CODE = #{breedCode},
+        </if>
+        <if test="breedName != null and breedName !=''">
+            BREED_NAME = #{breedName},
+        </if>
+        <if test="featureCode != null and  featureCode !=''">
+            FEATURE_CODE = #{featureCode},
+        </if>
+        <if test="featureName != null and featureName !=''">
+            FEATURE_NAME = #{featureName},
+        </if>
+        <if test="weightCode != null and  weightCode !=''">
+            WEIGHT_CODE = #{weightCode},
+        </if>
+        <if test="weightName != null and weightName !=''">
+            WEIGHT_NAME = #{weightName},
+        </if>
+        <if test="gradeCode != null and gradeCode !=''">
+            GRADE_CODE = #{gradeCode},
+        </if>
+        <if test="gradeName != null and gradeName !=''">
+            GRADE_NAME = #{gradeName},
+        </if>
+        <if test="normsCode != null and normsCode !=''">
+            NORMS_CODE = #{normsCode},
+        </if>
+        <if test="normsName != null and normsName !=''">
+            NORMS_NAME = #{normsName},
+        </if>
+        <if test="weightVal != null and weightVal !=''">
+            WEIGHT_VAL = #{weightVal},
+        </if>
+        <if test="pdDesc != null and pdDesc !=''">
+            PD_DESC = #{pdDesc},
+        </if>
+        <if test="productQua != null and productQua !=''">
+            PRODUCT_QUA = #{productQua},
+        </if>
+        <if test="productBox != null and productBox !=''">
+            PRODUCT_BOX = #{productBox},
+        </if>
+        <if test="fobFreePackage != null and fobFreePackage !=''">
+            FOB_FREE_PACKAGE = #{fobFreePackage},
+        </if>
+        <if test="packageCost != null and packageCost !=''">
+            PACKAGE_COST = #{packageCost},
+        </if>
+        <if test="fobIncludePackage != null and fobIncludePackage !=''">
+            FOB_INCLUDE_PACKAGE = #{fobIncludePackage},
+        </if>
+        <if test="trunkFreight != null and trunkFreight !=''">
+            TRUNK_FREIGHT = #{trunkFreight},
+        </if>
+        <if test="cif != null and  cif !=''">
+            CIF = #{cif},
+        </if>
+        <if test="remark != null and  remark !=''">
+            remark = #{remark},
+        </if>
+        <if test="settkementStandardPrice != null and settkementStandardPrice !=''">
+            SETTKEMENT_STANDARD_PRICE = #{settkementStandardPrice},
+        </if>
+        <if test="productValue != null and productValue !=''">
+            PRODUCT_VALUE = #{productValue},
+        </if>
+        <if test="delFlg != null and delFlg !=''">
+            DEL_FLG = #{delFlg},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE  detail_id = #{detailId}
+
+    </update>
+
+
+    <select id="findPD" parameterType="com.msk.ssc.bean.SSC11302Param" resultType="Long">
+        SELECT   DETAIL_ID    FROM   SSC_BID_PRODUCT_DETAIL
+        WHERE BID_ID = #{bidId}
+        AND  PD_CODE=#{pdCode}
+        AND  DEL_FLG=0
+    </select>
+
+
+    <update id="modifyBasicBidInfo" parameterType="com.msk.ssc.bean.SSC11301RsParam">
+        UPDATE SSC_BID_BASIC_INFO
+        SET
+        <if test="bidProjectNo != null and bidProjectNo !=''">
+            BID_PROJECT_NO = #{bidProjectNo},
+        </if>
+        <if test="purchaserName != null and  purchaserName !=''">
+            PURCHASER_NAME = #{purchaserName},
+        </if>
+        <if test="bidProjectName != null and bidProjectName !=''">
+            BID_PROJECT_NAME = #{bidProjectName},
+        </if>
+        <if test="supplierName != null and supplierName !=''">
+            SUPPLIER_NAME = #{supplierName},
+        </if>
+        <if test="bidStartDate != null and bidStartDate !=''">
+            BID_START_DATE = #{bidStartDate},
+        </if>
+        <if test="bidEndDate != null and bidEndDate !=''">
+            BID_END_DATE = #{bidEndDate},
+        </if>
+        <if test="purchaserCode != null and  purchaserCode !=''">
+            PURCHASER_CODE = #{purchaserCode},
+        </if>
+        <if test="supplierCode != null and supplierCode !=''">
+            SUPPLIER_CODE = #{supplierCode},
+        </if>
+        <if test="bidStatus != null and bidStatus !=''">
+            BID_STATUS = #{bidStatus},
+        </if>
+        <if test="delFlg != null and delFlg !=''">
+            DEL_FLG = #{delFlg},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER + 1
+        WHERE
+        BID_ID= #{bidId}
+    </update>
+
+
+    <select id="findMaxBidProjectNo" parameterType="BaseEntity" resultType="String">
+       select  BID_PROJECT_NO from ssc_bid_basic_info ORDER BY CRT_TIME DESC   LIMIT 0 ,1;
+    </select>
+
+    <select id="findContractCountByBidId" parameterType="com.msk.ssc.bean.SSC11302Param" resultType="Integer">
+        SELECT CONTRACT_ID FROM ssc_contract_basic WHERE BID_ID =#{bidId} AND  DEL_FLG=0
+    </select>
+
+
+    <select id="findBidBaseByBid" parameterType="com.msk.ssc.bean.SSC11301RsBean" resultType="com.msk.ssc.bean.SSC11301RsBean">
+         SELECT
+        <include refid="selectSql"/>
+        from ssc_bid_basic_info WHERE BID_ID = #{bidId}
+    </select>
+
+    <!--根据中标编号查询中标id-->
+    <select id="findBidIdByBidProjectNo" parameterType="com.msk.ssc.bean.SSC11302Param" resultType="Long">
+        SELECT BID_ID AS bidId from ssc_bid_basic_info WHERE BID_PROJECT_NO = #{bidProjectNo}
+    </select>
+
+</mapper>

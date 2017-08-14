@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151409.getReturnOrderCountSql">
+        SELECT
+        count(1) AS count
+        FROM
+        so_return sr
+        INNER JOIN so_order so ON sr.ORDER_ID = so.ORDER_ID
+        LEFT JOIN so_return_reason srreasnon ON srreasnon.REASON_ID = sr.RETURN_REASON
+        WHERE
+        sr.DEL_FLG = 0
+    </sql>
+
+
+
+    <sql id="ISO151409.returnOrderSql">
+        SELECT
+        sr.RETURN_ID AS returnId,
+        sr.RETURN_CODE AS returnCode,
+        sr.CRT_TIME AS crtTime,
+        sr.VER AS ver,
+        so.BUYER_ID AS buyersId,
+        sr.RETURN_SOURCE AS returnSource,
+        sr.RETURN_TYPE AS returnType,
+        sr.RETURN_AMOUNT AS returnAmount,
+        sr.RETURN_MODE AS returnMode,
+        sr.RETURN_REASON AS returnReasonCode,
+        sr.APPLY_REMARK AS returnReasonDes,
+        sr.APPLY_REMARK AS remark,
+        sr.IMAGE1 AS image1,
+        sr.IMAGE2 AS image2,
+        sr.IMAGE3 AS image3,
+        sr.IMAGE4 AS image4,
+        sr.IMAGE5 AS image5,
+        sr.IS_PAID AS isPaid,
+        sr.REFUND_MODE AS refundMode,
+        sr.ORDER_ID AS orderId,
+        sr.ORDER_CODE AS orderCode,
+        so.ORDER_TIME AS orderTime
+        FROM
+        so_return sr
+        INNER JOIN so_order so
+        ON sr.ORDER_ID = so.ORDER_ID
+        WHERE
+        sr.DEL_FLG = 0
+    </sql>
+
+    <sql id="ISO151409.getReturnOrderDetailSql">
+        SELECT
+        detail.DETAIL_ID AS returnDetailId,
+        detail.PD_CODE AS pdCode,
+        detail.PD_NAME AS pdName,
+        detail.PD_LEVEL AS pdLevel,
+        detail.UNIT AS unit,
+        detail.PACKING_VOLUME AS packingVolume,
+        detail.WEIGHT AS weight,
+        detail.VOLUME AS volume,
+        soDetail.PD_PRICE AS orderPrice,
+        soDetail.PRICE_CYCLE AS priceCycle,
+        detail.RETURN_QTY AS returnQty,
+        detail.INBOUND_QTY AS receiveQty,
+        detail.RETURN_REASON AS returnReasonCode,
+        soDetail.ORDER_DETAIL_ID AS orderDetailId,
+        sr.ORDER_TIME
+        FROM
+        so_return_detail detail
+        LEFT JOIN so_order_ship_detail shipDetail
+        ON detail.SHIP_DETAIL_ID = shipDetail.SHIP_DETAIL_ID
+        INNER JOIN so_order_detail soDetail
+        ON shipDetail.ORDER_DETAIL_ID = soDetail.ORDER_DETAIL_ID
+        INNER JOIN so_order sr
+        on sr.ORDER_ID=soDetail.ORDER_ID
+        WHERE
+        detail.DEL_FLG = 0
+    </sql>
+</sqlList>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.SL24110300301Logic">
+    <select id="findSLMstCertItemList" parameterType="BasePageParam" resultType="com.msk.core.entity.SlMstCertItem">
+        SELECT
+        SlMstCertItem.CERT_ID AS certId,
+        SlMstCertItem.CERT_ITEM_ID AS certItemId,
+        SlMstCertItem.CERT_ITEM_NAME AS certItemName,
+        SlMstCertItem.SORT AS sort
+        FROM SL_MST_CERT_ITEM SlMstCertItem
+        WHERE SlMstCertItem.CERT_ID = #{filterMap.certId}
+        AND  SlMstCertItem.DEL_FLG = 0
+        ORDER BY SlMstCertItem.CERT_ID ASC
+    </select>
+
+    <select id="findMstCertName" parameterType="BasePageParam" resultType="com.msk.core.entity.SlMstCert">
+        SELECT
+        SlMstCert.CERT_ID AS certId,
+        SlMstCert.CERT_NAME AS certName
+        FROM SL_MST_CERT SlMstCert
+        WHERE SlMstCert.CERT_ID = #{filterMap.certId}
+        AND  SlMstCert.DEL_FLG = 0
+    </select>
+
+    <select id="findMaxCertSeq" parameterType="BasePageParam" resultType="com.msk.core.entity.SlEpCert">
+        SELECT
+              CASE
+              WHEN MAX(slEpCert.CERT_SEQ) IS NULL THEN 1
+              ELSE MAX(slEpCert.CERT_SEQ)+1 END AS certSeq
+        FROM SL_EP_CERT slEpCert
+        WHERE slEpCert.EP_ID = #{filterMap.epId}
+    </select>
+
+    <select id="findMaxCertItemSeq" parameterType="BasePageParam" resultType="com.msk.core.entity.SlEpCertItem">
+        SELECT
+        CASE
+        WHEN MAX(slEpCertItem.CERT_ITEM_SEQ) IS NULL THEN 1
+        ELSE MAX(slEpCertItem.CERT_ITEM_SEQ)+1 END AS certItemSeq
+        FROM SL_EP_CERT_ITEM slEpCertItem
+        WHERE slEpCertItem.EP_ID = #{filterMap.epId}
+        AND slEpCertItem.CERT_SEQ=#{filterMap.certSeq}
+    </select>
+
+    <insert id="saveSlEpCert" parameterType="com.msk.core.entity.SlEpCert">
+        <!-- Modified by xia_xiaojie on 2016/6/22. Modified start.
+        INSERT INTO SL_EP_CERT
+        (EP_ID,CERT_SEQ,CERT_ID,CERT_NAME,DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER)
+        VALUES (#{epId},#{certSeq},#{certId},#{certName},#{delFlg},#{crtId},#{crtTime},#{updId},#{updTime},#{actId},#{actTime},#{ver}) -->
+        INSERT INTO SL_EP_CERT
+            (EP_ID, CERT_SEQ, CERT_ID, CERT_NAME, DEL_FLG, CRT_ID, CRT_TIME, UPD_ID, UPD_TIME, ACT_ID, ACT_TIME, VER)
+        VALUES
+            (#{epId}, #{certSeq}, #{certId}, #{certName},0, #{crtId}, #{crtTime}, #{crtId}, #{crtTime}, #{crtId}, #{crtTime},1)
+        <!-- Modified end. -->
+    </insert>
+
+    <insert id="saveSlEpCertItem" parameterType="com.msk.core.entity.SlEpCertItem">
+        <!-- Modified by xia_xiaojie on 2016/6/22. Modified start.
+        INSERT INTO SL_EP_CERT_ITEM
+        (EP_ID,CERT_SEQ,CERT_ITEM_SEQ,CERT_ID,CERT_ITEM_ID,CERT_ITEM_NAME,CERT_ITEM_VALUE,DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER)
+        VALUES (#{epId},#{certSeq},#{certItemSeq},#{certId},#{certItemId},#{certItemName},#{certItemValue},#{delFlg},#{crtId},#{crtTime},#{updId},#{updTime},#{actId},#{actTime},#{ver}) -->
+        INSERT INTO SL_EP_CERT_ITEM
+            (EP_ID, CERT_SEQ, CERT_ITEM_SEQ, CERT_ID, CERT_ITEM_ID, CERT_ITEM_NAME, CERT_ITEM_VALUE, DEL_FLG, CRT_ID, CRT_TIME, UPD_ID, UPD_TIME, ACT_ID, ACT_TIME, VER)
+        VALUES
+            (#{epId}, #{certSeq}, #{certItemSeq}, #{certId}, #{certItemId}, #{certItemName}, #{certItemValue},0, #{crtId}, #{crtTime}, #{crtId}, #{crtTime}, #{crtId}, #{crtTime},1)
+        <!-- Modified end. -->
+    </insert>
+
+    <select id="findSlEpCertById" parameterType="BasePageParam" resultType="com.msk.core.entity.SlEpCert">
+        SELECT
+        slEpCert.CERT_SEQ AS  certSeq
+        FROM SL_EP_CERT SlEpCert
+        WHERE SlEpCert.CERT_ID = #{filterMap.certId}
+        AND SlEpCert.EP_ID=#{filterMap.epId}
+        AND SlEpCert.DEL_FLG = 0
+    </select>
+</mapper>

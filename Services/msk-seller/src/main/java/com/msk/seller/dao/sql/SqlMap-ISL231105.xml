@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231105RsLogic">
+    <select id="findSlAccount" resultType="com.msk.seller.bean.ISL231105RsResult"
+            parameterType="com.hoperun.core.bean.BaseParam">
+        select
+        <if test="filterMap.userName== null or filterMap.userName ==''">
+            IFNULL(A.SL_ACCOUNT,'') AS slAccount,
+            IFNULL(A.SL_TEL,'') AS slTel,
+            IFNULL(A.SL_SHOW_NAME,'') AS slShowName,
+            IFNULL(A.SL_CONTACT,'') AS slContact,
+            IFNULL(A.ACCOUNT_PSD,'') AS accountPsd,
+            IFNULL(A.ACCOUNT_IMG,'') AS accountImg,
+            IFNULL(A.AUTH_STATUS,'') AS authStatus,
+            IFNULL(A.FROM_FLG,'') AS fromFlg,
+            B.SL_MAIN_CLASS AS slMainClass
+        </if>
+        <if test="filterMap.userName!=null and filterMap.userName!=''">
+            A.SL_ACCOUNT AS emplNo,
+            IFNULL(A.SL_SHOW_NAME,'') AS emplName,
+            A.ACCOUNT_PSD AS loginPwd,
+            A.AUTH_STATUS AS status,
+            A.SL_ACCOUNT AS emplId
+        </if>
+         from sl_account  A
+        <if test="filterMap.userName== null or filterMap.userName ==''">
+             LEFT JOIN sl_seller B ON A.SL_ACCOUNT = B.SL_ACCOUNT AND  B.DEL_FLG = 0
+             WHERE
+                A.DEL_FLG = 0
+                <if test="filterMap.slAccount!=null and filterMap.slAccount!=''">
+                    AND A.SL_ACCOUNT=#{filterMap.slAccount}
+                </if>
+                <if test="filterMap.accountPsd!=null and filterMap.accountPsd!=''">
+                    AND A.ACCOUNT_PSD=#{filterMap.accountPsd}
+                </if>
+                <if test="filterMap.slTel!=null and filterMap.slTel!=''">
+                    AND A.SL_TEL=#{filterMap.slTel}
+            </if>
+        </if>
+        <if test="filterMap.userName!=null and filterMap.userName!=''">
+            INNER JOIN sl_seller B ON B.SL_ACCOUNT = A.SL_ACCOUNT
+            WHERE
+              A.DEL_FLG = 0
+              AND B.DEL_FLG = 0
+              AND (A.SL_ACCOUNT = #{filterMap.userName} OR A.SL_TEL = #{filterMap.userName})
+              AND A.AUTH_STATUS = 2
+        </if>
+    </select>
+</mapper>

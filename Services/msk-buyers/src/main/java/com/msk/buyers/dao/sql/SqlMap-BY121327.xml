@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121327Logic">
+    <select id="findPageList" resultType="com.msk.buyers.bean.BY121303Bean" parameterType="BaseParam">
+        select
+        IFNULL(BUYER_CODE,'') AS buyerCode,
+        IFNULL(a.BUYER_NAME, '') AS buyerName,
+        IFNULL(c.ACCOUNT_NAME, '') AS accountName,
+        IFNULL(c.TEL_NO, '') AS telNo,
+        IFNULL(SUPERIOR_TYPE, '') AS superiorType,
+        IFNULL(SUPERIOR_NAME, '') AS superiorName,
+        IFNULL(SUPERIOR_SUB_TYPE, '') AS superiorSubType,
+        IFNULL(SUPERIOR_SUB_NAME, '') AS superiorSubName,
+        IFNULL(LGCS_AREA_CODE, '') AS lgcsAreaCode,
+        IFNULL(LGCS_AREA_NAME, '') AS lgcsAreaName,
+        IFNULL(CITY_CODE, '') AS cityCode,
+        IFNULL(CITY_NAME, '') AS cityName,
+        IFNULL(DISTRICT_CODE, '') AS districtCode,
+        IFNULL(DISTRICT_NAME, '') AS districtName,
+        IFNULL(REGISTER_SOURCE, '') AS registerSource,
+        IFNULL(BUYER_ADDR, '') AS buyerAddr
+        FROM   BY_BUYER_BASIC_INFO a
+        LEFT JOIN by_buyer_account c  ON c.BUYER_ID = a.BUYER_ID AND c.DEL_FLG  = a.DEL_FLG
+        <include refid="whereCondition"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        FROM   BY_BUYER_BASIC_INFO a
+        LEFT JOIN by_buyer_account c  ON c.BUYER_ID = a.BUYER_ID AND c.DEL_FLG  = a.DEL_FLG
+        <include refid="whereCondition"/>
+    </select>
+
+    <sql id="whereCondition">
+         WHERE a.DEL_FLG = '0'
+         and c.DEL_FLG = '0'
+        <if test="filterMap.buyerCode!=null and filterMap.buyerCode!=''">
+            AND a.BUYER_CODE like #{filterMap.buyerCode}
+        </if>
+        <if test="filterMap.buyerName!=null and filterMap.buyerName!=''">
+            AND a.BUYER_NAME like #{filterMap.buyerName}
+        </if>
+        <if test="filterMap.accountName!=null and filterMap.accountName!=''">
+            AND c.ACCOUNT_NAME like #{filterMap.accountName}
+        </if>
+        <if test="filterMap.telNo!=null and filterMap.telNo!=''">
+            AND c.TEL_NO like #{filterMap.telNo}
+        </if>
+
+        <if test="filterMap.buyerAddr!=null and filterMap.buyerAddr!=''">
+            AND a.BUYER_ADDR like #{filterMap.buyerAddr}
+        </if>
+
+        <if test="filterMap.registerSource != null and filterMap.registerSource.length > 0 ">
+            AND a.REGISTER_SOURCE IN
+            <foreach collection="filterMap.registerSource" item="registerSource" open="(" separator="," close=")">
+                #{registerSource}
+            </foreach>
+        </if>
+
+    </sql>
+
+</mapper>

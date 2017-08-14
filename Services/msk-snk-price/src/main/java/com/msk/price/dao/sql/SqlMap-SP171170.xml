@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171170Logic">
+
+    <select id="findPageList"  resultType="com.msk.price.bean.SP171170Bean" parameterType="com.msk.price.bean.SP171170Param">
+        SELECT  sp.PRICE_PERIOD AS pricecyclePeriod,
+        sp.PRICE_STARTDATE AS priceStartDate,
+        sp.PRICE_ENDDATE AS priceEndDate,
+        sp.LGCS_CODE AS logiareaCode,
+        IFNULL(sps.LGCS_NAME,'') AS logiareaName,
+        sp.PD_CODE AS pdCode,
+        IFNULL(sp.MARKETING_NAME,'') AS marketingName,
+        sp.DEL_FLG AS delFlg,
+        IFNULL(sps.PD_NAME,'') AS pdtName,
+        IFNULL(sps.CLASSES_CODE,'') AS classCode,
+        IFNULL(sps.CLASSES,'') AS classesName,
+        IFNULL(sps.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(sps.MACHINING,'') AS machiningName,
+        IFNULL(sps.BREED_CODE,'') AS breedCode,
+        IFNULL(sps.BREED,'') AS breedName,
+        IFNULL(sps.FEATURE_CODE,'') AS featureCode,
+        IFNULL(sps.FEATURE,'') AS featureName,
+        IFNULL(sps.WEIGHT_CODE,'') AS weightCode,
+        IFNULL(sps.WEIGHT,'') AS weightName,
+        IFNULL(sps.GRADE_CODE,'') AS gradeCode,
+        IFNULL(sps.GRADE,'') AS gradeName,
+        sp.WAY_CODE AS wayCode,
+        IFNULL(way.WAY_NAME,'') AS wayGradeName,
+        sp.WAYGRADE_CODE AS wayGradeCode,
+        way.supOrder,
+        way.order1,
+        way.order2,
+        way.order3,
+        way.order4,
+        way.order5,
+        way.order6,
+        way.order7,
+        way.order8,
+        way.order9,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 0 THEN convert(sp.WAYGRADE_PRICE,decimal(10,2))  END),'-') as supPriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 0 THEN sp.WAYGRADE_PRICE_BOX END) ,'-') as supPriceofbox,
+        0 as supGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 0 THEN sp.DEL_FLG END),'-' ) as supDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 1 THEN convert(sp.WAYGRADE_PRICE,decimal(10,2))  END),'-') as onePriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 1 THEN sp.WAYGRADE_PRICE_BOX END),'-') as onepriceofbox,
+        1 as oneGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 1 THEN sp.DEL_FLG END) ,'-') as oneDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 2 THEN convert(sp.WAYGRADE_PRICE,decimal(10,2)) END),'-') as twoPriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 2 THEN sp.WAYGRADE_PRICE_BOX END),'-') as twoPriceofbox,
+        2 as twoGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 2 THEN sp.DEL_FLG END) ,'-') as twoDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 3 THEN convert(sp.WAYGRADE_PRICE,decimal(10,2)) END),'-') as threePriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 3 THEN sp.WAYGRADE_PRICE_BOX END),'-') as threepriceofbox,
+        3 as threeGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 3 THEN sp.DEL_FLG END) ,'-') as threeDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 4 THEN convert(sp.WAYGRADE_PRICE,decimal(10,2)) END),'-') as fourPriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 4 THEN sp.WAYGRADE_PRICE_BOX END),'-') as fourPriceofbox,
+        4 as fourGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 4 THEN sp.DEL_FLG END) ,'-') as fourDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 5 THEN convert(sp.WAYGRADE_PRICE,decimal(10,2)) END),'-') as fivePriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 5 THEN sp.WAYGRADE_PRICE_BOX END),'-') as fivepriceofbox,
+        5 as fiveGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 5 THEN sp.DEL_FLG END) ,'-') as fiveDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 6 THEN convert(sp.WAYGRADE_PRICE,decimal(10,2)) END),'-') as sixPriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 6 THEN sp.WAYGRADE_PRICE_BOX END),'-') as sixPriceofbox,
+        6 as sixGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 6 THEN sp.DEL_FLG END) ,'-') as sixDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 7 THEN convert(sp.WAYGRADE_PRICE,decimal(10,2)) END),'-') as sevenPriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 7 THEN sp.WAYGRADE_PRICE_BOX END),'-') as sevenpriceofbox,
+        7 as sevenGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 7 THEN sp.DEL_FLG END) ,'-') as sevenDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 8 THEN convert(sp.WAYGRADE_PRICE,decimal(10,2)) END),'-') as eightPriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 8 THEN sp.WAYGRADE_PRICE_BOX END),'-') as eightPriceofbox,
+        8 as eightGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 8 THEN sp.DEL_FLG END) ,'-') as eightDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 9 THEN convert(sp.WAYGRADE_PRICE,decimal(10,2)) END),'-') as ninePriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 9 THEN sp.WAYGRADE_PRICE_BOX END),'-')	 as ninepriceofbox,
+        9 as nineGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 9 THEN sp.DEL_FLG END) ,'-') as nineDelFlg
+        from sp_seller_pd_priceplate sp
+        LEFT JOIN sp_logs_product sps ON sp.LGCS_CODE = sps.LGCS_CODE
+        AND sp.PD_CODE = sps.PD_CODE
+        LEFT JOIN (
+        SELECT
+        t.WAY_CODE,
+        tt.WAY_NAME,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 0 THEN concat("≥",CONVERT(t.WAYGRADE_START,UNSIGNED)) ELSE '' END),',','') AS supOrder,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 1 THEN concat(CONVERT(t.WAYGRADE_START,UNSIGNED),"-",CONVERT(t.WAYGRADE_END,UNSIGNED))ELSE ''END),',','') AS order1,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 2 THEN concat(CONVERT(t.WAYGRADE_START,UNSIGNED),"-",CONVERT(t.WAYGRADE_END,UNSIGNED))ELSE ''END),',','') AS order2,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 3 THEN concat(CONVERT(t.WAYGRADE_START,UNSIGNED),"-",CONVERT(t.WAYGRADE_END,UNSIGNED) )ELSE ''END),',','') AS order3,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 4 THEN concat(CONVERT(t.WAYGRADE_START,UNSIGNED),"-",CONVERT(t.WAYGRADE_END,UNSIGNED))ELSE ''END),',','') AS order4,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 5 THEN concat(CONVERT(t.WAYGRADE_START,UNSIGNED),"-",CONVERT(t.WAYGRADE_END,UNSIGNED))ELSE ''END),',','') AS order5,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 6 THEN concat(CONVERT(t.WAYGRADE_START,UNSIGNED),"-",CONVERT(t.WAYGRADE_END,UNSIGNED))ELSE ''END),',','') AS order6,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 7 THEN concat(CONVERT(t.WAYGRADE_START,UNSIGNED),"-",CONVERT(t.WAYGRADE_END,UNSIGNED))ELSE''END),',','') AS order7,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 8 THEN concat(CONVERT(t.WAYGRADE_START,UNSIGNED),"-",CONVERT(t.WAYGRADE_END,UNSIGNED))ELSE ''END),',','') AS order8,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 9 THEN concat(CONVERT(t.WAYGRADE_START,UNSIGNED),"-",CONVERT(t.WAYGRADE_END,UNSIGNED))ELSE ''END),',','') AS order9
+        FROM
+        sp_wayg_detail t
+        INNER JOIN sp_way tt ON t.way_code = tt.way_code
+        GROUP BY t.way_code
+        ) way ON sp.WAY_CODE = way.WAY_CODE
+        <include refid="whereCondition"/>
+        GROUP BY sp.LGCS_CODE,sp.PD_CODE,sp.WAY_CODE
+        ORDER BY sp.LGCS_CODE,sp.PD_CODE,sp.WAY_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <sql id="whereCondition">
+        WHERE  sp.DEL_FLG = 0
+        <if test="lgcsAreaCode !=null and lgcsAreaCode !=''">
+            AND sp.LGCS_CODE = #{lgcsAreaCode}
+        </if>
+        <if test="classesCode !=null and classesCode !=''">
+            AND sps.CLASSES_CODE = #{classesCode}
+        </if>
+        <if test="machiningCode !=null and machiningCode !=''">
+            AND sps.MACHINING_CODE = #{machiningCode}
+        </if>
+        <if test="pricecyclePeriod !=null and pricecyclePeriod !=''">
+            AND sp.PRICE_PERIOD = #{pricecyclePeriod}
+        </if>
+        <if test="breedName !=null and breedName !=''">
+            <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  Start-->
+            AND sps.BREED LIKE #{breedName}
+            <!--Add: 横展开设置模糊查询条件 2016/09/12   BY  任强  End-->
+        </if>
+    </sql>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1) from (SELECT  sp.PRICE_PERIOD AS pricePeriod,
+        sp.PRICE_STARTDATE AS priceStartDate,
+        sp.PRICE_ENDDATE AS priceEndDate,
+        sp.LGCS_CODE AS logiareaCode,
+        IFNULL(sps.LGCS_NAME,'') AS logiareaName,
+        sp.PD_CODE AS pdCode,
+        sp.DEL_FLG AS delFlg,
+        IFNULL(sps.PD_NAME,'') AS pdtName,
+        IFNULL(sps.CLASSES_CODE,'') AS classCode,
+        IFNULL(sps.CLASSES,'') AS classesName,
+        IFNULL(sps.MACHINING_CODE,'') AS machiningCode,
+        IFNULL(sps.MACHINING,'') AS machiningName,
+        IFNULL(sps.BREED_CODE,'') AS breedCode,
+        IFNULL(sps.BREED,'') AS breedName,
+        IFNULL(sps.FEATURE_CODE,'') AS featureCode,
+        IFNULL(sps.FEATURE,'') AS featureName,
+        IFNULL(sps.WEIGHT_CODE,'') AS weightCode,
+        IFNULL(sps.WEIGHT,'') AS weightName,
+        IFNULL(sps.GRADE_CODE,'') AS gradeCode,
+        IFNULL(sps.GRADE,'') AS gradeName,
+        sp.WAY_CODE AS wayCode,
+        way.WAY_NAME AS wayGradeName,
+        way.supOrder,
+        way.order1,
+        way.order2,
+        way.order3,
+        way.order4,
+        way.order5,
+        way.order6,
+        way.order7,
+        way.order8,
+        way.order9,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 0 THEN sp.WAYGRADE_PRICE  END),'-') as supPriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 0 THEN sp.WAYGRADE_PRICE_BOX END) ,'-') as supPriceofbox,
+        0 as supGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 0 THEN sp.DEL_FLG END),'-' ) as supDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 1 THEN sp.WAYGRADE_PRICE  END),'-') as onePriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 1 THEN sp.WAYGRADE_PRICE_BOX END),'-') as onepriceofbox,
+        1 as oneGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 1 THEN sp.DEL_FLG END) ,'-') as oneDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 2 THEN sp.WAYGRADE_PRICE END),'-') as twoPriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 2 THEN sp.WAYGRADE_PRICE_BOX END),'-') as twoPriceofbox,
+        2 as twoGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 2 THEN sp.DEL_FLG END) ,'-') as twoDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 3 THEN sp.WAYGRADE_PRICE END),'-') as threePriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 3 THEN sp.WAYGRADE_PRICE_BOX END),'-') as threepriceofbox,
+        3 as threeGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 3 THEN sp.DEL_FLG END) ,'-') as threeDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 4 THEN sp.WAYGRADE_PRICE END),'-') as fourPriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 4 THEN sp.WAYGRADE_PRICE_BOX END),'-') as fourPriceofbox,
+        4 as fourGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 4 THEN sp.DEL_FLG END) ,'-') as fourDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 5 THEN sp.WAYGRADE_PRICE END),'-') as fivePriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 5 THEN sp.WAYGRADE_PRICE_BOX END),'-') as fivepriceofbox,
+        5 as fiveGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 5 THEN sp.DEL_FLG END) ,'-') as fiveDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 6 THEN sp.WAYGRADE_PRICE END),'-') as sixPriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 6 THEN sp.WAYGRADE_PRICE_BOX END),'-') as sixPriceofbox,
+        6 as sixGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 6 THEN sp.DEL_FLG END) ,'-') as sixDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 7 THEN sp.WAYGRADE_PRICE END),'-') as sevenPriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 7 THEN sp.WAYGRADE_PRICE_BOX END),'-') as sevenpriceofbox,
+        7 as sevenGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 7 THEN sp.DEL_FLG END) ,'-') as sevenDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 8 THEN sp.WAYGRADE_PRICE END),'-') as eightPriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 8 THEN sp.WAYGRADE_PRICE_BOX END),'-') as eightPriceofbox,
+        8 as eightGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 8 THEN sp.DEL_FLG END) ,'-') as eightDelFlg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 9 THEN sp.WAYGRADE_PRICE END),'-') as ninePriceofkg,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 9 THEN sp.WAYGRADE_PRICE_BOX END),'-')	 as ninepriceofbox,
+        9 as nineGradeCode,
+        IFNULL(MAX(CASE WAYGRADE_CODE WHEN 9 THEN sp.DEL_FLG END) ,'-') as nineDelFlg
+        from sp_seller_pd_priceplate sp
+        LEFT JOIN sp_logs_product sps ON sp.LGCS_CODE = sps.LGCS_CODE
+        AND sp.PD_CODE = sps.PD_CODE
+        LEFT JOIN (
+        SELECT
+        t.WAY_CODE,
+        tt.WAY_NAME,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 0 THEN concat("≥", t.WAYGRADE_START) ELSE '' END),',','') AS supOrder,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 1 THEN concat(t.WAYGRADE_START,"-",t.WAYGRADE_END)ELSE ''END),',','') AS order1,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 2 THEN concat(t.WAYGRADE_START,"-",t.WAYGRADE_END)ELSE ''END),',','') AS order2,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 3 THEN concat(t.WAYGRADE_START,"-",t.WAYGRADE_END )ELSE ''END),',','') AS order3,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 4 THEN concat(t.WAYGRADE_START,"-",t.WAYGRADE_END)ELSE ''END),',','') AS order4,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 5 THEN concat(t.WAYGRADE_START,"-",t.WAYGRADE_END)ELSE ''END),',','') AS order5,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 6 THEN concat(t.WAYGRADE_START,"-",t.WAYGRADE_END)ELSE ''END),',','') AS order6,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 7 THEN concat(t.WAYGRADE_START,"-",t.WAYGRADE_END)ELSE''END),',','') AS order7,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 8 THEN concat(t.WAYGRADE_START,"-",t.WAYGRADE_END)ELSE ''END),',','') AS order8,
+        REPLACE (group_concat(CASE WHEN t.WAYGRADE_CODE = 9 THEN concat(t.WAYGRADE_START,"-",t.WAYGRADE_END)ELSE ''END),',','') AS order9
+        FROM
+        sp_wayg_detail t
+        INNER JOIN sp_way tt ON t.way_code = tt.way_code
+        GROUP BY t.way_code
+        ) way ON sp.WAY_CODE = way.WAY_CODE
+        <include refid="whereCondition"/>
+        GROUP BY sp.LGCS_CODE,sp.PD_CODE,sp.WAY_CODE) AS  t
+    </select>
+
+    <update id="modify" parameterType="com.msk.price.bean.SP171170Bean">
+      UPDATE  sp_seller_pd_priceplate
+      SET
+          WAYGRADE_PRICE = #{priceofkg},
+          WAYGRADE_PRICE_BOX = #{priceofbox},
+          UPD_ID =#{updId},
+          WAY_CODE = #{wayCode},
+          MARKETING_NAME = #{marketingName},
+          UPD_TIME =#{updTime},
+          DEL_FLG=#{delFlg}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+          ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+          WHERE PD_CODE =  #{pdCode} AND WAYGRADE_CODE = #{wayGradeCode}
+          AND PRICE_PERIOD =  #{pricecyclePeriod}
+          AND  PRICE_ID= #{pricecycleId}
+          <!--Modify delflag横展开 2016/10/10 任强 Start-->
+          AND  DEL_FLG='0'
+          <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+    <select id="findNewestPriceplate" resultType="String">
+        SELECT MAX(PRICE_PERIOD) from sp_seller_pd_priceplate ORDER BY PRICE_PERIOD DESC
+    </select>
+
+    <select id="getPriceId" resultType="Long" parameterType="BaseParam">
+        SELECT PRICE_ID AS priceId
+        FROM sp_seller_pd_priceplate A
+         WHERE A.PD_CODE = #{filterMap.pdCode}
+          AND A.WAYGRADE_CODE = #{filterMap.gradeCode}
+          AND A.PRICE_PERIOD =  #{filterMap.pricecyclePeriod}
+          AND A.LGCS_CODE =  #{filterMap.logiareaCode}
+          AND A.UPD_TIME = ( SELECT MAX(UPD_TIME)
+                              FROM sp_seller_pd_priceplate B
+                             WHERE B.PD_CODE = #{filterMap.pdCode}
+                             AND B.WAYGRADE_CODE = #{filterMap.gradeCode}
+                             AND B.PRICE_PERIOD =  #{filterMap.pricecyclePeriod}
+                             AND  B.LGCS_CODE =  #{filterMap.logiareaCode}
+                           )
+    </select>
+
+    <select id="getMaxUpdTime" resultType="String" parameterType="BaseParam">
+        SELECT MAX(DATE_FORMAT(UPD_TIME,'%Y-%m-%d %H:%i:%S')) FROM sp_seller_pd_priceplate
+        WHERE PD_CODE = #{filterMap.pdCode}
+        AND WAYGRADE_CODE = #{filterMap.gradeCode}
+        AND PRICE_PERIOD =  #{filterMap.pricecyclePeriod}
+        AND  WAY_CODE =  #{filterMap.wayCode}
+    </select>
+
+    <select id="findProduct" resultType="com.msk.price.bean.SP171170Bean" parameterType="com.msk.price.bean.SP171170ExcelBean">
+        SELECT
+        CLASSES  AS  classesName,
+        MACHINING AS machiningName,
+        BREED AS  breedName,
+        FEATURE AS  featureName,
+        WEIGHT AS weightName,
+        GRADE AS  gradeName,
+        LGCS_CODE AS  logiareaCode,
+        LGCS_NAME AS  logiareaName,
+        PD_CODE AS  pdCode
+        from sp_logs_product
+        where
+        del_flg = 0
+        <if test="excelBeans !=null and excelBeans.size >0">
+        AND
+            ( <foreach collection="excelBeans" item="params" separator="or">
+                (LGCS_NAME =#{params.lgcsAreaName}
+                 AND PD_CODE = #{params.pdCode}
+            )
+              </foreach>
+            )
+        </if>
+
+    </select>
+
+
+    <select id="getWayInfo" resultType="com.msk.price.bean.SP171170Bean">
+       SELECT
+        WAY_CODE AS wayCode,
+        WAY_NAME AS  wayName
+        from sp_way WHERE DEL_FLG =0
+    </select>
+
+    <insert id="batchSavePriceinfo" parameterType="List">
+         INSERT INTO sp_seller_pd_priceplate(
+        PRICE_ID,
+        PRICE_PERIOD,
+        PRICE_STARTDATE,
+        PRICE_ENDDATE,
+        LGCS_CODE,
+        PD_CODE,
+        WAY_CODE,
+        MARKETING_NAME,
+        WAYGRADE_CODE,
+        WAYGRADE_NAME,
+        WAYGRADE_PRICE,
+        WAYGRADE_PRICE_BOX,
+        DEL_FLG,
+        Crt_Id,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )VALUES
+        <foreach collection="list" item="SP171170Bean" index="index" separator=",">
+        (
+        #{SP171170Bean.pricecycleId},
+        #{SP171170Bean.pricecyclePeriod},
+        #{SP171170Bean.pricePeriodStart},
+        #{SP171170Bean.pricePeriodEnd},
+        #{SP171170Bean.logiareaCode},
+        #{SP171170Bean.pdCode},
+        #{SP171170Bean.wayCode},
+        #{SP171170Bean.marketingName},
+        #{SP171170Bean.wayGradeCode},
+        #{SP171170Bean.wayGradeName},
+        #{SP171170Bean.priceofkg},
+        #{SP171170Bean.priceofbox},
+        #{SP171170Bean.delFlg},
+        #{SP171170Bean.crtId},
+        #{SP171170Bean.crtTime},
+        #{SP171170Bean.updId},
+        #{SP171170Bean.updTime},
+        #{SP171170Bean.actId},
+        #{SP171170Bean.actTime},
+        1
+        )
+        </foreach>
+    </insert>
+</mapper>

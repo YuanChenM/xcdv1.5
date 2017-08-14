@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2102105Logic">
+
+<select id="findPageList" resultType="com.msk.bs.bean.BS2102105Result" parameterType="BasePageParam">
+        SELECT
+        IFNULL(h.HOUSE_ACCOUNT,'') AS houseAccount,
+        IFNULL(h.SL_IDCARD,'') AS slIdcard,
+        IFNULL(h.SL_CON_FLG,'') AS slConFlg,
+        IFNULL(h.QQ,'') AS qq,
+        IFNULL(h.EMAIL,'') AS email,
+        IFNULL(h.FIXED_TEL,'') AS fixedTel,
+        IFNULL(h.FAX,'') AS fax,
+        IFNULL(h.FLAG5,'') AS flag5,
+        IFNULL(h.FLAG4,'') AS flag4,
+        IFNULL(h.FLAG3,'') AS flag3,
+        IFNULL(h.FLAG2,'') AS flag2,
+        IFNULL(h.HOUSE_ADDRESS,'') AS houseAddress,
+        IFNULL(h.SL_CODE,'') AS slCode,
+        IFNULL(h.HOUSE_CODE,'') AS houseCode,
+        ifnull(h.HOUSE_CONTACT,'') AS houseContact,
+        IFNULL(h.V_LGCS_AREA_CODE,'') AS vlgcsAreaCode,
+        IFNULL(h.PROVINCE_CODE,'') AS provinceCode,
+        IFNULL(h.CITY_CODE,'') AS cityCode,
+        IFNULL(h.DISTRICT_CODE,'') AS districtCode,
+        IFNULL(h.V_PROVINCE_CODE,'') AS vprovinceCode,
+        IFNULL(h.V_CITY_CODE,'') AS vcityCode,
+        IFNULL(h.V_DISTRICT_CODE,'') AS vdistrictCode,
+        IFNULL(h.V_HOUSE_ADDRESS,'') AS vhouseAddress,
+        IFNULL(h.LAT,'') AS lat,
+        IFNULL(h.V_LAT,'') AS vlat,
+        IFNULL(h.V_LON,'') AS vlon,
+        IFNULL(h.BUYER_ASIGN,'') AS buyerAsign,
+        IFNULL(h.HOUSE_INTRODUCE,'') AS houseIntroduce,
+        IFNULL(h.HOUSE_CLASS,'') AS houseClass,
+        IFNULL(h.HOUSE_SHOW_NAME,'') AS houseShowName,
+        CASE h.FLAG1 WHEN '1' THEN '男'
+                      WHEN  '2' THEN '女'
+        ELSE '' END AS sex,
+        IFNULL(h.FLAG1,'') AS flag1,
+        IFNULL(h.HOUSE_GREADE,'') AS  houseGreade,
+        IFNULL(h.HOUSE_TEL,'') AS houseTel,
+        IFNULL(h.WECHAT,'') AS wechat,
+        IFNULL(h.FLAG6,'') AS flag6
+        FROM sl_house_manage manage
+        LEFT JOIN sl_house_account h
+        ON h.SL_CODE = manage.SL_CODE
+        AND h.HOUSE_CODE = manage.HOUSE_CODE
+        AND (h.DEL_FLG = 0 OR h.DEL_FLG IS NULL)
+       <where>
+            (manage.DEL_FLG = 0 OR manage.DEL_FLG IS NULL)
+            AND
+            h.SL_CODE != '' AND h.SL_CODE IS NOT NULL
+            AND
+            h.HOUSE_CODE != '' AND h.HOUSE_CODE IS NOT NULL
+           <if test="null != houseList and houseList.size() > 0">
+               AND
+               <choose>
+                   <when test="filterMap.flag != null and filterMap.flag != ''">
+                       CONCAT(h.sl_code,h.HOUSE_CODE) NOT IN
+                       <foreach collection="houseList" item="item" open="(" separator="," close=")">
+                           CONCAT( #{item.slCode},#{item.houseCode})
+                       </foreach>
+                   </when>
+                   <otherwise>
+                       <foreach collection="houseList" item="item" open="(" separator="OR" close=")">
+                           h.sl_code = #{item.slCode} AND h.HOUSE_CODE = #{item.houseCode}
+                       </foreach>
+                   </otherwise>
+               </choose>
+           </if>
+           <if test="filterMap.lgcsAreaCode != null and filterMap.lgcsAreaCode != ''">
+               AND h.V_LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+           </if>
+           <if test="filterMap.cityCode != null and filterMap.cityCode != ''">
+                AND manage.CITY_CODE = CONVERT(#{filterMap.cityCode},SIGNED)
+           </if>
+           <if test="filterMap.category != null and filterMap.category != ''">
+                AND manage.HOUSE_CATEGORY_CODE = #{filterMap.category}
+           </if>
+           <if test="filterMap.categorySub != null and filterMap.categorySub != ''">
+                AND manage.HOUSE_RECLASSIFY_CODE = #{filterMap.categorySub}
+           </if>
+       </where>
+        GROUP BY
+        h.HOUSE_CODE
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+                <select id="getPageCount" resultType="int" parameterType="BasePageParam">
+        select
+        count(1)
+        from
+        (
+        SELECT
+        IFNULL(h.HOUSE_ACCOUNT,'') AS houseAccount,
+        IFNULL(h.SL_IDCARD,'') AS slIdcard,
+        IFNULL(h.SL_CON_FLG,'') AS slConFlg,
+        IFNULL(h.QQ,'') AS qq,
+        IFNULL(h.EMAIL,'') AS email,
+        IFNULL(h.FIXED_TEL,'') AS fixedTel,
+        IFNULL(h.FAX,'') AS fax,
+        IFNULL(h.FLAG5,'') AS flag5,
+        IFNULL(h.FLAG4,'') AS flag4,
+        IFNULL(h.FLAG3,'') AS flag3,
+        IFNULL(h.FLAG2,'') AS flag2,
+        IFNULL(h.HOUSE_ADDRESS,'') AS houseAddress,
+        IFNULL(h.SL_CODE,'') AS slCode,
+        IFNULL(h.HOUSE_CODE,'') AS houseCode,
+        ifnull(h.HOUSE_CONTACT,'') AS houseContact,
+        IFNULL(h.V_LGCS_AREA_CODE,'') AS vlgcsAreaCode,
+        IFNULL(h.PROVINCE_CODE,'') AS provinceCode,
+        IFNULL(h.CITY_CODE,'') AS cityCode,
+        IFNULL(h.DISTRICT_CODE,'') AS districtCode,
+        IFNULL(h.V_PROVINCE_CODE,'') AS vprovinceCode,
+        IFNULL(h.V_CITY_CODE,'') AS vcityCode,
+        IFNULL(h.V_DISTRICT_CODE,'') AS vdistrictCode,
+        IFNULL(h.V_HOUSE_ADDRESS,'') AS vhouseAddress,
+        IFNULL(h.LAT,'') AS lat,
+        IFNULL(h.V_LAT,'') AS vlat,
+        IFNULL(h.V_LON,'') AS vlon,
+        IFNULL(h.BUYER_ASIGN,'') AS buyerAsign,
+        IFNULL(h.HOUSE_INTRODUCE,'') AS houseIntroduce,
+        IFNULL(h.HOUSE_CLASS,'') AS houseClass,
+        IFNULL(h.HOUSE_SHOW_NAME,'') AS houseShowName,
+        CASE h.FLAG1 WHEN '1' THEN '男'
+        WHEN '2' THEN '女'
+        ELSE '' END AS sex,
+        IFNULL(h.FLAG1,'') AS flag1,
+        IFNULL(h.HOUSE_GREADE,'') AS houseGreade,
+        IFNULL(h.HOUSE_TEL,'') AS houseTel,
+        IFNULL(h.WECHAT,'') AS wechat,
+        IFNULL(h.FLAG6,'') AS flag6
+        FROM sl_house_manage manage
+        LEFT JOIN sl_house_account h
+        ON h.SL_CODE = manage.SL_CODE
+        AND h.HOUSE_CODE = manage.HOUSE_CODE
+        AND (h.DEL_FLG = 0 OR h.DEL_FLG IS NULL)
+        <where>
+            (manage.DEL_FLG = 0 OR manage.DEL_FLG IS NULL)
+            AND
+            h.SL_CODE != '' AND h.SL_CODE IS NOT NULL
+            AND
+            h.HOUSE_CODE != '' AND h.HOUSE_CODE IS NOT NULL
+            <if test="null != houseList and houseList.size() > 0">
+                AND
+                <choose>
+                    <when test="filterMap.flag != null and filterMap.flag != ''">
+                        CONCAT(h.sl_code,h.HOUSE_CODE) NOT IN
+                        <foreach collection="houseList" item="item" open="(" separator="," close=")">
+                            CONCAT( #{item.slCode},#{item.houseCode})
+                        </foreach>
+                    </when>
+                    <otherwise>
+                        <foreach collection="houseList" item="item" open="(" separator="OR" close=")">
+                            h.sl_code = #{item.slCode} AND h.HOUSE_CODE = #{item.houseCode}
+                        </foreach>
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="filterMap.lgcsAreaCode != null and filterMap.lgcsAreaCode != ''">
+                AND h.V_LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+            </if>
+            <if test="filterMap.cityCode != null and filterMap.cityCode != ''">
+                AND manage.CITY_CODE = CONVERT(#{filterMap.cityCode},SIGNED)
+            </if>
+            <if test="filterMap.category != null and filterMap.category != ''">
+                AND manage.HOUSE_CATEGORY_CODE = #{filterMap.category}
+            </if>
+            <if test="filterMap.categorySub != null and filterMap.categorySub != ''">
+                AND manage.HOUSE_RECLASSIFY_CODE = #{filterMap.categorySub}
+            </if>
+        </where>
+        GROUP BY
+        h.HOUSE_CODE
+        ) a
+
+    </select>
+
+                <!--<select id="findPageList" resultType="com.msk.bs.bean.BS2102105Result" parameterType="BasePageParam">
+        select
+        IFNULL(h.HOUSE_ACCOUNT,'') AS houseAccount,
+        IFNULL(h.SL_IDCARD,'') AS slIdcard,
+        IFNULL(h.SL_CON_FLG,'') AS slConFlg,
+        IFNULL(h.QQ,'') AS qq,
+        IFNULL(h.EMAIL,'') AS email,
+        IFNULL(h.FIXED_TEL,'') AS fixedTel,
+        IFNULL(h.FAX,'') AS fax,
+        IFNULL(h.FLAG5,'') AS flag5,
+        IFNULL(h.FLAG4,'') AS flag4,
+        IFNULL(h.FLAG3,'') AS flag3,
+        IFNULL(h.FLAG2,'') AS flag2,
+        IFNULL(h.HOUSE_ADDRESS,'') AS houseAddress,
+        IFNULL(h.SL_CODE,'') AS slCode,
+        IFNULL(h.HOUSE_CODE,'') AS houseCode,
+        ifnull(h.HOUSE_CONTACT,'') AS houseContact,
+        IFNULL(h.V_LGCS_AREA_CODE,'') AS vlgcsAreaCode,
+        IFNULL(h.PROVINCE_CODE,'') AS provinceCode,
+        IFNULL(h.CITY_CODE,'') AS cityCode,
+        IFNULL(h.DISTRICT_CODE,'') AS districtCode,
+        IFNULL(h.V_PROVINCE_CODE,'') AS vprovinceCode,
+        IFNULL(h.V_CITY_CODE,'') AS vcityCode,
+        IFNULL(h.V_DISTRICT_CODE,'') AS vdistrictCode,
+        IFNULL(h.V_HOUSE_ADDRESS,'') AS vhouseAddress,
+        IFNULL(h.LAT,'') AS lat,
+        IFNULL(h.V_LAT,'') AS vlat,
+        IFNULL(h.V_LON,'') AS vlon,
+        IFNULL(h.BUYER_ASIGN,'') AS buyerAsign,
+        IFNULL(h.HOUSE_INTRODUCE,'') AS houseIntroduce,
+        IFNULL(h.HOUSE_CLASS,'') AS houseClass,
+        IFNULL(h.HOUSE_SHOW_NAME,'') AS houseShowName,
+        CASE h.FLAG1 WHEN '1' THEN '男'
+        WHEN  '2' THEN '女'
+        ELSE '' END AS sex,
+        IFNULL(h.FLAG1,'') AS flag1,
+        IFNULL(h.HOUSE_GREADE,'') AS  houseGreade,
+        IFNULL(star.STAR_CODE,'') AS  houseStar,
+        IFNULL(h.HOUSE_TEL,'') AS houseTel,
+        IFNULL(h.WECHAT,'') AS wechat,
+        IFNULL(h.FLAG6,'') AS flag6,
+        IFNULL(t.SL_SHOW_NAME,'') AS slShowName,
+        IFNULL(t.SL_CODE_DIS,'') AS slCodeDis,
+        IFNULL(t.SL_CONTACT,'') AS  slContact
+        from sl_house_account h
+        LEFT JOIN (
+        SELECT basic.SL_CODE,
+        bsAccount.SL_SHOW_NAME,
+        bsAccount.SL_CONTACT,
+        basic.SL_CODE_DIS
+        from sl_bs_basic_info basic
+        LEFT JOIN sl_bs_account bsAccount
+        on basic.SL_ACCOUNT = bsAccount.SL_ACCOUNT and bsAccount.DEL_FLG=0
+        where  basic.DEL_FLG=0)
+        t on h.SL_CODE = t.SL_CODE
+        LEFT JOIN sl_house_star star
+        ON h.SL_CODE = star.SL_CODE AND h.HOUSE_CODE = star.HOUSE_CODE
+        <where>
+            &lt;!&ndash;Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 start&ndash;&gt;
+            (h.DEL_FLG = 0 OR h.DEL_FLG IS NULL)
+            &lt;!&ndash;Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 start&ndash;&gt;
+            <if test="null != houseList and houseList.size() > 0">
+                AND
+                <choose>
+                    <when test="filterMap.flag != null and filterMap.flag != ''">
+                        CONCAT(h.sl_code,h.HOUSE_CODE) NOT IN
+                        <foreach collection="houseList" item="item" open="(" separator="," close=")">
+                            CONCAT( #{item.slCode},#{item.houseCode})
+                        </foreach>
+                    </when>
+                    <otherwise>
+                        <foreach collection="houseList" item="item" open="(" separator="OR" close=")">
+                            h.sl_code = #{item.slCode} AND h.HOUSE_CODE = #{item.houseCode}
+                        </foreach>
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="filterMap.lgcsAreaCode != null and filterMap.lgcsAreaCode != ''">
+                AND h.V_LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+            </if>
+            <if test="filterMap.cityCode != null and filterMap.cityCode != ''">
+                AND h.V_CITY_CODE = CONVERT(#{filterMap.cityCode},SIGNED)
+            </if>
+            <if test="filterMap.category != null and filterMap.category != ''">
+                AND h.HOUSE_CATEGORY = #{filterMap.category}
+            </if>
+            <if test="filterMap.categorySub != null and filterMap.categorySub != ''">
+                AND h.HOUSE_CATEGORY_SUB = #{filterMap.categorySub}
+            </if>
+        </where>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>-->
+
+    <!--<select id="getPageCount" resultType="int" parameterType="BasePageParam">
+        select
+        count(1)
+        from sl_house_account h
+        <where>
+            &lt;!&ndash;Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 start&ndash;&gt;
+            (h.DEL_FLG = 0 OR h.DEL_FLG IS NULL)
+            &lt;!&ndash;Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 start&ndash;&gt;
+            <if test="null != houseList and houseList.size() > 0">
+                AND
+                <choose>
+                    <when test="filterMap.flag != null and filterMap.flag != ''">
+                        CONCAT(h.sl_code,h.HOUSE_CODE) NOT IN
+                        <foreach collection="houseList" item="item" open="(" separator="," close=")">
+                            CONCAT( #{item.slCode},#{item.houseCode})
+                        </foreach>
+                    </when>
+                    <otherwise>
+                        <foreach collection="houseList" item="item" open="(" separator="OR" close=")">
+                            h.sl_code = #{item.slCode} AND h.HOUSE_CODE = #{item.houseCode}
+                        </foreach>
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="filterMap.lgcsAreaCode != null and filterMap.lgcsAreaCode != ''">
+                AND h.V_LGCS_AREA_CODE = #{filterMap.lgcsAreaCode}
+            </if>
+            <if test="filterMap.cityCode != null and filterMap.cityCode != ''">
+                AND h.V_CITY_CODE = CONVERT(#{filterMap.cityCode},SIGNED)
+            </if>
+            <if test="filterMap.category != null and filterMap.category != ''">
+                AND h.HOUSE_CATEGORY = #{filterMap.category}
+            </if>
+            <if test="filterMap.categorySub != null and filterMap.categorySub != ''">
+                AND h.HOUSE_CATEGORY_SUB = #{filterMap.categorySub}
+            </if>
+        </where>
+    </select>-->
+
+    <update id="modifyHouseInfo" parameterType="com.msk.bs.bean.BS2102105Param">
+        update sl_house_account set flag6 = #{flag6}
+         <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        , VER = VER + 1
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+         where sl_Code = #{slCode} and house_code = #{houseCode}
+        <!--Modify delflag横展开 2016/10/09 任强 Start-->
+        and  DEL_FLG='0'
+        <!--Modify delflag横展开 2016/10/09 任强 End-->
+    </update>
+
+</mapper>

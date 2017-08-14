@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.sp.logic.BSP171103Logic">
+
+    <insert id="batchSave"  parameterType="List">
+        INSERT INTO SP_LOGS_PRODUCT
+        (LGCS_CODE,
+        LGCS_NAME,
+        PD_CODE,
+        SCIENTIFIC_NAME,
+        LOCAL_NAME,
+        SALES_NAME,
+        PD_NAME,
+        CLASSES_CODE,
+        CLASSES,
+        MACHINING_CODE,
+        MACHINING,
+        BREED_CODE,
+        BREED,
+        FEATURE_CODE,
+        FEATURE,
+        WEIGHT_CODE,
+        WEIGHT,
+        GRADE_CODE,
+        GRADE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (
+            #{item.lgcsCode},
+            #{item.lgcsName},
+            #{item.pdCode},
+            #{item.scientificName},
+            #{item.localName},
+            #{item.salesName},
+            #{item.pdName},
+            #{item.classesCode},
+            #{item.classes},
+            #{item.machiningCode},
+            #{item.machining},
+            #{item.breedCode},
+            #{item.breed},
+            #{item.featureCode},
+            #{item.feature},
+            #{item.weightCode},
+            #{item.weight},
+            #{item.gradeCode},
+            #{item.grade},
+            0,
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            #{item.actId},
+            #{item.actTime},
+            1
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectLogsProduct" parameterType="com.msk.batch.sp.bean.BSP171103Param"
+            resultType="com.msk.batch.sp.bean.BSP171103Bean">
+           SELECT
+       SLP.LGCS_CODE as lgcsCode,
+       SLP.LGCS_NAME as lgcsName,
+       SLP.PD_CODE as pdCode,
+       SLP.SCIENTIFIC_NAME as scientificName,
+       SLP.LOCAL_NAME as localName,
+       SLP.SALES_NAME as salesName,
+       SLP.PD_NAME as pdName,
+       SLP.CLASSES_CODE as classesCode,
+       SLP.CLASSES as classes,
+       SLP.MACHINING_CODE as machiningCode,
+       SLP.MACHINING as machining,
+       SLP.BREED_CODE as breedCode,
+       SLP.BREED as breed,
+       SLP.FEATURE_CODE as featureCode,
+       SLP.FEATURE as feature,
+       SLP.WEIGHT_CODE as weightCode,
+       SLP.WEIGHT as weight,
+       SLP.GRADE_CODE as gradeCode,
+       SLP.GRADE as grade,
+       SLP.DEL_FLG as deFlg,
+       SLP.CRT_ID as crtId,
+       SLP.CRT_TIME as crtTime,
+       SLP.UPD_ID as updId,
+       SLP.UPD_TIME as updTime,
+       SLP.ACT_ID as actId,
+       SLP.ACT_TIME as actTime,
+       SLP.VER as ver FROM SP_LOGS_PRODUCT SLP
+    </select>
+    <delete id="remove" parameterType="com.msk.batch.sp.bean.BSP171103Param">
+      DELETE FROM SP_LOGS_PRODUCT
+    </delete>
+</mapper>

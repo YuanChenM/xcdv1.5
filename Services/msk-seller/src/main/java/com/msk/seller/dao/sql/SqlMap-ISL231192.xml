@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231192RsLogic">
+	<select id="findOne" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL231192Result">
+	SELECT
+	IFNULL(A.ARTNO_ID,'') AS artnoId,
+    IFNULL(A.SL_CODE,'') AS slCode,
+	IFNULL(A.SL_PD_ARTNO,'') AS slPdArtNo,
+	IFNULL(A.SL_CODE_DIS,'') AS slCodeDis,
+	IFNULL(A.CLASSES_CODE,'') AS classesCode,
+	IFNULL(A.MACHINING_CODE,'') AS machiningCode,
+	IFNULL(A.BREED_CODE,'') AS breedCode,
+	IFNULL(A.FEATURE_CODE,'') AS featureCode,
+	IFNULL(A.WEIGHT_CODE,'') AS weightCode,
+	IFNULL(A.NORMS_CODE, '') AS normsCode,
+	IFNULL(A.GRADE_CODE, '') AS gradeCode,
+	IFNULL(A.SALE_PLATFORM, '') AS salePlatform,
+	IFNULL(A.BRAND_EP_ID, '') AS brandEpId,
+	IFNULL(A.BRAND_ID, '') AS brandId,
+	IFNULL(A.MANUFACTURE_CODE, '') AS manufactureCode,
+    IFNULL(A.FACTORY_CODE, '') AS factoryCode,
+    IFNULL(A.SALE_REGION_CODE, '') AS saleRegionCode,
+    IFNULL(A.SALE_STATUS, '') AS saleStatus,
+    IFNULL(A.PD_COUNTRY, '') AS pdCountry,
+	IFNULL(A.PD_PLACE, '') AS pdPlace,
+    IFNULL(A.PD_STANDARD, '') AS pdStandard,
+    IFNULL(A.PD_INGREDIENT, '') AS pdIngredient,
+    IFNULL(A.FOOD_LICENSE, '') AS foodLicense,
+    IFNULL(A.SHELF_LIFE, '') AS shelfLife,
+    IFNULL(A.STORAGE_CONDITION, '') AS storageCondition,
+    IFNULL(A.NORMS_SPECIFICATION, '') AS normsSpecification
+	FROM
+	sl_pd_artno AS A
+	WHERE
+	A.DEL_FLG = 0
+	AND A.SL_CODE=#{filterMap.slCode}
+	AND A.SL_PD_ARTNO=#{filterMap.slPdArtNo}
+	</select>
+</mapper>

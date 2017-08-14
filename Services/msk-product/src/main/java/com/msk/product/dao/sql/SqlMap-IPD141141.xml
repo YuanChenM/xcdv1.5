@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141141Logic">
+    <select id="count" parameterType="BaseParam" resultType="int">
+        SELECT count(1)
+        FROM pd_logiarea
+    </select>
+    <select id="findPageList" parameterType="BaseParam" resultType="com.msk.product.bean.LogiAreaPdBean">
+        SELECT
+         Ast.LGCS_CODE AS logiAreaCode
+        <!--modify by dai_youcheng start at 2016-6-17-->
+        <!--,b.LGCS_AREA_NAME AS logiAreaName-->
+        ,Ast.LGCS_NAME AS logiAreaName
+        <!--modify by dai_youcheng end at 2016-6-17-->
+        ,Ast.CLASSES_CODE AS classesCode
+        ,Ast.BREED_CODE AS breedCode
+        ,Ast.MACHINING_CODE AS machiningCode
+        ,Ast.FEATURE_CODE AS featureCode
+        ,Ast.WEIGHT_CODE AS weightCode
+        ,Ast.GRADE_CODE AS gradeCode
+        ,CONCAT(Ast.CLASSES_CODE,Ast.MACHINING_CODE,Ast.BREED_CODE,Ast.FEATURE_CODE,Ast.WEIGHT_CODE,Ast.GRADE_CODE) AS pdCode
+        ,CONCAT(Bcl.CLASSES_NAME,'@',mac.MACHINING_NAME,'@',Cbr.BREED_NAME,'@',Dfe.FEATURE_NAME,'@',Egr.WEIGHT_NAME,'@',gra.GRADE_NAME) AS pdName
+        FROM
+        pd_logiarea AS Ast
+        <!--modify by dai_youcheng start at 2016-6-17-->
+        <!--LEFT JOIN md_logistics_area b ON b.LGCS_AREA_CODE = Ast.LGCS_CODE-->
+        <!--modify by dai_youcheng end at 2016-6-17-->
+        LEFT JOIN PD_CLASSES Bcl ON Ast.CLASSES_CODE = Bcl.CLASSES_CODE
+        LEFT JOIN pd_machining mac ON Ast.CLASSES_CODE = mac.CLASSES_CODE  AND mac.MACHINING_CODE = Ast.MACHINING_CODE
+        LEFT JOIN PD_BREED Cbr ON Ast.CLASSES_CODE = Cbr.CLASSES_CODE AND Cbr.MACHINING_CODE = Ast.MACHINING_CODE AND Ast.BREED_CODE = Cbr.BREED_CODE
+        LEFT JOIN PD_FEATURE Dfe ON Ast.FEATURE_CODE  = Dfe.FEATURE_CODE AND Ast.CLASSES_CODE = Dfe.CLASSES_CODE AND Dfe.MACHINING_CODE = Ast.MACHINING_CODE AND Ast.BREED_CODE = Dfe.BREED_CODE
+        LEFT JOIN pd_weight Egr ON Ast.WEIGHT_CODE =Egr.WEIGHT_CODE AND Ast.FEATURE_CODE  = Egr.FEATURE_CODE AND Ast.CLASSES_CODE = Egr.CLASSES_CODE AND Egr.MACHINING_CODE = Ast.MACHINING_CODE
+        AND Ast.BREED_CODE = Egr.BREED_CODE
+        LEFT JOIN pd_grade gra ON Ast.GRADE_CODE = gra.GRADE_CODE
+        ORDER BY Ast.CLASSES_CODE,Ast.MACHINING_CODE,Ast.BREED_CODE,Ast.FEATURE_CODE,Ast.WEIGHT_CODE,Ast.GRADE_CODE
+        <if test="startPos>=0 and pageCount>0">
+            LIMIT #{startPos}, #{pageCount}
+        </if>
+    </select>
+
+    <select id="getPageCount" parameterType="BaseParam" resultType="int">
+        SELECT count(1)
+        FROM
+        pd_logiarea AS Ast
+        <!--modify by dai_youcheng start at 2016-6-17-->
+        <!--LEFT JOIN md_logistics_area b ON b.LGCS_AREA_CODE = Ast.LGCS_CODE-->
+        <!--modify by dai_youcheng end at 2016-6-17-->
+        LEFT JOIN PD_CLASSES Bcl ON Ast.CLASSES_CODE = Bcl.CLASSES_CODE
+        LEFT JOIN pd_machining mac ON Ast.CLASSES_CODE = mac.CLASSES_CODE  AND mac.MACHINING_CODE = Ast.MACHINING_CODE
+        LEFT JOIN PD_BREED Cbr ON Ast.CLASSES_CODE = Cbr.CLASSES_CODE AND Cbr.MACHINING_CODE = Ast.MACHINING_CODE AND Ast.BREED_CODE = Cbr.BREED_CODE
+        LEFT JOIN PD_FEATURE Dfe ON Ast.FEATURE_CODE  = Dfe.FEATURE_CODE AND Ast.CLASSES_CODE = Dfe.CLASSES_CODE AND Dfe.MACHINING_CODE = Ast.MACHINING_CODE AND Ast.BREED_CODE = Dfe.BREED_CODE
+        LEFT JOIN pd_weight Egr ON Ast.WEIGHT_CODE =Egr.WEIGHT_CODE AND Ast.FEATURE_CODE  = Egr.FEATURE_CODE AND Ast.CLASSES_CODE = Egr.CLASSES_CODE AND Egr.MACHINING_CODE = Ast.MACHINING_CODE
+        AND Ast.BREED_CODE = Egr.BREED_CODE
+         LEFT JOIN pd_grade gra ON Ast.GRADE_CODE = gra.GRADE_CODE
+    </select>
+</mapper>
+
+
+
+
+
+
+

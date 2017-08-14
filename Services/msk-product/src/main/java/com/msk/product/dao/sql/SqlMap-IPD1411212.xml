@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD1411212Logic">
+    <!-- 举报类型查询 -->
+    <select id="queryReportInfo" resultType="com.msk.product.bean.IPD1411212RsBean">
+        SELECT
+        A.REPORT_TYPE_CODE AS reportType,
+        A.REPORT_TITLE AS reportTitle,
+        A.REPORT_DESCRIPTION AS reportDescription
+        FROM
+        PD_REPORT_TYPE
+        AS A
+    </select>
+
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.msk.common.logic.CommonLogic">
+    <sql id="maxIdSql">
+        SELECT
+              CASE
+              WHEN MAX(${filterMap.tableFiled}) IS NULL THEN 1
+              ELSE MAX(${filterMap.tableFiled})+1 END AS MAXID
+        FROM ${filterMap.tableName}
+    </sql>
+
+    <select id="maxId" parameterType="BaseParam" resultType="java.lang.Long">
+        <include refid="maxIdSql"/>
+    </select>
+
+    <select id="findConstantList" parameterType="BaseParam" resultType="com.msk.core.entity.CommConstant">
+        SELECT
+            CONSTANT_TYPE AS constantType,
+            CONSTANT_NAME AS constantName,
+            CONSTANT_VALUE AS constantValue
+        FROM
+            COMM_CONSTANT
+        WHERE
+            CONSTANT_TYPE=#{filterMap.codeName}
+        AND DEL_FLG = 0
+    </select>
+
+    <select id="selectVersion" parameterType="BaseParam" resultType="com.msk.core.entity.BaseEntity">
+        SELECT
+          VER AS  ver
+        FROM ${filterMap.tableName}
+        WHERE 1=1
+        ${filterMap.condtion}
+        AND VER = #{filterMap.ver}
+        FOR UPDATE
+    </select>
+</mapper>

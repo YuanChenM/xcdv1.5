@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlList>
+    <sql id="ISO151426.findCount">
+        SELECT
+        count(SOO.ORDER_ID) AS count
+        FROM
+        SO_ORDER AS SOO
+        WHERE
+        1 = 1
+        AND SOO.DEL_FLG = 0
+    </sql>
+    <sql id="ISO151426.findList">
+        SELECT DISTINCT
+        IFNULL(
+        DATE_FORMAT(SOO.CRT_TIME, '%Y-%m-%d %T'),
+        ''
+        ) AS orderDate,
+        SOO.ORDER_ID AS orderId,
+        SOO.ORDER_CODE AS orderCode,
+        SOO.ORDER_AMOUNT AS realPayment,
+        CASE
+        WHEN (SOO.ORDER_STATUS = 2) THEN
+        1
+        WHEN (SOO.ORDER_STATUS = 3) THEN
+        2
+        WHEN (SOO.ORDER_STATUS = 5) THEN
+        3
+        WHEN (SOO.ORDER_STATUS = 6) THEN
+        4
+        WHEN SOO.ORDER_STATUS = 99 THEN
+        5
+        END AS orderStatus
+        FROM
+        SO_ORDER AS SOO
+        WHERE
+        1 = 1
+        AND soo.DEL_FLG = 0
+    </sql>
+    <sql id="ISO151426.findProductList">
+        SELECT
+        sod.PD_CODE AS productId,
+        sod.PD_NAME AS productName,
+        sod.ORDER_QTY AS number,
+        ifnull(sod.PD_PRICE, 0) AS pdPrice
+        FROM
+        so_order_detail sod
+        WHERE
+        sod.order_id = ?0
+        AND sod.del_flg = 0
+    </sql>
+
+</sqlList>

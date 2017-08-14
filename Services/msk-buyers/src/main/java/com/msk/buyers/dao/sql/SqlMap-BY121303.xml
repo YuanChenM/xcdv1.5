@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121303Logic">
+    <sql id="selectSql">
+        a.BUYER_ID AS buyerId,
+        ifnull(a.BUYER_CODE, '') AS buyerCode,
+        ifnull(a.BUYER_NAME, '') AS buyerName,
+        ifnull(a.BUYER_ADDR, '') AS buyerAddr,
+        ifnull(a.SUPERIOR_ID, '') AS superiorId,
+        ifnull(a.SUPERIOR_TYPE, '') AS superiorType,
+        ifnull(a.SUPERIOR_NAME, '') AS superiorName,
+        ifnull(a.SUPERIOR_QUA, '') AS superiorQua,
+        ifnull(a.PROVINCE_CODE, '') AS provinceCode,
+        ifnull(a.LGCS_AREA_CODE, '') AS lgcsAreaCode,
+        ifnull(a.CITY_CODE, '') AS cityCode,
+        ifnull(a.DISTRICT_CODE, '') AS districtCode,
+        ifnull(a.BUYER_WEBSITE, '') AS buyerWebsite,
+        ifnull(a.BUYER_WECHAT, '') AS buyerWechat,
+        ifnull(a.BUYER_SINGLE_WECHAT,'') AS buyerSingleWechat,
+        ifnull(a.BUYER_QQ,'') AS buyerQq,
+        ifnull(a.STORE_NO, '') AS storeNo,
+        ifnull(a.STORE_AREA, '') AS storeArea,
+        ifnull(a.BUSI_TEL, '') AS busiTel,
+        ifnull(a.EMPLOYEES_NUM, 0) AS employeesNum,
+        ifnull(a.PAYMENT_TYPE, '') AS paymentType,
+        ifnull(a.PLAN_ORDER_GAP, '') AS planOrderGap,
+        ifnull(a.PLAN_ORDER_NUM, '') AS planOrderNum,
+        ifnull(a.ACTUAL_ORDER_GAP, '') AS actualOrderGap,
+        ifnull(a.ACTUAL_ORDER_NUM, '') AS actualOrderNum,
+        ifnull(a.MARKETINGS_STATUS, '') AS marketingsStatus,
+        ifnull(a.REGISTER_SOURCE, '') AS registerSource,
+        ifnull(c.ACCOUNT_NAME, '') AS accountName,
+        ifnull(c.TEL_NO, '') AS telNo,
+        ifnull(a.LGCS_AREA_NAME, '') AS lgcsAreaName,
+        ifnull(a.CITY_NAME, '') AS cityName,
+        ifnull(a.DISTRICT_NAME, '') AS districtName,
+        ifnull(emp.EMPLOYEE_NAME,'') AS bossName,
+        CASE WHEN a.SUPERIOR_TYPE = '01' THEN
+        ifnull(ter.MARKET_NAME,'')
+        WHEN a.SUPERIOR_TYPE = '02' THEN
+        ifnull(food.MARKET_NAME,'')
+        WHEN a.SUPERIOR_TYPE = '05' AND a.SUPERIOR_SUB_TYPE = '01' THEN
+        ifnull(food.MARKET_NAME,'')
+        ELSE ''
+        END AS marketName
+    </sql>
+    <sql id="whereCondition">
+        WHERE
+        a.DEL_FLG = '0'
+        <![CDATA[ AND a.BUYER_CODE IS NOT NULL AND a.BUYER_CODE <> '' ]]>
+        <if test="filterMap.superiorId!=null and filterMap.superiorId!=''">
+            AND a.SUPERIOR_ID = #{filterMap.superiorId}
+        </if>
+        <if test="filterMap.buyerCode!=null and filterMap.buyerCode!=''">
+            AND a.BUYER_CODE like #{filterMap.buyerCode}
+        </if>
+        <if test="filterMap.buyerName!=null and filterMap.buyerName!=''">
+            AND a.BUYER_NAME like #{filterMap.buyerName}
+        </if>
+        <if test="filterMap.buyerAddr!=null and filterMap.buyerAddr!=''">
+            AND a.BUYER_ADDR like #{filterMap.buyerAddr}
+        </if>
+        <if test="filterMap.marketingsStatus!=null and filterMap.marketingsStatus!=''">
+            AND a.MARKETINGS_STATUS like #{filterMap.marketingsStatus}
+        </if>
+        <if test="filterMap.superiorName!=null and filterMap.superiorName!=''">
+            AND a.SUPERIOR_NAME like #{filterMap.superiorName}
+        </if>
+        <if test="filterMap.accountName!=null and filterMap.accountName!=''">
+            AND c.ACCOUNT_NAME like #{filterMap.accountName}
+        </if>
+        <if test="filterMap.telNo!=null and filterMap.telNo!=''">
+            AND c.TEL_NO like #{filterMap.telNo}
+        </if>
+        <if test="filterMap.bossName!=null and filterMap.bossName!=''">
+            AND emp.EMPLOYEE_NAME like #{filterMap.bossName}
+        </if>
+        <if test="filterMap.lgcsAreaName!=null and filterMap.lgcsAreaName!=''">
+            AND a.LGCS_AREA_NAME like #{filterMap.lgcsAreaName}
+        </if>
+        <if test="filterMap.cityName!=null and filterMap.cityName!=''">
+            AND a.CITY_NAME like #{filterMap.cityName}
+        </if>
+        <if test="filterMap.storeNo!=null and filterMap.storeNo!=''">
+            AND a.STORE_NO  like #{filterMap.storeNo}
+        </if>
+        <if test="filterMap.districtName!=null and filterMap.districtName!=''">
+            AND a.DISTRICT_NAME like #{filterMap.districtName}
+        </if>
+        <if test="filterMap.marketName!=null and filterMap.marketName!=''">
+            AND (ter.MARKET_NAME like #{filterMap.marketName} OR food.MARKET_NAME like #{filterMap.marketName})
+        </if>
+        ORDER BY a.BUYER_ID
+    </sql>
+    <sql id="selectFrom">
+        FROM by_buyer_basic_info a
+        LEFT JOIN by_buyer_account c
+          ON c.BUYER_ID = a.BUYER_ID AND c.DEL_FLG = a.DEL_FLG
+        LEFT JOIN by_buyer_employee emp
+        ON emp.BUYER_ID = a.BUYER_ID  and emp.EMPLOYEE_TYPE ='1' AND emp.DEL_FLG = a.DEL_FLG
+        LEFT JOIN by_market_terminal ter ON a.SUPERIOR_ID = ter.TER_MARKET_ID AND ter.DEL_FLG = a.DEL_FLG
+        LEFT JOIN by_market_food food ON a.SUPERIOR_ID = food.FOD_MARKET_ID AND food.DEL_FLG = a.DEL_FLG
+    </sql>
+    <select id="findPageList" resultType="com.msk.buyers.bean.BY121303Bean" parameterType="BaseParam">
+        select
+        <include
+                refid="selectSql"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+    </select>
+
+    <update id="deleteBuyerInfo" parameterType="BaseParam">
+        UPDATE
+           ${filterMap.tableName}
+        SET
+             DEL_FLG = #{filterMap.delFlg}
+            ,UPD_ID = #{updId}
+            ,UPD_TIME = #{updTime}
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+    </update>
+</mapper>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121224Logic">
+    <sql id="selectFiled">
+        IFNULL(B.BUYER_ID,'') AS buyerId,
+        IFNULL(B.BUYER_CODE,'') AS buyerCode,
+        IFNULL(B.BUYER_NAME,'') AS buyerName,
+        IFNULL(B.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(B.LGCS_AREA_NAME,'') AS lgcsAreaName,
+        IFNULL(B.PROVINCE_CODE,'') AS provinceCode,
+        IFNULL(B.PROVINCE_NAME,'') AS provinceName,
+        IFNULL(B.CITY_CODE,'') AS cityCode,
+        IFNULL(B.CITY_NAME,'') AS cityName,
+        IFNULL(B.DISTRICT_CODE,'') AS districtCode,
+        IFNULL(B.DISTRICT_NAME,'') AS districtName,
+        IFNULL(B.BUYER_ADDR,'') AS buyerAddr,
+        ifnull(B.SUPERIOR_TYPE, '') AS superiorType,
+        ifnull(B.SUPERIOR_NAME, '') AS superiorName,
+        ifnull(J.ACCOUNT_NAME, '') AS accountName,
+        ifnull(J.TEL_NO, '') AS busiTel,
+         ifnull(B.STORE_NO, '') AS buyerShop,
+        IFNULL(B.SUPERIOR_TYPE,'') AS buyerType,
+        IFNULL(B.SUPERIOR_NAME,'') AS buyerTypeName,
+        IFNULL(B.MARKETINGS_STATUS,'') AS marketingsStatusCode,
+        IFNULL(TERMINAL.MARKET_NAME,FOOD.MARKET_NAME) AS marketName,
+        IFNULL(B.SUPERIOR_ID,'') AS marketId
+    </sql>
+    <sql id="selectFrom">
+        FROM by_buyer_basic_info AS B
+        LEFT JOIN by_buyer_account J ON J.BUYER_ID = B.BUYER_ID AND J.DEL_FLG = B.DEL_FLG
+        LEFT JOIN by_market_food AS FOOD ON FOOD.FOD_MARKET_ID=B.SUPERIOR_ID AND B.SUPERIOR_TYPE='2' AND FOOD.DEL_FLG = B.DEL_FLG
+        LEFT JOIN by_market_terminal AS TERMINAL ON TERMINAL.TER_MARKET_ID=B.SUPERIOR_ID AND B.SUPERIOR_TYPE='1' AND B.DEL_FLG = TERMINAL.DEL_FLG
+    </sql>
+    <sql id="whereCondition">
+        <where>
+            (B.DEL_FLG IS NULL OR B.DEL_FLG = 0) AND  (J.DEL_FLG IS NULL OR J.DEL_FLG =0)
+            <if test="buyerIdList !=null and buyerIdList.size()>0">
+                AND B.BUYER_ID in
+                <foreach item="buyerId" index="index" collection="buyerIdList"
+                         open="(" separator="," close=")">
+                    #{buyerId}
+                </foreach>
+            </if>
+            <if test="filterMap.buyerCode!=null and filterMap.buyerCode!=''">
+                <!--AND B.BUYER_CODE LIKE '%${buyerCode}%'-->
+                AND B.BUYER_CODE LIKE #{filterMap.buyerCode}
+
+            </if>
+            <if test="filterMap.buyerName!=null and filterMap.buyerName!=''">
+                <!--AND B.BUYER_NAME like '%${buyerName}%'-->
+                AND B.BUYER_NAME like #{filterMap.buyerName}
+            </if>
+
+            <if test="filterMap.buyerAddr!=null and filterMap.buyerAddr!=''">
+                AND B.BUYER_ADDR like #{filterMap.buyerAddr}
+                <!--AND B.BUYER_ADDR like '%${buyerAddr}%'-->
+            </if>
+            <if test="filterMap.busiTel!=null and filterMap.busiTel!=''">
+                <!--AND J.TEL_NO like '%${busiTel}%' -->
+                AND J.TEL_NO like #{filterMap.busiTel}
+            </if>
+
+            <if test="lgcsAreaCode!=null and lgcsAreaCode!=''">
+                AND B.LGCS_AREA_CODE=#{lgcsAreaCode}
+            </if>
+
+            <if test="provinceCode!=null and provinceCode!=''">
+                AND B.PROVINCE_CODE = #{provinceCode}
+            </if>
+            <if test="cityCode!=null and cityCode!=''">
+                AND B.CITY_CODE=#{cityCode}
+            </if>
+            <if test="districtCode!=null and districtCode!=''">
+                AND B.DISTRICT_CODE=#{districtCode}
+            </if>
+            <if test="buyerShop!=null and buyerShop!=''">
+                AND B.STORE_NO=#{buyerShop}
+            </if>
+            <if test="buyerType!=null and buyerType!=''">
+                AND B.SUPERIOR_TYPE = #{buyerType}
+            </if>
+            <if test="marketId!=null and marketId!=''">
+                AND B.SUPERIOR_ID = #{marketId}
+            </if>
+            <if test="lgcsAreaCode!=null and lgcsAreaCode!=''">
+                AND B.LGCS_AREA_CODE = #{lgcsAreaCode}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findList" resultType="com.msk.buyers.bean.IBY121223Result"
+            parameterType="com.msk.buyers.bean.IBY121224Param">
+        SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+    </select>
+
+    <select id="findEmployee" parameterType="BaseParam" resultType="com.msk.buyers.bean.IBY121207RsParam">
+        SELECT
+        ID AS id,
+        IFNULL(BUYER_ID,'') AS buyerId,
+        IFNULL(EMPLOYEE_TYPE,'') AS employeeType,
+        IFNULL(EMPLOYEE_NAME,'') AS employeeName,
+        IFNULL(EMPLOYEE_TEL,'') AS employeeTel,
+        IFNULL(EMPLOYEE_QQ,'') AS employeeQq,
+        IFNULL(EMPLOYEE_WECHAT,'') AS employeeWechat,
+        IFNULL(BUS_CARD_ID,'') AS busCardId,
+        IFNULL(BUS_CARD_SUF,'') AS busCardSuf,
+        IFNULL(BUS_CARD_FLG,'') AS busCardFlg,
+        IFNULL(CONTACT_PERSON,'') AS contactPerson,
+        IFNULL(PURCHASE,'') AS purchase,
+        IFNULL(RECEIVE_PERSON,'') AS receivePerson
+        FROM
+        by_buyer_employee
+        WHERE
+        DEL_FLG = 0 AND  EMPLOYEE_TYPE='1'
+        <if test="employeeName!=null and employeeName!=''">
+            <!--AND EMPLOYEE_NAME LIKE '%${employeeName}%'-->
+            AND EMPLOYEE_NAME LIKE #{employeeName}
+        </if>
+        <if test="buyerIdList !=null and buyerIdList.size()>0">
+            AND BUYER_ID IN
+            <foreach item="buyerId" index="index" collection="buyerIdList"
+                     open="(" separator="," close=")">
+                #{buyerId}
+            </foreach>
+        </if>
+    </select>
+</mapper>

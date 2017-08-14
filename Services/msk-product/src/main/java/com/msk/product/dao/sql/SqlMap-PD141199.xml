@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141199Logic">
+	<select id="searchBasicInfo" resultType="com.msk.product.bean.PD141199Bean">
+		select distinct CLASSES_CODE AS classesCode,
+          CLASSES_NAME AS classesName,
+          MACHINING_CODE AS machiningCode,
+          MACHINING_NAME AS machiningName,
+	      BREED_CODE AS breedCode,
+          BREED_NAME AS breedName,
+	      FEATURE_CODE AS featureCode,
+          FEATURE_NAME AS featureName,
+          WEIGHT_CODE AS weightCode,
+	      PKG_CODE AS pkgCode,
+	      GRADE_CODE AS gradeCode,
+	      LOGIAREA_CODE AS logiareaCode,
+	      PRICECYCLE_PERIOD AS pricecyclePeriod
+		FROM
+		  PD_PRICEPRD_LOGIAREA
+		<include refid="whereCondition"/>
+	</select>
+	 <sql id="whereCondition">
+        <where>
+            <if test="classesCode!=null and classesCode!=''">
+               CLASSES_CODE = #{classesCode}
+            </if>
+            <if test="breedCode!=null and breedCode!=''">
+                AND BREED_CODE = #{breedCode}
+            </if>
+            <if test="featureCode!=null and featureCode!=''">
+                AND FEATURE_CODE = #{featureCode}
+            </if>
+            <if test="machiningCode!=null and machiningCode!=''">
+                AND MACHINING_CODE = #{machiningCode}
+            </if>
+            <if test="pkgCode!=null and pkgCode!=''">
+                AND PKG_CODE = #{pkgCode}
+            </if>
+            <if test="weightCode!=null and weightCode!=''">
+                AND WEIGHT_CODE = #{weightCode}
+            </if>
+            <if test="gradeCode!=null and gradeCode!=''">
+                AND GRADE_CODE = #{gradeCode}
+            </if>
+            <if test="logiareaCode!=null and logiareaCode!=''">
+                AND LOGIAREA_CODE = #{logiareaCode}
+            </if>
+            <if test="pricecyclePeriod!=null and pricecyclePeriod!=''">
+                AND PRICECYCLE_PERIOD = #{pricecyclePeriod}
+            </if>
+        </where>
+      </sql>
+      
+      <select id="searchPriceCycle" resultType="com.msk.product.bean.PD141199Bean">
+        select PRICEOFKG AS priceofkg, 
+           PRICEOFBOX AS priceofbox,
+          PRICECYCLE_ID AS pricecycleId
+        FROM
+          PD_PRICEPRD_LOGIAREA
+        <include refid="whereCondition"/>
+    </select>
+</mapper>

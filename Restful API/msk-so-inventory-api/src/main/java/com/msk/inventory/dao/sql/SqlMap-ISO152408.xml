@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.ISO152408ServiceImpl">
+    <update id="updateDecreaseQty" parameterType="com.msk.inventory.bean.ISO152408ParamBean">
+        UPDATE ivm_inventory_by_prod
+        SET
+        ALLOCATED_QTY=ALLOCATED_QTY-#{decreaseQty}
+        WHERE 1=1
+        AND EXTRACTVALUE(BELONE_XML,'/PLT')=#{plantFormId}
+        AND EXTRACTVALUE(BELONE_XML,'/AREA')=#{lgcsCode}
+        AND EXTRACTVALUE(BELONE_XML,'/SLT')=#{slType}
+        <!--AND OWNER_CODE=#{slCode}-->
+        AND CONCAT(
+		  EXTRACTVALUE(PRODUCT_XML, '/CLS_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/MACH_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/BRE_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/FEAT_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/WEI_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/GRAD_C')
+	    )=#{pdCode}
+        AND IV_STATUS=#{inventoryStatus}
+    </update>
+
+    <select id="findPdIvOccqupyty" parameterType="com.msk.inventory.bean.ISO152408ParamBean" resultType="com.msk.inventory.bean.ISO152408ParamBean">
+        select ALLOCATED_QTY as decreaseQty
+        from ivm_inventory_by_prod
+        where 1=1
+        AND EXTRACTVALUE(BELONE_XML,'/PLT')=#{plantFormId}
+        AND EXTRACTVALUE(BELONE_XML,'/AREA')=#{lgcsCode}
+        AND EXTRACTVALUE(BELONE_XML,'/SLT')=#{slType}
+        <!--AND OWNER_CODE=#{slCode}-->
+        AND CONCAT(
+        EXTRACTVALUE(PRODUCT_XML, '/CLS_C'),
+        EXTRACTVALUE(PRODUCT_XML, '/MACH_C'),
+        EXTRACTVALUE(PRODUCT_XML, '/BRE_C'),
+        EXTRACTVALUE(PRODUCT_XML, '/FEAT_C'),
+        EXTRACTVALUE(PRODUCT_XML, '/WEI_C'),
+        EXTRACTVALUE(PRODUCT_XML, '/GRAD_C')
+        )=#{pdCode}
+        AND IV_STATUS=#{inventoryStatus}
+    </select>
+</mapper>

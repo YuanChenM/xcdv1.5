@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.price.logic.SP171113Logic">
+    <select id="findPricePercent" resultType="com.msk.price.bean.SP171113Bean" parameterType="BaseParam">
+        SELECT
+        WAY_CODE AS wayCode,
+        WAYGRADE_CODE AS wayGateCode,
+        WAYGRADE_NAME AS wayGateName,
+        WAYGRADE_PERCENT AS wayGradePercent
+        FROM sp_wayg_detail
+        WHERE WAY_CODE = ${filterMap.wayCode}
+        ORDER BY WAYGRADE_CODE
+    </select>
+
+    <select id="findBeforePrice" resultType="com.msk.price.bean.SP171113Bean" parameterType="BaseParam">
+        SELECT
+        WAYGRADE_PRICE AS frontPrice
+        FROM sp_seller_pd_priceplate
+        WHERE PD_CODE = ${filterMap.pdCode}
+        AND LGCS_CODE = ${filterMap.lgcdCode}
+        AND PRICE_PERIOD = ${filterMap.frontPricePeriod}
+        AND DEL_FLG = 0
+        ORDER BY WAYGRADE_CODE
+    </select>
+
+    <select id="findPrice" resultType="com.msk.price.bean.SP171113Bean" parameterType="BaseParam">
+       SELECT
+        PRICE_ID AS priceId,
+        WAYGRADE_CODE AS wayGateCode,
+        WAYGRADE_PRICE AS price,
+        DEL_FLG AS delFlg
+        FROM sp_seller_pd_priceplate
+        WHERE PD_CODE = ${filterMap.pdCode}
+        AND LGCS_CODE = ${filterMap.lgcdCode}
+        AND PRICE_PERIOD = ${filterMap.pricePeriod}
+        AND DEL_FLG = 0
+        ORDER BY WAYGRADE_CODE
+    </select>
+
+    <update id="modify" parameterType="BaseParam">
+        UPDATE sp_seller_pd_priceplate
+        SET WAYGRADE_PRICE = #{filterMap.price}
+        ,WAYGRADE_PRICE_BOX = #{filterMap.piceBox}
+        ,UPD_ID = #{filterMap.updId}
+        ,UPD_TIME = #{filterMap.updDate}
+        ,DEL_FLG = #{filterMap.delFlg}
+        ,VER = VER + 1
+        WHERE PRICE_ID=#{filterMap.priceId}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        AND  DEL_FLG='0'
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+    <select id="findWeight" resultType="com.msk.price.bean.SP171112Bean" parameterType="BaseParam">
+        SELECT
+        WEIGHT AS weightName
+        from sp_seller_pd_priceplate sp
+        LEFT JOIN sp_logs_product sps ON sp.LGCS_CODE = sps.LGCS_CODE AND sp.PD_CODE = sps.PD_CODE
+        WHERE PRICE_ID=#{filterMap.priceId}
+        ORDER BY WAYGRADE_CODE
+    </select>
+
+</mapper>

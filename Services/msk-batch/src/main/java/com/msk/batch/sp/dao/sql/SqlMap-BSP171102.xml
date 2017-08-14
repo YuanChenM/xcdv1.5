@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.sp.logic.BSP171102Logic">
+    <update id="updateForecastStockSales" parameterType="com.msk.batch.sp.bean.BSP171102Param">
+        UPDATE SP_FORECAST_STOCKSALES
+        SET DEL_FLG = 1
+        WHERE DEL_FLG = 0
+        AND FORECAST_YM = #{forecastYm}
+    </update>
+
+    <update id="updatePdDemandSeller" parameterType="com.msk.batch.sp.bean.BSP171102Param">
+        UPDATE SP_PD_DEMAND_SELLER
+        SET DEL_FLG = 1
+        WHERE DEL_FLG = 0
+        AND FORECAST_YM = #{forecastYm}
+    </update>
+
+    <select id="selectForecastNum" parameterType="com.msk.batch.sp.bean.BSP171102Param"
+            resultType="com.msk.batch.sp.bean.BSP171102Bean">
+        SELECT
+        sfs.FORECAST_COND_ID as forecastCondId,
+        sfs.LGCS_CODE as lgcsCode,
+        sfs.PD_CODE as pdCode,
+        sfs.FORECAST_YM as forecastYm,
+        IFNULL(sfs.SALES_CNT, 0) * (IFNULL(sfc.SECURITY_RATIO, sfc2.SECURITY_RATIO)*3 + IFNULL(sfc.SELL_FORECAST_RATIO, sfc2.SELL_FORECAST_RATIO)) - IFNULL(sfs.STOCK_CNT, 0) - IFNULL(sfs.PLAN_CNT, 0) as forecastNum
+        FROM
+        SP_FORECAST_STOCKSALES sfs
+        LEFT JOIN SP_FORECAST_CONDITION sfc
+        ON sfs.LGCS_CODE = sfc.LGCS_CODE
+        AND sfs.FORECAST_YM = sfc.FORECAST_YM
+        AND sfc.DEL_FLG = 0
+        LEFT JOIN SP_FORECAST_CONDITION sfc2
+        ON sfs.LGCS_CODE = sfc2.LGCS_CODE
+        AND sfc2.FORECAST_YM = #{thisYm}
+        AND sfc2.DEL_FLG = 0
+        WHERE sfs.FORECAST_YM = #{forecastYm}
+        AND sfs.DEL_FLG = 0
+    </select>
+
+    <insert id="batchSave"  parameterType="List">
+        INSERT INTO SP_FORECAST_STOCKSALES
+        (FORECAST_COND_ID,
+        LGCS_CODE,
+        PD_CODE,
+        GRADE_CODE,
+        FORECAST_YM,
+        SALES_CNT,
+        STOCK_CNT,
+        PLAN_CNT,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (#{item.forecastCondId},
+            #{item.lgcsCode},
+            #{item.pdCode},
+            #{item.gradeCode},
+            #{item.forecastYm},
+            #{item.salesCnt},
+            #{item.stockCnt},
+            #{item.planCnt},
+            0,
+            #{item.crtId},
+            now(),
+            #{item.updId},
+            now(),
+            #{item.actId},
+            now(),
+            1)
+        </foreach>
+    </insert>
+
+    <insert id="batchSavePdDemandSeller"  parameterType="List">
+        INSERT INTO SP_PD_DEMAND_SELLER
+        (FORECAST_ID,
+        FORECAST_COND_ID,
+        FORECAST_YM,
+        LGCS_CODE,
+        PD_CODE,
+        GRADE_CODE,
+        FORECAST_NUM,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (
+            #{item.forecastId},
+            #{item.forecastCondId},
+            #{item.forecastYm},
+            #{item.lgcsCode},
+            #{item.pdCode},
+            #{item.gradeCode},
+            #{item.forecastNum},
+            0,
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            #{item.actId},
+            #{item.actTime},
+            1)
+        </foreach>
+    </insert>
+</mapper>

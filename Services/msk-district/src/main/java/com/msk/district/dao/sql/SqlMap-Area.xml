@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.district.logic.AreaLogic">
+
+    <select id="findList" resultType="com.msk.district.bean.AreaBean" parameterType="com.msk.district.bean.DistrictParam">
+        SELECT
+        AREA_ID AS areaId,
+        AREA_CODE AS areaCode,
+        AREA_NAME AS areaName,
+        DIVISION_LEVEL AS divisionLevel,
+        SPELL AS spell,
+        SHORT_SPELL AS shortSpell
+        FROM MD_AREA
+        WHERE
+        DEL_FLG = 0
+        <if test="areaCode != null and areaCode !=''">
+            and AREA_CODE =#{areaCode}
+        </if>
+        <if test="areaCodes !=null and areaCodes.length>0">
+             and AREA_CODE in
+            <foreach item="areaCode" index="index" collection="areaCodes"
+                     open="(" separator="," close=")">
+                #{areaCode}
+            </foreach>
+        </if>
+    </select>
+
+    <!-- 表字段 -->
+    <sql id="selectSql">
+        AREA_ID AS areaId,
+        AREA_CODE AS areaCode,
+        AREA_NAME AS areaName,
+        DIVISION_LEVEL AS divisionLevel,
+        SPELL AS spell,
+        SHORT_SPELL AS shortSpell,
+        (CASE DEL_FLG
+        WHEN '1' THEN '是'
+        ELSE '否' END) AS delFlg,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime
+    </sql>
+    <!--条件 -->
+    <sql id="whereCondition">
+        <where>
+            <if test="filterMap.areaCode!=null and filterMap.areaCode!=''">
+                AND AREA_CODE LIKE #{filterMap.areaCode}
+            </if>
+            <if test="filterMap.areaName!=null and filterMap.areaName!=''">
+                AND AREA_NAME LIKE #{filterMap.areaName}
+            </if>
+            <if test="filterMap.spell!=null and filterMap.spell!=''">
+                AND SPELL LIKE #{filterMap.spell}
+            </if>
+            <if test="filterMap.shortSpell!=null and filterMap.shortSpell!=''">
+                AND SHORT_SPELL LIKE #{filterMap.shortSpell}
+            </if>
+            <if test="filterMap.delFlg!=null and filterMap.delFlg!=''">
+                AND DEL_FLG = #{filterMap.delFlg}
+            </if>
+        </where>
+    </sql>
+    <!--数据插入 -->
+    <insert id="save" parameterType="com.msk.district.bean.AreaBean">
+        INSERT INTO md_area
+        (
+        AREA_ID,
+        AREA_CODE,
+        AREA_NAME,
+        DIVISION_LEVEL,
+        SPELL,
+        SHORT_SPELL,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        SELECT
+        ifnull(MAX(AREA_ID),0) + 1,
+        #{areaCode},
+        #{areaName},
+        #{divisionLevel},
+        #{shortSpell},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        #{ver}
+        FROM md_area
+        )
+    </insert>
+    <update id="modify" parameterType="com.msk.district.bean.AreaBean">
+        update md_area
+        set
+        AREA_CODE=#{areaCode},
+        AREA_NAME=#{areaName},
+        SPELL=#{spell},
+        SHORT_SPELL=#{shortSpell},
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime}
+        WHERE
+        AREA_ID=#{areaId}
+    </update>
+    <select id="findPageList" resultType="com.msk.district.bean.AreaBean" parameterType="BaseParam">
+        select
+        <include refid="selectSql"/>
+        from md_area
+        <include refid="whereCondition"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="Integer" parameterType="BaseParam">
+        select count(1)
+        from md_area
+        <include refid="whereCondition"/>
+    </select>
+
+    <update id="abolish" parameterType="com.msk.district.bean.AreaBean">
+        update md_area
+        SET DEL_FLG = 1,
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime}
+        WHERE AREA_ID=#{areaId}
+    </update>
+    <update id="restore" parameterType="com.msk.district.bean.AreaBean">
+        update md_area
+        SET DEL_FLG = 0,
+        UPD_ID=#{updId},
+        UPD_TIME=#{updTime}
+        WHERE AREA_ID=#{areaId}
+    </update>
+</mapper>

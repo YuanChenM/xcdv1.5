@@ -1,0 +1,12 @@
+spring:
+  mvc:
+    static-path-pattern: /static/**
+
+  datasource:
+    url: jdbc:mysql://10.173.225.18:3306/msk_batch
+    username: msk-web
+    password: Msk123
+    driver-class-name: com.mysql.jdbc.Driver
+server:
+  port: 9090
+  context-path: /batch-manager/

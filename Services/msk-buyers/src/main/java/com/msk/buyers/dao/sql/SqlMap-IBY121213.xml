@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121213Logic">
+    <select id="getPdMctStd" resultType="com.msk.core.entity.ByResearchStdMct" parameterType="BaseParam">
+        SELECT STANDARD_ID AS standardId
+        FROM pd_standard
+        WHERE CLASSES_CODE = #{filterMap.classesCode}
+        AND MACHINING_CODE = #{filterMap.machiningCode}
+        AND BREED_CODE = #{filterMap.breedCode}
+        AND CLASSESTREE_CODE = #{filterMap.treeCode}
+    </select>
+
+    <select id="countResearchMct" parameterType="BaseParam" resultType="int">
+        SELECT count(1)
+        FROM by_research_std_mct
+        WHERE BUYER_ID = #{filterMap.buyerId}
+        AND STANDARD_ID = #{filterMap.standardId}
+    </select>
+
+    <select id="getPdMct" resultType="com.msk.core.entity.ByResearchStdMct" parameterType="BaseParam">
+        SELECT 0 AS id
+             , '' AS buyerId
+             , a.CLASSES_CODE AS classesCode
+             , a.MACHINING_CODE AS machiningCode
+             , a.BREED_CODE AS breedCode
+             , a.STANDARD_ID AS standardId
+             , b.MCT_STD_ITEM_ID AS mctStdItemId
+             , c.MCT_STD_ITEM_NAME AS mctStdItemName
+             , b.MCT_OK_VAL AS okVal
+             , b.MCT_NG_VAL AS ngVal
+             , '' AS description
+             , b.REMARK AS remark
+             , '0' AS isResearch
+         FROM pd_standard a
+         INNER JOIN pd_mct_std b
+         ON b.STANDARD_ID = a.STANDARD_ID
+         AND b.DEL_FLG = a.DEL_FLG
+         INNER JOIN pd_mct_std_item c
+         ON c.MCT_STD_ITEM_ID = b.MCT_STD_ITEM_ID
+         AND c.DEL_FLG = b.DEL_FLG
+         AND c.IS_CATALOG = '1'
+         WHERE a.CLASSES_CODE = #{filterMap.classesCode}
+         AND a.MACHINING_CODE = #{filterMap.machiningCode}
+         AND a.BREED_CODE = #{filterMap.breedCode}
+         AND a.CLASSESTREE_CODE = #{filterMap.treeCode}
+    </select>
+
+    <select id="getResearchMct" resultType="com.msk.core.entity.ByResearchStdMct" parameterType="BaseParam">
+        SELECT ID AS id
+             , BUYER_ID AS buyerId
+             , CLASSES_CODE AS classesCode
+             , MACHINING_CODE AS machiningCode
+             , BREED_CODE AS breedCode
+             , STANDARD_ID AS standardId
+             , MCT_STD_ITEM_ID AS mctStdItemId
+             , MCT_STD_ITEM_NAME AS mctStdItemName
+             , OK_VAL AS okVal
+             , NG_VAL AS ngVal
+             , DESCRIPTION AS description
+             , REMARK AS remark
+             , IS_RESEARCH AS isResearch
+        FROM by_research_std_mct
+        WHERE BUYER_ID = #{filterMap.buyerId}
+        AND STANDARD_ID = #{filterMap.standardId}
+    </select>
+
+    <update id="modify" parameterType="com.msk.core.entity.ByResearchStdMct">
+        UPDATE by_research_std_mct
+        SET OK_VAL = #{okVal}
+        , NG_VAL = #{ngVal}
+        , DESCRIPTION = #{description}
+        , IS_RESEARCH = #{isResearch}
+        , UPD_ID = #{updId}
+        , UPD_TIME = #{updTime}
+        WHERE BUYER_ID = #{buyerId}
+        AND STANDARD_ID = #{standardId}
+        AND MCT_STD_ITEM_ID = #{mctStdItemId}
+        AND DEL_FLG = '0'
+    </update>
+
+    <insert id="save" parameterType="com.msk.core.entity.ByResearchStdMct">
+        INSERT INTO by_research_std_mct
+        (
+        ID,
+        BUYER_ID,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        BREED_CODE,
+        STANDARD_ID,
+        MCT_STD_ITEM_ID,
+        MCT_STD_ITEM_NAME,
+        OK_VAL,
+        NG_VAL,
+        DESCRIPTION,
+        REMARK,
+        IS_RESEARCH,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        SELECT @rownum:=@rownum + 1 + a.maxId as id
+        , #{buyerId} AS buyerId
+        , #{classesCode} AS classesCode
+        , #{machiningCode} AS machiningCode
+        , #{breedCode} AS breedCode
+        , #{standardId} AS standardId
+        , a.MCT_STD_ITEM_ID AS mctStdItemId
+        , a.MCT_STD_ITEM_NAME AS mctStdItemName
+        , a.MCT_OK_VAL AS okVal
+        , a.MCT_NG_VAL AS ngVal
+        , '' AS description
+        , a.REMARK AS remark
+        , '0' AS isResearch
+        , #{delFlg}
+        , #{updId}
+        , #{updTime}
+        , #{updId}
+        , #{updTime}
+        , #{updId}
+        , #{updTime}
+        , #{ver}
+        FROM (
+        SELECT @rownum:=0 AS rowNum
+        , (SELECT ifnull(MAX(ID), 0) FROM by_research_std_mct) AS maxId
+        , std.MCT_STD_ITEM_ID
+        , item.MCT_STD_ITEM_NAME
+        , std.MCT_OK_VAL
+        , std.MCT_NG_VAL
+        , std.REMARK
+        FROM pd_mct_std std
+        INNER JOIN pd_mct_std_item item
+        ON item.MCT_STD_ITEM_ID = std.MCT_STD_ITEM_ID
+        AND item.DEL_FLG = std.DEL_FLG
+        AND item.IS_CATALOG = '1'
+        WHERE std.STANDARD_ID = #{standardId}
+        AND std.DEL_FLG = '0'
+        ORDER BY std.MCT_STD_ITEM_ID) a
+    </insert>
+</mapper>

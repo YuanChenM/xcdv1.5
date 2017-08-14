@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.BS2102113Logic">
+
+
+    <insert id="saveHouseWork" parameterType="List">
+        INSERT INTO sl_house_work (
+        WORK_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        WORK_START,
+        WORK_END,
+        WORK_COMP,
+        WORK_POSITION,
+        WORK_STATION,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+        <foreach collection="list" item="houseWork" index="index" separator=",">
+            (
+            #{houseWork.workId},
+            #{houseWork.slCode},
+            #{houseWork.houseCode},
+            #{houseWork.workStart},
+            #{houseWork.workEnd},
+            #{houseWork.workComp},
+            #{houseWork.workPosition},
+            #{houseWork.workStation},
+            #{houseWork.delFlg},
+            #{houseWork.crtId},
+            #{houseWork.crtTime},
+            #{houseWork.updId},
+            #{houseWork.updTime},
+            #{houseWork.actId},
+            #{houseWork.actTime},
+            #{houseWork.ver}
+            )
+        </foreach>
+    </insert>
+
+
+    <insert id="saveHouseWorkHis" parameterType="List">
+        INSERT INTO sl_house_work_his (
+        WORK_HIS_ID,
+        WORK_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        WORK_START,
+        WORK_END,
+        WORK_COMP,
+        WORK_POSITION,
+        WORK_STATION,
+        ACT_FLG,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+        <foreach collection="list" item="houseWorkHis" index="index" separator=",">
+            (
+            #{houseWorkHis.workHisId},
+            #{houseWorkHis.workId},
+            #{houseWorkHis.slCode},
+            #{houseWorkHis.houseCode},
+            #{houseWorkHis.workStart},
+            #{houseWorkHis.workEnd},
+            #{houseWorkHis.workComp},
+            #{houseWorkHis.workPosition},
+            #{houseWorkHis.workStation},
+            #{houseWorkHis.actFlg},
+            #{houseWorkHis.delFlg},
+            #{houseWorkHis.crtId},
+            #{houseWorkHis.crtTime},
+            #{houseWorkHis.updId},
+            #{houseWorkHis.updTime},
+            #{houseWorkHis.actId},
+            #{houseWorkHis.actTime},
+            #{houseWorkHis.ver}
+            )
+        </foreach>
+    </insert>
+
+
+    <insert id="saveHouseEdu" parameterType="List">
+        INSERT INTO sl_house_education (
+        EDU_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        EDU_START,
+        EDU_END,
+        EDU_COMP,
+        EDU_RECORD,
+        EDU_DEGREE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+        <foreach collection="list" item="houseEdu" index="index" separator=",">
+            (
+            #{houseEdu.eduId},
+            #{houseEdu.slCode},
+            #{houseEdu.houseCode},
+            #{houseEdu.eduStart},
+            #{houseEdu.eduEnd},
+            #{houseEdu.eduComp},
+            #{houseEdu.eduRecord},
+            #{houseEdu.eduDegree},
+            #{houseEdu.delFlg},
+            #{houseEdu.crtId},
+            #{houseEdu.crtTime},
+            #{houseEdu.updId},
+            #{houseEdu.updTime},
+            #{houseEdu.actId},
+            #{houseEdu.actTime},
+            #{houseEdu.ver}
+            )
+        </foreach>
+    </insert>
+
+
+    <insert id="saveHouseEduHis" parameterType="List">
+        INSERT INTO sl_house_education_his (
+        EDU_HIS_ID,
+        EDU_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        EDU_START,
+        EDU_END,
+        EDU_COMP,
+        EDU_RECORD,
+        EDU_DEGREE,
+        ACT_FLG,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+        <foreach collection="list" item="houseEduHis" index="index" separator=",">
+            (
+            #{houseEduHis.eduHisId},
+            #{houseEduHis.eduId},
+            #{houseEduHis.slCode},
+            #{houseEduHis.houseCode},
+            #{houseEduHis.eduStart},
+            #{houseEduHis.eduEnd},
+            #{houseEduHis.eduComp},
+            #{houseEduHis.eduRecord},
+            #{houseEduHis.eduDegree},
+            #{houseEduHis.actFlg},
+            #{houseEduHis.delFlg},
+            #{houseEduHis.crtId},
+            #{houseEduHis.crtTime},
+            #{houseEduHis.updId},
+            #{houseEduHis.updTime},
+            #{houseEduHis.actId},
+            #{houseEduHis.actTime},
+            #{houseEduHis.ver}
+            )
+        </foreach>
+    </insert>
+
+
+    <insert id="saveHouseTrain" parameterType="List">
+        INSERT INTO sl_house_training (
+        TRAIN_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        TRAIN_START,
+        TRAIN_END,
+        TRAIN_COMP,
+        TRAIN_CERTIFICATE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+        <foreach collection="list" item="houseTrain" index="index" separator=",">
+            (
+            #{houseTrain.trainId},
+            #{houseTrain.slCode},
+            #{houseTrain.houseCode},
+            #{houseTrain.trainStart},
+            #{houseTrain.trainEnd},
+            #{houseTrain.trainComp},
+            #{houseTrain.trainCertificate},
+            #{houseTrain.delFlg},
+            #{houseTrain.crtId},
+            #{houseTrain.crtTime},
+            #{houseTrain.updId},
+            #{houseTrain.updTime},
+            #{houseTrain.actId},
+            #{houseTrain.actTime},
+            #{houseTrain.ver}
+            )
+        </foreach>
+    </insert>
+
+
+    <insert id="saveHouseTrainHis" parameterType="List">
+        INSERT INTO sl_house_training_his (
+        TRAIN_HIS_ID,
+        TRAIN_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        TRAIN_START,
+        TRAIN_END,
+        TRAIN_COMP,
+        TRAIN_CERTIFICATE,
+        ACT_FLG,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+        <foreach collection="list" item="houseTrainHis" index="index" separator=",">
+            (
+            #{houseTrainHis.trainHisId},
+            #{houseTrainHis.trainId},
+            #{houseTrainHis.slCode},
+            #{houseTrainHis.houseCode},
+            #{houseTrainHis.trainStart},
+            #{houseTrainHis.trainEnd},
+            #{houseTrainHis.trainComp},
+            #{houseTrainHis.trainCertificate},
+            #{houseTrainHis.actFlg},
+            #{houseTrainHis.delFlg},
+            #{houseTrainHis.crtId},
+            #{houseTrainHis.crtTime},
+            #{houseTrainHis.updId},
+            #{houseTrainHis.updTime},
+            #{houseTrainHis.actId},
+            #{houseTrainHis.actTime},
+            #{houseTrainHis.ver}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateIntroduceInfoByHouseCode" parameterType="com.msk.core.entity.SlHouseIntroduce">
+        UPDATE sl_house_introduce
+        SET
+        <if test="uploadUrl1 != null and uploadUrl1 != ''">
+            UPLOAD_URL1 = #{uploadUrl1},
+        </if>
+        <if test="uploadUrl2 != null and uploadUrl2 != ''">
+            UPLOAD_URL2 = #{uploadUrl2},
+        </if>
+        INTRODUCE = #{introduce},
+        SERVICE_COMMIT = #{serviceCommit},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime},
+        VER = VER+1
+        WHERE
+        HOUSE_CODE = #{houseCode}
+        AND
+        (DEL_FLG = '0' OR DEL_FLG IS NULL )
+    </update>
+
+    <insert id="saveIntroduceInfoByHouseCode" parameterType="com.msk.core.entity.SlHouseIntroduce">
+        INSERT INTO sl_house_introduce (
+        INT_ID,
+        HOUSE_CODE,
+        INTRODUCE,
+        SERVICE_COMMIT,
+        UPLOAD_URL1,
+        UPLOAD_URL2,
+        UPLOAD_URL3,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUE
+        (
+        #{intId},
+        #{houseCode},
+        #{introduce},
+        #{serviceCommit},
+        #{uploadUrl1},
+        #{uploadUrl2},
+        #{uploadUrl3},
+        #{delFlg},
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        #{ver}
+        )
+    </insert>
+
+</mapper>
+

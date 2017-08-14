@@ -1,0 +1,718 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141404Logic">
+    <!-- 查询商品种源数据 -->
+    <select id="findListOrgs" parameterType="BaseParam" resultType="com.msk.product.bean.PD141404OrgBean">
+        SELECT
+        A.ORG_STD_ITEM_ID AS orgStdItemId
+        ,B.ORG_STD_ITEM_NAME AS orgStdItemName
+        ,A.ORG_GOOD_VAL AS orgGoodVal
+        ,A.ORG_NORMAL_VAL AS orgNormalVal
+        ,A.ORG_BAD_VAL AS orgBadVal
+        ,C.RESULT_FLG AS resultFlg
+        ,C.RESULT_INFO AS resultInfo
+        FROM PD_ORG_STD AS A
+        LEFT JOIN PD_ORG_STD_ITEM AS B ON A.ORG_STD_ITEM_ID = B.ORG_STD_ITEM_ID
+        LEFT JOIN PD_ORG_SELLER_ONLINE AS C ON
+        A.STANDARD_ID = C.STANDARD_ID
+        AND A.ORG_STD_ITEM_ID = C.ORG_STD_ITEM_ID
+        <if test="filterMap.slId!=null and filterMap.slId!=''">
+            AND C.SL_ID = #{filterMap.slId}
+        </if>
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND C.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.showDate!=null and filterMap.showDate!=''">
+            AND C.CHECK_DATE = #{filterMap.showDate}
+        </if>
+        <if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+            AND C.SL_CODE_DIS = #{filterMap.slCodeDis}
+        </if>
+        <where>
+            <if test="filterMap.standardId!=null and filterMap.standardId!=''">
+                A.STANDARD_ID = #{filterMap.standardId}
+            </if>
+        </where>
+        ORDER BY A.ORG_STD_ITEM_ID
+    </select>
+    <!-- 查询商品饲养数据 -->
+    <select id="findListFeds" parameterType="BaseParam" resultType="com.msk.product.bean.PD141404FedBean">
+        SELECT
+        A.FED_STD_ITEM_ID AS fedStdItemId
+        ,B.FED_STD_ITEM_NAME AS fedStdItemName
+        ,A.FED_GOOD_VAL AS fedGoodVal
+        ,A.FED_NORMAL_VAL AS fedNormalVal
+        ,A.FED_BAD_VAL AS fedBadVal
+        ,C.RESULT_FLG AS resultFlg
+        ,C.RESULT_INFO AS resultInfo
+        FROM PD_FED_STD AS A
+        LEFT JOIN PD_FED_STD_ITEM AS B ON A.FED_STD_ITEM_ID = B.FED_STD_ITEM_ID
+        LEFT JOIN PD_FED_SELLER_ONLINE AS C ON
+        A.STANDARD_ID = C.STANDARD_ID AND A.FED_STD_ITEM_ID = C.FED_STD_ITEM_ID
+        <if test="filterMap.showDate!=null and filterMap.showDate!=''">
+            AND C.CHECK_DATE = #{filterMap.showDate}
+        </if>
+        <if test="filterMap.slId!=null and filterMap.slId!=''">
+            AND C.SL_ID = #{filterMap.slId}
+        </if>
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND C.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+            AND C.SL_CODE_DIS = #{filterMap.slCodeDis}
+        </if>
+        <where>
+            <if test="filterMap.standardId!=null and filterMap.standardId!=''">
+                A.STANDARD_ID = #{filterMap.standardId}
+            </if>
+        </where>
+        ORDER BY A.FED_STD_ITEM_ID
+    </select>
+    <!-- 查询商品加工技术 -->
+    <select id="findListMcts" parameterType="BaseParam" resultType="com.msk.product.bean.PD141404MctBean">
+        SELECT
+        A.MCT_STD_ITEM_ID AS mctStdItemId
+        ,B.MCT_STD_ITEM_NAME AS mctStdItemName
+        ,A.MCT_OK_VAL AS mctOkVal
+        ,A.MCT_NG_VAL AS mctNgVal
+        ,C.RESULT_FLG AS resultFlg
+        ,C.RESULT_INFO AS resultInfo
+        FROM PD_MCT_STD AS A
+        LEFT JOIN PD_MCT_STD_ITEM AS B ON A.MCT_STD_ITEM_ID = B.MCT_STD_ITEM_ID
+        LEFT JOIN PD_MCT_SELLER_ONLINE AS C ON A.STANDARD_ID = C.STANDARD_ID AND A.MCT_STD_ITEM_ID = C.MCT_STD_ITEM_ID
+        <if test="filterMap.showDate!=null and filterMap.showDate!=''">
+            AND C.CHECK_DATE = #{filterMap.showDate}
+        </if>
+        <if test="filterMap.slId!=null and filterMap.slId!=''">
+            AND C.SL_ID = #{filterMap.slId}
+        </if>
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND C.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+            AND C.SL_CODE_DIS = #{filterMap.slCodeDis}
+        </if>
+        <where>
+            <if test="filterMap.standardId!=null and filterMap.standardId!=''">
+                A.STANDARD_ID = #{filterMap.standardId}
+            </if>
+        </where>
+        ORDER BY A.MCT_STD_ITEM_ID
+    </select>
+
+    <!-- 产品质量技术查询-->
+    <select id="findListTncs" parameterType="BaseParam" resultType="com.msk.product.bean.PD141404TncBean">
+        SELECT
+        A.STANDARD_ID AS standardId,
+        A.TNC_STD_ITEM_ID AS tncStdItemId,
+        A.TNC_STD_VAL1 AS tncStdVal1,
+        A.TNC_STD_VAL2 AS tncStdVal2,
+        A.TNC_STD_VAL3 AS tncStdVal3,
+        A.REMARK AS remark,
+        B.TNC_STD_ITEM_ID AS tncStdItemId,
+        B.TNC_STD_ITEM_NAME AS tncStdItemName,
+        B.LEVEL_ID AS levelId,
+        B.PARENT_ID AS parentId,
+        B.IS_CATALOG AS isCatalog
+        ,C.RESULT_FLG AS resultFlg
+        ,C.RESULT_INFO AS resultInfo
+        FROM PD_TNC_STD_ITEM B
+        LEFT JOIN PD_TNC_STD A ON A.TNC_STD_ITEM_ID=B.TNC_STD_ITEM_ID
+        AND A.STANDARD_ID=#{filterMap.standardId}
+        LEFT JOIN PD_TNC_SELLER_ONLINE AS C ON A.STANDARD_ID = C.STANDARD_ID AND A.TNC_STD_ITEM_ID = C.TNC_STD_ITEM_ID
+        <if test="filterMap.showDate!=null and filterMap.showDate!=''">
+            AND C.CHECK_DATE = #{filterMap.showDate}
+        </if>
+        <if test="filterMap.slId!=null and filterMap.slId!=''">
+            AND C.SL_ID = #{filterMap.slId}
+        </if>
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND C.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+            AND C.SL_CODE_DIS = #{filterMap.slCodeDis}
+        </if>
+        WHERE B.LEVEL_ID=#{filterMap.levelId} AND B.PARENT_ID=#{filterMap.parentId}
+    </select>
+    <!--获取市场需求时间-->
+    <select id="findListTncMarkey" parameterType="BaseParam" resultType="com.msk.product.bean.PDtncMarkeyBean">
+        SELECT
+        A.KEY_ID AS keyId
+        ,A.TNC_STD_ITEM_ID AS tncStdItemId
+        ,A.TNC_STD_VAL AS tncStdVal
+        ,A.RAISE_DATE AS raiseDate
+        ,A.FIX_DATE AS fixDate
+        ,A.DISCUSS_STATUS AS discussStatus
+        FROM PD_TNC_STD_DISCUSS_MARKET A
+        WHERE A.STANDARD_ID=#{filterMap.standardId}
+        AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+        AND A.DISCUSS_STATUS != #{filterMap.discussStatus}
+        ORDER BY A.DISCUSS_STATUS DESC
+    </select>
+
+    <!--获取供应商时间-->
+    <select id="findListTncProvider" parameterType="BaseParam" resultType="com.msk.product.bean.PDtncProviderBean">
+        SELECT
+        A.KEY_ID AS keyId
+        ,A.TNC_STD_ITEM_ID AS tncStdItemId
+        ,A.TNC_STD_VAL AS tncStdVal
+        ,A.SL_PD_ID AS slPdId
+        ,A.RAISE_DATE AS raiseDate
+        ,A.FIX_DATE AS fixDate
+        ,A.DISCUSS_STATUS AS discussStatus
+        FROM PD_TNC_STD_DISCUSS_PROVIDER A
+        WHERE A.STANDARD_ID=#{filterMap.standardId}
+        AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+        AND A.DISCUSS_STATUS != #{filterMap.discussStatus}
+        ORDER BY A.DISCUSS_STATUS DESC
+    </select>
+
+    <!--获取市场需求禁止时间-->
+    <select id="findListTncMarkeyNo" parameterType="BaseParam" resultType="com.msk.product.bean.PDtncMarkeyBean">
+        SELECT
+        A.KEY_ID AS keyId
+        ,A.TNC_STD_ITEM_ID AS tncStdItemId
+        ,A.TNC_STD_VAL AS tncStdVal
+        ,A.RAISE_DATE AS raiseDate
+        ,A.FIX_DATE AS fixDate
+        FROM PD_TNC_STD_DISCUSS_MARKET A
+        WHERE A.STANDARD_ID=#{filterMap.standardId}
+        AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+        AND A.DISCUSS_STATUS = #{filterMap.discussStatus}
+        ORDER BY A.DISCUSS_STATUS
+    </select>
+
+    <!--获取市场需求禁止时间-->
+    <select id="findListTncProviderNo" parameterType="BaseParam" resultType="com.msk.product.bean.PDtncProviderBean">
+        SELECT
+        A.KEY_ID AS keyId
+        ,A.TNC_STD_ITEM_ID AS tncStdItemId
+        ,A.TNC_STD_VAL AS tncStdVal
+        ,A.SL_PD_ID AS slPdId
+        ,A.FIX_DATE AS fixDate
+        FROM PD_TNC_STD_DISCUSS_PROVIDER A
+        WHERE A.STANDARD_ID=#{filterMap.standardId}
+        AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+        AND A.DISCUSS_STATUS = #{filterMap.discussStatus}
+        ORDER BY A.DISCUSS_STATUS
+    </select>
+
+    <!-- 通用质量 查询一级类目  存在-->
+    <select id="findListGnqs" parameterType="BaseParam" resultType="com.msk.product.bean.PD141404GnqBean">
+        SELECT
+        A.GNQ_STD_ITEM_ID AS gnqStdItemId
+        ,A.GNQ_STD_ITEM_NAME AS gnqStdItemName
+        FROM PD_GNQ_STD_ITEM AS A
+        WHERE A.LEVEL_ID = #{filterMap.levelId} AND   A.PARENT_ID = #{filterMap.parentId}
+        ORDER BY A.GNQ_STD_ITEM_ID
+    </select>
+
+    <!--查询二级类目  存在-->
+    <select id="findListGnqChilds" parameterType="BaseParam" resultType="com.msk.product.bean.PD141404GnqChildBean">
+        SELECT
+        A.GNQ_STD_ITEM_ID AS gnqStdItemId
+        ,A.GNQ_STD_ITEM_NAME AS gnqStdItemName
+        ,B.GNQ_STD_ITEM_ID AS gnqStdItemId
+        ,B.GNQ_OK_VAL AS gnqOkVal
+        ,B.GNQ_NG_VAL AS gnqNgVal
+        ,C.RESULT_FLG AS resultFlg
+        ,C.RESULT_INFO AS resultInfo
+        FROM PD_GNQ_STD_ITEM AS A
+        LEFT JOIN PD_GNQ_STD AS B ON A.GNQ_STD_ITEM_ID = B.GNQ_STD_ITEM_ID AND B.STANDARD_ID = #{filterMap.standardId}
+        LEFT JOIN PD_GNQ_SELLER_ONLINE AS C ON B.STANDARD_ID = C.STANDARD_ID AND B.GNQ_STD_ITEM_ID = C.GNQ_STD_ITEM_ID
+        <if test="filterMap.showDate!=null and filterMap.showDate!=''">
+            AND C.CHECK_DATE = #{filterMap.showDate}
+        </if>
+        <if test="filterMap.slId!=null and filterMap.slId!=''">
+            AND C.SL_ID = #{filterMap.slId}
+        </if>
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND C.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+            AND C.SL_CODE_DIS = #{filterMap.slCodeDis}
+        </if>
+        WHERE A.PARENT_ID = #{filterMap.parentId} AND A.LEVEL_ID = #{filterMap.levelId}
+        ORDER BY A.GNQ_STD_ITEM_ID
+    </select>
+
+
+    <!--查询一级类目  存在 安全-->
+    <select id="findListSfts" parameterType="BaseParam" resultType="com.msk.product.bean.PD141404SftBean">
+        SELECT
+        A.SFT_STD_ITEM_ID AS sftStdItemId
+        ,A.SFT_STD_ITEM_NAME AS sftStdItemName
+        FROM PD_SFT_STD_ITEM AS A
+        WHERE A.LEVEL_ID = #{filterMap.levelId} AND   A.PARENT_ID = #{filterMap.parentId}
+        ORDER BY A.SFT_STD_ITEM_ID
+
+    </select>
+
+    <!--查询二级类目  存在-->
+    <select id="findListSftChilds" parameterType="BaseParam" resultType="com.msk.product.bean.PD141404SftChildBean">
+        SELECT
+        A.SFT_STD_ITEM_NAME AS sftStdItemName
+        ,A.SFT_STD_ITEM_ID AS sftStdItemId
+        ,B.SFT_OK_VAL AS sftOkVal
+        ,B.SFT_NG_VAL AS sftNgVal
+        ,C.RESULT_FLG AS resultFlg
+        ,C.RESULT_INFO AS resultInfo
+        FROM PD_SFT_STD_ITEM AS A
+        LEFT JOIN PD_SFT_STD AS B ON A.SFT_STD_ITEM_ID = B.SFT_STD_ITEM_ID AND B.STANDARD_ID = #{filterMap.standardId}
+        LEFT JOIN PD_SFT_SELLER_ONLINE AS C ON B.STANDARD_ID = C.STANDARD_ID AND B.SFT_STD_ITEM_ID = C.SFT_STD_ITEM_ID
+        <if test="filterMap.showDate!=null and filterMap.showDate!=''">
+            AND C.CHECK_DATE = #{filterMap.showDate}
+        </if>
+        <if test="filterMap.slId!=null and filterMap.slId!=''">
+            AND C.SL_ID = #{filterMap.slId}
+        </if>
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND C.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+            AND C.SL_CODE_DIS = #{filterMap.slCodeDis}
+        </if>
+        WHERE A.PARENT_ID = #{filterMap.parentId} AND A.LEVEL_ID = #{filterMap.levelId}
+        ORDER BY A.SFT_STD_ITEM_ID
+    </select>
+
+    <!--查询一级类目  存在 运输-->
+    <select id="findListTsp" parameterType="BaseParam" resultType="com.msk.product.bean.PD141404TspBean">
+        SELECT
+        A.TSP_STD_ITEM_ID AS tspStdItemId
+        ,A.TSP_STD_ITEM_NAME AS tspStdItemName
+        FROM PD_TSP_STD_ITEM AS A
+        WHERE A.LEVEL_ID = #{filterMap.levelId} AND   A.PARENT_ID = #{filterMap.parentId}
+        ORDER BY A.TSP_STD_ITEM_ID
+
+    </select>
+
+    <!--查询二级类目  存在-->
+    <select id="findListTspChilds" parameterType="BaseParam" resultType="com.msk.product.bean.PD141404TspChildBean">
+        SELECT
+        A.TSP_STD_ITEM_NAME AS tspStdItemName
+        ,A.TSP_STD_ITEM_ID AS tspStdItemId
+        ,B.TSP_OK_VAL AS tspOkVal
+        ,B.TSP_NG_VAL AS tspNgVal
+        ,C.RESULT_FLG AS resultFlg
+        ,C.RESULT_INFO AS resultInfo
+        FROM PD_TSP_STD_ITEM AS A
+        LEFT JOIN PD_TSP_STD AS B ON A.TSP_STD_ITEM_ID = B.TSP_STD_ITEM_ID AND B.STANDARD_ID = #{filterMap.standardId}
+        LEFT JOIN PD_TSP_SELLER_ONLINE AS C ON B.STANDARD_ID = C.STANDARD_ID AND B.TSP_STD_ITEM_ID = C.TSP_STD_ITEM_ID
+        <if test="filterMap.showDate!=null and filterMap.showDate!=''">
+            AND C.CHECK_DATE = #{filterMap.showDate}
+        </if>
+        <if test="filterMap.slId!=null and filterMap.slId!=''">
+            AND C.SL_ID = #{filterMap.slId}
+        </if>
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND C.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+            AND C.SL_CODE_DIS = #{filterMap.slCodeDis}
+        </if>
+        WHERE A.PARENT_ID = #{filterMap.parentId} AND A.LEVEL_ID = #{filterMap.levelId}
+        ORDER BY A.TSP_STD_ITEM_ID
+    </select>
+
+    <!--查询产品包装数据-->
+    <select id="findListNorms" parameterType="BaseParam" resultType="com.msk.product.bean.PD141404NormsChildBean" >
+        SELECT
+         A.STANDARD_ID AS standardId,
+         A.NORMS_CODE AS normsCode,
+         A.NORMS_SUTTLE AS normsSuttle,
+         A.NORMS_ERROR AS normsError,
+         A.NORMS_NUMBER AS normsNumber,
+         A.NORMS_SIZE AS normsSize,
+         A.NORMS_TEXTURE AS normsTexture,
+         A.NORMS_OUT AS normsOut,
+         A.NORMS_KG AS normsKg,
+         A.NORMS_OUT_SIZE AS normsOutSize,
+         A.NORMS_OUT_TEXTURE AS normsOutTexture,
+         B.NORMS_ID AS normsCodeOld,
+         B.RESULT_INNERWEIGHT_FLG AS resultInnerweightFlg,
+         B.RESULT_INNERERROR_FLG AS resultInnererrorFlg,
+         B.RESULT_INNERCOUNT_FLG AS resultInnercountFlg,
+         B.RESULT_INNERSIZE_FLG AS resultInnersizeFlg,
+         B.RESULT_INNERMAT_FLG AS resultInnermatFlg,
+         B.RESULT_OUTSPEC_FLG AS resultOutspecFlg,
+         B.RESULT_OUTWEIGHT_FLG AS resultOutweightFlg,
+         B.RESULT_OUTSIZE_FLG AS resultOutsizeFlg,
+         B.RESULT_OUTMAT_FLG AS resultOutmatFlg
+        FROM PD_NORMS_STD AS A
+        LEFT JOIN PD_NORMS_SELLER_ONLINE AS B ON A.NORMS_CODE = B.NORMS_ID AND B.STANDARD_ID = (SELECT STANDARD_ID FROM PD_STANDARD WHERE CLASSESTREE_CODE=#{filterMap.classestreeCode})
+        <if test="filterMap.showDate!=null and filterMap.showDate!=''">
+            AND B.CHECK_DATE = #{filterMap.showDate}
+        </if>
+        <if test="filterMap.slId!=null and filterMap.slId!=''">
+            AND B.SL_ID = #{filterMap.slId}
+        </if>
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND B.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.slCodeDis!=null and filterMap.slCodeDis!=''">
+            AND B.SL_CODE_DIS = #{filterMap.slCodeDis}
+        </if>
+        WHERE A.STANDARD_ID = (SELECT STANDARD_ID FROM PD_STANDARD WHERE CLASSESTREE_CODE=#{filterMap.classestreeCode})
+        ORDER BY A.STANDARD_ID,A.NORMS_CODE
+    </select>
+
+
+    <!--    111111111111111111111111111111111111111111111111111111111111111111111                         修改数据                        -->
+
+    <select id="countSize" parameterType="BaseParam" resultType="int">
+        SELECT count(1)
+        FROM  PD_GRADE_SELLER_ONLINE
+        WHERE SL_ID = #{filterMap.slId}  AND SL_PD_ID = #{filterMap.slPdId} AND SL_CODE_DIS = #{filterMap.slCodeDis} AND STANDARD_ID = #{filterMap.standardId}
+        AND CHECK_DATE = #{filterMap.checkDate}
+    </select>
+
+   <!-- 修改产品等级操作-->
+    <update id="modifyGrade" parameterType="BaseParam">
+        UPDATE pd_grade_seller_online SET
+        RESULT_GRADE = #{filterMap.resultGrade},
+        RESULT_INFO = #{filterMap.resultInfo},
+        UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME=#{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        WHERE SL_ID = #{filterMap.slId}  AND SL_PD_ID = #{filterMap.slPdId} AND SL_CODE_DIS = #{filterMap.slCodeDis} AND STANDARD_ID = #{filterMap.standardId}
+        AND CHECK_DATE = #{filterMap.checkDate}
+    </update>
+
+    <!--修改产品种源数据-->
+    <update id="modifyOrgs" parameterType="BaseParam">
+        UPDATE PD_ORG_SELLER_ONLINE SET
+        RESULT_FLG = #{filterMap.orgResultFlg},
+        RESULT_INFO = #{filterMap.orgResultInfo},
+        UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME=#{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        WHERE SL_ID = #{filterMap.slId}  AND SL_PD_ID = #{filterMap.slPdId} AND SL_CODE_DIS = #{filterMap.slCodeDis} AND STANDARD_ID = #{filterMap.standardId}
+        AND ORG_STD_ITEM_ID =  #{filterMap.orgStdItemId} AND CHECK_DATE = #{filterMap.checkDate}
+    </update>
+    <!--修改产品饲养数据-->
+    <update id="modifyFeds" parameterType="BaseParam">
+        UPDATE PD_FED_SELLER_ONLINE SET
+        RESULT_FLG = #{filterMap.fedResultFlg},
+        RESULT_INFO = #{filterMap.fedResultInfo},
+        UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME=#{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        WHERE SL_ID = #{filterMap.slId}  AND SL_PD_ID = #{filterMap.slPdId} AND SL_CODE_DIS = #{filterMap.slCodeDis} AND STANDARD_ID = #{filterMap.standardId}
+        AND FED_STD_ITEM_ID =  #{filterMap.fedStdItemId} AND CHECK_DATE = #{filterMap.checkDate}
+    </update>
+
+    <!--修改产品加工技术数据-->
+    <update id="modifyMcts" parameterType="BaseParam">
+        UPDATE PD_MCT_SELLER_ONLINE SET
+        RESULT_FLG = #{filterMap.mctResultFlg},
+        RESULT_INFO = #{filterMap.mctResultInfo},
+        UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME=#{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        WHERE SL_ID = #{filterMap.slId}  AND SL_PD_ID = #{filterMap.slPdId} AND SL_CODE_DIS = #{filterMap.slCodeDis} AND STANDARD_ID = #{filterMap.standardId}
+        AND MCT_STD_ITEM_ID =  #{filterMap.mctStdItemId} AND CHECK_DATE = #{filterMap.checkDate}
+    </update>
+
+    <!--修改产品质量数据-->
+    <update id="modifyTncs" parameterType="BaseParam">
+        UPDATE PD_TNC_SELLER_ONLINE SET
+        RESULT_FLG = #{filterMap.tncResultFlg},
+        RESULT_INFO = #{filterMap.tncResultInfo},
+        UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME=#{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        WHERE SL_ID = #{filterMap.slId}  AND SL_PD_ID = #{filterMap.slPdId} AND SL_CODE_DIS = #{filterMap.slCodeDis} AND STANDARD_ID = #{filterMap.standardId}
+        AND TNC_STD_ITEM_ID =  #{filterMap.tncStdItemId} AND CHECK_DATE = #{filterMap.checkDate}
+    </update>
+
+
+    <!--修改产品通用质量数据-->
+    <update id="modifyGnqs" parameterType="BaseParam">
+        UPDATE PD_GNQ_SELLER_ONLINE SET
+        RESULT_FLG = #{filterMap.gnqResultFlg},
+        RESULT_INFO = #{filterMap.gnqResultInfo},
+        UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME=#{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        WHERE SL_ID = #{filterMap.slId}  AND SL_PD_ID = #{filterMap.slPdId} AND SL_CODE_DIS = #{filterMap.slCodeDis} AND STANDARD_ID = #{filterMap.standardId}
+        AND GNQ_STD_ITEM_ID =  #{filterMap.gnqStdItemId} AND CHECK_DATE = #{filterMap.checkDate}
+    </update>
+
+    <!--修改产品安全数据-->
+    <update id="modifySfts" parameterType="BaseParam">
+        UPDATE PD_SFT_SELLER_ONLINE SET
+        RESULT_FLG = #{filterMap.sftResultFlg},
+        RESULT_INFO = #{filterMap.sftResultInfo},
+        UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME=#{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        WHERE SL_ID = #{filterMap.slId}  AND SL_PD_ID = #{filterMap.slPdId} AND SL_CODE_DIS = #{filterMap.slCodeDis} AND STANDARD_ID = #{filterMap.standardId}
+        AND SFT_STD_ITEM_ID =  #{filterMap.sftStdItemId} AND CHECK_DATE = #{filterMap.checkDate}
+    </update>
+
+    <!--修改产品运输数据-->
+    <update id="modifyTsps" parameterType="BaseParam">
+        UPDATE PD_TSP_SELLER_ONLINE SET
+        RESULT_FLG = #{filterMap.tspResultFlg},
+        RESULT_INFO = #{filterMap.tspResultInfo},
+        UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME=#{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        WHERE SL_ID = #{filterMap.slId}  AND SL_PD_ID = #{filterMap.slPdId} AND SL_CODE_DIS = #{filterMap.slCodeDis} AND STANDARD_ID = #{filterMap.standardId}
+        AND TSP_STD_ITEM_ID =  #{filterMap.tspStdItemId} AND CHECK_DATE = #{filterMap.checkDate}
+    </update>
+
+
+    <!--修改产品包装数据-->
+    <update id="modifyNorms" parameterType="BaseParam">
+        UPDATE PD_NORMS_SELLER_ONLINE SET
+        RESULT_INNERWEIGHT_FLG = #{filterMap.resultInnerweightFlg},
+        RESULT_INNERERROR_FLG = #{filterMap.resultInnererrorFlg},
+        RESULT_INNERCOUNT_FLG = #{filterMap.resultInnercountFlg},
+        RESULT_INNERSIZE_FLG = #{filterMap.resultInnersizeFlg},
+        RESULT_INNERMAT_FLG = #{filterMap.resultInnermatFlg},
+        RESULT_OUTSPEC_FLG = #{filterMap.resultOutspecFlg},
+        RESULT_OUTWEIGHT_FLG = #{filterMap.resultOutweightFlg},
+        RESULT_OUTSIZE_FLG = #{filterMap.resultOutsizeFlg},
+        RESULT_OUTMAT_FLG = #{filterMap.resultOutmatFlg},
+        NORMS_ID = #{filterMap.normsCode},
+        NORMS_NAME = #{filterMap.normsName},
+        UPD_ID = #{updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME=#{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        WHERE SL_ID = #{filterMap.slId}  AND SL_PD_ID = #{filterMap.slPdId} AND SL_CODE_DIS = #{filterMap.slCodeDis} AND STANDARD_ID = #{filterMap.normStandardId}
+        AND  NORMS_ID=  #{filterMap.normsCodeOld} AND CHECK_DATE = #{filterMap.checkDate}
+    </update>
+
+    <select id="findMaxIdGrade" parameterType="BaseParam" resultType="com.msk.product.bean.PD141403Bean">
+       SELECT
+		CASE
+		WHEN MAX(PD_LOT) IS NULL THEN 1
+		ELSE MAX(PD_LOT)+1 END AS pdLot
+		FROM PD_GRADE_SELLER_ONLINE
+        WHERE SL_ID = #{filterMap.slId}  AND SL_PD_ID = #{filterMap.slPdId} AND SL_CODE_DIS = #{filterMap.slCodeDis} AND STANDARD_ID = #{filterMap.standardId}
+    </select>
+
+
+    <!--                      数据保存操作                           -->
+    <!--保存产品等级数据-->
+    <insert id="saveGrade" parameterType="com.msk.product.bean.PD141404Bean">
+        INSERT INTO PD_GRADE_SELLER_ONLINE (
+	ONLINE_ID,SL_ID,SL_CODE_DIS,SL_PD_ID,STANDARD_ID,PD_LOT,CHECK_DATE,RESULT_GRADE,RESULT_INFO,
+	DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER
+)
+         VALUES
+	(
+		#{onlineId},#{slId},#{slCodeDis},#{slPdId},#{standardId},#{pdLot},#{showDate},#{resultGrade},#{resultInfo},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		'0',#{crtId},
+		#{crtTime},
+		#{updId},
+		#{updTime},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  Start -->
+        #{actId},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  End -->
+		#{actTime},'1'
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+	);
+    </insert>
+
+   <!--保存产品种源标准数据-->
+    <insert id="saveOrgs" parameterType="BaseParam">
+    INSERT INTO PD_ORG_SELLER_ONLINE (
+	ONLINE_ID,SL_ID,SL_CODE_DIS,SL_PD_ID,STANDARD_ID,PD_LOT,ORG_STD_ITEM_ID,ORG_STD_ITEM_NAME,CHECK_DATE,RESULT_FLG,RESULT_INFO,
+	DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER
+)
+    VALUES
+	(
+		#{filterMap.onlineId},#{filterMap.slId},#{filterMap.slCodeDis},#{filterMap.slPdId},#{filterMap.standardId},#{filterMap.pdLot},#{filterMap.orgStdItemId},#{filterMap.orgStdItemName},#{filterMap.checkDate},#{filterMap.orgResultFlg},#{filterMap.orgResultInfo},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        '0',#{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  Start -->
+        #{actId},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  End -->
+        #{actTime},'1'
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+	);
+    </insert>
+
+    <!--保存产品种源标准数据-->
+    <insert id="saveFeds" parameterType="BaseParam">
+        INSERT INTO PD_FED_SELLER_ONLINE (
+        ONLINE_ID,SL_ID,SL_CODE_DIS,SL_PD_ID,STANDARD_ID,PD_LOT,FED_STD_ITEM_ID,FED_STD_ITEM_NAME,CHECK_DATE,RESULT_FLG,RESULT_INFO,
+        DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER
+        )
+        VALUES
+        (
+        #{filterMap.onlineId},#{filterMap.slId},#{filterMap.slCodeDis},#{filterMap.slPdId},#{filterMap.standardId},#{filterMap.pdLot},#{filterMap.fedStdItemId},#{filterMap.fedStdItemName},#{filterMap.checkDate},#{filterMap.fedResultFlg},#{filterMap.fedResultInfo},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        '0',#{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  Start -->
+        #{actId},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  End -->
+        #{actTime},'1'
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        );
+    </insert>
+
+    <!--保存产品饲养标准数据-->
+    <insert id="saveMcts" parameterType="BaseParam">
+        INSERT INTO PD_MCT_SELLER_ONLINE (
+        ONLINE_ID,SL_ID,SL_CODE_DIS,SL_PD_ID,STANDARD_ID,PD_LOT,MCT_STD_ITEM_ID,MCT_STD_ITEM_NAME,CHECK_DATE,RESULT_FLG,RESULT_INFO,
+        DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER
+        )
+        VALUES
+        (
+        #{filterMap.onlineId},#{filterMap.slId},#{filterMap.slCodeDis},#{filterMap.slPdId},#{filterMap.standardId},#{filterMap.pdLot},#{filterMap.mctStdItemId},#{filterMap.mctStdItemName},#{filterMap.checkDate},#{filterMap.mctResultFlg},#{filterMap.mctResultInfo},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        '0',#{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  Start -->
+        #{actId},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  End -->
+        #{actTime},'1'
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        );
+    </insert>
+
+    <!--保存产品质量标准数据-->
+    <insert id="saveTncs" parameterType="BaseParam">
+        INSERT INTO PD_TNC_SELLER_ONLINE (
+        ONLINE_ID,SL_ID,SL_CODE_DIS,SL_PD_ID,STANDARD_ID,PD_LOT,TNC_STD_ITEM_ID,TNC_STD_ITEM_NAME,CHECK_DATE,RESULT_FLG,RESULT_INFO,
+        DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER
+        )
+        VALUES
+        (
+        #{filterMap.onlineId},#{filterMap.slId},#{filterMap.slCodeDis},#{filterMap.slPdId},#{filterMap.standardId},#{filterMap.pdLot},#{filterMap.tncStdItemId},#{filterMap.tncStdItemName},#{filterMap.checkDate},#{filterMap.tncResultFlg},#{filterMap.tncResultInfo},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        '0',#{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  Start -->
+        #{actId},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  End -->
+        #{actTime},'1'
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        );
+    </insert>
+
+    <!--保存产品通用质量标准数据-->
+    <insert id="saveGnqs" parameterType="BaseParam">
+        INSERT INTO PD_GNQ_SELLER_ONLINE (
+        ONLINE_ID,SL_ID,SL_CODE_DIS,SL_PD_ID,STANDARD_ID,PD_LOT,GNQ_STD_ITEM_ID,GNQ_STD_ITEM_NAME,CHECK_DATE,RESULT_FLG,RESULT_INFO,
+        DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER
+        )
+        VALUES
+        (
+        #{filterMap.onlineId},#{filterMap.slId},#{filterMap.slCodeDis},#{filterMap.slPdId},#{filterMap.standardId},#{filterMap.pdLot},#{filterMap.gnqStdItemId},#{filterMap.gnqStdItemName},#{filterMap.checkDate},#{filterMap.gnqResultFlg},#{filterMap.gnqResultInfo},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        '0',#{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  Start -->
+        #{actId},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  End -->
+        #{actTime},'1'
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        );
+    </insert>
+
+    <!--保存产品安全数据-->
+    <insert id="saveSfts" parameterType="BaseParam">
+        INSERT INTO PD_SFT_SELLER_ONLINE (
+        ONLINE_ID,SL_ID,SL_CODE_DIS,SL_PD_ID,STANDARD_ID,PD_LOT,SFT_STD_ITEM_ID,SFT_STD_ITEM_NAME,CHECK_DATE,RESULT_FLG,RESULT_INFO,
+        DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER
+        )
+        VALUES
+        (
+        #{filterMap.onlineId},#{filterMap.slId},#{filterMap.slCodeDis},#{filterMap.slPdId},#{filterMap.standardId},#{filterMap.pdLot},#{filterMap.sftStdItemId},#{filterMap.sftStdItemName},#{filterMap.checkDate},#{filterMap.sftResultFlg},#{filterMap.sftResultInfo},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        '0',#{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  Start -->
+        #{actId},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  End -->
+        #{actTime},'1'
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        );
+    </insert>
+
+
+    <!--保存产品运输数据-->
+    <insert id="saveTsps" parameterType="BaseParam">
+        INSERT INTO PD_TSP_SELLER_ONLINE (
+        ONLINE_ID,SL_ID,SL_CODE_DIS,SL_PD_ID,STANDARD_ID,PD_LOT,TSP_STD_ITEM_ID,TSP_STD_ITEM_NAME,CHECK_DATE,RESULT_FLG,RESULT_INFO,
+        DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER
+        )
+        VALUES
+        (
+        #{filterMap.onlineId},#{filterMap.slId},#{filterMap.slCodeDis},#{filterMap.slPdId},#{filterMap.standardId},#{filterMap.pdLot},#{filterMap.tspStdItemId},#{filterMap.tspStdItemName},#{filterMap.checkDate},#{filterMap.tspResultFlg},#{filterMap.tspResultInfo},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        '0',#{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  Start -->
+        #{actId},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  End -->
+        #{actTime},'1'
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        );
+    </insert>
+
+    <!--保存产品包装数据-->
+    <insert id="saveNorms" parameterType="BaseParam">
+        INSERT INTO pd_norms_seller_online (
+	ONLINE_ID,SL_ID,SL_CODE_DIS,SL_PD_ID,STANDARD_ID,PD_LOT,NORMS_ID,NORMS_NAME,CHECK_DATE,
+	RESULT_INNERWEIGHT_FLG,RESULT_INNERWEIGHT_INFO,RESULT_INNERERROR_FLG,RESULT_INNERERROR_INFO,RESULT_INNERCOUNT_FLG,
+	RESULT_INNERCOUNT_INFO,RESULT_INNERSIZE_FLG,RESULT_INNERSIZE_INFO,RESULT_INNERMAT_FLG,RESULT_INNERMAT_INFO,RESULT_OUTSPEC_FLG,
+	RESULT_OUTSPEC_INFO,RESULT_OUTWEIGHT_FLG,RESULT_OUTWEIGHT_INFO,RESULT_OUTSIZE_FLG,RESULT_OUTSIZE_INFO,
+	RESULT_OUTMAT_FLG,RESULT_OUTMAT_INFO,
+	DEL_FLG,CRT_ID,CRT_TIME,UPD_ID,UPD_TIME,ACT_ID,ACT_TIME,VER
+)
+VALUES
+	(
+		 #{filterMap.onlineId},#{filterMap.slId},#{filterMap.slCodeDis},#{filterMap.slPdId},#{filterMap.normStandardId},#{filterMap.pdLot},#{filterMap.normsCode},#{filterMap.normsName},#{filterMap.checkDate},
+		 #{filterMap.resultInnerweightFlg},NULL,#{filterMap.resultInnererrorFlg},NULL,#{filterMap.resultInnercountFlg},
+		 NULL,#{filterMap.resultInnersizeFlg},NULL,#{filterMap.resultInnermatFlg},NULL,#{filterMap.resultOutspecFlg},
+		 NULL,#{filterMap.resultOutweightFlg},NULL,#{filterMap.resultOutsizeFlg},NULL,
+		#{filterMap.resultOutmatFlg},NULL,
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        '0',#{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  Start -->
+        #{actId},
+        <!--Modify: 添加公共属性 2016/09/27   BY  任强  End -->
+        #{actTime},'1'
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+	);
+    </insert>
+
+    <select id="findnormsStandardId" parameterType="BaseParam" resultType="com.msk.core.entity.PdNormsStd">
+        SELECT STANDARD_ID AS standardId FROM PD_STANDARD WHERE CLASSESTREE_CODE=#{filterMap.classestreeCode}
+    </select>
+</mapper>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.BY121324Logic">
+    <insert id="save" parameterType="com.msk.core.entity.ByBuyerReportManager">
+        INSERT INTO by_buyer_report_manager(
+           FILE_ID,
+           FILE_SERVER_ID,
+           FILE_SERVER_IP,
+           FILE_NAME,
+           FILE_SUF,
+           FILE_STATUS,
+           BUYER_ID,
+           DEL_FLG,
+           CRT_ID,
+           CRT_TIME,
+           UPD_ID,
+           UPD_TIME,
+           ACT_ID,
+           ACT_TIME,
+           VER
+        )VALUES(
+           #{fileId},
+           #{fileServerId},
+           #{fileServerIp},
+           #{fileName},
+           #{fileSuf},
+           #{fileStatus},
+           #{buyerId},
+           0,
+           #{crtId},
+           #{crtTime},
+           #{updId},
+           #{updTime},
+           #{actId},
+           #{actTime},
+           1
+        )
+    </insert>
+
+    <select id="findBuyerBasicByBuyerId" resultType="com.msk.buyers.bean.BY121324Bean" parameterType="BaseParam">
+        SELECT
+        basic.BUYER_ID AS buyerId,
+        account.ACCOUNT_NAME AS accountName,
+        account.ACCOUNT_PASS AS accountPass,
+        account.TEL_NO AS telNo,
+        basic.BUYER_NAME AS buyerName,
+        basic.BUYER_CODE AS buyerCode,
+        basic.BUYER_ADDR AS buyerAddr,
+        basic.STORE_NO AS storeNo,
+        terminal.MARKET_NAME AS terminalMarketName,
+        terminal.MARKET_LEVEL_NAME AS superiorQua,
+        basic.LGCS_AREA_NAME AS lgcsAreaName,
+        basic.CITY_NAME AS cityName,
+        basic.BUYER_WEBSITE AS buyerWebsite,
+        basic.BUYER_WECHAT AS buyerWechat,
+        basic.BUYER_SINGLE_WECHAT AS buyerSingleWechat,
+        basic.BUYER_QQ AS buyerQq,
+        basic.BUSI_TEL AS busiTel,
+        basic.MARKETING_TOOLS AS marketingTools,
+        basic.TEL_MARKETING_START_TIME AS telMarketingStartTime,
+        basic.TEL_MARKETING_END_TIME AS telMarketingEndTime,
+        basic.MARKETINGS_STATUS AS marketingsStatus,
+        basic.MARKET_EXCEPTION_STATUS AS marketExceptionStatus,
+        basic.MARKET_EXCEPTION_REMARK AS marketExceptionRemark
+        FROM
+        by_buyer_basic_info basic
+        INNER JOIN by_buyer_account account ON basic.BUYER_ID = account.BUYER_ID AND basic.DEL_FLG = 0 AND account.DEL_FLG = 0
+        LEFT JOIN by_market_terminal terminal ON basic.SUPERIOR_ID = terminal.TER_MARKET_ID AND basic.DEL_FLG = 0 AND terminal.DEL_FLG = 0
+        WHERE
+        basic.BUYER_ID = #{filterMap.buyerId}
+
+    </select>
+    <select id="findEmployeeListByBuyerId" resultType="com.msk.buyers.bean.BY121324Bean" parameterType="BaseParam">
+        SELECT
+        CASE EMPLOYEE_TYPE WHEN '1' THEN '老板' WHEN '2' THEN '经理/店长' WHEN '3' THEN '员工' END AS employeeTypeName,
+        EMPLOYEE_NAME AS employeeName,
+        EMPLOYEE_QQ AS employeeQq,
+        EMPLOYEE_WECHAT AS employeeWechat,
+        EMPLOYEE_TEL AS employeeTel,
+        PURCHASE AS purchase,
+        CONTACT_PERSON AS contactPerson
+        FROM
+        by_buyer_employee
+        WHERE
+        BUYER_ID = #{filterMap.buyerId}
+        AND DEL_FLG = 0
+    </select>
+    <select id="findMallAccountListByBuyerId" resultType="com.msk.buyers.bean.BY121324Bean" parameterType="BaseParam">
+        SELECT
+        account.TEL_NO AS telNo,
+        account.ACCOUNT_NAME AS accountName,
+        account.ACCOUNT_PASS AS accountPass,
+        basic.BUYER_NAME AS buyerName,
+        basic.BUYER_QQ AS buyerQq,
+        basic.BUYER_SINGLE_WECHAT AS buyerSingleWechat
+        FROM
+        by_buyer_account account
+        LEFT JOIN by_buyer_basic_info basic ON account.BUYER_ID = basic.BUYER_ID AND account.DEL_FLG = 0 AND basic.DEL_FLG = 0
+        WHERE
+        account.BUYER_ID = #{filterMap.buyerId}
+    </select>
+    <select id="findPdClaByBuyerId" resultType="com.msk.buyers.bean.BY121324Bean" parameterType="BaseParam">
+        SELECT
+          CLASS_CODE AS classCode,
+          CLASS_NAME AS className,
+          MACHINING_CODE AS machingCodeU
+        FROM
+          by_buyer_pd_cla
+        WHERE
+          BUYER_ID = #{filterMap.buyerId}
+          AND DEL_FLG = 0
+    </select>
+    <update id="modify" parameterType="com.msk.core.entity.ByBuyerReportManager">
+        UPDATE by_buyer_report_manager
+        SET FILE_SERVER_ID = #{fileServerId},
+        FILE_STATUS = #{fileStatus},
+        FILE_CREATE_TIME = #{fileCreateTime}
+        WHERE
+        BUYER_ID = #{buyerId} AND FILE_ID = #{fileId}
+    </update>
+</mapper>

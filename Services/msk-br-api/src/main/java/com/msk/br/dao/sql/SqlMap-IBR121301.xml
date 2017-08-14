@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121301Logic">
+    <select id="findPageList" resultType="com.msk.br.bean.IBY121308RsBean"
+            parameterType="com.msk.br.bean.IBY121308RsParam">
+        SELECT
+            IFNULL(br_cla.CLASSES_NAME,'') AS classesName
+            ,IFNULL(br_cla.MACHINING_NAME,'') AS machiningName
+            ,IFNULL(br_breed.BREED_NAME,'') AS breedName
+            ,IFNULL(br_breed.FEATURE_NAME,'') AS featureName
+            ,IFNULL(CONCAT(CLASSES_NAME,'/',MACHINING_NAME,'/',BREED_NAME,'/',FEATURE_NAME),'') AS pdName
+            ,IFNULL(br_wei.WEIGHT_NAME,'') AS weightName
+            ,IFNULL(br_wei.NORMS_NAME,'') AS normsName
+            ,IFNULL(br_breed.GRADE_NAME,'') AS gradeName
+            ,IFNULL(br_order.PD_CODE,'') AS pdCode
+            ,IFNULL(br_order.ORDER_TIME,'') AS orderTime
+            ,IFNULL(COUNT(br_order.ORDER_ID),'') AS orderCount
+            ,IFNULL(br_order.RECEIVE_QTY,'') AS receiveQty
+            ,IFNULL(br_order.WEIGHT,'') AS weight
+            FROM
+        BR_O_CLA_MACHINING_INFO br_cla
+        INNER JOIN BR_O_BREED_FEA_INFO br_breed ON br_cla.CLA_ID=br_breed.CLA_ID AND  br_cla.DEL_FLG = br_breed.DEL_FLG
+        INNER JOIN BR_O_WEI_NOR_INFO br_wei ON br_breed.ID=br_wei.ID AND br_breed.DEL_FLG = br_wei.DEL_FLG
+        LEFT JOIN BR_O_ORDER_INFO br_order ON br_cla.CLASSES_CODE=br_order.CLASSES_CODE AND br_cla.DEL_FLG = br_order.DEL_FLG
+        AND br_breed.BREED_CODE=br_order.BREED_CODE
+        AND br_breed.FEATURE_CODE=br_order.FEATURE_CODE
+        AND br_breed.GRADE_CODE=br_order.GRADE_CODE
+        AND br_order.DEL_FLG=0
+        WHERE br_order.BUYER_ID=#{buyerId}
+        AND DETAIL_STATUS=#{filterMap.detailStatus}
+        GROUP BY
+        br_order.ORDER_ID
+        ORDER BY orderCount DESC
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.br.bean.IBY121308RsParam">
+        SELECT
+            COUNT(br_order.ORDER_ID)
+        FROM
+            BR_O_CLA_MACHINING_INFO br_cla
+        LEFT JOIN BR_O_BREED_FEA_INFO br_breed ON br_cla.CLA_ID = br_breed.CLA_ID AND  br_cla.DEL_FLG = br_breed.DEL_FLG
+        LEFT JOIN BR_O_WEI_NOR_INFO br_wei ON br_breed.ID = br_wei.ID AND br_breed.DEL_FLG = br_wei.DEL_FLG
+        RIGHT JOIN BR_O_ORDER_INFO br_order ON br_cla.CLASSES_CODE = br_order.CLASSES_CODE AND br_cla.DEL_FLG = br_order.DEL_FLG
+        AND br_breed.BREED_CODE = br_order.BREED_CODE
+        AND br_breed.FEATURE_CODE = br_order.FEATURE_CODE
+        AND br_breed.GRADE_CODE = br_order.GRADE_CODE
+        AND br_order.DEL_FLG = 0
+        WHERE
+            br_order.BUYER_ID = #{buyerId}
+        AND DETAIL_STATUS=#{filterMap.detailStatus}
+    </select>
+
+</mapper>

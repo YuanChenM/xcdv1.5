@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.comm.ISLMultiSellerLogic">
+
+    <select id="querySlSellerDisQua" parameterType="BaseParam"
+            resultType="com.msk.seller.bean.result.ISLMultiSellerResult">
+        SELECT
+        a.SL_CODE AS slCode,
+        IFNULL(a.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(b.SL_SHOW_NAME,'') AS slShowName,
+        IFNULL(a.DIST_QUA,'') AS distQua
+        FROM
+        sl_seller a
+        LEFT JOIN sl_account b ON a.SL_ACCOUNT = b.SL_ACCOUNT AND b.DEL_FLG = 0
+        WHERE
+        a.DEL_FLG = 0
+        AND  a.SL_MAIN_CLASS IN (0,1,2,3)
+        AND
+        <foreach collection="filterMap.slSellers" item="item" index="index" open="(" close=")" separator="OR">
+            a.SL_CODE = #{item.slCode}
+            AND a.LGCS_AREA_CODE = #{item.lgcsAreaCode}
+        </foreach>
+    </select>
+
+    <select id="querySlSellerProduct" parameterType="BaseParam"
+            resultType="com.msk.seller.bean.result.ISLMultiSellerResult">
+        SELECT
+        a.SL_CODE AS slCode,
+        IFNULL(a.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(c.SL_SHOW_NAME,'') AS slShowName,
+        IFNULL(a.DIST_QUA,'') AS distQua,
+        IFNULL(CONCAT(b.PD_CLASSES_CODE,b.MACHINING_CODE,b.PD_BREED_CODE,b.PD_FEATURE_CODE,b.WEIGHT_CODE,
+            b.SL_TNC_GRADE_CODE),'') AS  pdCode
+        FROM
+        sl_seller a
+        LEFT JOIN sl_product  b  ON  a.SL_CODE =  b.SL_CODE  AND  b.DEL_FLG = 0 AND  b.`STATUS`  in  (4,5)
+        LEFT JOIN sl_account  c  ON  a.SL_ACCOUNT = c.SL_ACCOUNT AND c.DEL_FLG = 0
+        WHERE
+        a.DEL_FLG = 0
+        AND  a.SL_MAIN_CLASS IN (0,1,2,3)
+        AND  a.CRT_TIME  BETWEEN  #{filterMap.startPriceCycle}   AND   #{filterMap.endPriceCycle}
+    </select>
+
+
+</mapper>

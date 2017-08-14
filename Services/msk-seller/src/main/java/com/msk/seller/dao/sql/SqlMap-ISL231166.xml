@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231166RsLogic">
+
+    <insert id="save" parameterType="com.msk.seller.bean.ISL23116601">
+		INSERT INTO sl_pd_classes (
+			SL_CODE,
+			PD_CLASSES_CODE,
+			CRT_ID,
+			CRT_TIME,
+			UPD_ID,
+			UPD_TIME,
+			ACT_ID,
+			ACT_TIME,
+			DEL_FLG,
+			VER
+		)
+		VALUES
+			(
+			  #{slCode},
+			  #{pdClassesCode},
+			  #{crtId},
+			  #{crtTime},
+			  #{crtId},
+			  #{crtTime},
+			  #{crtId},
+			  #{crtTime},
+			  0,
+			  1)
+	</insert>
+
+    <select id="findList" parameterType="BaseParam" resultType="com.msk.core.entity.SlSeller">
+		SELECT SL_CODE AS slCode
+		from sl_seller
+		 WHERE SL_CODE = #{filterMap.slCode}
+		  AND  DEL_FLG = 0
+	</select>
+
+
+    <delete id="remove" parameterType="BaseParam">
+        DELETE FROM sl_pd_classes WHERE
+		SL_CODE = #{filterMap.slCode}
+        <if test="filterMap.pdClassesCode != null and filterMap.pdClassesCode != ''">
+            AND PD_CLASSES_CODE=#{filterMap.pdClassesCode}
+        </if>
+    </delete>
+
+
+	<select id="findSLPdClassesAll" parameterType="BaseParam" resultType="com.msk.seller.bean.ISL23116601">
+		SELECT
+		SL_CODE AS slCode,
+		PD_CLASSES_CODE AS pdClassesCode,
+		CRT_ID AS crtId
+		FROM
+		sl_pd_classes
+		WHERE
+		SL_CODE = #{filterMap.slCode}
+		AND  DEL_FLG = 0
+	</select>
+
+</mapper>

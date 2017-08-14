@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.batch.order.logic.BSO151402Logic">
+
+    <select id="getOrdersByStatus" resultType="com.msk.batch.order.bean.BSO151402OrderInfo" parameterType="com.msk.batch.order.bean.BSO151402Param" >
+        SELECT
+          sso.SUB_ORDER_ID AS subOrderId,
+          sso.SUB_ORDER_STATUS AS orderStatus,
+          so.ORDER_ID AS orderId,
+          so.ORDER_CODE AS orderCode,
+          so.SALE_PLATFORM AS salePlatform,
+          so.ORDER_TIME AS orderTime,
+          sso.SELLER_CODE AS slCode,
+          so.DISTRICT_CODE AS districtCode,
+          sso.ORDER_TYPE AS orderType
+        FROM
+          so_sub_order sso
+          LEFT JOIN so_order so
+            ON so.order_id = sso.order_id
+        WHERE sso.SUB_ORDER_STATUS IN ( 6,14 )
+        AND so.del_flg = 0
+        AND sso.del_flg = 0
+    </select>
+
+    <select id = "getSubOrderDetailInfo" parameterType = "com.msk.batch.order.bean.BSO151402Param" resultType = "com.msk.batch.order.bean.BSO151402OrderResult" >
+        SELECT
+          ssod.SUB_ORDER_ID AS subOrderId,
+          ssod.ORDER_ID AS orderId,
+          so.ORDER_CODE AS orderCode,
+          ssod.order_detail_id AS orderDetailId,
+          ssod.sub_order_detail_id AS subOrderDetailId,
+          so.DISTRICT_CODE AS districtCode,
+          ssod.ORDER_DETAIL_LEVEL AS orderDetailLevel,
+          ssod.pd_code AS pdCode,
+          ssod.pd_name AS pdName,
+          ssod.ORDER_QTY AS orderQty,
+          sso.SELLER_CODE AS sellerCode,
+          ssod.DETAIL_STATUS AS subOrderDetailStatus,
+          so.SALE_PLATFORM AS salePlatform,
+          so.ORDER_TIME AS orderTime
+        FROM
+          so_sub_order_detail ssod
+          LEFT JOIN so_sub_order sso
+            ON sso.sub_order_id = ssod.sub_order_id
+          LEFT JOIN so_order so
+            ON so.order_id = ssod.order_id
+          LEFT JOIN so_order_detail sod
+            ON sod.order_detail_id = ssod.order_detail_id
+        WHERE sso.SUB_ORDER_STATUS = #{orderStatus}
+          AND ssod.SUB_ORDER_ID = #{subOrderId}
+        ORDER BY ssod.ORDER_ID ASC
+    </select>
+
+    <select id="countFrequency" parameterType="com.msk.batch.order.bean.BSO151402Param" resultType="int">
+        SELECT COUNT(1)
+        FROM so_sales_ranking
+        WHERE
+        <![CDATA[ WHEEL_FREQUENCY < DIST_QUA ]]>
+        <if test="lgcsCode!=null and lgcsCode!=''">
+            AND LGCS_CODE = #{lgcsCode}
+        </if>
+        <if test="orderLevel!=null and orderLevel!=''">
+            AND ORDER_LEVEL = #{orderLevel}
+        </if>
+        <if test="pdCode!=null and pdCode!=''">
+            AND PD_CODE = #{pdCode}
+        </if>
+        <if test="supplierCode!=null and supplierCode!=''">
+            AND SUPPLIER_CODE = #{supplierCode}
+        </if>
+    </select>
+
+    <update id="updateFrequency" parameterType="com.msk.core.entity.SoSalesRanking">
+        UPDATE so_sales_ranking
+        SET WHEEL_FREQUENCY = #{wheelFrequency},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        <include refid="whereCondition"/>
+    </update>
+
+    <sql id="whereCondition">
+        <where>
+            <if test="lgcsCode!=null and lgcsCode!=''">
+                AND LGCS_CODE = #{lgcsCode}
+            </if>
+            <if test="orderLevel!=null and orderLevel!=''">
+                AND ORDER_LEVEL = #{orderLevel}
+            </if>
+            <if test="pdCode!=null and pdCode!=''">
+                AND PD_CODE = #{pdCode}
+            </if>
+            <if test="supplierCode!=null and supplierCode!=''">
+                AND SUPPLIER_CODE = #{supplierCode}
+            </if>
+        </where>
+    </sql>
+
+    <!--DIST_QUA: 0:无资格,1:标准分销卖家,2:优良分销卖家,3:重点分销卖家 -->
+    <!--SELECT 同一区域，同一订单级别，同一个产品的销售排行 【:标准分销卖家】和【优良分销卖家】和 【重点分销卖家】的排行 -->
+    <!--UNION ALL -->
+    <!--SELECT 同一区域，同一订单级别，同一个产品的销售排行 【优良分销卖家】和 【重点分销卖家】的排行 -->
+    <!--UNION ALL-->
+    <!--SELECT 同一区域，同一订单级别，同一个产品的销售排行 【重点分销卖家】的排行 -->
+    <select id="findList" parameterType="com.msk.batch.order.bean.BSO151402Param" resultType="com.msk.core.entity.SoSalesRanking">
+        SELECT
+        <include refid="selectSql"/>
+        FROM so_sales_ranking
+        WHERE 1 = 1
+        <if test="lgcsCode!=null and lgcsCode!=''">
+            AND LGCS_CODE = #{lgcsCode}
+        </if>
+        <if test="orderLevel!=null and orderLevel!=''">
+            AND ORDER_LEVEL = #{orderLevel}
+        </if>
+        <if test="pdCode!=null and pdCode!=''">
+            AND PD_CODE = #{pdCode}
+        </if>
+        <if test="supplierCode!=null and supplierCode!=''">
+            AND SUPPLIER_CODE = #{supplierCode}
+        </if>
+        ORDER BY ORDER_LEVEL,wheelFrequency, salesRanking
+    </select>
+
+    <sql id="selectSql">
+        LGCS_CODE AS lgcsCode,
+        ORDER_LEVEL AS orderLevel,
+        PD_CODE AS pdCode,
+        SUPPLIER_CODE AS supplierCode,
+        SUPPLIER_NAME AS supplierName,
+        PRICE_CYCLE AS priceCycle,
+        SALES_AMOUNT AS salesAmount,
+        SALES_RANKING AS salesRanking,
+        DIST_QUA AS distQua,
+        WHEEL_FREQUENCY AS wheelFrequency,
+        VER AS ver
+    </sql>
+
+    <insert id="saveSoShipOrderDetail" parameterType="com.msk.core.entity.SoOrderShipDetail">
+      INSERT INTO so_order_ship_detail (
+          SHIP_DETAIL_ID,
+          ORDER_ID,
+          ORDER_DETAIL_ID,
+          SUB_ORDER_ID,
+          SUB_ORDER_DETAIL_ID,
+          SOURCE_SUPPLIER_CODE,
+          SUPPLIER_CODE,
+          SUPPLIER_NAME,
+          PD_CODE,
+          PD_NAME,
+          SKU_CODE,
+          SUPP_QTY,
+          DETAIL_STATUS,
+          DEL_FLG,
+          CRT_ID,
+          CRT_TIME,
+          VER
+        )
+        VALUES
+          (
+            #{shipDetailId},
+            #{orderId},
+            #{orderDetailId},
+            #{subOrderId},
+            #{subOrderDetailId},
+            #{sourceSupplierCode},
+            #{supplierCode},
+            #{supplierName},
+            #{pdCode},
+            #{pdName},
+            #{skuCode},
+            #{suppQty},
+            #{detailStatus},
+            0,
+            "BSO151402Batch",
+            #{crtTime},
+            1
+          )
+    </insert>
+
+    <update id="modifySoOrderStatus" parameterType="com.msk.batch.order.bean.BSO151402OrderInfo">
+        UPDATE
+          so_order_status
+        SET
+          DEL_FLG = 1,
+          UPD_ID = "BSO151402Batch",
+          UPD_TIME = #{updTime},
+          VER = VER + 1
+        WHERE ORDER_ID = #{orderId}
+        AND DEL_FLG = 0
+    </update>
+
+    <insert id="saveSoOrderStatus" parameterType="com.msk.batch.order.bean.BSO151402OrderInfo">
+        INSERT INTO so_order_status (
+          STATUS_ID,
+          ORDER_ID,
+          ORDER_CODE,
+          ORDER_STATUS,
+          DEL_FLG,
+          CRT_ID,
+          CRT_TIME,
+          VER
+        )
+        VALUES
+          (
+            #{statusId},
+            #{orderId},
+            #{orderCode},
+            #{orderStatus},
+            0,
+            "BSO151402Batch",
+            #{updTime},
+            1
+          )
+    </insert>
+
+    <update id="modifySoOrderStatusInfo" parameterType="com.msk.batch.order.bean.BSO151402OrderInfo">
+        UPDATE
+          so_order
+        SET
+          ORDER_STATUS = #{orderStatus},
+          UPD_ID = "BSO151402Batch",
+          UPD_TIME = #{updTime},
+          VER = VER + 1
+        WHERE ORDER_ID = #{orderId}
+    </update>
+
+    <update id="modifySoSubOrderStatus" parameterType="com.msk.batch.order.bean.BSO151402OrderInfo">
+        UPDATE
+          so_sub_order_status
+        SET
+          DEL_FLG = 1,
+          UPD_ID = "BSO151402Batch",
+          UPD_TIME = #{updTime},
+          VER = VER + 1
+        WHERE SUB_ORDER_ID = #{subOrderId}
+        AND DEL_FLG = 0
+    </update>
+
+    <insert id="saveSoSubOrderStatus" parameterType="com.msk.batch.order.bean.BSO151402OrderInfo">
+        INSERT INTO so_sub_order_status (
+          STATUS_ID,
+          SUB_ORDER_ID,
+          ORDER_ID,
+          SUB_ORDER_STATUS,
+          DEL_FLG,
+          CRT_ID,
+          CRT_TIME,
+          VER
+        )
+        VALUES
+          (
+            #{statusId},
+            #{subOrderId},
+            #{orderId},
+            #{subOrderStatus},
+            0,
+            "BSO151402Batch",
+            #{updTime},
+            1
+          )
+    </insert>
+
+    <update id="modifySoSubOrderStatusInfo" parameterType="com.msk.batch.order.bean.BSO151402OrderInfo">
+        UPDATE
+          so_sub_order
+        SET
+          SUB_ORDER_STATUS = #{subOrderStatus},
+          UPD_ID = "BSO151402Batch",
+          UPD_TIME = #{updTime},
+          VER = VER + 1
+        WHERE SUB_ORDER_ID = #{subOrderId}
+    </update>
+
+    <update id="modifySoOrderDetailStatus" parameterType="com.msk.batch.order.bean.BSO151402OrderInfo">
+        UPDATE
+        so_order_detail
+        SET
+        UPD_ID = "BSO151402Batch",
+        UPD_TIME = #{updTime},
+        VER = VER + 1,
+        DETAIL_STATUS = #{soOrderDetailStatus}
+        WHERE ORDER_ID = #{orderId}
+    </update>
+
+    <update id="modifySoSubOrderDetailStatus" parameterType="com.msk.batch.order.bean.BSO151402OrderInfo">
+        UPDATE
+        so_sub_order_detail
+        SET
+        UPD_ID = "BSO151402Batch",
+        UPD_TIME = #{updTime},
+        VER = VER + 1,
+        DETAIL_STATUS = #{subOrderDetailStatus}
+        WHERE SUB_ORDER_ID = #{subOrderId}
+    </update>
+
+    <update id="modifySoOrderShipDetailStatus" parameterType="com.msk.batch.order.bean.BSO151402OrderInfo">
+        UPDATE
+        so_order_ship_detail
+        SET
+        UPD_ID = "BSO151402Batch",
+        UPD_TIME = #{updTime},
+        DETAIL_STATUS = #{orderShipDetailStatus},
+        VER = VER + 1,
+        DEL_FLG = 1
+        WHERE ORDER_ID = #{orderId}
+    </update>
+</mapper>

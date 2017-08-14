@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBA2141101Logic">
+
+    <select id="findList" parameterType="com.hoperun.core.bean.BaseParam" resultType="com.msk.bs.bean.IBA2141101Bean">
+        SELECT
+        VERSIONS_ID AS versionsId,
+        VERSIONS_CODE AS versionsCode,
+        VERSIONS_STATUS AS versionsStatus,
+        DOWNLOAD_URL AS downloadUrl,
+        END_TIME AS endTime,
+        REMARK AS remark,
+        DEL_FLG AS delFlg
+        FROM
+        sl_bs_ba_versions
+        ORDER BY VERSIONS_CODE DESC
+    </select>
+</mapper>
+

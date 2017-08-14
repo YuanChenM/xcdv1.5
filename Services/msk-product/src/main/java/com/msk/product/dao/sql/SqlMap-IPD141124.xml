@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.IPD141124Logic">
+    <select id="findList" parameterType="BaseParam"
+            resultType="com.msk.product.bean.PD141147Bean">
+        SELECT
+	B.FED_STD_ITEM_ID AS fedStdItemId,
+	B.FED_STD_ITEM_NAME AS fedStdItemName,
+	A.FED_GOOD_VAL AS goodVal,
+	A.FED_NORMAL_VAL AS normalVal,
+	A.FED_BAD_VAL AS badVal
+FROM
+	pd_fed_std AS A,
+	pd_fed_std_item AS B
+WHERE
+	A.FED_STD_ITEM_ID = B.FED_STD_ITEM_ID
+AND A.STANDARD_ID = #{filterMap.standardId}
+    </select>
+
+    <select id="findPdStandard" parameterType="BaseParam"
+            resultType="com.msk.core.entity.PdStandard">
+        SELECT
+        A.STANDARD_ID AS standardId
+        FROM pd_standard AS A
+        WHERE A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+    </select>
+
+</mapper>

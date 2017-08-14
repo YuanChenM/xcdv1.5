@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231118Logic">
+    <sql id="selectSql">
+	A.SL_CODE AS   slCode
+	,A.SL_PD_ID AS   slPdId
+	,A.PROD_EP_ID AS   prodEpId
+	,A.BRAND_EP_ID AS   brandEpId
+	,A.BRAND_ID AS   brandId
+	,A.PD_CLASSES_CODE AS   pdClassesCode
+	,A.PD_BREED_CODE AS   pdBreedCode
+	,A.PD_FEATURE_CODE AS   pdFeatureCode
+	,A.DIST_FLG AS   distFlg
+	,A.SL_TNC_GRADE_CODE AS   slTncGradeCode
+	,A.SL_QLT_GRADE_CODE AS   slQltGradeCode
+	,A.DEL_FLG AS  delFlg
+	</sql>
+    <select id="findList" parameterType="com.msk.seller.bean.ISL231118RsParam" resultType="com.msk.core.entity.SlProduct">
+        SELECT
+        <include refid="selectSql"/>
+        FROM
+        sl_product A
+        WHERE A.SL_CODE=#{slCode}
+    </select>
+</mapper>

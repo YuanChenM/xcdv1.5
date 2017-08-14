@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="resources/js/BY121227.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>品种包装标准调研</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="text-align:center;width:76%;height:40px;line-height:45px;text-shadow:none;color:#3290B3;font-size: 23px;font-weight: bold;">通路注册营销一体化工作站</div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div id="breedStandard" style="width: 80%;margin-left:25px;color: #52C2E9;text-align:left;line-height:40px;text-shadow:none;height:40px;font-size: 23px;"></div>
+            <div style="width: 80%;margin-left:30px;color: #CCCCCC;text-align:left;text-shadow:none;font-size: 17px;">根据指标和标准,记录买家调研意见</div>
+            <div style="width: 85%;margin-left:25px;background-color: #E1E4E9;color: #52C2E9;text-align:left;line-height:35px;text-shadow:none;height:30px;font-size: 17px;margin-top:10px;"><span style="padding-left:15px;">规格名称</span></div>
+            <div id="normName" style="width: 85%;margin-left:25px;background-color: #F0F2F5;color: #898989;text-align:left;line-height:35px;text-shadow:none;height:30px;font-size: 17px;"></div>
+            <div style="width: 85%;margin-left:25px;background-color: #E1E4E9;color: #52C2E9;text-align:left;line-height:35px;text-shadow:none;height:30px;font-size: 17px;margin-top:5px;"><span style="padding-left:15px;">指标内容</span></div>
+            <div style="width: 85%;margin-left:25px;text-shadow:none;font-size: 17px;background-color: #F0F2F5;">
+                <div style="padding-left:25px;color:#52C2E9">单个产品规格净重</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea id="normsSuttle" name="normsSuttle" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea id="normsSuttleR" name="normsSuttleR" style="color:#000000"></textarea>
+                </div>
+                <div style="padding-left:25px;color:#52C2E9">单个产品规格净重误差范围</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsError" name="normsError" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsErrorR" name="normsErrorR" style="color:#000000"></textarea>
+                </div>
+                <div style="padding-left:25px;color:#52C2E9">内包装净重/个数</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsNumber" name="normsNumber" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsNumberR" name="normsNumberR" style="color:#000000"></textarea>
+                </div>
+                <div style="padding-left:25px;color:#52C2E9">内包装尺寸</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsSize" name="normsSize" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsSizeR" name="normsSizeR" style="color:#000000"></textarea>
+                </div>
+                <div style="padding-left:25px;color:#52C2E9">内包装材质及技术标准</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsTexture" name="normsTexture" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsTextureR" name="normsTextureR" style="color:#000000"></textarea>
+                </div>
+                <div style="padding-left:25px;color:#52C2E9">外包装规格</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsOut" name="normsOut" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsOutR" name="normsOutR" style="color:#000000"></textarea>
+                </div>
+                <div style="padding-left:25px;color:#52C2E9">外包装净重/毛重</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsKg" name="normsKg" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsKgR" name="normsKgR" style="color:#000000"></textarea>
+                </div>
+                <div style="padding-left:25px;color:#52C2E9">外包装尺寸</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsOutSize" name="normsOutSize" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsOutSizeR" name="normsOutSizeR" style="color:#000000"></textarea>
+                </div>
+                <div style="padding-left:25px;color:#52C2E9">外包装材质及技术标准</div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsOutTexture" name="normsOutTexture" style="color:#000000" disabled></textarea>
+                </div>
+                <div style="padding-left:25px;padding-right:25px;">
+                    <textarea  id="normsOutTextureR" name="normsOutTextureR" style="color:#000000"></textarea>
+                </div>
+            </div>
+            <div style="width: 85%;margin-left:25px;margin-top:20px;" class="ui-grid-a">
+                <div style="width: 40%;height:40px;line-height: 45px;background-color:#A0D468;color: #FFFFFF;text-align:center;text-shadow:none;font-size: 20px;" class="ui-block-a" onclick="skip()">跳过</div>
+                <div style="width: 40%;height:40px;line-height: 45px;background-color:#A0D468;color: #FFFFFF;text-align:center;text-shadow:none;font-size: 20px;margin-left:60px;" class="ui-block-b" onclick="normsResearchSumit()">保存</div>
+            </div>
+            <br/>
+        </div>
+	</body>
+</html>

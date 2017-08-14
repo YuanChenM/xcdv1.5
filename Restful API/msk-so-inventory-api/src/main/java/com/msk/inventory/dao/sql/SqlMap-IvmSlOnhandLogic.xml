@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.inventory.service.impl.SlOnhandLogicServiceImpl">
+    <!-- 表字段 -->
+	<sql id="selectSql">
+        IV_ID AS ivId,
+        PRODUCT_XML AS productXml,
+        BELONE_XML AS beloneXml,
+        CONCAT(
+		  EXTRACTVALUE(PRODUCT_XML, '/CLS_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/MACH_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/BRE_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/FEAT_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/WEI_C'),
+		  EXTRACTVALUE(PRODUCT_XML, '/GRAD_C')
+	    )AS pdCode,
+        EXTRACTVALUE(PRODUCT_XML, '/AREA') AS logicArea,
+        EXTRACTVALUE(PRODUCT_XML, '/PLT') AS platform,
+        EXTRACTVALUE(PRODUCT_XML, '/SLT') AS slType,
+        EXTRACTVALUE(PRODUCT_XML, '/SLID') AS slId,
+        OWNER_ID AS ownerId,
+        OWNER_CODE AS ownerCode,
+        ONHAND_QTY AS onhandQty
+	</sql>
+    <!--条件 -->
+	<sql id="whereCondition">
+		<where>
+            <if test="ivId!=null">
+                  AND IV_ID=#{ivId}
+            </if> 
+            <if test="pdCode!=null">
+                AND CONCAT(
+                EXTRACTVALUE(PRODUCT_XML,'/CLS_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/MACH_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/BRE_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/FEAT_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/WEI_C'),
+                EXTRACTVALUE(PRODUCT_XML,'/GRAD_C')
+                ) = #{pdCode}
+            </if>
+            <if test="skuCode!=null">
+                AND CONCAT(
+                EXTRACTVALUE(PRODUCT_XML, '/SL_C'),
+                EXTRACTVALUE(PRODUCT_XML, '/SL_P_C')
+                ) = #{skuCode}
+            </if>
+            <if test="logicArea!=null">
+                AND EXTRACTVALUE(BELONE_XML,'/AREA')=#{logicArea}
+            </if>
+            <if test="platform!=null">
+                AND EXTRACTVALUE(BELONE_XML,'/PLT')=#{platform}
+            </if>
+            <if test="slType!=null">
+                AND EXTRACTVALUE(BELONE_XML,'/SLT')=#{slType}
+            </if>
+            <if test="slId!=null">
+                AND EXTRACTVALUE(BELONE_XML,'/SLID')=#{slId}
+            </if>
+		<if test="ownerId!=null">
+                  AND OWNER_ID=#{ownerId}
+            </if> 
+            <if test="ownerCode!=null">
+                  AND OWNER_CODE=#{ownerCode}
+            </if> 
+            <if test="ivType!=null">
+                AND IV_TYPE=#{ivType}
+            </if>
+		</where>
+	</sql>
+    <!--数据插入 -->
+	<insert id="insertOneSlOnhandLogic" parameterType="com.msk.inventory.bean.IvmSlOnhandLogicBean">
+		INSERT INTO ivm_sl_onhand_logic
+		(
+            <if test="productXml!=null">
+                PRODUCT_XML,
+            </if> 
+            <if test="beloneXml!=null">
+                BELONE_XML,
+            </if> 
+            <if test="ownerId!=null">
+                OWNER_ID,
+            </if> 
+            <if test="ownerCode!=null">
+                OWNER_CODE,
+            </if> 
+            <if test="ivType!=null">
+            IV_TYPE,
+            </if> 			
+        ONHAND_QTY
+		)
+		VALUES
+		(
+            <if test="productXml!=null">
+                #{productXml},
+            </if> 
+            <if test="beloneXml!=null">
+                #{beloneXml},
+            </if> 
+            <if test="ownerId!=null">
+                #{ownerId},
+            </if> 
+            <if test="ownerCode!=null">
+                #{ownerCode},
+            </if> 
+            <if test="ivType!=null">
+            #{ivType},
+            </if> 
+        #{onhandQty}
+		)
+	</insert>
+	    <update id="editOneSlOnhandLogic" parameterType="com.msk.inventory.bean.IvmSlOnhandLogicBean">
+		update ivm_sl_onhand_logic 
+		set 
+            ONHAND_QTY=#{onhandQty}
+        <include refid="whereCondition"/>
+	</update>
+	    <select id="queryListByCondition" resultType="com.msk.inventory.bean.IvmSlOnhandLogicBean">
+		select 
+		<include refid="selectSql"/>
+		from ivm_sl_onhand_logic
+        <include refid="whereCondition"/>
+	</select>
+	
+	<select id="countByCondition" resultType="Integer" parameterType="com.msk.inventory.bean.IvmSlOnhandLogicBean">
+		select count(1)
+		from ivm_sl_onhand_logic
+		<include refid="whereCondition"/>
+	</select>
+
+    <update id="cutOnhandQty" parameterType="com.msk.inventory.bean.IvmSlOnhandLogicBean">
+        update ivm_sl_onhand_logic
+        set
+        ONHAND_QTY=ONHAND_QTY-#{onhandQty}
+        WHERE
+        1=1
+        <if test="platform!=null">
+            AND EXTRACTVALUE(BELONE_XML,'/PLT')=#{platform}
+        </if>
+        <if test="logicArea!=null">
+            AND EXTRACTVALUE(BELONE_XML,'/AREA')=#{logicArea}
+        </if>
+        <if test="slType!=null">
+            AND EXTRACTVALUE(BELONE_XML,'/SLT')=#{slType}
+        </if>
+        <if test="slId!=null">
+            AND EXTRACTVALUE(BELONE_XML,'/SLID')=#{slId}
+        </if>
+        <if test="pdCode!=null">
+            AND CONCAT(
+            EXTRACTVALUE(PRODUCT_XML, '/CLS_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/MACH_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/BRE_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/FEAT_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/WEI_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/GRAD_C')
+            )=#{pdCode}
+        </if>
+        <if test="ownerId!=null">
+            AND OWNER_ID=#{ownerId}
+        </if>
+        <if test="ownerCode!=null">
+            AND OWNER_CODE=#{ownerCode}
+        </if>
+        <if test="ivType!=null">
+            AND IV_TYPE=#{ivType}
+        </if>
+    </update>
+
+    <update id="addOnhandQty" parameterType="com.msk.inventory.bean.IvmSlOnhandLogicBean">
+        update ivm_sl_onhand_logic
+        set
+        ONHAND_QTY=ONHAND_QTY+#{onhandQty}
+        WHERE
+        1=1
+        <if test="platform!=null">
+            AND EXTRACTVALUE(BELONE_XML,'/PLT')=#{platform}
+        </if>
+        <if test="logicArea!=null">
+            AND EXTRACTVALUE(BELONE_XML,'/AREA')=#{logicArea}
+        </if>
+        <if test="slType!=null">
+            AND EXTRACTVALUE(BELONE_XML,'/SLT')=#{slType}
+        </if>
+        <if test="slId!=null">
+            AND EXTRACTVALUE(BELONE_XML,'/SLID')=#{slId}
+        </if>
+        <if test="pdCode!=null">
+            AND CONCAT(
+            EXTRACTVALUE(PRODUCT_XML, '/CLS_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/MACH_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/BRE_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/FEAT_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/WEI_C'),
+            EXTRACTVALUE(PRODUCT_XML, '/GRAD_C')
+            )=#{pdCode}
+        </if>
+        <if test="ownerId!=null">
+            AND OWNER_ID=#{ownerId}
+        </if>
+        <if test="ownerCode!=null">
+            AND OWNER_CODE=#{ownerCode}
+        </if>
+        <if test="ivType!=null">
+            AND IV_TYPE=#{ivType}
+        </if>
+    </update>
+
+    <sql id="updateCondition">
+        UPDATE IVM_SL_ONHAND_LOGIC A
+        LEFT JOIN(
+        SELECT
+        D.PM_EXTERNAL_XML,
+        EXTRACTVALUE(C.BELONE_XML, '/AREA') AS LOGIC_AREA,
+        EXTRACTVALUE(C.BELONE_XML,'/PLT') AS PLATFORM,
+        C.OWNER_CODE,
+        C.IV_FLAG AS IV_TYPE,
+        SUM(C.QTY) AS OUT_QTY
+        FROM IVM_INVENTORY_DETAIL C
+        INNER JOIN IVM_PARTS_MASTER D ON C.PM_ID = D.PM_ID
+        WHERE C.OUTBOUND_ID = #{outboundId}
+        AND C.OUTBOUND_NO = #{outboundNo}
+        GROUP BY UPDATEXML(
+        UPDATEXML(D.PM_EXTERNAL_XML,'/SL_C',''),'/SL_P_C',''),
+        EXTRACTVALUE(C.BELONE_XML, '/AREA'),
+        EXTRACTVALUE(C.BELONE_XML,'/PLT'),
+        C.OWNER_CODE,
+        C.IV_FLAG
+        )B ON (EXTRACTVALUE(B.PM_EXTERNAL_XML, '/CLS_C') = EXTRACTVALUE(A.PRODUCT_XML, '/CLS_C')
+							AND EXTRACTVALUE(B.PM_EXTERNAL_XML, '/MACH_C') = EXTRACTVALUE(A.PRODUCT_XML, '/MACH_C')
+							AND EXTRACTVALUE(B.PM_EXTERNAL_XML, '/BRE_C') = EXTRACTVALUE(A.PRODUCT_XML, '/BRE_C')
+							AND EXTRACTVALUE(B.PM_EXTERNAL_XML, '/FEAT_C') = EXTRACTVALUE(A.PRODUCT_XML, '/FEAT_C')
+							AND EXTRACTVALUE(B.PM_EXTERNAL_XML, '/WEI_C') = EXTRACTVALUE(A.PRODUCT_XML, '/WEI_C')
+							AND EXTRACTVALUE(B.PM_EXTERNAL_XML, '/GRAD_C') = EXTRACTVALUE(A.PRODUCT_XML, '/GRAD_C')
+        AND EXTRACTVALUE(A.BELONE_XML, '/AREA') = B.LOGIC_AREA
+        AND EXTRACTVALUE(A.BELONE_XML, '/PLT') = B.PLATFORM
+        AND A.OWNER_CODE = B.OWNER_CODE
+        AND A.IV_TYPE = B.IV_TYPE
+        )
+    </sql>
+
+    <update id="calOnhandQtyForDispatch" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        <include refid="updateCondition"/>
+        SET A.ONHAND_QTY = IF(A.ONHAND_QTY - B.OUT_QTY <![CDATA[ < ]]> 0, 0, A.ONHAND_QTY - B.OUT_QTY)
+        WHERE EXTRACTVALUE(A.BELONE_XML, '/SLT') = #{slType}
+        AND EXTRACTVALUE(A.BELONE_XML, '/SLID') = #{slId}
+    </update>
+
+    <update id="calOnhandQtyForUndoDispatch" parameterType="com.msk.inventory.bean.IvmInventoryDetailBean">
+        <include refid="updateCondition"/>
+        SET A.ONHAND_QTY = A.ONHAND_QTY + B.OUT_QTY
+        WHERE EXTRACTVALUE(A.BELONE_XML, '/SLT') = #{slType}
+        AND EXTRACTVALUE(A.BELONE_XML, '/SLID') = #{slId}
+    </update>
+</mapper>

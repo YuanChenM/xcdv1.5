@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBA2141112RsLogic">
+
+    <select id="findAddInfo" parameterType="com.msk.bs.bean.IBA2141112Param" resultType="com.msk.bs.bean.IBA2141112Result">
+        SELECT
+        SL_RECBOOK_ID AS slRecbookId,
+        SL_CODE AS  slCode,
+        HOUSE_CODE AS  houseCode,
+        BUYER_NAME AS buyerName,
+        TEL_NUM AS  telNum,
+        LGCS_AREA_CODE AS  lgcsAreaCode,
+        LGCS_AREA_NAME AS  lgcsAreaName,
+        PROVINCE_NAME AS  provinceName,
+        CITY_NAME AS cityName,
+        DISTRICT_NAME AS  districtName,
+        PROVINCE_CODE AS provinceCode,
+        CITY_CODE AS cityCode,
+        DISTRICT_CODE AS  districtCode,
+        ADDRESS AS  address,
+        FULL_ADDRESS AS fullAddress
+         FROM  sl_house_receive_book
+        WHERE DEL_FLG = 0
+        <if test="houseCode !=null and houseCode !=''">
+            AND HOUSE_CODE = #{houseCode}
+        </if>
+        <if test="slRecbookId !=null and slRecbookId !=''">
+           AND SL_RECBOOK_ID = #{slRecbookId}
+        </if>
+    </select>
+
+    <select id="findbuyerAddrInfo" parameterType="com.msk.bs.bean.IBA2141112Param" resultType="com.msk.bs.bean.IBA2141112Result">
+        SELECT
+        SL_RECBOOK_ID AS slRecbookId,
+        SL_CODE AS  slCode,
+        BUYER_NAME AS buyerName,
+        TEL_NUM AS  telNum,
+        LGCS_AREA_CODE AS  lgcsAreaCode,
+        PROVINCE_CODE AS provinceCode,
+        CITY_CODE AS cityCode,
+        DISTRICT_CODE AS  districtCode,
+        LGCS_AREA_NAME AS  lgcsAreaName,
+        PROVINCE_NAME AS  provinceName,
+        CITY_NAME AS cityName,
+        DISTRICT_NAME AS  districtName,
+        ADDRESS AS  address,
+        FULL_ADDRESS AS fullAddress
+        FROM  sl_bs_receive_book
+        WHERE DEL_FLG = 0
+        <if test="slCode !=null and slCode !=''">
+            AND SL_CODE = #{slCode}
+        </if>
+        <if test="slRecbookId !=null and slRecbookId !=''">
+            AND SL_RECBOOK_ID = #{slRecbookId}
+        </if>
+    </select>
+
+    <!--删除管家地址-->
+    <update id="deleteAddress" parameterType="com.msk.bs.bean.IBA2141112Param">
+        UPDATE  sl_house_receive_book
+        SET DEL_FLG =1,
+        VER = VER+1,
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        where DEL_FLG = 0 AND  SL_RECBOOK_ID = #{slRecbookId}
+    </update>
+
+    <!--删除买手地址-->
+    <update id="deleteBuyersAddress" parameterType="com.msk.bs.bean.IBA2141112Param">
+        UPDATE  sl_bs_receive_book
+        SET DEL_FLG =1,
+        VER = VER+1,
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        where DEL_FLG = 0 AND  SL_RECBOOK_ID = #{slRecbookId}
+    </update>
+
+    <!--编辑管家收货地址信息-->
+    <update id="modifyAddress" parameterType="com.msk.bs.bean.IBA2141112Param">
+        UPDATE  sl_house_receive_book
+        SET BUYER_NAME = #{buyerName},
+        TEL_NUM =#{telNum},
+        PROVINCE_CODE = #{provinceCode},
+        CITY_CODE =  #{cityCode},
+        DISTRICT_CODE =  #{districtCode},
+        ADDRESS =  #{address},
+        PROVINCE_NAME = #{provinceName},
+        CITY_NAME = #{cityName},
+        DISTRICT_NAME =#{districtName},
+        FULL_ADDRESS = #{fullAddress}
+        where DEL_FLG = 0 AND SL_RECBOOK_ID = #{slRecbookId}
+    </update>
+
+    <!--编辑买手收货地址信息-->
+    <update id="modifyBuyersAddress" parameterType="com.msk.bs.bean.IBA2141112Param">
+        UPDATE  sl_bs_receive_book
+        SET BUYER_NAME = #{buyerName},
+        TEL_NUM =#{telNum},
+        PROVINCE_CODE = #{provinceCode},
+        CITY_CODE =  #{cityCode},
+        DISTRICT_CODE =  #{districtCode},
+        ADDRESS =  #{address},
+        PROVINCE_NAME = #{provinceName},
+        CITY_NAME = #{cityName},
+        DISTRICT_NAME =#{districtName} ,
+        FULL_ADDRESS = #{fullAddress}
+        where DEL_FLG = 0 AND SL_RECBOOK_ID = #{slRecbookId}
+    </update>
+    <select id="selectHouseAccount" parameterType="com.msk.bs.bean.IBA2141112Param" resultType="String">
+        <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 start-->
+        select SL_CODE AS slCode  FROM  sl_house_account WHERE  HOUSE_CODE=#{houseCode} AND  (DEL_FLG = 0 OR DEL_FLG IS NULL)
+        <!--Modif 横展开数据存在del_flg是空的 ni_shaotang 2016-9-21 end-->
+    </select>
+
+    <select id="findHouseBookInfo" parameterType="com.msk.bs.bean.IBA2141112Param" resultType="com.msk.bs.bean.IBA2141112Result">
+      SELECT
+        SL_RECBOOK_ID AS slRecbookId,
+        SL_CODE AS  slCode,
+        HOUSE_CODE AS  houseCode,
+        BUYER_NAME AS buyerName,
+        TEL_NUM AS  telNum,
+        LGCS_AREA_CODE AS  lgcsAreaCode,
+        PROVINCE_CODE AS provinceCode,
+        CITY_CODE AS cityCode,
+        DISTRICT_CODE AS  districtCode,
+        ADDRESS AS  address,
+        LGCS_AREA_NAME AS  lgcsAreaName,
+        PROVINCE_NAME AS  provinceName,
+        CITY_NAME AS cityName,
+        DISTRICT_NAME AS  districtName,
+        FULL_ADDRESS AS fullAddress
+         FROM  sl_house_receive_book
+        WHERE DEL_FLG = 0  AND SL_RECBOOK_ID = #{slRecbookId}
+    </select>
+
+    <select id="findBuyersBookInfo" parameterType="com.msk.bs.bean.IBA2141112Param" resultType="com.msk.bs.bean.IBA2141112Result">
+        SELECT
+        SL_RECBOOK_ID AS slRecbookId,
+        SL_CODE AS  slCode,
+        BUYER_NAME AS buyerName,
+        TEL_NUM AS  telNum,
+        LGCS_AREA_CODE AS  lgcsAreaCode,
+        PROVINCE_CODE AS provinceCode,
+        CITY_CODE AS cityCode,
+        DISTRICT_CODE AS  districtCode,
+        ADDRESS AS  address,
+        LGCS_AREA_NAME AS  lgcsAreaName,
+        PROVINCE_NAME AS  provinceName,
+        CITY_NAME AS cityName,
+        DISTRICT_NAME AS  districtName,
+        FULL_ADDRESS AS fullAddress
+        FROM  sl_bs_receive_book
+        WHERE DEL_FLG = 0  AND SL_RECBOOK_ID = #{slRecbookId}
+    </select>
+
+    <insert id="addHouseAddr" parameterType="com.msk.bs.bean.IBA2141112Param">
+        INSERT  INTO  sl_house_receive_book (
+        SL_RECBOOK_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_NAME,
+        TEL_NUM,
+        LGCS_AREA_CODE,
+        PROVINCE_CODE,
+        CITY_CODE,
+        DISTRICT_CODE,
+        ADDRESS,
+        LGCS_AREA_NAME,
+        PROVINCE_NAME ,
+        CITY_NAME ,
+        DISTRICT_NAME,
+        FULL_ADDRESS,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{slRecbookId},
+        #{slCode},
+        #{houseCode},
+        #{buyerName},
+        #{telNum},
+        #{lgcsAreaCode},
+        #{provinceCode},
+        #{cityCode},
+         #{districtCode},
+        #{address},
+        #{lgcsAreaName},
+        #{provinceName},
+        #{cityName},
+        #{districtName},
+        #{fullAddress},
+        0,
+        #{crtId},
+        #{crtTime},
+         #{updId},
+        #{updTime},
+         #{actId},
+        #{actTime},
+        0
+        )
+    </insert>
+
+
+    <insert id="addBuyersAddr" parameterType="com.msk.bs.bean.IBA2141112Param">
+        INSERT  INTO  sl_bs_receive_book (
+        SL_RECBOOK_ID,
+        SL_CODE,
+        BUYER_NAME,
+        TEL_NUM,
+        LGCS_AREA_CODE,
+        PROVINCE_CODE,
+        CITY_CODE,
+        DISTRICT_CODE,
+        ADDRESS,
+         LGCS_AREA_NAME,
+        PROVINCE_NAME ,
+        CITY_NAME ,
+        DISTRICT_NAME,
+        FULL_ADDRESS,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{slRecbookId},
+        #{slCode},
+        #{buyerName},
+        #{telNum},
+        #{lgcsAreaCode},
+        #{provinceCode},
+        #{cityCode},
+        #{districtCode},
+        #{address},
+        #{lgcsAreaName},
+        #{provinceName},
+        #{cityName},
+        #{districtName},
+        #{fullAddress},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        0
+        )
+    </insert>
+</mapper>
+

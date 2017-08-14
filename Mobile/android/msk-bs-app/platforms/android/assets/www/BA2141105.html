@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>APP首页</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="css/common.css" type="text/css" rel="stylesheet"/>
+    <link href="css/animate.min.css" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/scroll.css" type="text/css">
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="js/constantDef.js"></script>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+    <script src="jquery/simplemodal.js"></script>
+    <link rel="stylesheet" href="css/swiper-3.3.1.min.css">
+    <!--<link rel="stylesheet" href="css/jquery.mobile-1.4.5.css">-->
+    <link href="css/css.css" type="text/css" rel="stylesheet"/>
+    <script src="jquery/swiper-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="css/loaders.css">
+    <link rel="stylesheet" href="css/animate.min.css">
+</head>
+
+<body>
+<img id="no-image" style="display: none" src="image/no-image.png"/>
+<!--加载指示器-->
+<span id='messageLoading' style="display: none">
+     <div id="messageLoadingText">正在加载中...</div>
+     <div class="loader-inner ball-clip-rotate">
+          <div></div>
+        </div>
+ </span>
+<p id="show"></p>
+<div id="wrapper">
+    <div id="scroller">
+        <div id="pullDown">
+            <span class="pullDownIcon"></span><span class="pullDownLabel"></span>
+        </div>
+        <!--主页开始-->
+        <div class="main-wapp">
+            <div class="swiper-container" style="height:25vh">
+                <div class="swiper-wrapper">
+                    <div class='swiper-slide '><img src="img/u66.png"></div>
+                </div>
+                <!-- 如果需要分页器 -->
+                <div class="swiper-pagination  swiper-pagination-white"></div>
+            </div>
+            <div class="menu">
+                <a href="javascript:void(0);" id="buss" class="icon01">营销订单</a>
+                <a href="javascript:void(0);" id="save" class="icon03">销售订单</a>
+                <a href="javascript:void(0);" id="weituo" class="icon03-usable">委托订单</a>
+                <a href="javascript:void(0);" id="stock" class="icon04">消息盒子</a>
+                <a href="javascript:void(0);" id="findBuyer" class="icon05">找买家</a>
+                <a href="javascript:void(0);" id="buyerRegister" class="icon06">买家注册</a>
+                <a href="javascript:void(0);" class="icon07">快速下单</a>
+                <a href="javascript:void(0);" id="product" class="icon08">产品列表</a>
+            </div>
+            <div class="floorMain">
+                    <!--<div class="pr-list">
+                        <div class="til">
+                            <span class='floorColor' style='background-color:red;display: inline-block;width: 7px;height: 14px;margin-top: auto;margin-bottom: auto'></span>
+                            <span>鸡产品</span>
+                            <a href="javascript:void(0);">更多</a>
+                        </div>
+                        <ul id="thelist">
+                            <li>
+                                <img src="image/pr02.png">
+                                <div class="detail">
+                                    <div class="label"><p>新鲜鸡翅尖</p><span class="label-js">大促惠</span></div>
+                                    <input value="7只装"/><input value="9.5kg"/><input value="A2">
+                                    <div class="price"><label>库存:<span>4543</span></label><label>大宗价:<span>95.17元/箱</span></label></div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>-->
+            </div>
+
+            </div>
+        </div>
+        <!--主页结束/-->
+        <div id="pullUp" style="display:none;">
+            <span class="pullUpIcon"></span><span class="pullUpLabel">Pull up to refresh...</span>
+        </div>
+    </div>
+</div>
+<select class="js--animations" style="display:none">
+    <optgroup label="Bouncing Entrances">
+    </optgroup>
+</select>
+<div style="width:0;height:0;position:fixed;left:50%;rigth:50%;top:50%;bottom:50%;">
+            <span id="animationSandbox" class="exit-message" name="animationSandbox" style="display:none;margin-left:-75px;background-color:#919191; margin-top: -110px; border-radius: 10px;
+    position: fixed; width: 43%;line-height: 35px;height: 40px;opacity: 0.9;font-size: smaller;color: white"><h1
+                    class="site_title mega">再按一次退出程序</h1></span>
+</div>
+<div class="bottom">
+    <span id="index" class="current"><div><img src="img/home1.png"></div><div>首页</div></span>
+    <span id="center"><div><img src="img/center2.png"></div><div>个人中心</div></span>
+    <span id="car"><div><img src="img/car2.png"></div><div>购物车</div></span>
+    <span id="setting"><div><img src="img/setting2.png"></div><div>设置</div></span>
+</div>
+
+
+</body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<script type="text/javascript" src="jquery/iscroll.js"></script>
+<script src="js/BA2141105.js"></script>
+</html>

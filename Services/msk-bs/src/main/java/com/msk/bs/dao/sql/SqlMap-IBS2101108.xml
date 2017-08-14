@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101108RsLogic">
+
+    <!--<sql id="selectFiled">
+        IFNULL(B.BUYER_ID,'') AS buyerId,
+        IFNULL(B.BUYER_CODE,'') AS buyerCode,
+        IFNULL(B.BUYER_NAME,'') AS buyerName,
+        IFNULL(B.STORE_NO,'') AS buyerShop,
+        IFNULL(B.LGCS_AREA_CODE,'') AS lgcsAreaCode,
+        IFNULL(D.LGCS_AREA_NAME,'') AS lgcsAreaName,
+        IFNULL(B.PROVINCE_CODE,'') AS provinceCode,
+        IFNULL(E.PROVINCE_NAME,'') AS provinceName,
+        IFNULL(B.CITY_CODE,'') AS cityCode,
+        IFNULL(F.CITY_NAME,'') AS cityName,
+        IFNULL(B.DISTRICT_CODE,'') AS districtCode,
+        IFNULL(G.DISTRICT_NAME,'') AS districtName,
+        IFNULL(B.BUYER_ADDR,'') AS buyerAddr,
+        IFNULL(CONCAT(IFNULL(E.PROVINCE_NAME,''),' ',IFNULL(F.CITY_NAME,''),' ',IFNULL(G.DISTRICT_NAME,''),' '),'') AS domainName,
+        ifnull(B.SUPERIOR_TYPE, '') AS superiorType,
+        ifnull(B.SUPERIOR_NAME, '') AS superiorName,
+        ifnull(J.ACCOUNT_NAME, '') AS accountName,
+        ifnull(J.TEL_NO, '') AS busiTel,
+        ifnull(J.TEL_NO, '') AS telNo,
+        ifnull(K.CONSTANT_NAME, '') AS marketingsStatusName,
+        IFNULL(L.EMPLOYEE_NAME,'') AS employeeName
+    </sql>
+
+    <sql id="selectFrom">
+        FROM by_buyer_basic_info AS B
+        LEFT JOIN MD_LOGISTICS_AREA AS D ON B.LGCS_AREA_CODE=D.LGCS_AREA_CODE
+        LEFT JOIN MD_PROVINCE E ON B.PROVINCE_CODE=E.PROVINCE_CODE
+        LEFT JOIN MD_CITY F ON F.CITY_CODE=B.CITY_CODE
+        LEFT JOIN MD_DISTRICT G ON G.DISTRICT_CODE=B.DISTRICT_CODE AND F.CITY_ID=G.CITY_ID
+        LEFT JOIN by_buyer_account J ON J.BUYER_ID = B.BUYER_ID
+        LEFT JOIN comm_constant K
+        ON K.CONSTANT_VALUE = B.MARKETINGS_STATUS
+        AND K.CONSTANT_TYPE = 'MarketingSatus'
+        LEFT JOIN by_buyer_employee L ON L.EMPLOYEE_TYPE='1' AND L.BUYER_ID=B.BUYER_ID
+        <if test="filterMap.salesTargetType!=null and filterMap.salesTargetType!=''">
+            INNER JOIN by_buyer_salestarget H ON H.BUYER_ID=B.BUYER_ID
+        </if>
+        <if test="filterMap.classCode!=null and filterMap.classCode!=''">
+            INNER JOIN by_buyer_pd_cla I ON I.BUYER_ID=B.BUYER_ID
+        </if>
+    </sql>
+
+    <sql id="whereCondition">
+        <where>
+            (B.DEL_FLG IS NULL OR B.DEL_FLG = 0) AND (J.DEL_FLG IS NULL or J.DEL_FLG=0)
+            <if test="filterMap.buyerCode!=null and filterMap.buyerCode!=''">
+                AND B.BUYER_CODE LIKE #{filterMap.buyerCode}
+            </if>
+            <if test="filterMap.buyerName!=null and filterMap.buyerName!=''">
+                AND B.BUYER_NAME like #{filterMap.buyerName}
+            </if>
+            <if test="filterMap.buyerShop!=null and filterMap.buyerShop!=''">
+                AND B.STORE_NO LIKE #{filterMap.buyerShop}
+            </if>
+            <if test="filterMap.provinceCode!=null and filterMap.provinceCode!=''">
+                AND E.PROVINCE_CODE = #{filterMap.provinceCode}
+            </if>
+            <if test="filterMap.cityCode!=null and filterMap.cityCode!=''">
+                AND F.CITY_CODE=#{filterMap.cityCode}
+            </if>
+            <if test="filterMap.districtCode!=null and filterMap.districtCode!=''">
+                AND G.DISTRICT_CODE=#{filterMap.districtCode}
+            </if>
+            <if test="filterMap.buyerAddr!=null and filterMap.buyerAddr!=''">
+                AND B.BUYER_ADDR like #{filterMap.buyerAddr}
+            </if>
+            <if test="filterMap.salesTargetType!=null and filterMap.salesTargetType!=''">
+                AND H.SALES_TARGET_TYPE=#{filterMap.salesTargetType}
+            </if>
+            <if test="filterMap.classCode!=null and filterMap.classCode!=''">
+                AND I.CLASS_CODE=#{filterMap.classCode}
+            </if>
+            <if test="filterMap.accountName!=null and filterMap.accountName!=''">
+                AND J.ACCOUNT_NAME like #{filterMap.accountName}
+            </if>
+            <if test="filterMap.telNo!=null and filterMap.telNo!=''">
+                AND J.TEL_NO like #{filterMap.telNo}
+            </if>
+            <if test="filterMap.buyerName!=null and filterMap.buyerName!=''">
+                AND B.BUYER_NAME like #{filterMap.buyerName}
+            </if>
+            <if test="filterMap.superiorName!=null and filterMap.superiorName!=''">
+                AND B.SUPERIOR_NAME like #{filterMap.superiorName}
+            </if>
+            <if test="filterMap.marketingsStatusName!=null and filterMap.marketingsStatusName!=''">
+                AND K.CONSTANT_NAME like #{filterMap.marketingsStatusName}
+            </if>
+            <if test="filterMap.busiTel!=null and filterMap.busiTel!=''">
+                AND J.TEL_NO like #{filterMap.busiTel}
+            </if>
+            <if test="filterMap.employeeName!=null and filterMap.employeeName!=''">
+                AND L.EMPLOYEE_NAME like #{filterMap.employeeName}
+            </if>
+            AND NOT EXISTS (SELECT BUYER_ID FROM sl_bs_buyer WHERE BUYER_ID=B.BUYER_ID)
+            AND NOT EXISTS (SELECT BUYER_ID FROM sl_bs_buyer_get WHERE BUYER_ID=B.BUYER_ID)
+        </where>
+        GROUP BY B.BUYER_ID
+    </sql>
+
+    <select id="getPageCount" resultType="int" parameterType="BasePageParam">
+        SELECT COUNT(1) FROM (SELECT COUNT(1)
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        ) INFO
+    </select>
+
+    <select id="findPageList" resultType="com.msk.bs.bean.IBS2101107Bean"
+            parameterType="BasePageParam">
+        SELECT
+        <include refid="selectFiled"/>
+        <include refid="selectFrom"/>
+        <include refid="whereCondition"/>
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>-->
+
+</mapper>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101132RsLogic">
+
+    <!-- 根据原因ID查询关系解除原因-->
+    <select id="findSlBsReason" parameterType="com.msk.bs.bean.IBS2101132RsParam"
+            resultType="com.msk.core.entity.SlBsReason">
+        SELECT
+        A.Msg_ID AS msgId,
+        A.Msq_Reason AS msqReason
+        FROM
+        sl_bs_reason
+        AS A
+        WHERE (A.DEL_FLG IS NULL OR A.DEL_FLG = 0)
+        AND A.Msg_ID = #{msgId}
+    </select>
+
+    <!-- 根据买家/管家编码查询管家专属会员表信息 -->
+    <select id="findBuyerIfExist" resultType="com.msk.core.entity.SlBsBuyer" parameterType="com.msk.bs.bean.IBS2101132RsParam">
+        SELECT
+        SL_CODE AS slCode,
+        HOUSE_CODE AS houseCode,
+        BUYER_ID AS buyerId,
+        START_TIME AS startTime,
+        END_TIME AS endTime,
+        APPLY_SIDE AS applySide,
+        APPLY_STATUS AS applyStatus,
+        APPLY_TIME AS applyTime,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+        FROM sl_bs_buyer
+        WHERE (DEL_FLG IS NULL OR DEL_FLG =0)
+        AND BUYER_ID IN
+        <foreach collection="filterMap.buyerIds" item="item" index="index" open="(" separator="," close=")" >
+            #{item}
+        </foreach>
+        <if test="houseCode !=null and houseCode !=''">
+            AND HOUSE_CODE = #{houseCode}
+        </if>
+    </select>
+
+    <!-- 将查询到的管家专属会员表信息保存到管家买家关系履历表中 -->
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO sl_bs_buyer_his (
+        HIS_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        BUYER_ID,
+        START_TIME,
+        END_TIME,
+        APPLY_SIDE,
+        APPLY_STATUS,
+        APPLY_TIME,
+        BUYER_REASON,
+        BUYERSHOP_REASON,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.hisId},
+            #{item.slCode},
+            #{item.houseCode},
+            #{item.buyerId},
+            #{item.startTime},
+            #{item.endTime},
+            #{item.applySide},
+            #{item.applyStatus},
+            #{item.applyTime},
+            #{item.buyerReason},
+            #{item.buyershopReason},
+            #{item.delFlg},
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.updId},
+            #{item.updTime},
+            #{item.actId},
+            #{item.actTime},
+            #{item.ver}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 修改delFlag 为 1 -->
+    <update id="updateBsBuyerInfo" parameterType="com.msk.bs.bean.IBS2101132RsParam">
+        UPDATE sl_bs_buyer buyer
+        SET buyer.DEL_FLG = 1 ,buyer.UPD_ID = #{updId},buyer.UPD_TIME = #{updTime},buyer.VER = VER+1
+        WHERE
+        (buyer.DEL_FLG IS NULL OR buyer.DEL_FLG = 0)
+        AND buyer.BUYER_ID IN
+        <foreach collection="filterMap.buyerIdList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <!-- 查询请求中的管家编码是否在表中存在 -->
+    <select id="findHouseCodeIfExist" resultType="com.msk.core.entity.SlBsBuyer" parameterType="com.msk.bs.bean.IBS2101132RsParam">
+        SELECT
+        SL_CODE AS slCode,
+        HOUSE_CODE AS houseCode,
+        BUYER_ID AS buyerId,
+        START_TIME AS startTime,
+        END_TIME AS endTime,
+        APPLY_SIDE AS applySide,
+        APPLY_STATUS AS applyStatus,
+        APPLY_TIME AS applyTime,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtId,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+        FROM sl_bs_buyer
+        WHERE (DEL_FLG IS NULL OR DEL_FLG =0)
+        AND
+           HOUSE_CODE = #{houseCode}
+    </select>
+
+</mapper>

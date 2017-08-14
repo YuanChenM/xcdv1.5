@@ -1,0 +1,19 @@
+spring:
+  redis:
+    database: 12
+    host: 10.20.10.105
+    port: 6379
+    password: Bms123456
+    pool:
+      max-active: 50
+      max-idle: 5
+      max-wait: 1000
+server:
+  port: 9390
+  context-path: /print-server/
+
+config:
+  environment: prod
+  server:
+    baseUrl: http://10.20.10.100/config-server/api
+    constant: /load/config/constant

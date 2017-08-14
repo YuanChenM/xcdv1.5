@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD14112301Logic">
+
+    <select id="findOne" parameterType="com.hoperun.core.bean.BaseParam" resultType="com.msk.product.bean.PD141123Bean">
+        SELECT
+         A.MACHININGREF_ID AS machiningRefId
+        FROM PD_MACHININGREF A
+        WHERE
+        A.CLASSES_CODE=#{filterMap.classesCode} AND A.MACHINING_NAME=#{filterMap.machiningName}
+    </select>
+
+    <insert id="saveMacRef" parameterType="com.msk.product.bean.PD141123Bean">
+        INSERT INTO PD_MACHININGREF (
+        MACHININGREF_ID,
+        CLASSES_CODE,
+        MACHINING_CODE,
+        MACHINING_NAME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{machiningRefId},
+        #{classesCode},
+        #{machiningCode},
+        #{machiningName},
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        0,
+        #{crtId},
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        #{crtTime},
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        #{updId},
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+        #{updTime},
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        #{actId},
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+         #{actTime},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        0);
+    </insert>
+
+
+    <update id="modify" parameterType="com.hoperun.core.bean.BaseParam" >
+       UPDATE PD_MACHININGREF SET
+		MACHINING_NAME=#{filterMap.machiningName},
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  Start -->
+        UPD_ID = #{updId},
+        <!--Modify: 添加公共属性 2016/09/21   BY  任强  End -->
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+		UPD_TIME=#{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        ,VER = VER+1
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+		WHERE
+		MACHININGREF_ID=#{filterMap.machiningRefId} AND CLASSES_CODE=#{filterMap.classesCode}
+        <!--Modify delflag横展开 2016/10/10 任强 Start-->
+        AND  (DEL_FLG IS NULL OR DEL_FLG  = 0)
+        <!--Modify delflag横展开 2016/10/10 任强 End-->
+    </update>
+
+    <delete id="remove" parameterType="com.msk.product.bean.PD141123Bean">
+        DELETE  FROM  PD_MACHININGREF
+        WHERE MACHININGREF_ID=#{machiningRefId}
+    </delete>
+
+    <!--ADD:添加machingCode生成 任强 2016/09/27 Start-->
+    <select id="getMaxCode" parameterType="BaseParam" resultType="com.msk.product.bean.PD141123Bean">
+        SELECT
+        CASE
+        WHEN MAX(MACHINING_CODE) IS NULL THEN 1
+        ELSE MAX(MACHINING_CODE)+1 END AS machiningCode
+        FROM PD_MACHININGREF
+        WHERE CLASSES_CODE = #{filterMap.classesCode}
+    </select>
+    <!--ADD:添加machingCode生成 任强 2016/09/27 End-->
+</mapper>

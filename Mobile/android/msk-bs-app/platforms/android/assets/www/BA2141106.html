@@ -1,0 +1,72 @@
+﻿<html>
+<head>
+    <title>产品列表</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link href="css/common.css" type="text/css" rel="stylesheet"/>
+    <link href="css/css.css" type="text/css" rel="stylesheet"/>
+    <script src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="jquery/simplemodal.js"></script>
+    <link rel="stylesheet" href="css/loaders.css">
+    <link rel="stylesheet" href="css/animate.min.css">
+    <script src="js/constantDef.js"></script>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+
+</head>
+<body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<!--加载指示器-->
+<span id='messageLoading'>
+     <div id="messageLoadingText">正在加载中...</div>
+     <div class="loader-inner ball-clip-rotate">
+         <div></div>
+     </div>
+ </span>
+<!--页眉开始-->
+<div class="wapp-head">产品列表
+    <a href="javascript:void(0);" id="fanhui" class="head-back">返回</a>
+</div>
+<!--页眉结束/-->
+
+<!--产品主体开始-->
+<div class="wapp-pr">
+    <!--产品列表菜单开始-->
+    <div class="pr-menu" style="overflow: scroll;">
+        <ul id="pdClass" >
+        </ul>
+    </div>
+    <!--产品列表菜单结束/-->
+    <!--产品列表开始-->
+    <div class="pr-list" id="pdInfo">
+    </div>
+    <!--产品列表结束/-->
+</div>
+<!--产品主体结束/-->
+<div id="classCopy" style="display: none">
+    <li onclick="BA2141106.loadPdInfo('copyCode')" class="off" id="classcopyCode">copyClass</li>
+</div>
+<div id="copyMachining" style="display: none">
+    <div class="til"><span>copyMachining</span></div>
+    <div class="pr-mode">
+        <ul>
+            breedList
+        </ul>
+    </div>
+</div>
+<div id="copyBreed" style="display: none">
+    <li class="off"><a href="javascript:BA2141106.jumpUrl('copyPdCode');" class="is-bg">copyBreed</a></li>
+</div>
+<div class="bottom">
+    <span id="index" class="current"><div><img src="img/home1.png"></div><div>首页</div></span>
+    <span id="center"><div><img src="img/center2.png"></div><div>个人中心</div></span>
+    <span id="car"><div><img src="img/car2.png"></div><div>购物车</div></span>
+    <span id="setting"><div><img src="img/setting2.png"></div><div>设置</div></span>
+</div>
+</body>
+<script src="js/BA2141106.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

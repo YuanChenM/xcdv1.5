@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBS2101110RsLogic">
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.bs.bean.IBS210111001RsParam">
+       SELECT
+        A.UNION_ID AS unionId,
+        A.OWNER_SL_CODE AS ownerSlCode,
+        A.ALLIANCE_SL_CODE AS allianceSlCode,
+        A.CLASSES_CODE AS classesCode,
+        A.MACHINING_CODE AS machiningCode,
+        A.BREED_CODE AS breedCode,
+        A.FEATURE_CODE AS featureCode,
+        A.WEIGHT_CODE AS weightCode,
+        A.GRADE_CODE AS gradeCode,
+        A.DIVIDE AS divide,
+        A.SORT_NUM AS sortNum,
+        A.APPLY_STATUS AS applyStatus,
+        A.APPLY_TIME AS applyTime,
+        A.DEL_FLG AS delFlg,
+        A.CRT_ID AS crtId,
+        A.CRT_TIME AS crtTime,
+        A.UPD_ID AS updId,
+        A.UPD_TIME AS updTime,
+        A.ACT_ID AS actId,
+        A.ACT_TIME AS actTime,
+        A.VER AS ver
+      FROM
+        sl_bs_buyer_leagues AS A
+        WHERE A.DEL_FLG IS NULL OR A.DEL_FLG=0
+    </select>
+    <update id="deleteLeagues" parameterType="com.msk.bs.bean.IBS210111001RsParam">
+      UPDATE sl_bs_buyer_leagues
+        SET
+         DEL_FLG = '1',
+         UPD_ID = #{loginId},
+         UPD_TIME = #{updTime}
+        WHERE
+            UNION_ID = #{unionId}
+            <!--Modify delflag横展开 2016/10/09 任强 Start-->
+            and  (DEL_FLG IS NULL OR DEL_FLG =0)
+            <!--Modify delflag横展开 2016/10/09 任强 End-->
+
+    </update>
+    <insert id="save" parameterType="com.msk.bs.bean.IBS210111001RsParam">
+        INSERT INTO sl_bs_buyer_leagues (
+            UNION_ID,
+            OWNER_SL_CODE,
+            ALLIANCE_SL_CODE,
+            CLASSES_CODE,
+            MACHINING_CODE,
+            BREED_CODE,
+            FEATURE_CODE,
+            WEIGHT_CODE,
+            GRADE_CODE,
+            DIVIDE,
+            SORT_NUM,
+            APPLY_STATUS,
+            APPLY_TIME,
+            CRT_ID,
+            CRT_TIME,
+            VER
+        )
+        VALUES
+            (
+                #{unionId},
+                #{ownerSlCode},
+                #{allianceSlCode},
+                #{classesCode},
+                #{machiningCode},
+                #{breedCode},
+                #{featureCode},
+                #{weightCode},
+                #{gradeCode},
+                #{divide},
+                #{sortNum},
+                #{applyStatus},
+                #{applyTime},
+                #{loginId},
+                #{crtTime},
+                #{ver}
+            )
+    </insert>
+    <insert id="saveHis" parameterType="com.msk.bs.bean.IBS210111001RsParam">
+        INSERT INTO sl_bs_buyer_leagues_his (
+            HISID,
+            UNION_ID,
+            OWNER_SL_CODE,
+            ALLIANCE_SL_CODE,
+            CLASSES_CODE,
+            MACHINING_CODE,
+            BREED_CODE,
+            FEATURE_CODE,
+            WEIGHT_CODE,
+            GRADE_CODE,
+            DIVIDE,
+            SORT_NUM,
+            APPLY_STATUS,
+            APPLY_TIME,
+            CRT_ID,
+            CRT_TIME,
+            <!--Add: 横展开添加共通设置 2016/10/09   BY  任强  Start-->
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            <!--Add: 横展开添加共通设置 2016/10/09   BY  任强  Start-->
+            VER
+        )
+        VALUES
+        (
+            #{hisId}
+            #{unionId},
+            #{ownerSlCode},
+            #{allianceSlCode},
+            #{classesCode},
+            #{machiningCode},
+            #{breedCode},
+            #{featureCode},
+            #{weightCode},
+            #{gradeCode},
+            #{divide},
+            #{sortNum},
+            #{applyStatus},
+            #{applyTime},
+            #{loginId},
+            #{crtTime},
+            <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            <!--Add: 横展开添加共通设置 2016/09/23   BY  任强  Start-->
+            #{ver}
+        )
+    </insert>
+    <update id="modify" parameterType="com.msk.bs.bean.IBS210111001RsParam">
+        UPDATE sl_bs_buyer_leagues
+        SET
+        DIVIDE = #{divIde},
+        APPLY_STATUS = #{applyStatus},
+        <if test="applyStatus == 1">
+            APPLY_TIME = #{applyTime},
+        </if>
+        SORT_NUM=#{sortNum},
+        UPD_ID = #{loginId},
+        UPD_TIME = #{updTime},
+        VER = #{ver}+1
+        WHERE
+        UNION_ID = #{unionId}
+    </update>
+</mapper>

@@ -1,0 +1,59 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<c:set var="ver" value="${version}" />
+
+<div id="header" style="width:100%; height: 86px; background: #003972 no-repeat fixed 100% 1%; border-bottom: 4px solid #8FC31F; color: #fdfdfd; font-weight: bolder;">
+    <input type="hidden" id="MAIN_PAGE_LOGINID" value="${loginInfo.userId}" />
+    <!-- logo -->
+    <div style="margin-left: 4px; margin-top: 12px; float: left;">
+        <img src="${ctx}/static/images/main/header-logo.png" />
+    </div>
+    <div style="margin-left: 8px; margin-top: 32px; float: left;">
+        <img src="${ctx}/static/images/main/square-dot.png" style="width:10px;" />
+    </div>
+    <!-- title -->
+    <div style="margin-left: 4px; margin-top: 12px; float: left;">
+        <img src="${ctx}/static/images/main/sys/${sysModel}-text.png" style="height:36px; margin-left: -16px; margin-top: 8px;" />
+    </div>
+    <%--<!-- help -->--%>
+    <%--<div title="<spring:message code='sys.header.help'/>" style="margin-left: 30px; margin-top: 40px; float: left;" class="icon-button">--%>
+    <%--<img alt="<spring:message code='sys.header.help'/>" src="${ctx}/images/sys/help.png" onclick="javascript:HGRID.hfilter.clear();$( '#sys-content' ).postUrl('${ctx}/sys/message', {}, function(){});"/>--%>
+    <%--</div>--%>
+    <%--<div title="<spring:message code='sys.header.announcement'/>" style="margin-left: 30px; margin-top: 40px; float: left;" class="icon-button">--%>
+    <%--<img alt="<spring:message code='sys.header.announcement'/>" src="${ctx}/images/sys/announcement.png" onclick="javascript:HGRID.hfilter.clear();$( '#sys-content' ).postUrl('${ctx}/mm02s01/init', {}, function(){});"/>--%>
+    <%--</div>--%>
+    <%--<c:if test="${noticeNum > 0}">--%>
+    <%--<div style="margin-left: -12px; margin-top: 40px; float:left;" id="noticeDiv">--%>
+    <%--<img src="${ctx}/images/sys/new.gif" />--%>
+    <%--</div>--%>
+    <%--</c:if>--%>
+    <%--<div title="<spring:message code='sys.header.alarm'/>" style="margin-left: 30px; margin-top: 40px; float: left;" class="icon-button">--%>
+    <%--<img alt="<spring:message code='sys.header.alarm'/>" src="${ctx}/images/sys/alarm.png" onclick="javascript:HGRID.hfilter.clear();$( '#sys-content' ).postUrl('${ctx}/mm03s01/init', {}, function(){});"/>--%>
+    <%--</div>--%>
+    <%--<c:if test="${alarmNum > 0}">--%>
+    <%--<div style="margin-left: -12px; margin-top: 40px; float:left;" id="alarmDiv">--%>
+    <%--<img src="${ctx}/images/sys/new.gif" />--%>
+    <%--</div>--%>
+    <%--</c:if>--%>
+    <div style="margin-top: 16px; margin-right: 20px; float: right; overflow: hidden;">
+        <div style="height: 30px; line-height: 30px;">
+            <div style="color:#fdfdfd; font-size: 14px;float: right; max-width: 400px;">${sessionScope['loginUser'].emplName}<%-- ${loginInfo.clientName}(${loginInfo.loginOrgCode})--%></div>
+        </div>
+        <div style="height: 30px; line-height: 30px;" class="icon-select">
+            <a href="javascript:void(0)" id="favorites">
+                <img src='<c:url value="/static/images/action/favorites.png"/>' height="30px" alt="收藏页面"/>
+            </a>
+            <div style="color:#fdfdfd; float: right; max-width: 400px; cursor: pointer;">${sessionScope['loginUser'].emplNo}<span class="ui-icon ui-icon-triangle-1-s" style="margin-left:4px; margin-top:6px; float:right;"></span></div>
+
+            <ul style="position: absolute; width: 128px;" class="ui-selectable-helper">
+                <c:if test="${sessionScope['loginUser'].userType ne ('2')}">
+                    <li id="head_passwordchange" >修改密码</li>
+                </c:if>
+                <li id="head_switch">系统选择</li>
+                <li id="head_logout">退出</li>
+            </ul>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>管理收货地址</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link href="css/css.css" type="text/css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/alertPopShow.css?v=20160520">
+    <script src="js/constantDef.js"></script>
+    <script type="text/javascript" src="jquery/jquery-1.11.1.min.js"></script>
+    <script src="jquery/Popt.js"></script>
+    <script src="jquery/citySet.js"></script>
+    <script src="js/commonUtil.js"></script>
+    <script type="text/javascript" src="jquery/jquery-html5Validate.js?v=14"></script>
+    <script type="text/javascript" src="jquery/alertPopShow.js"></script>
+</head>
+<body>
+<div class="top_header" >
+    <form id="addressForm">
+        <!--页眉开始-->
+        <div class="wapp-head">添加收货地址
+            <a href="javascript:void(0);" class="head-back">返回</a>
+        </div>
+        <!--页眉结束/-->
+        <div id="base" class="base">
+            <!--Modify: 修改Bug #3412 2016/10/20 任强 Start-->
+            <ul class="add_address_ul">
+                <li>
+                    <div class="minContinue">
+                        <label class="label_edit"  style="line-height: 50px;">收货人</label>
+                        <input  class="ba13_input" type="text" id="u19_input" required  placeholder="请输入收货人"/>
+                    </div>
+                </li>
+                <li>
+                    <div class="minContinue">
+                        <label  class="label_edit" style="line-height: 50px;" >联系电话</label>
+                        <input class="ba13_input" type="tel" id="u24_input" maxlength="11" required  placeholder="请输入联系电话" />
+                    </div>
+                </li>
+                <li>
+                    <div class="lgcsClass" id="area">
+                        <label  class="label_edit" style="line-height: 50px;">物流区</label>
+                        <input  class="wl_input" required  placeholder="请选择物流区"  type="text" id="city"   readonly="readonly"/>
+                    </div>
+                </li>
+                <li >
+                    <div class="minContinue">
+                        <label class="label_edit" style="line-height: 50px;" >详细地址</label>
+                        <textarea type="text" style="line-height: 50px;"  required placeholder="请输入详细地址" class="ba13_input  ba13_textArea" id="u44_input"></textarea>
+                    </div>
+                </li>
+            </ul>
+            <!--Modify: 修改Bug #3412 2016/10/20 任强 End-->
+        </div>
+        <!--页尾开始-->
+        <div class="wapp-footer">
+            <div class="add_address_contain">
+                <button disabled type="submit" class="add_address_" id="add_address_">
+                    <span class="span-sure">添加新地址</span>
+                </button>
+            </div>
+        </div>
+
+        <!--页尾结束/-->
+    </form>
+</div >
+</body>
+<script type="text/javascript" src="cordova.js"></script>
+<script type="text/javascript" src="js/plugin/httpClient.js"></script>
+<script src="js/BA2141113.js"></script>
+<script src="js/commonBack.js"></script>
+</html>

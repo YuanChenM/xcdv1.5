@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121208Logic">
+    <select id="findReceiveAddr" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerRecAddr">
+        SELECT
+           ID AS id,
+           BUYER_ID AS buyerId,
+           RECEIVE_ADDR AS receiveAddr
+        FROM
+           by_buyer_rec_addr
+        WHERE
+           BUYER_ID = #{filterMap.buyerId}
+           AND DEL_FLG = 0
+           <if test="filterMap.id != null and filterMap.id != ''">
+               AND ID = #{filterMap.id}
+           </if>
+           <if test="filterMap.receiveAddr != null and filterMap.receiveAddr != ''">
+               AND RECEIVE_ADDR = #{filterMap.receiveAddr}
+           </if>
+           AND DEL_FLG = 0
+    </select>
+    <update id="buyerReceiveAddrModify" parameterType="BaseEntity">
+        UPDATE
+           by_buyer_rec_addr
+        SET
+           BUYER_ID = #{buyerId},
+           RECEIVE_ADDR = #{receiveAddr},
+           DEL_FLG = 0
+             ,UPD_ID = #{updId}
+       ,UPD_TIME = #{updTime}
+        WHERE
+           ID = #{id}
+    </update>
+    <insert id="buyerReceiveAddrInsert" parameterType="BaseEntity">
+        INSERT INTO
+           by_buyer_rec_addr(
+               ID,
+               BUYER_ID,
+               RECEIVE_ADDR,
+               DEL_FLG,
+               CRT_ID,
+               CRT_TIME,
+               UPD_ID,
+               UPD_TIME,
+               ACT_ID,
+               ACT_TIME,
+               VER
+           )VALUES (
+               #{id},
+               #{buyerId},
+               #{receiveAddr},
+               0,
+               #{crtId},
+               #{crtTime},
+               #{updId},
+               #{updTime},
+               #{actId},
+               #{actTime},
+               1
+           )
+    </insert>
+    <update id="buyerReceiveAddrDelete" parameterType="BaseEntity">
+        UPDATE by_buyer_rec_addr
+           SET DEL_FLG = 1
+             , UPD_ID = #{updId}
+             , UPD_TIME = #{updTime}
+         WHERE BUYER_ID = #{buyerId}
+           AND ID = #{id}
+    </update>
+
+    <select id="findReceiveAddrList" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerRecAddr">
+        SELECT
+        ID AS id,
+        BUYER_ID AS buyerId,
+        RECEIVE_ADDR AS receiveAddr
+        FROM
+        by_buyer_rec_addr
+        WHERE
+        DEL_FLG = 0
+        <if test="buyerIdList !=null and buyerIdList.size()>0">
+            AND BUYER_ID in
+            <foreach item="buyerId" index="index" collection="buyerIdList"
+                     open="(" separator="," close=")">
+                #{buyerId}
+            </foreach>
+        </if>
+        <if test="filterMap.id != null">
+            AND ID = #{filterMap.id}
+        </if>
+        <if test="filterMap.receiveAddr != null">
+            AND RECEIVE_ADDR = #{filterMap.receiveAddr}
+        </if>
+        AND DEL_FLG = 0
+    </select>
+
+</mapper>

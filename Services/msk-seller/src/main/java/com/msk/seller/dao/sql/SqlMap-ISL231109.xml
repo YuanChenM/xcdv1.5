@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.seller.logic.ISL231109RsLogic">
+    <select id="getTncStdInfo" resultType="com.msk.seller.bean.SL241117Bean" parameterType="BaseParam">
+        SELECT
+        C.STANDARD_ID AS standardId,
+        C.STD_ITEM_ID AS tncStdItemId,
+        C.SL_PD_ID AS slPdId,
+        IFNULL(C.STD_VAL,'') AS stdVal,
+        IFNULL(C.AGREE_FLG,'') AS agreeFlg,
+        C.SL_CODE AS slCode,
+        C.CRT_TIME AS stdDate,
+        C.VER AS ver
+        FROM sl_pd_tnc_std_new C
+        WHERE
+        C.SL_PD_ID IN
+        <foreach item="item" index="index" collection="filterMap.slPdIdlists" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND C.DEL_FLG=0
+    </select>
+
+    <select id="getMctStdInfo" resultType="com.msk.seller.bean.SL241118Bean" parameterType="BaseParam">
+        SELECT
+        C.STANDARD_ID AS standardId,
+        C.STD_ITEM_ID AS mctStdItemId,
+        C.SL_PD_ID AS slPdId,
+        IFNULL(C.STD_VAL,'') AS stdVal,
+        IFNULL(C.AGREE_FLG,'') AS agreeFlg,
+        C.SL_CODE AS slCode,
+        C.CRT_TIME AS stdDate,
+        C.VER AS ver
+        FROM sl_pd_mct_std_new C
+        WHERE
+        C.SL_PD_ID IN
+        <foreach item="item" index="index" collection="filterMap.slPdIdlists" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND C.DEL_FLG=0
+    </select>
+
+    <select id="getOrgStdInfo" resultType="com.msk.seller.bean.SL241122Bean" parameterType="BaseParam">
+        SELECT
+        C.STANDARD_ID AS standardId,
+        C.TNC_STD_ITEM_ID AS orgStdItemId,
+        C.SL_PD_ID AS slPdId,
+        IFNULL(C.AGREE_FLG,'') AS agreeFlg,
+        C.SL_CODE AS slCode
+        FROM sl_pd_tnc_std_other C
+        WHERE
+        C.STD_FLAG=#{filterMap.stdFlg}
+        AND C.DEL_FLG=0
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND C.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.standardId!=null and filterMap.standardId!=''">
+            AND C.STANDARD_ID = #{filterMap.standardId}
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND C.SL_CODE = #{filterMap.slCode}
+            </if>
+        </if>
+        <if test="filterMap.standardId==null or filterMap.standardId==''">
+            <if test="filterMap.slPdIdlists!=null and filterMap.slPdIdlists.size()> 0">
+                AND C.SL_PD_ID IN
+                <foreach item="item" index="index" collection="filterMap.slPdIdlists" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </if>
+    </select>
+
+    <select id="getFedStdInfo" resultType="com.msk.seller.bean.SL241123Bean" parameterType="BaseParam">
+        SELECT
+        C.STANDARD_ID AS standardId,
+        C.TNC_STD_ITEM_ID AS fedStdItemId,
+        C.SL_PD_ID AS slPdId,
+        IFNULL(C.AGREE_FLG,'') AS agreeFlg,
+        C.SL_CODE AS slCode
+        FROM sl_pd_tnc_std_other C
+        WHERE
+        C.STD_FLAG=#{filterMap.stdFlg}
+        AND C.DEL_FLG=0
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND C.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.standardId!=null and filterMap.standardId!=''">
+            AND C.STANDARD_ID = #{filterMap.standardId}
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND C.SL_CODE = #{filterMap.slCode}
+            </if>
+        </if>
+        <if test="filterMap.standardId==null or filterMap.standardId==''">
+            <if test="filterMap.slPdIdlists!=null and filterMap.slPdIdlists.size()> 0">
+                AND C.SL_PD_ID IN
+                <foreach item="item" index="index" collection="filterMap.slPdIdlists" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </if>
+    </select>
+
+    <select id="getGnqStdInfo" resultType="com.msk.seller.bean.SL241124Bean" parameterType="BaseParam">
+        SELECT
+        C.STANDARD_ID AS standardId,
+        C.TNC_STD_ITEM_ID AS gnqStdItemId,
+        C.SL_PD_ID AS slPdId,
+        IFNULL(C.AGREE_FLG,'') AS agreeFlg,
+        C.SL_CODE AS slCode,
+        C.DEL_FLG AS delFlg
+        FROM sl_pd_tnc_std_other C
+        WHERE
+        C.STD_FLAG=#{filterMap.stdFlg}
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND C.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.standardId!=null and filterMap.standardId!=''">
+            AND C.STANDARD_ID = #{filterMap.standardId}
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND C.SL_CODE = #{filterMap.slCode}
+            </if>
+        </if>
+        <if test="filterMap.standardId==null or filterMap.standardId==''">
+            <if test="filterMap.slPdIdlists!=null and filterMap.slPdIdlists.size()> 0">
+                AND C.SL_PD_ID IN
+                <foreach item="item" index="index" collection="filterMap.slPdIdlists" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </if>
+    </select>
+
+    <select id="getTspStdInfo" resultType="com.msk.seller.bean.SL241125Bean" parameterType="BaseParam">
+        SELECT
+        C.STANDARD_ID AS standardId,
+        C.TNC_STD_ITEM_ID AS tspStdItemId,
+        C.SL_PD_ID AS slPdId,
+        IFNULL(C.AGREE_FLG,'') AS agreeFlg,
+        C.SL_CODE AS slCode,
+        C.DEL_FLG AS delFlg
+        FROM sl_pd_tnc_std_other C
+        WHERE
+        C.STD_FLAG=#{filterMap.stdFlg}
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND C.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.standardId!=null and filterMap.standardId!=''">
+            AND C.STANDARD_ID = #{filterMap.standardId}
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND C.SL_CODE = #{filterMap.slCode}
+            </if>
+        </if>
+        <if test="filterMap.standardId==null or filterMap.standardId==''">
+            <if test="filterMap.slPdIdlists!=null and filterMap.slPdIdlists.size()> 0">
+                AND C.SL_PD_ID IN
+                <foreach item="item" index="index" collection="filterMap.slPdIdlists" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </if>
+    </select>
+
+    <select id="getSftStdInfo" resultType="com.msk.seller.bean.SL241126Bean" parameterType="BaseParam">
+        SELECT
+        C.STANDARD_ID AS standardId,
+        C.TNC_STD_ITEM_ID AS sftStdItemId,
+        C.SL_PD_ID AS slPdId,
+        IFNULL(C.AGREE_FLG,'') AS agreeFlg,
+        C.SL_CODE AS slCode,
+        C.DEL_FLG AS delFlg
+        FROM sl_pd_tnc_std_other C
+        WHERE
+        C.STD_FLAG=#{filterMap.stdFlg}
+        <if test="filterMap.slPdId!=null and filterMap.slPdId!=''">
+            AND C.SL_PD_ID = #{filterMap.slPdId}
+        </if>
+        <if test="filterMap.standardId!=null and filterMap.standardId!=''">
+            AND C.STANDARD_ID = #{filterMap.standardId}
+            <if test="filterMap.slCode!=null and filterMap.slCode!=''">
+                AND C.SL_CODE = #{filterMap.slCode}
+            </if>
+        </if>
+        <if test="filterMap.standardId==null or filterMap.standardId==''">
+            <if test="filterMap.slPdIdlists!=null and filterMap.slPdIdlists.size()> 0">
+                AND C.SL_PD_ID IN
+                <foreach item="item" index="index" collection="filterMap.slPdIdlists" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </if>
+    </select>
+
+</mapper>

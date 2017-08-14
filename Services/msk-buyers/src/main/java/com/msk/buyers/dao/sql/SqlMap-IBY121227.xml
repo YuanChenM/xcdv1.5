@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121227Logic">
+    <update id="modify" parameterType="com.msk.core.entity.ByBuyerBasicInfo">
+        UPDATE
+          by_buyer_basic_info
+        SET
+          MARKETING_TOOLS = #{marketingTools},
+          TEL_MARKETING_START_TIME = #{telMarketingStartTime},
+          TEL_MARKETING_END_TIME = #{telMarketingEndTime}
+          ,UPD_ID = #{updId}
+          ,UPD_TIME = #{updTime}
+        WHERE
+          BUYER_ID = #{buyerId}
+           AND DEL_FLG =0
+    </update>
+
+    <select id="findToolToBuyerIds" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerBasicInfo">
+        SELECT
+          MARKETING_TOOLS AS marketingTools,
+          TEL_MARKETING_START_TIME AS telMarketingStartTime,
+          TEL_MARKETING_END_TIME  AS telMarketingEndTime
+         FROM
+          by_buyer_basic_info
+         WHERE
+          BUYER_ID = #{filterMap.buyerId}
+          AND DEL_FLG =0
+    </select>
+
+
+    <select id="findRecTimeByBuyerIds" parameterType="BaseParam" resultType="com.msk.core.entity.ByBuyerBasicInfo">
+        SELECT
+        HABIT_REC_TIME AS habitRecTime,
+        EARLIEST_REC_TIME AS earliestRecTime,
+        LATEST_REC_TIME  AS latestRecTime
+        FROM
+        by_buyer_basic_info
+        WHERE
+        BUYER_ID = #{filterMap.buyerId}
+        AND DEL_FLG =0
+    </select>
+</mapper>

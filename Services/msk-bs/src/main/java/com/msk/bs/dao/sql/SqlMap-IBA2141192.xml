@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.bs.logic.IBA2141192RsLogic">
+<update id="modify" parameterType="com.msk.bs.bean.IBA2141192Param">
+    UPDATE sl_house_account SET ACCOUNT_PSD =#{password},UPD_ID=#{updId},UPD_TIME =#{updTime} WHERE HOUSE_TEL =#{slTel}
+</update>
+<update id="modifyBsPwd" parameterType="com.msk.bs.bean.IBA2141192Param">
+    UPDATE sl_bs_account SET ACCOUNT_PSD =#{password},UPD_ID=#{updId},UPD_TIME =#{updTime} WHERE SL_TEL = #{slTel}
+</update>
+
+    <select id="findSlAccountIsExist" resultType="java.lang.Integer" parameterType="com.msk.bs.bean.IBA2141192Param">
+        SELECT
+        COUNT(1)
+        FROM
+        sl_bs_account
+        WHERE (DEL_FLG IS NULL OR DEL_FLG =0)
+        <if test="slTel != null and slTel != ''">
+            AND SL_TEL = #{slTel}
+        </if>
+    </select>
+
+    <select id="findHouseAccountYesOrNO" resultType="java.lang.Integer" parameterType="com.msk.bs.bean.IBA2141192Param">
+        SELECT
+        COUNT(1)
+        FROM
+        sl_house_account
+        WHERE (DEL_FLG IS NULL OR DEL_FLG =0)
+        <if test="slTel != null and slTel != ''">
+            AND HOUSE_TEL = #{slTel}
+        </if>
+    </select>
+</mapper>
+

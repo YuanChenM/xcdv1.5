@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.buyers.logic.IBY121322Logic">
+    <select id="count" parameterType="com.msk.buyers.bean.IBY121322RsParam" resultType="int" >
+      SELECT
+        COUNT(1)
+      FROM
+       by_buyer_pd_cla
+      WHERE
+       BUYER_ID =#{buyerId}
+       AND  CLASS_CODE =#{classesCode}
+       AND  MACHINING_CODE =#{machiningCode}
+       AND  DEL_FLG = 0
+    </select>
+
+    <insert id="save" parameterType="com.msk.buyers.bean.IBY121322RsParam">
+        INSERT INTO by_buyer_pd_cla(
+        ID,
+        BUYER_ID,
+        CLASS_CODE,
+        CLASS_NAME,
+        MACHINING_CODE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID ,
+        UPD_TIME,
+        ACT_ID ,
+        ACT_TIME ,
+        VER
+        )VALUES
+        (
+        #{id},
+        #{buyerId},
+        #{classesCode},
+        #{classesName},
+        #{machiningCode},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+
+    </insert>
+</mapper>

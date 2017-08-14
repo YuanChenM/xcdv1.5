@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ssc.logic.SSC11326Logic">
+
+    <!-- 查询合同生效日及交货期中的最后交货日-->
+    <select id="findContractPlanInfo" resultType="com.msk.ssc.bean.SSC11326RsBean" parameterType="com.msk.ssc.bean.SSC11326RsParam">
+        SELECT
+            A.CONTRACT_ID AS contractId,
+            A.CONTRACT_CODE AS contractCode,
+            A.CONTRACT_NAME AS contractName,
+            DATE_FORMAT(A.CONTRACT_ACT_DATE, '%Y-%m-%d')AS contractActDate,
+            DATE_FORMAT(B.ETA, '%Y-%m-%d')  AS lastDeliveryDate,
+            DATE_FORMAT(A.REAL_PRODUCE_START_DATE, '%Y-%m-%d')AS realProduceStartDate,
+            DATE_FORMAT(A.REAL_PRODUCE_END_DATE, '%Y-%m-%d')  AS realProduceEndDate,
+            A.VER AS ver
+        FROM
+            SSC_CONTRACT_BASIC A
+        INNER JOIN SSC_DELIVERY_PLAN_BASIC B ON A.CONTRACT_ID = B.CONTRACT_ID
+        AND B.DEL_FLG = 0
+        WHERE
+            A.DEL_FLG = 0
+        AND A.CONTRACT_CODE = #{contractCode}
+        ORDER BY
+            B.ETA DESC
+        LIMIT 0,1;
+    </select>
+
+    <!-- 查询生产期/待孕期产品管控信息-->
+    <select id="findProducePdControl" resultType="com.msk.ssc.bean.SSC11326RsBean" parameterType="com.msk.ssc.bean.SSC11326RsParam">
+        SELECT
+            A.PD_DESC AS pdName,
+            B.ID AS id,
+            A.DETAIL_ID AS detailId,
+            DATE_FORMAT(B.PRODUCE_DATE, '%Y-%m-%d')AS produceDateStr,
+            TRUNCATE(B.PLAN_NUM,2) as planNum,
+            TRUNCATE(B.REAL_NUM,2) as realNum,
+            B.TYPE AS type,
+            B.VER as ver
+        FROM
+            SSC_CONTRACT_PR_DETAIL A
+				INNER JOIN SSC_CONTRACT_BASIC C ON C.CONTRACT_ID = A.CONTRACT_ID
+				AND C.DEL_FLG = 0 AND C.CONTRACT_CODE = #{contractCode}
+        LEFT JOIN SSC_PRODUCE_PD_CONTROL B ON A.DETAIL_ID = B.DETAIL_ID
+        AND B.DEL_FLG = 0
+        <if test="type!=null and type!=''">
+            AND B.TYPE = #{type}
+        </if>
+        <if test="realProduceStartDate!=null and realProduceStartDate!=''">
+            <![CDATA[ AND DATE_FORMAT(B.PRODUCE_DATE,'%Y-%m-%d') >= #{realProduceStartDate}]]>
+        </if>
+        <if test="realProduceEndDate!=null and realProduceEndDate!=''">
+            <![CDATA[ AND DATE_FORMAT(B.PRODUCE_DATE,'%Y-%m-%d') <= #{realProduceEndDate}]]>
+        </if>
+        WHERE
+            A.DEL_FLG = 0
+    </select>
+
+    <!-- 根据日期合计生产期/待孕期产品管控信息-->
+    <select id="findProduceTotalByDate" resultType="com.msk.ssc.bean.SSC11326RsBean" parameterType="com.msk.ssc.bean.SSC11326RsParam">
+        SELECT
+        DATE_FORMAT(A.PRODUCE_DATE, '%Y-%m-%d') AS produceDateStr,
+        SUM(TRUNCATE(A.PLAN_NUM, 2)) AS totalPlanNum,
+        SUM(TRUNCATE(A.REAL_NUM, 2)) AS totalRealNum
+        FROM SSC_PRODUCE_PD_CONTROL A
+        INNER JOIN SSC_CONTRACT_PR_DETAIL B ON A.DETAIL_ID = B.DETAIL_ID
+        INNER JOIN SSC_CONTRACT_BASIC C ON B.CONTRACT_ID = C.CONTRACT_ID
+        WHERE A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+        AND C.DEL_FLG = 0
+        AND C.CONTRACT_CODE = #{contractCode}
+        <if test="type!=null and type!=''">
+            AND A.TYPE = #{type}
+        </if>
+        <if test="realProduceStartDate!=null and realProduceStartDate!=''">
+            <![CDATA[ AND DATE_FORMAT(A.PRODUCE_DATE,'%Y-%m-%d') >= #{realProduceStartDate}]]>
+        </if>
+        <if test="realProduceEndDate!=null and realProduceEndDate!=''">
+            <![CDATA[ AND DATE_FORMAT(A.PRODUCE_DATE,'%Y-%m-%d') <= #{realProduceEndDate}]]>
+        </if>
+        GROUP BY
+        DATE_FORMAT(A.PRODUCE_DATE, '%Y-%m-%d')
+    </select>
+
+    <!-- 根据日期合计生产期/待孕期产品管控信息-->
+    <select id="findProduceTotalByName" resultType="com.msk.ssc.bean.SSC11326RsBean" parameterType="com.msk.ssc.bean.SSC11326RsParam">
+        SELECT
+        A.PD_DESC AS pdName,
+        SUM(TRUNCATE(B.PLAN_NUM,2))AS totalPlanNum,
+        SUM(TRUNCATE(B.REAL_NUM,2))AS totalRealNum
+        FROM
+        SSC_CONTRACT_PR_DETAIL A
+        INNER JOIN SSC_CONTRACT_BASIC C ON C.CONTRACT_ID = A.CONTRACT_ID
+        AND C.DEL_FLG = 0
+        AND C.CONTRACT_CODE = #{contractCode}
+        LEFT JOIN SSC_PRODUCE_PD_CONTROL B ON A.DETAIL_ID = B.DETAIL_ID
+        AND B.DEL_FLG = 0
+        <if test="type!=null and type!=''">
+            AND B.TYPE = #{type}
+        </if>
+        <if test="realProduceStartDate!=null and realProduceStartDate!=''">
+            <![CDATA[ AND DATE_FORMAT(B.PRODUCE_DATE,'%Y-%m-%d') >= #{realProduceStartDate}]]>
+        </if>
+        <if test="realProduceEndDate!=null and realProduceEndDate!=''">
+            <![CDATA[ AND DATE_FORMAT(B.PRODUCE_DATE,'%Y-%m-%d') <= #{realProduceEndDate}]]>
+        </if>
+        WHERE
+        A.DEL_FLG = 0
+        GROUP BY A.PD_DESC
+    </select>
+
+    <!--批量保存生产期/待孕期产品管控信息 -->
+    <insert id="batchSave" parameterType="List">
+        INSERT INTO SSC_PRODUCE_PD_CONTROL (
+        ID,
+        DETAIL_ID,
+        PRODUCE_DATE,
+        PLAN_NUM,
+        REAL_NUM,
+        TYPE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (
+            #{item.id},
+            #{item.detailId},
+            #{item.produceDateStr},
+            #{item.planNum},
+            #{item.realNum},
+            #{item.type},
+            0,
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.crtId},
+            #{item.crtTime},
+            1
+            )
+        </foreach>
+    </insert>
+
+    <!-- 批量修改生产期/待孕期产品管控信息 -->
+    <update id="batchUpdate" parameterType="com.msk.ssc.bean.SSC11326RsBean">
+        update SSC_PRODUCE_PD_CONTROL
+        set
+        DETAIL_ID = #{detailId},
+        PRODUCE_DATE = #{produceDateStr},
+        PLAN_NUM = #{planNum},
+        REAL_NUM = #{realNum},
+        TYPE = #{type},
+        UPD_TIME=#{updTime},
+        UPD_ID=#{updId},
+        VER = VER + 1
+        WHERE
+        DEL_FLG = 0
+        AND ID = #{id}
+    </update>
+
+    <!-- 入库产品管控-->
+    <select id="findStockProductDetail" resultType="com.msk.ssc.bean.SSC11317PrePdBean" parameterType="com.msk.ssc.bean.SSC11326RsParam">
+        SELECT
+        A.DELIVERY_BATCH AS deliveryBatch,
+        B.PD_DESC AS pdName,
+        IFNULL(B.PRODUCT_PLAN_BOX,0) AS productPlanBox,
+        IFNULL(B.PRODUCT_RECV_BOX,0) AS productRecvBox,
+        IFNULL(B.PRODUCT_RECV_BOX,0) - IFNULL(B.PRODUCT_PLAN_BOX,0) AS differBoxes
+        FROM SSC_DELIVERY_PRE_INTO A
+        INNER JOIN SSC_DELIVERY_PRE_PD B ON A.DELIVERY_PRE_INTO_ID = B.DELIVERY_PRE_INTO_ID
+        WHERE A.DEL_FLG = 0
+        AND B.DEL_FLG = 0
+        AND A.CONTRACT_CODE = #{contractCode}
+        ORDER BY A.DELIVERY_BATCH
+    </select>
+
+    <!-- 查询运输期产品管控-->
+    <select id="findDeliveryPdControl" resultType="com.msk.ssc.bean.SSC1132601RsBean" parameterType="com.msk.ssc.bean.SSC11326RsParam">
+       SELECT DISTINCT
+            A.BATCH_CODE AS deliveryBatch,
+            B.CONTRACT_ID AS contractId,
+            B.CONTRACT_CODE AS contractCode,
+            C.ID AS id,
+            DATE_FORMAT(C.PLAN_ARRIVE_DATE,'%Y-%m-%d %H:%i:%s') AS planArriveDateStr,
+            DATE_FORMAT(C.REAL_ARRIVE_DATE,'%Y-%m-%d %H:%i:%s') AS realArriveDateStr,
+            DATE_FORMAT(C.PLAN_CHOOSE_VEHICLE_DATE,'%Y-%m-%d %H:%i:%s') AS planChooseVehicleDateStr,
+            DATE_FORMAT(C.REAL_CHOOSE_VEHICLE_DATE,'%Y-%m-%d %H:%i:%s') AS realChooseVehicleDateStr,
+            DATE_FORMAT(C.PLAN_INTO_VEHICLE_DATE,'%Y-%m-%d %H:%i:%s') AS planIntoVehicleDateStr,
+            DATE_FORMAT(C.REAL_INTO_VEHICLE_DATE,'%Y-%m-%d %H:%i:%s') AS realIntoVehicleDateStr,
+            DATE_FORMAT(C.PLAN_OFF_DATE,'%Y-%m-%d %H:%i:%s') AS planOffDateStr,
+            DATE_FORMAT(C.REAL_OFF_DATE,'%Y-%m-%d %H:%i:%s') AS realOffDateStr,
+            C.VER as ver
+        FROM
+        SSC_DELIVERY_PLAN_BASIC A
+        INNER JOIN SSC_CONTRACT_BASIC B ON A.CONTRACT_ID = B.CONTRACT_ID
+        AND B.DEL_FLG = 0
+        AND B.CONTRACT_CODE = #{contractCode}
+        LEFT JOIN SSC_DELIVERY_PD_CONTROL C ON A.CONTRACT_ID = C.CONTRACT_ID
+        AND A.BATCH_CODE = C.DELIVERY_BATCH
+        AND C.DEL_FLG = 0
+        WHERE
+            A.DEL_FLG = 0
+        ORDER BY A.BATCH_CODE
+    </select>
+
+    <!-- 批量保存运输期产品管控 -->
+    <insert id="batchSaveDeliveryPdControl" parameterType="List">
+        INSERT INTO SSC_DELIVERY_PD_CONTROL (
+        ID,
+        CONTRACT_ID,
+        CONTRACT_CODE,
+        DELIVERY_BATCH,
+        PLAN_ARRIVE_DATE,
+        REAL_ARRIVE_DATE,
+        PLAN_CHOOSE_VEHICLE_DATE,
+        REAL_CHOOSE_VEHICLE_DATE,
+        PLAN_INTO_VEHICLE_DATE,
+        REAL_INTO_VEHICLE_DATE,
+        PLAN_OFF_DATE,
+        REAL_OFF_DATE,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        VER
+        )
+        VALUES
+        <foreach collection ="list" item ="item" index ="index" separator =",">
+            (
+            #{item.id},
+            #{item.contractId},
+            #{item.contractCode},
+            #{item.deliveryBatch},
+            #{item.planArriveDateStr},
+            #{item.realArriveDateStr},
+            #{item.planChooseVehicleDateStr},
+            #{item.realChooseVehicleDateStr},
+            #{item.planIntoVehicleDateStr},
+            #{item.realIntoVehicleDateStr},
+            #{item.planOffDateStr},
+            #{item.realOffDateStr},
+            0,
+            #{item.crtId},
+            #{item.crtTime},
+            #{item.crtId},
+            #{item.crtTime},
+            1
+            )
+        </foreach>
+    </insert>
+
+    <!-- 批量修改运输期产品管控 -->
+    <update id="batchUpdateDeliveryPdControl" parameterType="com.msk.core.entity.SscDeliveryPdControl">
+        update SSC_DELIVERY_PD_CONTROL
+        set
+        CONTRACT_ID = #{contractId},
+        CONTRACT_CODE = #{contractCode},
+        DELIVERY_BATCH = #{deliveryBatch},
+        PLAN_ARRIVE_DATE = #{planArriveDateStr},
+        REAL_ARRIVE_DATE = #{realArriveDateStr},
+        PLAN_CHOOSE_VEHICLE_DATE = #{planChooseVehicleDateStr},
+        REAL_CHOOSE_VEHICLE_DATE = #{realChooseVehicleDateStr},
+        PLAN_INTO_VEHICLE_DATE = #{planIntoVehicleDateStr},
+        REAL_INTO_VEHICLE_DATE = #{realIntoVehicleDateStr},
+        PLAN_OFF_DATE = #{planOffDateStr},
+        REAL_OFF_DATE = #{realOffDateStr},
+        UPD_TIME=#{updTime},
+        UPD_ID=#{updId},
+        VER = VER + 1
+        WHERE
+        DEL_FLG = 0
+        AND ID = #{id}
+    </update>
+</mapper>

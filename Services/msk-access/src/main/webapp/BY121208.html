@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <meta http-equiv=Content-Type content="text/html; charset=utf-8">
+        <meta http-equiv=Content-Language content=en-US>
+        <script src="./resources/js/com/jquery-1.11.3.min.js"></script>
+        <link rel="stylesheet" href="./resources/css/com/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="./resources/css/com/common.css">
+		<script type="text/javascript" src="./resources/js/com/jquery.mobile-1.4.2.min.js"></script>
+		<script type="text/javascript" src="./resources/js/BY121208.js"></script>
+		<script type="text/javascript" src="./resources/js/com/common.js"></script>
+		<title>收货信息录入</title>
+    </head>
+    <body>
+	    <div style="width:100%;">
+            <div style="width:100%;background-color: #F0F2F5;" class="ui-grid-b">
+                <div class="ui-block-a" style="width: 10%;height: 40px;margin-left:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/return.png" onclick="returnPage()"/>
+                </div>
+                <div class="ui-block-b" style="width:76%;"><div class="headDiv">通路注册营销一体化工作站</div></div>
+                <div class="ui-block-c" style="width: 10%;height:40px;margin-right:5px;">
+                    <img style="width: 40px;height: 40px;" src="./resources/img/home.png"/>
+                </div>
+            </div>
+            <div id="titleDiv" style="width: 80%;margin-left:20px;" class="divCommon1">新买家注册 - 收货信息</div>
+            <div style="width:100%;">
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000"></span>收货地址</div>
+                <div id="receiveAddrDiv"></div>
+                <div id="receiveAddrAdd" style="width:60px;margin-left:35px;" class="buttonDiv2" onclick="receiveAddrModify(this)" onmouseover="javascript:this.style.backgroundColor='#4169E1'">新增</div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000"></span>收货时间</div>
+                <div id="receiveTimeDiv" style="width:80%;margin-left: 35px;"></div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000"></span>买家销售对象</div>
+                <div id="salesTargetDiv" style="width:80%;margin-left: 35px;"></div>
+                <div style="width: 80%;margin-left:35px;" class="divCommon2"><span style="color:#FF0000"></span>产品类型</div>
+                <div id="pdClassesDiv" style="width:80%;margin-left: 35px;"></div>
+            </div>
+            <div id="message" class="errorMessageDiv" style="width: 80%;margin-left:35px;display: none;"></div>
+            <br/>
+            <div>
+                <div id="saveButtonDiv" style="margin-left:35px;width:100px;" class="buttonDiv" onclick="buyerReceiveInfo()" onmouseover="javascript:this.style.backgroundColor='#4169E1'">下一步 3/4</div>
+            </div>
+            <br/>
+		</div>
+        <!-- background div -->
+        <div style="position:absolute;top:0px;width:100%;height:100%;display:none;opacity:0.5;background-color:#000000;z-index:9" id="backGroundDiv">
+        </div>
+        <!--买家收货地址更新/新增-->
+        <div id="receiveAddrEditDiv" style="width:300px;height:250px;background-color:#ffffff;position:absolute;top:10%;left:8%;z-index:10;border:1px solid #CCCCCC;display:none;">
+            <div style="top:-20px;left:315px;position:absolute;z-index:11">
+                <a href="#" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right" onclick="receiveDivNone()"></a>
+            </div>
+            <div style="width:100%;background-color:#F0F2F5;">
+                <div id="header" style="text-align:center;width:100%;" class="headDiv"></div>
+            </div>
+            <input type="hidden" id="receiveId" />
+            <input type="hidden" id="enterFlag" />
+            <div style="width: 80%;margin-left:30px;" class="divCommon2"><span style="color:#FF0000"></span>收货地址</div>
+            <div style="width: 80%;margin-left:30px;">
+                <input type="text" value="" id="receiveAddr" placeholder="请输入收货地址"/>
+            </div>
+            <br/>
+            <div id="errorMessage" class="errorMessageDiv" style="width: 75%;margin-left:30px;display:none;"></div>
+            <div style="width:60px;margin-left:30px;" class="buttonDiv2" onclick="receiveAddrSave(this)" onmouseover="javascript:this.style.backgroundColor='#4169E1'">保存</div>
+        </div>
+	</body>
+</html>

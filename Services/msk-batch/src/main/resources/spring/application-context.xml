@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <context:component-scan base-package="com.msk" use-default-filters="false">
+        <context:include-filter type="regex" expression="com.msk.*.logic.*Logic" />
+        <context:include-filter type="regex" expression="com.msk.batch.LockBatch" />
+        <context:include-filter type="regex" expression="com.msk.batch.*Batch" />
+        <context:include-filter type="regex" expression="com.msk.batch.*.*Batch" />
+        <context:include-filter type="regex" expression="com.msk.batch.base.*" />
+        <context:include-filter type="regex" expression="com.msk.comm.aspect.*"/>
+        <context:include-filter type="regex" expression="com.msk.batch.order.logic.Order" />
+        <context:include-filter type="regex" expression="com.msk.batch.order.orderStatus.*" />
+        <context:include-filter type="regex" expression="com.msk.common.config.ConfigInfo"/>
+        <context:include-filter type="regex" expression="com.msk.common.config.ConfigManager"/>
+        <context:include-filter type="regex" expression="com.msk.batch.base.logic.BatchRecordLogic" />
+        <context:include-filter type="regex" expression="com.msk.comm.job.*"/>
+    </context:component-scan>
+
+    <bean id="dynamicBeanReader" class="com.msk.comm.dynamic.impl.DynamicBeanReaderImpl" init-method="init">
+    </bean>
+    <bean id="springContextUtil" class="com.hoperun.plug.spring.utils.SpringContextUtil"/>
+    <!-- 动态数据源 -->
+    <!--<bean class="com.msk.comm.aspect.BatchDynamicDataSourceAspect" id="dataSourceAspect"/>-->
+
+    <aop:aspectj-autoproxy proxy-target-class="true">
+    </aop:aspectj-autoproxy>
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="10"/>
+        <property name="maxPoolSize" value="20"/>
+        <property name="queueCapacity" value="100"/>
+    </bean>
+
+    <!--<aop:config proxy-target-class="true">-->
+        <!--<aop:aspect id="myAop" ref="dataSourceAspect" order="0">-->
+            <!--<aop:pointcut id="target" expression="execution(public * com.msk.batch.*.logic.*Logic.*(..))"/>-->
+            <!--<aop:before method="setDynamicDataSource" pointcut-ref="target"/>-->
+        <!--</aop:aspect>-->
+    <!--</aop:config>-->
+</beans>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.comm.logic.BatchRecordLogic">
+
+    <update id="modify" parameterType="BaseParam">
+        UPDATE BATCH_RECORD
+        SET STATUS=#{filterMap.status}
+        ,UPD_ID=#{filterMap.updId}
+        ,UPD_TIME=#{filterMap.updTime}
+        ,RESULT=#{filterMap.result}
+        ,VER = VER+1
+        WHERE RUN_ID=#{filterMap.runId}
+    </update>
+
+    <select id="findOne" resultType="com.msk.core.entity.BatchRecord" parameterType="BaseParam">
+      SELECT
+        PARAMETER AS parameter
+        ,BATCH_CODE AS batchCode
+        ,RUN_ID AS runId
+      FROM BATCH_RECORD
+      WHERE EXECUTE_MODEL = '1' AND STATUS = 1
+      ORDER BY CRT_TIME DESC
+      LIMIT 0,1
+    </select>
+    <select id="getBatchByBatchCodeAndStatus" resultType="com.msk.core.entity.BatchRecord" parameterType="BaseParam">
+        SELECT
+        PARAMETER AS parameter
+        ,BATCH_CODE AS batchCode
+        ,RUN_ID AS runId
+      FROM BATCH_RECORD
+      WHERE BATCH_CODE=#{filterMap.batchCode} AND STATUS=#{filterMap.status}
+      LIMIT 0,1
+    </select>
+
+
+
+</mapper>

@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.msk.so.logic.SO153112Logic">
+    <!-- 表字段 -->
+    <sql id="selectSoRunningSql">
+    RUNNING_ID  AS runningId,
+    AMOUNT_TYPE AS amountType,
+    BACK_TYPE AS backType,
+    BILL_ID AS   billId ,
+    (CASE WHEN TRANS_CODE IS NULL THEN '-'
+              WHEN TRANS_CODE = '' THEN '-'
+              ELSE TRANS_CODE
+     END) AS transCode,
+    TRANS_TYPE AS transType,
+    REFUND_ID AS refundId,
+    (CASE WHEN REFUND_CODE IS NULL THEN '-'
+              WHEN REFUND_CODE = '' THEN '-'
+              ELSE  REFUND_CODE
+     END) AS refundCode,
+    PAID_AMOUNT AS paidAmount,
+    PAID_TYPE AS paidType,
+    (CASE WHEN PAID_SEQ IS NULL THEN '-'
+              WHEN PAID_SEQ = '' THEN '-'
+              ELSE PAID_SEQ
+              END) AS paidSeq,
+    VER_SEQ AS verSeq,
+    PAID_TIME AS paidTime,
+    PAYER_ID AS payerId,
+    PAYEE_ID AS payeeId,
+    (CASE WHEN REMARK IS NULL THEN '-'
+              WHEN REMARK = '' THEN '-'
+              ELSE REMARK
+        END) AS remark
+    </sql>
+    <!--条件 -->
+    <sql id="whereSoRunningCondition">
+        <where>
+            <if test="filterMap.backType!=null and filterMap.backType!=''">
+                AND BACK_TYPE = #{filterMap.backType}
+            </if>
+            <if test="filterMap.billId!=null and filterMap.billId!=''">
+                AND BILL_ID = #{filterMap.billId}
+            </if>
+            AND DEL_FLG = 0
+        </where>
+    </sql>
+
+    <select id="findSORunning" parameterType="BaseParam" resultType="com.msk.core.entity.SoCpRunning">
+        SELECT
+        <include refid="selectSoRunningSql"/>
+        from SO_CP_RUNNING
+        <include refid="whereSoRunningCondition"/>
+    </select>
+    <!--添加卖家资金池详细页面合计 modify by renyi on 2016/8/12 start-->
+    <select id="getTotalPaidAmountInfo" parameterType="BaseParam" resultType="com.msk.so.bean.SO153102Bean">
+        SELECT
+        IFNULL(SUM(t1.paidAmount),'') AS totalPaidAmount
+        FROM (
+        SELECT
+        <include refid="selectSoRunningSql"/>
+        from SO_CP_RUNNING
+        <include refid="whereSoRunningCondition"/>
+        )AS t1
+    </select>
+    <!--添加卖家资金池详细页面合计 modify by renyi on 2016/8/12 end-->
+
+    <select id="findSORunningBean" parameterType="BaseParam" resultType="com.msk.so.bean.SoCpRunningBean">
+        SELECT
+        <include refid="selectSoRunningSql"/>
+        from SO_CP_RUNNING
+        <include refid="whereSoRunningCondition"/>
+    </select>
+
+
+    <sql id="selectSoRefundSql">
+        RE.REFUND_ID   AS    refundId,
+        RE.TRANS_CODE  AS    transCode,
+        SELLER_BILL_ID AS  sellerBillId,
+        IFNULL(RE.REFUND_CODE,'') AS refundCode,
+        RE.REFUND_AMOUNT  AS refundAmount,
+        RE.REFUND_TIME    AS refundTime,
+        RE.REFUND_TYPE    AS refundType,
+        IFNULL(RE.RE_SHIP_FLG,'') AS reShipFlg,
+        IFNULL(RE.PAYER_ID,'')    AS payerId,
+        IFNULL(RE.PAYEE_ID,'')    AS payeeId,
+        IFNULL(RE.REMARK,'')      AS remark
+    </sql>
+
+    <!-- 添加卖家资金池详细列表更新删除功能 modify by lihuiqian on 2016/9/2 start -->
+    <select id="findSORefund" parameterType="BaseParam" resultType="com.msk.so.bean.SOCp153112Bean">
+        SELECT
+        'REFUND' AS tb,
+        RE.REFUND_ID   AS    id,
+        (CASE WHEN RE.TRANS_CODE IS NULL THEN '-'
+        WHEN RE.TRANS_CODE = '' THEN '-'
+        ELSE RE.TRANS_CODE
+        END) AS transCode,
+        RE.SELLER_BILL_ID AS  sellerBillId,
+        (CASE WHEN RE.REFUND_CODE IS NULL THEN '-'
+        WHEN RE.REFUND_CODE = '' THEN '-'
+        ELSE  RE.REFUND_CODE
+        END) AS refundCode,
+        RE.REFUND_AMOUNT  AS refundAmount,
+        RE.REFUND_TIME    AS refundTime,
+        RE.REFUND_TYPE    AS refundType,
+        IFNULL(RE.RE_SHIP_FLG,'') AS reShipFlg,
+        IFNULL(RE.PAYER_ID,'')    AS payerId,
+        IFNULL(RE.PAYEE_ID,'')    AS payeeId,
+        (CASE WHEN RE.REMARK IS NULL THEN '-'
+              WHEN RE.REMARK = '' THEN '-'
+              ELSE RE.REMARK
+              END) AS remark
+        FROM SO_CP_REFUND AS RE
+        WHERE RE.SELLER_BILL_ID = #{filterMap.sellerBillId}
+        AND RE.DEL_FLG=0
+        UNION ALL
+        SELECT
+        'SELLER_BILL_HIS' AS tb,
+        HIS.SELLER_BILL_HIS_ID AS id,
+        <!-- #Bug 3307 Modify by li_huiqian on 2016/10/13 start -->
+        '-' AS transCode,
+        HIS.SELLER_BILL_ID AS  sellerBillId,
+        '-' AS refundCode,
+        <!-- #Bug 3307 Modify by li_huiqian on 2016/10/13 end -->
+        HIS.AJUST_AMOUNT AS refundAmount,
+        HIS.AJUST_DATE AS refundTime,
+        HIS.AJUST_TYPE AS refundType,
+        '' AS reShipFlg,
+        '' AS payerId,
+        '' AS payeeId,
+        (CASE WHEN HIS.REMARK IS NULL THEN '-'
+              WHEN HIS.REMARK = '' THEN '-'
+              ELSE HIS.REMARK
+              END) AS remark
+        FROM SO_CP_SELLER_BILL_HIS AS HIS
+        WHERE HIS.SELLER_BILL_ID = #{filterMap.sellerBillId}
+        AND HIS.DEL_FLG=0
+    </select>
+    <!-- 添加卖家资金池详细列表更新删除功能 modify by lihuiqian on 2016/9/2 end -->
+    <!--Bug#3252 modify by li_huiqian on 2016/10/12 start-->
+    <!--添加卖家资金池详细页面合计 modify by renyi on 2016/8/12 start-->
+    <select id="getTotalRefundAmountInfo" parameterType="BaseParam" resultType="com.msk.so.bean.SO153102Bean">
+        SELECT
+        IFNULL(SUM(t1.refundAmount),'') AS totalRefundAmount
+        FROM (
+        SELECT
+        'REFUND' AS tb,
+        RE.REFUND_ID   AS    id,
+        RE.TRANS_CODE  AS    transCode,
+        RE.SELLER_BILL_ID AS  sellerBillId,
+        IFNULL(RE.REFUND_CODE,'') AS refundCode,
+        RE.REFUND_AMOUNT  AS refundAmount,
+        RE.REFUND_TIME    AS refundTime,
+        RE.REFUND_TYPE    AS refundType,
+        IFNULL(RE.RE_SHIP_FLG,'') AS reShipFlg,
+        IFNULL(RE.PAYER_ID,'')    AS payerId,
+        IFNULL(RE.PAYEE_ID,'')    AS payeeId,
+        IFNULL(RE.REMARK,'')      AS remark
+        FROM SO_CP_REFUND AS RE
+        WHERE RE.SELLER_BILL_ID = #{filterMap.sellerBillId}
+        AND RE.DEL_FLG=0
+        UNION ALL
+        SELECT
+        'SELLER_BILL_HIS' AS tb,
+        HIS.SELLER_BILL_HIS_ID AS id,
+        '' AS transCode,
+        HIS.SELLER_BILL_ID AS  sellerBillId,
+        '' AS refundCode,
+        HIS.AJUST_AMOUNT AS refundAmount,
+        HIS.AJUST_DATE AS refundTime,
+        HIS.AJUST_TYPE AS refundType,
+        '' AS reShipFlg,
+        '' AS payerId,
+        '' AS payeeId,
+        IFNULL(HIS.REMARK,'')      AS remark
+        FROM SO_CP_SELLER_BILL_HIS AS HIS
+        WHERE HIS.SELLER_BILL_ID = #{filterMap.sellerBillId}
+        AND HIS.DEL_FLG=0
+        )AS t1
+    </select>
+    <!--添加卖家资金池详细页面合计 modify by renyi on 2016/8/12 end-->
+    <!--Bug#3252 modify by li_huiqian on 2016/10/12 end-->
+
+
+    <!-- 添加卖家资金池详细列表更新删除功能 modify by lihuiqian on 2016/9/2 start -->
+    <update id="deleteSoCpRunning" parameterType="com.msk.core.entity.SoCpRunning">
+        UPDATE so_cp_running
+        SET
+        DEL_FLG = 1,
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        RUNNING_ID = #{runningId}
+    </update>
+
+    <update id="updateSoCpSellerBillByRunning" parameterType="com.msk.core.entity.SoCpSellerBill">
+        UPDATE so_cp_seller_bill
+        SET
+        <if test="received!=null">
+            RECEIVED = #{received},
+        </if>
+        <if test="realRefund!=null">
+            REAL_REFUND = #{realRefund},
+        </if>
+        VER = VER + 1,
+        SETTLEMENT_STATUS = #{settlementStatus},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        SELLER_BILL_ID=#{sellerBillId}
+    </update>
+
+    <select id="findOneSoCpSellerBillHis" parameterType="com.msk.so.bean.SOCp153112Param"
+            resultType="com.msk.core.entity.SoCpSellerBillHis">
+        SELECT
+        SELLER_BILL_HIS_ID AS sellerBillHisId,
+        SELLER_BILL_ID AS sellerBillId,
+        OPERATE_ID AS operateId,
+        OPERATE_DATE AS operateDate,
+        AJUST_DATE AS ajustDate,
+        AJUST_AMOUNT AS ajustAmount,
+        AJUST_TYPE AS ajustType,
+        SELLER_BILL_NO AS sellerBillNo,
+        BUSINESS_MAIN_ID AS businessMainId,
+        BUSINESS_MAIN_CODE AS businessMainCode,
+        BUSINESS_MAIN_NAME AS businessMainName,
+        BUSINESS_MAIN_ROLE AS businessMainRole,
+        SETTLEMENT_STATUS AS settlementStatus,
+        SETTLEMENT_FLG AS settlementFlg,
+        START_DATE AS startDate,
+        END_DATE AS endDate,
+        PAYMENT_TYPE AS paymentType,
+        SUPPLY_PLATFORM AS supplyPlatform,
+        BILL_TYPE AS billType,
+        BILL_AMOUNT AS billAmount,
+        RECEIVEABLE AS receiveable,
+        RECEIVED AS received,
+        REFUNDABLE AS refundable,
+        REAL_REFUND AS realRefund,
+        TRANS_PAID_STATUS AS transPaidStatus,
+        CHARGE_RATE AS chargeRate,
+        HANDING_CHARGE AS handingCharge,
+        CHARGE_STATUS AS chargeStatus,
+        MATCH_VER_FLG AS matchVerFlg,
+        STATEMENT_FLG AS statementFlg,
+        REMARK AS remark,
+        DEL_FLG AS delFlg,
+        CRT_ID AS crtID,
+        CRT_TIME AS crtTime,
+        UPD_ID AS updId,
+        UPD_TIME AS updTime,
+        ACT_ID AS actId,
+        ACT_TIME AS actTime,
+        VER AS ver
+        FROM
+        so_cp_seller_bill_his
+        WHERE
+        SELLER_BILL_HIS_ID = #{sellerBillHisId}
+    </select>
+
+    <update id="updateSoCpSellerBill" parameterType="com.msk.core.entity.SoCpSellerBill">
+        UPDATE so_cp_seller_bill
+        SET
+        AJUST_AMOUNT = #{ajustAmount},
+        VER = VER + 1,
+        SETTLEMENT_STATUS = #{settlementStatus},
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        SELLER_BILL_ID=#{sellerBillId}
+    </update>
+
+    <update id="deleteSoCpSellerBillHis" parameterType="com.msk.core.entity.SoCpSellerBillHis">
+        UPDATE so_cp_seller_bill_his
+        SET
+        DEL_FLG = 1,
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        SELLER_BILL_HIS_ID = #{sellerBillHisId}
+    </update>
+
+    <update id="deleteSoCpRefund" parameterType="com.msk.core.entity.SoCpRefund">
+        UPDATE so_cp_refund
+        SET
+        DEL_FLG = 1,
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        REFUND_ID = #{refundId}
+    </update>
+
+    <update id="updateSoCpBuyerBillByRefund" parameterType="com.msk.core.entity.SoCpBuyerBill">
+        UPDATE so_cp_buyer_bill
+        SET
+        <if test="reliefAmount!=null">
+            RELIEF_AMOUNT = #{reliefAmount},
+        </if>
+        VER = VER + 1,
+        SETTLEMENT_STATUS = #{settlementStatus},
+        <if test="refundable!=null">
+            REFUNDABLE = #{refundable},
+        </if>
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE
+        BUYER_BILL_ID=#{buyerBillId}
+    </update>
+
+    <select id="findOneSoCpBuyerBill" parameterType="com.msk.so.bean.SOCp153112Param"
+            resultType="com.msk.so.bean.SoCpBuyerBillBean">
+       	SELECT
+		bb.BUYER_BILL_ID AS buyerBillId,
+		bb.TRANS_CODE AS transCode,
+		bb.TRANS_TYPE AS transType,
+		bb.SETTLEMENT_STATUS AS settlementStatus,
+		bb.DUE AS due,
+		bb.REFUND_FLG AS refundFlg,
+		bb.PAID AS paid,
+		bb.REFUNDABLE AS refundable,
+		bb.REAL_REFUND AS realRefund,
+		bb.MATCH_VER_FLG AS matchVerFlg,
+		bb.STATEMENT_FLG AS statementFlg,
+		bb.REMARK AS remark,
+		bb.DEL_FLG AS delFlg,
+		bb.CRT_ID AS crtId,
+		bb.CRT_TIME AS crtTime,
+		bb.UPD_ID AS updId,
+		bb.UPD_TIME AS updTime,
+		bb.ACT_ID AS actId,
+		bb.ACT_TIME AS actTime,
+		bb.VER AS ver,
+		bb.TRANS_ID AS transId,
+		bb.RELIEF_AMOUNT AS reliefAmount,
+		bb.ORDER_ID AS orderId,
+		t.TRANS_FLG AS transFlg
+        FROM SO_CP_BUYER_BILL bb
+		LEFT JOIN SO_CP_REFUND r ON bb.TRANS_CODE = r.TRANS_CODE
+		LEFT JOIN SO_CP_TRANSACTION t ON bb.TRANS_ID = t.TRANS_ID
+        WHERE r.REFUND_ID = #{refundId}
+    </select>
+    <!-- 添加卖家资金池详细列表更新删除功能 modify by lihuiqian on 2016/9/2 end -->
+
+
+</mapper>

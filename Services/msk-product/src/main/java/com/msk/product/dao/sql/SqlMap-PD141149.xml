@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141149Logic">
+    <!--查询产品标准id -->
+    <select id="findOne" parameterType="BaseParam" resultType="com.msk.core.entity.PdStandard">
+        SELECT
+        A.STANDARD_ID AS standardId
+        FROM PD_STANDARD AS A
+        WHERE A.CLASSESTREE_CODE = #{filterMap.classestreeCode}
+    </select>
+    <!-- 获取产品加工质量标准个数 -->
+
+    <!--查询个数-->
+    <select id="findListSize" parameterType="BaseParam" resultType="int">
+        SELECT COUNT(1)
+        FROM PD_TNC_STD A
+        WHERE A.STANDARD_ID = #{filterMap.standardId}
+    </select>
+
+    <sql id="PdTncStdSql">
+        A.STANDARD_ID AS standardId,
+        A.TNC_STD_ITEM_ID AS tncStdItemId,
+        A.TNC_STD_VAL1 AS tncStdVal1,
+        A.TNC_STD_VAL2 AS tncStdVal2,
+        A.TNC_STD_VAL3 AS tncStdVal3,
+        A.REMARK AS remark
+    </sql>
+    <sql id="PdTncStdItemSql">
+        B.TNC_STD_ITEM_ID AS tncStdItemId,
+        B.TNC_STD_ITEM_NAME AS tncStdItemName,
+        B.LEVEL_ID AS levelId,
+        B.PARENT_ID AS parentId,
+		B.IS_CATALOG AS isCatalog
+    </sql>
+    <select id="findList" parameterType="BaseParam"  resultType="com.msk.product.bean.PD141149Bean">
+        SELECT
+        <include refid="PdTncStdItemSql" />
+        ,
+        <include refid="PdTncStdSql" />
+        FROM PD_TNC_STD_ITEM B
+        LEFT JOIN PD_TNC_STD A ON A.TNC_STD_ITEM_ID=B.TNC_STD_ITEM_ID
+        AND A.STANDARD_ID=#{filterMap.standardId}
+        WHERE B.LEVEL_ID=#{filterMap.levelId} AND B.PARENT_ID=#{filterMap.parentId}
+    </select>
+    <!--获取市场需求时间-->
+    <select id="findListTncMarkey" parameterType="BaseParam"  resultType="com.msk.product.bean.PDtncMarkeyBean">
+        SELECT
+         A.KEY_ID AS keyId
+        ,A.TNC_STD_ITEM_ID AS tncStdItemId
+        ,A.TNC_STD_VAL AS tncStdVal
+        ,A.RAISE_DATE AS raiseDate
+        ,A.FIX_DATE AS fixDate
+        ,A.DISCUSS_STATUS AS discussStatus
+        FROM PD_TNC_STD_DISCUSS_MARKET A
+        WHERE A.STANDARD_ID=#{filterMap.standardId}
+        AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+        AND A.DISCUSS_STATUS != #{filterMap.discussStatus}
+        ORDER BY A.DISCUSS_STATUS DESC
+    </select>
+
+    <!--获取供应商时间-->
+    <select id="findListTncProvider" parameterType="BaseParam"  resultType="com.msk.product.bean.PDtncProviderBean">
+        SELECT
+        A.KEY_ID AS keyId
+        ,A.TNC_STD_ITEM_ID AS tncStdItemId
+        ,A.TNC_STD_VAL AS tncStdVal
+        ,A.SL_PD_ID AS slPdId
+        ,A.RAISE_DATE AS raiseDate
+        ,A.FIX_DATE AS fixDate
+        ,A.DISCUSS_STATUS AS discussStatus
+        FROM PD_TNC_STD_DISCUSS_PROVIDER A
+        WHERE A.STANDARD_ID=#{filterMap.standardId}
+        AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+        AND A.DISCUSS_STATUS != #{filterMap.discussStatus}
+        ORDER BY A.DISCUSS_STATUS DESC
+    </select>
+
+    <!--获取市场需求禁止时间-->
+    <select id="findListTncMarkeyNo" parameterType="BaseParam"  resultType="com.msk.product.bean.PDtncMarkeyBean">
+        SELECT
+        A.KEY_ID AS keyId
+        ,A.TNC_STD_ITEM_ID AS tncStdItemId
+        ,A.TNC_STD_VAL AS tncStdVal
+        ,A.RAISE_DATE AS raiseDate
+        ,A.FIX_DATE AS fixDate
+        FROM PD_TNC_STD_DISCUSS_MARKET A
+        WHERE A.STANDARD_ID=#{filterMap.standardId}
+        AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+        AND A.DISCUSS_STATUS = #{filterMap.discussStatus}
+        ORDER BY A.DISCUSS_STATUS
+    </select>
+
+    <!--获取市场需求禁止时间-->
+    <select id="findListTncProviderNo" parameterType="BaseParam"  resultType="com.msk.product.bean.PDtncProviderBean">
+        SELECT
+        A.KEY_ID AS keyId
+        ,A.TNC_STD_ITEM_ID AS tncStdItemId
+        ,A.TNC_STD_VAL AS tncStdVal
+        ,A.SL_PD_ID AS slPdId
+        ,A.FIX_DATE AS fixDate
+        FROM PD_TNC_STD_DISCUSS_PROVIDER A
+        WHERE A.STANDARD_ID=#{filterMap.standardId}
+        AND A.TNC_STD_ITEM_ID = #{filterMap.tncStdItemId}
+        AND A.DISCUSS_STATUS = #{filterMap.discussStatus}
+         ORDER BY A.DISCUSS_STATUS
+    </select>
+
+    <!--获取产品加工质量标准列表-->
+    <select id="findListTncStdCount" parameterType="BaseParam"  resultType="int">
+        SELECT
+        COUNT(1)
+        FROM PD_TNC_STD A
+        WHERE A.STANDARD_ID=#{filterMap.standardId}
+    </select>
+
+
+    <!--保存加工质量标准-->
+    <insert id="save" parameterType="com.msk.core.entity.PdTncStd">
+        INSERT INTO pd_tnc_std (
+            STANDARD_ID,
+            TNC_STD_ITEM_ID,
+            TNC_STD_VAL1,
+            TNC_STD_VAL2,
+            TNC_STD_VAL3,
+            REMARK,
+            DEL_FLG,
+            CRT_ID,
+            CRT_TIME,
+            UPD_ID,
+            UPD_TIME,
+            ACT_ID,
+            ACT_TIME,
+            VER)
+        VALUES(
+            #{standardId},
+            #{tncStdItemId},
+            #{tncStdVal1},
+            #{tncStdVal2},
+            #{tncStdVal3},
+            #{remark},
+            '0',
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+           #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            <!--Modify: 添加公共属性 2016/09/26   BY  任强  Start -->
+            #{actId},
+            <!--Modify: 添加公共属性 2016/09/26   BY  任强  End -->
+            #{actTime},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+            '1'
+	);
+    </insert>
+
+
+    <!--修改数据-->
+    <update id="modify" parameterType="com.msk.core.entity.PdTncStd">
+        UPDATE PD_TNC_STD
+            SET
+             TNC_STD_VAL1 = #{tncStdVal1},
+             TNC_STD_VAL2 = #{tncStdVal2},
+             TNC_STD_VAL3 = #{tncStdVal3},
+             REMARK = #{remark},
+             UPD_ID = #{updId},
+            <!--Modify delflag横展开 2016/10/10 任强 Start-->
+            ,VER = VER+1,
+            <!--Modify delflag横展开 2016/10/10 任强 End-->
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+             UPD_TIME = #{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+                WHERE
+                  STANDARD_ID = #{standardId} AND TNC_STD_ITEM_ID = #{tncStdItemId}
+                  <!--Modify delflag横展开 2016/10/10 任强 Start-->
+                  AND   (DEL_FLG IS NULL OR DEL_FLG  = 0)
+                  <!--Modify delflag横展开 2016/10/10 任强 End-->
+        ;
+    </update>
+
+    <!-- 获取产品品种名称和品种下的特征名称-->
+    <select id="findName" parameterType="BaseParam" resultType="com.msk.product.bean.PD141124showNameBean">
+        SELECT
+        LEVEL_NAME AS featureNames
+        FROM  PD_CLASSESTREE
+        WHERE PARENT_CODE = #{filterMap.classestreeCode}
+        ORDER BY LEVEL_CODE
+    </select>
+
+    <!-- 修改产品标准标准表中数据-->
+    <update id="modifyFlg" parameterType="BaseParam" >
+        UPDATE PD_STANDARD SET
+        MCQ_FLG = #{filterMap.flg},
+        UPD_ID = #{filterMap.updId},
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  Start -->
+        UPD_TIME = #{updTime}
+        <!--Modify: 创建时间，修改时间，生效时间横展开修改sysdate 2016/09/06   BY  杨春艳  End -->
+        WHERE STANDARD_ID = #{filterMap.standardId}
+    </update>
+</mapper>

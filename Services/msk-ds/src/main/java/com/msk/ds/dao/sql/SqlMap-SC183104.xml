@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.ds.logic.SC183104Logic">
+
+    <delete id="deleteAclBean" parameterType="com.msk.ds.bean.SC183104Bean">
+        DELETE FROM ds_pd_virtual_stock_actual WHERE
+        SUPP_DS_ID=#{suppDsId} AND VIRTUAL_STOCK_ACTUAL_ID=#{actualFlowId}
+    </delete>
+
+    <sql id="selectFiled">
+        DS.SUPP_DS_ID AS suppDsId,
+        DS.VIRTUAL_STOCK_ACTUAL_ID AS actualFlowId,
+        DS.DIST_MONTH AS distMonth,
+        DS.LGCS_CODE AS lgcsCode,
+        IFNULL(PLAN.LGCS_NAME,'') AS lgcsName,
+        IFNULL(DS.SUPP_CODE,'') AS suppCode,
+        IFNULL(PLAN.SUPP_NAME,'') AS suppName,
+        IFNULL(DS.PD_STOCK_TYPE,'') AS pdStockType,
+        DS.PD_STOCK_TYPE AS pdStockTypeZ,
+        DS.HALF_CODE AS halfCodeZ,
+        DS.HALF_CODE AS halfCodeA,
+        DS.HALF_CODE AS halfCodeB,
+        DS.HALF_CODE AS halfCode,
+        IFNULL(PLAN.CLASSES_NAME, '') AS classesName,
+        IFNULL(PLAN.BREED_NAME,'') AS breedName,
+        IFNULL(PLAN.FEATURE_NAME,'') AS featureName,
+        /**Modify for 2781 at 2016/09/22 by likai Start*/
+        IFNULL(PLAN.GRADE_NAME,'') AS gradeName,
+        IFNULL(DS.GRADE_CODE,'') AS gradeCode,
+        /**Modify for 2781 at 2016/09/22 by likai End*/
+        IFNULL(DS.OUT_SPEC,'') AS outSpec,
+        IFNULL(DS.OUT_NW,'') AS outNw,
+        IFNULL(DS.PD_CODE,'') AS pdCode,
+        IFNULL(DS.NORMS_CODE,'') AS normsCode,
+        DATE_FORMAT(DS.INPUT_DATE,'%Y/%m/%d %H:%i:%s') AS inputDate,
+        DS.OLD_ACTUAL_NUM AS oldActualNum,
+        DS.NEW_ACTUAL_NUM AS newActualNum,
+        DS.DEL_FLG AS delFlg
+    </sql>
+    <sql id="selectFrom">
+        FROM ds_pd_virtual_stock_actual AS DS
+        LEFT JOIN ds_pd_virtual_stock_plan AS PLAN
+        ON DS.SUPP_DS_ID = PLAN.SUPP_DS_ID AND PLAN.DEL_FLG = 0
+
+    </sql>
+    <sql id="whereCondition">
+        <where>
+
+            <if test="filterMap.suppDsId!=null and filterMap.suppDsId!=''">
+                AND DS.SUPP_DS_ID like #{filterMap.suppDsId}
+            </if>
+            <if test="filterMap.actualFlowId!=null and filterMap.actualFlowId!=''">
+                AND DS.VIRTUAL_STOCK_ACTUAL_ID like #{filterMap.actualFlowId}
+            </if>
+            <if test="filterMap.distMonth!=null and filterMap.distMonth!=''">
+                AND DS.DIST_MONTH like #{filterMap.distMonth}
+            </if>
+            <!--<if test="filterMap.lgcsCode!=null and filterMap.lgcsCode!=''">-->
+                <!--AND DS.LGCS_CODE like #{filterMap.lgcsCode}-->
+            <!--</if>-->
+            <if test="filterMap.lgcsName!=null and filterMap.lgcsName!=''">
+               AND PLAN.LGCS_NAME like #{filterMap.lgcsName}
+            </if>
+            <!--<if test="filterMap.suppCode!=null and filterMap.suppCode!=''">-->
+            <!--AND DS.SUPP_CODE like #{filterMap.suppCode}-->
+            <!--</if>-->
+            <if test="filterMap.suppName!=null and filterMap.suppName!=''">
+               AND PLAN.SUPP_NAME like #{filterMap.suppName}
+            </if>
+            <if test="filterMap.suppCode!=null and filterMap.suppCode!=''">
+                AND DS.SUPP_CODE = #{filterMap.suppCode}
+            </if>
+            <if test="filterMap.pdStockTypes!=null">
+                AND DS.PD_STOCK_TYPE IN
+                <foreach collection="filterMap.pdStockTypes" item="pdStockType" open="(" separator="," close=")">
+                    #{pdStockType}
+                </foreach>
+            </if>
+            <if test="filterMap.halfCodes!=null">
+                AND DS.HALF_CODE IN
+                <foreach collection="filterMap.halfCodes" item="halfCode" open="(" separator="," close=")">
+                    #{halfCode}
+                </foreach>
+            </if>
+            <!--<if test="filterMap.classesCode!=null and filterMap.classesCode!=''">-->
+                <!--AND DS.CLASSES_CODE like #{filterMap.classesCode}-->
+            <!--</if>-->
+            <if test="filterMap.classesName!=null and filterMap.classesName!=''">
+               AND PLAN.CLASSES_NAME like #{filterMap.classesName}
+            </if>
+            <!--<if test="filterMap.breedCode!=null and filterMap.breedCode!=''">-->
+                <!--AND DS.BREED_CODE like #{filterMap.breedCode}-->
+            <!--</if>-->
+            <if test="filterMap.breedName!=null and filterMap.breedName!=''">
+                AND PLAN.BREED_NAME like #{filterMap.breedName}
+            </if>
+            <!--<if test="filterMap.featureCode!=null and filterMap.featureCode!=''">-->
+                <!--AND DS.FEATURE_CODE like #{filterMap.featureCode}-->
+            <!--</if>-->
+            <if test="filterMap.featureName!=null and filterMap.featureName!=''">
+               AND PLAN.FEATURE_NAME like #{filterMap.featureName}
+            </if>
+            <!--<if test="filterMap.gradeCode!=null and filterMap.gradeCode!=''">-->
+                <!--AND DS.GRADE_CODE like #{filterMap.gradeCode}-->
+            <!--</if>-->
+
+            <!-- Modify for #2781 at 2016/09/22 by likai Start -->
+            <!--<if test="filterMap.gradeCode!=null and filterMap.gradeCode!=''">
+                AND PLAN.GRADE_NAME like #{filterMap.gradeName}
+            </if>-->
+            <if test="filterMap.gradeCodes !=null and filterMap.gradeCodes != ''">
+                AND DS.GRADE_CODE IN
+                <foreach collection="filterMap.gradeCodes" item="gradeCode" open="(" separator="," close=")">
+                    #{gradeCode}
+                </foreach>
+            </if>
+            <!-- Modify for #2781 at 2016/09/22 by likai End -->
+            <!--<if test="filterMap.outSpec!=null and filterMap.outSpec!=''">-->
+                <!--AND DS.OUT_SPEC = #{filterMap.outSpec}-->
+            <!--</if>-->
+            <if test="filterMap.outSpec!=null and filterMap.outSpec!=''">
+                AND DS.OUT_SPEC like #{filterMap.outSpec}
+            </if>
+            <if test="filterMap.outNw!=null and filterMap.outNw!=''">
+                AND DS.OUT_NW like #{filterMap.outNw}
+            </if>
+            <if test="filterMap.pdCode!=null and filterMap.pdCode!=''">
+                AND DS.PD_CODE like #{filterMap.pdCode}
+            </if>
+            <if test="filterMap.normsCode!=null and filterMap.normsCode!=''">
+                AND DS.NORMS_CODE like #{filterMap.normsCode}
+            </if>
+            <!-- Modify for #2938 at 2016/09/26 by likai Start -->
+            <!--<if test="filterMap.inputDate!=null and filterMap.inputDate!=''">
+                AND DS.INPUT_DATE LIKE #{filterMap.inputDate}
+            </if>-->
+            <if test="filterMap.inputDateStart!=null and filterMap.inputDateStart!=''">
+                AND <![CDATA[ DATE_FORMAT(DS.INPUT_DATE,'%Y-%m-%d') >= #{filterMap.inputDateStart}]]>
+            </if>
+            <if test="filterMap.inputDateEnd!=null and filterMap.inputDateEnd!=''">
+                AND <![CDATA[ DATE_FORMAT(DS.INPUT_DATE,'%Y-%m-%d') <= #{filterMap.inputDateEnd}]]>
+            </if>
+            <!-- Modify for #2938 at 2016/09/26 by likai End -->
+            <if test="filterMap.oldActualNum!=null and filterMap.oldActualNum!=''">
+                AND DS.OLD_ACTUAL_NUM LIKE #{filterMap.oldActualNum}
+            </if>
+            <if test="filterMap.newActualNum!=null and filterMap.newActualNum!=''">
+                AND DS.NEW_ACTUAL_NUM LIKE #{filterMap.newActualNum}
+            </if>
+            AND DS.DEL_FLG = 0
+        </where>
+    </sql>
+    <select id="getPageCount" resultType="int" parameterType="BasePageParam">
+        SELECT COUNT(1) FROM (
+            SELECT
+            DISTINCT
+            <include refid="selectFiled" />
+            <include refid="selectFrom" />
+            <include refid="whereCondition" />
+            order by suppDsId, actualFlowId, distMonth
+        ) AS page
+
+    </select>
+    <select id="findPageList" resultType="com.msk.ds.bean.SC183104Bean"
+            parameterType="BasePageParam">
+        SELECT
+        DISTINCT
+        <include refid="selectFiled" />
+        <include refid="selectFrom" />
+        <include refid="whereCondition" />
+         order by suppDsId, actualFlowId, distMonth
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize};
+        </if>
+    </select>
+
+</mapper>

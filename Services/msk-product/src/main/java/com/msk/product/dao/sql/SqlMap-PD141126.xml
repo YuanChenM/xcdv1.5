@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.product.logic.PD141126Logic">
+    <select id="findOneClass" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestree">
+      select
+      a.CLASSESTREE_CODE AS classestreeCode
+     ,a.LEVEL_CODE AS levelCode
+     ,a.LEVEL_NAME AS levelName
+      from pd_classestree AS a where a.TREE_LEVEL=#{filterMap.treeLevel}
+    </select>
+    <select id="findTWOClass" parameterType="BaseParam" resultType="com.msk.core.entity.PdClassestree">
+        select
+         a.CLASSESTREE_CODE AS classestreeCode
+         ,a.LEVEL_CODE AS levelCode
+        ,a.LEVEL_NAME AS levelName
+        from pd_classestree AS a
+        where a.TREE_LEVEL=#{filterMap.treeLevel} and a.PARENT_CODE=#{filterMap.parentCode}
+    </select>
+</mapper>

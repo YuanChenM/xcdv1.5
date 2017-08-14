@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121407Logic">
+    <!--营销期分销买家-->
+    <select id="findMarketingDistributionBuyers" resultType="com.msk.br.bean.IBR121407RsBean" parameterType="com.msk.br.bean.IBR121407RsParam">
+        SELECT
+        IFNULL(a.BUYER_ID, '') AS buyerId,
+        IFNULL(a.LGCS_AREA_NAME, '') AS lgcsAreaName,
+        IFNULL(a.CITY_NAME, '') AS cityName,
+        IFNULL(a.MARKET_NAME, '') AS marketName,
+        IFNULL(a.MANAGE_ADDR, '') AS manageAddr,
+        IFNULL(
+        CONCAT(
+        a.LGCS_AREA_NAME,
+        '物流区',
+        a.CITY_NAME,
+        '地区',
+        buyerPool.CLASSES_NAME,
+        buyerPool.MACHINING_NAME_U,
+        '分销买家池管控表'
+        ),
+        ''
+        ) AS fileName,
+        IFNULL(
+        CONCAT(
+        a.BUYER_NAME,
+        '(',
+        byPoolRelation.POOL_BUYER_CODE,
+        ')'
+        ),
+        ''
+        ) AS buyerNameCode,
+        IFNULL(
+        CONCAT(
+        a.BOSS_NAME,
+        '(',
+        a.BOSS_TEL,
+        ')'
+        ),
+        ''
+        ) AS bossNameTel,
+        IFNULL(a.BOSS_WECHAT, '') AS bossWechat,
+        IFNULL(a.BOSS_QQ, '') AS bossQq,
+        /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei Start*/
+        IFNULL(a.BUYER_WECHAT,'') AS buyerWechat,
+        IFNULL(a.BUYER_QQ,'') AS buyerQq
+        /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei End*//*营销日代号*/
+        FROM
+        br_buyer_pool buyerPool
+        INNER JOIN br_buyer_pool_relationship byPoolRelation ON buyerPool.BUYER_POOL_ID = byPoolRelation.BUYER_POOL_ID
+        AND buyerPool.DEL_FLG = '0'
+        AND byPoolRelation.DEL_FLG = '0'
+        INNER JOIN br_buyer_marketing_status_history b ON b.BUYER_ID = byPoolRelation.BUYER_ID
+        AND b.DEL_FLG = '0'
+        AND b.CURRENT_STATUS_FLG = '1'
+        INNER JOIN br_o_buyer_info a ON a.BUYER_ID = byPoolRelation.BUYER_ID
+        AND a.DEL_FLG = '0'
+        WHERE
+        a.DEL_FLG = '0'
+        AND buyerPool.LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND buyerPool.CITY_CODE = #{cityCode}
+        /** Modif for Bug#2748 at 2016/09/19 by yuan_zhifei Start*/
+        AND a.BUYER_TYPE = #{buyerType}
+        /** Modif for Bug#2748 at 2016/09/19 by yuan_zhifei End*/
+        AND buyerPool.CLASSES_CODE = #{classesCode}
+        AND buyerPool.MACHINING_CODE_U = #{machiningCodeU}
+        <if test="marketingsStatusCla != null and marketingsStatusCla != '' and marketingsStatusCla == 1 and marketingsStatus == ''" >
+            AND b.NEW_STATUS_CLASS = '1'
+            AND b.NEW_STATUS_BREED IN (01,02)
+        </if>
+        <if test="marketingsStatusCla != null and marketingsStatusCla != '' and marketingsStatusCla == 98 and marketingsStatus == ''">
+            /*营销期异常买家(停业)*/
+            AND b.OLD_STATUS_BREED IN (01,02)
+            AND b.NEW_STATUS_BREED = '31'
+        </if>
+        <if test="marketingsStatus !=null and marketingsStatus != '' and marketingsStatus != '31' and marketingsStatus != '32'">
+            AND b.NEW_STATUS_BREED = #{marketingsStatus}
+        </if>
+        <if test="marketingsStatus == '31'">
+            /*停业*/
+            AND b.OLD_STATUS_BREED IN (01,02)
+            AND b.NEW_STATUS_BREED = '31'
+        </if>
+        <if test="marketingsStatus == '32'">
+            /*信息错误*/
+            AND b.NEW_STATUS_BREED IN (01,02)
+            AND b.NEW_EXCEPTION_STATUS = '32'
+        </if>
+        GROUP BY byPoolRelation.BUYER_ID
+        UNION
+        SELECT
+        IFNULL(a.BUYER_ID, '') AS buyerId,
+        IFNULL(a.LGCS_AREA_NAME, '') AS lgcsAreaName,
+        IFNULL(a.CITY_NAME, '') AS cityName,
+        IFNULL(a.MARKET_NAME, '') AS marketName,
+        IFNULL(a.MANAGE_ADDR, '') AS manageAddr,
+        IFNULL(
+        CONCAT(
+        a.LGCS_AREA_NAME,
+        '物流区',
+        a.CITY_NAME,
+        '地区',
+        buyerPool.CLASSES_NAME,
+        buyerPool.MACHINING_NAME_U,
+        '分销买家池管控表'
+        ),
+        ''
+        ) AS fileName,
+        IFNULL(
+        CONCAT(
+        a.BUYER_NAME,
+        '(',
+        byPoolRelation.POOL_BUYER_CODE,
+        ')'
+        ),
+        ''
+        ) AS buyerNameCode,
+        IFNULL(
+        CONCAT(
+        a.BOSS_NAME,
+        '(',
+        a.BOSS_TEL,
+        ')'
+        ),
+        ''
+        ) AS bossNameTel,
+        IFNULL(a.BOSS_WECHAT, '') AS bossWechat,
+        IFNULL(a.BOSS_QQ, '') AS bossQq,
+        /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei Start*/
+        IFNULL(a.BUYER_WECHAT,'') AS buyerWechat,
+        IFNULL(a.BUYER_QQ,'') AS buyerQq
+        /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei End*//*营销日代号*/
+        FROM
+        br_buyer_pool buyerPool
+        INNER JOIN br_buyer_pool_relationship byPoolRelation ON buyerPool.BUYER_POOL_ID = byPoolRelation.BUYER_POOL_ID
+        AND buyerPool.DEL_FLG = '0'
+        AND byPoolRelation.DEL_FLG = '0'
+        INNER JOIN br_buyer_marketing_status_history b ON b.BUYER_ID = byPoolRelation.BUYER_ID
+        AND b.DEL_FLG = '0'
+        AND b.CURRENT_STATUS_FLG = '1'
+        INNER JOIN br_o_buyer_info a ON a.BUYER_ID = byPoolRelation.BUYER_ID
+        AND a.DEL_FLG = '0'
+        WHERE
+        a.DEL_FLG = '0'
+        AND buyerPool.LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND buyerPool.CITY_CODE = #{cityCode}
+        /** Modif for Bug#2748 at 2016/09/19 by yuan_zhifei Start*/
+        AND a.BUYER_TYPE = #{buyerType}
+        /** Modif for Bug#2748 at 2016/09/19 by yuan_zhifei End*/
+        AND buyerPool.CLASSES_CODE = #{classesCode}
+        AND buyerPool.MACHINING_CODE_U = #{machiningCodeU}
+        <if test="marketingsStatusCla != null and marketingsStatusCla != '' and marketingsStatusCla == 1 and marketingsStatus == ''" >
+            AND b.NEW_STATUS_CLASS = '1'
+            AND b.NEW_STATUS_BREED IN (01,02)
+        </if>
+        <if test="marketingsStatusCla != null and marketingsStatusCla != '' and marketingsStatusCla == 98 and marketingsStatus == ''">
+            /*营销期异常买家(信息错误)*/
+            AND b.NEW_STATUS_BREED IN (01,02)
+            AND b.NEW_EXCEPTION_STATUS = '32'
+        </if>
+        <if test="marketingsStatus !=null and marketingsStatus != '' and marketingsStatus != '31' and marketingsStatus!= '32'">
+            AND b.NEW_STATUS_BREED = #{marketingsStatus}
+        </if>
+        <if test="marketingsStatus == '31'">
+            /*停业*/
+            AND b.OLD_STATUS_BREED IN (01,02)
+            AND b.NEW_STATUS_BREED = '31'
+        </if>
+        <if test="marketingsStatus == '32'">
+            /*信息错误*/
+            AND b.NEW_STATUS_BREED IN (01,02)
+            AND b.NEW_EXCEPTION_STATUS = '32'
+        </if>
+        GROUP BY byPoolRelation.BUYER_ID
+    </select>
+    <!--销售期分销买家-->
+    <select id="findSalesPeriodDistributionBuyers" resultType="com.msk.br.bean.IBR121407RsBean" parameterType="com.msk.br.bean.IBR121407RsParam">
+        SELECT
+        CASE WHEN b.NEW_EXCEPTION_STATUS = 32 AND (#{marketingsStatusCla} = 98 OR #{marketingsStatusCla} = 99)
+        THEN '信息错误'
+        ELSE b.NEW_STATUS_BREED_NAME END AS marketingsStatusName,
+        IFNULL(a.MARKET_NAME, '') AS marketName,
+        IFNULL(
+        CONCAT(
+        a.LGCS_AREA_NAME,
+        '物流区',
+        a.CITY_NAME,
+        '地区',
+        buyerPool.CLASSES_NAME,
+        buyerPool.MACHINING_NAME_U,
+        '分销买家池管控表'
+        ),
+        ''
+        ) AS fileName,
+        /*冻品管家，指定方式*/
+        IFNULL(
+        CONCAT(
+        a.BUYER_NAME,
+        '(',
+        byPoolRelation.POOL_BUYER_CODE,
+        ')'
+        ),
+        ''
+        ) AS buyerNameCode,
+        /*买家营业执照地址*/
+        IFNULL(
+        CONCAT(
+        a.BOSS_NAME,
+        '(',
+        a.BOSS_TEL,
+        ')'
+        ),
+        ''
+        ) AS bossNameTel,
+        IFNULL(a.BOSS_WECHAT, '') AS bossWechat,
+        IFNULL(a.BOSS_QQ, '') AS bossQq,
+        /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei Start*/
+        IFNULL(a.BUYER_WECHAT,'') AS buyerWechat,
+        IFNULL(a.BUYER_QQ,'') AS buyerQq,
+        /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei End*/
+        IFNULL(
+        CONCAT(
+        a.REC_PER_NAME,
+        '(',
+        a.REC_PER_TEL,
+        ')'
+        ),
+        ''
+        ) AS recNameTel,
+        IFNULL(a.HABIT_REC_TIME, '') AS habitRecTime,
+        IFNULL(a.EARLIEST_REC_TIME, '') AS earliestRecTime,
+        IFNULL(a.LATEST_REC_TIME, '') AS latestRecTime,
+        /*配送地址(虚拟地址)*/
+        IFNULL(a.DELIVERY_ADDR, '') AS deliveryAddr,
+        IFNULL(a.REFERENCE_ADDR, '') AS referenceAddr,
+        IFNULL(a.MANAGE_ADDR, '') AS manageAddr,
+        IFNULL(a.PAYMENT_TYPE, '') AS paymentType
+        FROM
+        br_buyer_pool buyerPool
+        INNER JOIN br_buyer_pool_relationship byPoolRelation ON buyerPool.BUYER_POOL_ID = byPoolRelation.BUYER_POOL_ID
+        AND buyerPool.DEL_FLG = '0'
+        AND byPoolRelation.DEL_FLG = '0'
+        INNER JOIN br_buyer_marketing_status_history b ON b.BUYER_ID = byPoolRelation.BUYER_ID
+        AND b.DEL_FLG = '0'
+        INNER JOIN br_o_buyer_info a ON a.BUYER_ID = byPoolRelation.BUYER_ID
+        AND a.DEL_FLG = '0'
+        WHERE
+        a.DEL_FLG = '0'
+        AND buyerPool.LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND buyerPool.CITY_CODE = #{cityCode}
+        /** Modif for Bug#2748 at 2016/09/19 by yuan_zhifei Start*/
+        AND a.BUYER_TYPE = #{buyerType}
+        /** Modif for Bug#2748 at 2016/09/19 by yuan_zhifei End*/
+        AND buyerPool.CLASSES_CODE = #{classesCode}
+        AND buyerPool.MACHINING_CODE_U = #{machiningCodeU}
+        <if test="marketingsStatusCla != null and marketingsStatusCla != '' and marketingsStatusCla == 2 and marketingsStatus == ''">
+            AND b.NEW_STATUS_CLASS = '2'
+            AND b.NEW_STATUS_BREED IN (11,13,14,21,22)
+        </if>
+        <if test="marketingsStatusCla != null and marketingsStatusCla != '' and marketingsStatusCla == 98 and marketingsStatus == ''">
+            /*营销期异常买家(信息错误)*/
+            AND b.NEW_STATUS_BREED IN (01,02)
+            AND b.NEW_EXCEPTION_STATUS = '32'
+        </if>
+        <if test="marketingsStatusCla != null and marketingsStatusCla != '' and marketingsStatusCla == 99 and marketingsStatus == ''">
+            /*销售期异常买家(信息错误)*/
+            AND b.NEW_STATUS_BREED IN (11,13,14,21,22)
+            AND b.NEW_EXCEPTION_STATUS = '32'
+        </if>
+        <if test="marketingsStatus !=null and marketingsStatus != '' and marketingsStatus != '31' and marketingsStatus!= '32'">
+            AND b.NEW_STATUS_BREED = #{marketingsStatus}
+        </if>
+        <if test="marketingsStatusCla == '98' and marketingsStatus == '31'">
+            /*营销期停业*/
+            AND b.OLD_STATUS_BREED IN (01,02)
+            AND b.NEW_STATUS_BREED = '31'
+        </if>
+        <if test="marketingsStatusCla == '98' and marketingsStatus == '32'">
+            /*营销期信息错误*/
+            AND b.NEW_STATUS_BREED IN (01,02)
+            AND b.NEW_EXCEPTION_STATUS = '32'
+        </if>
+        <if test="marketingsStatusCla == '99' and marketingsStatus == '31'">
+            /*销售期停业*/
+            AND b.OLD_STATUS_BREED IN (11,13,14,21,22)
+            AND b.NEW_STATUS_BREED = '31'
+        </if>
+        <if test="marketingsStatusCla == '99' and marketingsStatus == '32'">
+            /*销售期信息错误*/
+            AND b.NEW_STATUS_BREED IN (11,13,14,21,22)
+            AND b.NEW_EXCEPTION_STATUS = '32'
+        </if>
+        GROUP BY byPoolRelation.BUYER_ID
+        /*ORDER BY a.MARKETINGS_STATUS*/
+        UNION
+        SELECT
+        CASE WHEN b.NEW_EXCEPTION_STATUS = 32 AND (#{marketingsStatusCla} = 98 OR #{marketingsStatusCla} = 99)
+        THEN '信息错误'
+        ELSE b.NEW_STATUS_BREED_NAME END AS marketingsStatusName,
+        IFNULL(a.MARKET_NAME, '') AS marketName,
+        IFNULL(
+        CONCAT(
+        a.LGCS_AREA_NAME,
+        '物流区',
+        a.CITY_NAME,
+        '地区',
+        buyerPool.CLASSES_NAME,
+        buyerPool.MACHINING_NAME_U,
+        '分销买家池管控表'
+        ),
+        ''
+        ) AS fileName,
+        /*冻品管家，指定方式*/
+        IFNULL(
+        CONCAT(
+        a.BUYER_NAME,
+        '(',
+        byPoolRelation.POOL_BUYER_CODE,
+        ')'
+        ),
+        ''
+        ) AS buyerNameCode,
+        /*买家营业执照地址*/
+        IFNULL(
+        CONCAT(
+        a.BOSS_NAME,
+        '(',
+        a.BOSS_TEL,
+        ')'
+        ),
+        ''
+        ) AS bossNameTel,
+        IFNULL(a.BOSS_WECHAT, '') AS bossWechat,
+        IFNULL(a.BOSS_QQ, '') AS bossQq,
+        /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei Start*/
+        IFNULL(a.BUYER_WECHAT,'') AS buyerWechat,
+        IFNULL(a.BUYER_QQ,'') AS buyerQq,
+        /** Modif for Bug#2563 at 2016/09/08 by yuan_zhifei End*/
+        IFNULL(
+        CONCAT(
+        a.REC_PER_NAME,
+        '(',
+        a.REC_PER_TEL,
+        ')'
+        ),
+        ''
+        ) AS recNameTel,
+        IFNULL(a.HABIT_REC_TIME, '') AS habitRecTime,
+        IFNULL(a.EARLIEST_REC_TIME, '') AS earliestRecTime,
+        IFNULL(a.LATEST_REC_TIME, '') AS latestRecTime,
+        /*配送地址(虚拟地址)*/
+        IFNULL(a.DELIVERY_ADDR, '') AS deliveryAddr,
+        IFNULL(a.REFERENCE_ADDR, '') AS referenceAddr,
+        IFNULL(a.MANAGE_ADDR, '') AS manageAddr,
+        IFNULL(a.PAYMENT_TYPE, '') AS paymentType
+        FROM
+        br_buyer_pool buyerPool
+        INNER JOIN br_buyer_pool_relationship byPoolRelation ON buyerPool.BUYER_POOL_ID = byPoolRelation.BUYER_POOL_ID
+        AND buyerPool.DEL_FLG = '0'
+        AND byPoolRelation.DEL_FLG = '0'
+        INNER JOIN br_buyer_marketing_status_history b ON b.BUYER_ID = byPoolRelation.BUYER_ID
+        AND b.DEL_FLG = '0'
+        INNER JOIN br_o_buyer_info a ON a.BUYER_ID = byPoolRelation.BUYER_ID
+        AND a.DEL_FLG = '0'
+        WHERE
+        a.DEL_FLG = '0'
+        AND buyerPool.LGCS_AREA_CODE = #{lgcsAreaCode}
+        AND buyerPool.CITY_CODE = #{cityCode}
+        /** Modif for Bug#2748 at 2016/09/19 by yuan_zhifei Start*/
+        AND a.BUYER_TYPE = #{buyerType}
+        /** Modif for Bug#2748 at 2016/09/19 by yuan_zhifei End*/
+        AND buyerPool.CLASSES_CODE = #{classesCode}
+        AND buyerPool.MACHINING_CODE_U = #{machiningCodeU}
+        <if test="marketingsStatusCla != null and marketingsStatusCla != '' and marketingsStatusCla == 2 and marketingsStatus == ''">
+            AND b.NEW_STATUS_CLASS = '2'
+            AND b.NEW_STATUS_BREED IN (11,13,14,21,22)
+        </if>
+        <if test="marketingsStatusCla != null and marketingsStatusCla != '' and marketingsStatusCla == 98 and marketingsStatus == ''">
+            /*营销期异常买家(停业)*/
+            AND b.OLD_STATUS_BREED IN (01,02)
+            AND b.NEW_STATUS_BREED = '31'
+        </if>
+        <if test="marketingsStatusCla != null and marketingsStatusCla != '' and marketingsStatusCla == 99 and marketingsStatus == ''">
+            /*销售期异常买家(停业)*/
+            AND b.OLD_STATUS_BREED IN (11,13,14,21,22)
+            AND b.NEW_STATUS_BREED = '31'
+        </if>
+        <if test="marketingsStatus !=null and marketingsStatus != '' and marketingsStatus != '31' and marketingsStatus!= '32'">
+            AND b.NEW_STATUS_BREED = #{marketingsStatus}
+        </if>
+        <if test="marketingsStatusCla == '98' and marketingsStatus == '31'">
+            /*停业*/
+            AND b.OLD_STATUS_BREED IN (01,02)
+            AND b.NEW_STATUS_BREED = '31'
+        </if>
+        <if test="marketingsStatusCla == '98' and marketingsStatus == '32'">
+            /*信息错误*/
+            AND b.NEW_STATUS_BREED IN (01,02)
+            AND b.NEW_EXCEPTION_STATUS = '32'
+        </if>
+        <if test="marketingsStatusCla == '99' and marketingsStatus == '31'">
+            /*停业*/
+            AND b.OLD_STATUS_BREED IN (11,13,14,21,22)
+            AND b.NEW_STATUS_BREED = '31'
+        </if>
+        <if test="marketingsStatusCla == '99' and marketingsStatus == '32'">
+            /*信息错误*/
+            AND b.NEW_STATUS_BREED IN (11,13,14,21,22)
+            AND b.NEW_EXCEPTION_STATUS = '32'
+        </if>
+        GROUP BY byPoolRelation.BUYER_ID
+        /*ORDER BY a.MARKETINGS_STATUS*/
+    </select>
+
+    <select id="count" resultType="Integer" parameterType="BaseParam">
+        SELECT
+            COUNT(1)
+            FROM
+            br_file_buyer_pool
+            WHERE DEL_FLG = '0'
+        AND FILE_ID = #{filterMap.fileId}
+    </select>
+
+    <update id="modify" parameterType="com.msk.br.bean.IBR121407RsParam">
+        UPDATE br_file_buyer_pool
+        SET FILE_SERVER_ID = #{fileServerId},
+        FILE_STATUS = '1',
+        UPD_ID = #{updId},
+        UPD_TIME = #{updTime}
+        WHERE FILE_ID = #{fileId}
+    </update>
+
+    <!-- 插入EXCEL文件信息表信息 -->
+    <insert id="save" parameterType = "com.msk.br.bean.IBR121407RsParam">
+        INSERT INTO br_file_buyer_pool
+        (
+        FILE_ID,
+        FILE_SERVER_ID,
+        FILE_NAME,
+        FILE_SUF,
+        FILE_START_TIME,
+        FILE_END_TIME,
+        FILE_CREATE_TIME,
+        FILE_STATUS,
+        POOL_TYPE,
+        LGCS_AREA_CODE,
+        CITY_CODE,
+        BUYER_TYPE,
+        BUYER_SUB_TYPE,
+        CLASSES_CODE,
+        MACHINING_CODE_U,
+        MARKETINGS_PERIOD_NAME,
+        MARKETINGS_STATUS,
+        MARKET_ID,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER
+        )
+        VALUES
+        (
+        #{fileId},
+        #{fileServerId},
+        #{fileName},
+        #{fileSuf},
+        #{fileStartTime},
+        #{fileEndTime},
+        #{fileCreateTime},
+        2,
+        3,
+        #{lgcsAreaCode},
+        #{cityCode},
+        #{buyerType},
+        #{buyerSubType},
+        #{classesCode},
+        #{machiningCodeU},
+        #{marketingsPeriodName},
+        #{marketingsStatus},
+        #{marketId},
+        0,
+        #{crtId},
+        #{crtTime},
+        #{updId},
+        #{updTime},
+        #{actId},
+        #{actTime},
+        1
+        )
+    </insert>
+
+
+    <update id="deleteFlag" parameterType="com.msk.br.bean.IBR121407RsParam" >
+        UPDATE br_file_buyer_pool
+        SET DEL_FLG = '1'
+        ,UPD_ID = #{updId}
+		,UPD_TIME = #{updTime}
+        WHERE FILE_ID = #{fileId}
+    </update>
+
+    <update id="modifyFileStatus" parameterType="com.msk.br.bean.IBR121407RsParam">
+        UPDATE br_file_buyer_pool
+        SET FILE_STATUS = '3'
+        ,UPD_ID = #{updId}
+		,UPD_TIME = #{updTime}
+        WHERE FILE_ID = #{fileId}
+    </update>
+</mapper>

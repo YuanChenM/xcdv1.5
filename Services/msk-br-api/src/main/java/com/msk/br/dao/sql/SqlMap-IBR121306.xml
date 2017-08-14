@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121306Logic">
+    <select id="findPageList" resultType="com.msk.core.entity.BrHkInfo" parameterType="com.msk.br.bean.IBR121306RsParam">
+        SELECT
+            IFNULL(SL_CODE,'') AS slCode,
+            IFNULL(HOUSE_CODE,'') houseCode
+        FROM
+            BR_HK_INFO
+        WHERE
+          DEL_FLG = '0'
+        <if test="hkGroupId!=null and hkGroupId!=''">
+            AND HK_GROUP_ID = #{hkGroupId}
+        </if>
+        <if test="null != hkGroupIds and hkGroupIds.size() > 0">
+            AND HK_GROUP_ID IN
+            <foreach collection="hkGroupIds" item="item" open="(" separator="OR" close=")">
+                 #{item}
+            </foreach>
+        </if>
+        ORDER BY ID
+        <if test="paging==true">
+            LIMIT #{startPos},#{pageSize}
+        </if>
+    </select>
+
+    <select id="getPageCount" resultType="int" parameterType="com.msk.br.bean.IBR121306RsParam">
+        SELECT
+          COUNT(1)
+        FROM
+          BR_HK_INFO
+        WHERE
+          DEL_FLG = '0'
+        <if test="hkGroupId!=null and hkGroupId!=''">
+            AND HK_GROUP_ID = #{hkGroupId}
+        </if>
+        <if test="null != hkGroupIds and hkGroupIds.size() > 0">
+            AND HK_GROUP_ID IN
+            <foreach collection="hkGroupIds" item="item" open="(" separator="OR" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="isExist" resultType="int" parameterType="com.msk.br.bean.IBR121306RsParam">
+        SELECT
+          COUNT(1)
+        FROM
+          BR_HK_INFO
+        WHERE DEL_FLG = '0'
+        AND HOUSE_CODE = #{houseCode}
+        AND  HK_GROUP_ID = #{hkGroupId}
+    </select>
+
+    <update id="modify" parameterType="com.msk.br.bean.IBR121306RsParam">
+        UPDATE BR_HK_INFO
+        SET DEL_FLG = '1'
+        ,LEAVE_TIME = #{leaveTime}
+        ,UPD_ID = #{updId}
+        ,UPD_TIME = #{updTime}
+		WHERE HK_GROUP_ID = #{hkGroupId}
+		<if test="slCode!=null and slCode!=''">
+            AND SL_CODE = #{slCode}
+        </if>
+        <if test="houseCode!=null and houseCode!=''">
+            AND HOUSE_CODE = #{houseCode}
+        </if>
+    </update>
+
+    <insert id="save" parameterType="com.msk.br.bean.IBR121306RsParam">
+        INSERT INTO BR_HK_INFO
+        (
+        ID,
+        HK_GROUP_ID,
+        SL_CODE,
+        HOUSE_CODE,
+        HOUSE_CODE_DIS,
+        HOUSE_TEL,
+        HOUSE_SHOW_NAME,
+        HOUSE_CONTACT,
+        JOIN_TIME,
+        LEAVE_TIME,
+        DEL_FLG,
+        CRT_ID,
+        CRT_TIME,
+        UPD_ID,
+        UPD_TIME,
+        ACT_ID,
+        ACT_TIME,
+        VER)
+        VALUES
+            (
+            #{id},
+            #{hkGroupId},
+            #{slCode},
+            #{houseCode},
+            #{houseCodeDis},
+            #{houseTel},
+            #{houseShowName},
+            #{houseContact},
+            #{joinTime},
+            #{leaveTime},
+            0,
+            #{crtId},
+            #{crtTime},
+            #{updId},
+            #{updTime},
+            #{actId},
+            #{actTime},
+            1)
+    </insert>
+    <select id="findHkGroupForHkInfo" resultType="com.msk.core.entity.BrHkInfo" parameterType="com.msk.br.bean.IBR121306RsParam">
+        SELECT
+            g.HK_GROUP_ID AS hkGroupId,
+            o.HOUSE_CODE AS houseCode,
+            o.SL_CODE AS slCode
+        FROM
+            br_hk_group g,
+            BR_HK_INFO o
+        WHERE
+            g.HK_GROUP_ID = o.HK_GROUP_ID
+            <if test="lgcsAreaCode != null and lgcsAreaCode != ''">
+                AND g.LGCS_AREA_CODE = #{lgcsAreaCode}
+            </if>
+            <if test="cityCode != null and cityCode != ''">
+                AND g.CITY_CODE = #{cityCode}
+            </if>
+            <if test="classesCode != null and classesCode != ''">
+                AND g.CLASSES_CODE = #{classesCode}
+            </if>
+            <if test="machiningCode != null and machiningCode != ''">
+                AND g.MACHINING_CODE_U = #{machiningCode}
+            </if>
+            <if test="buyerType != null and buyerType != ''">
+                AND g.BUYER_TYPE = #{buyerType}
+            </if>
+            <![CDATA[
+            AND DATE_FORMAT(#{creationEndTime} ,'%y-%m-%d 23:59:59') >= o.JOIN_TIME
+            AND (o.LEAVE_TIME is null OR DATE_FORMAT(#{creationEndTime},'%y-%m-%d 00:00:00') <= o.LEAVE_TIME )
+            ]]>
+    </select>
+
+</mapper>

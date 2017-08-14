@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.msk.br.logic.IBR121307Logic">
+
+
+    <select id="findMachiningList" resultType="com.msk.core.entity.BrMPdClasses"
+            parameterType="com.msk.br.bean.IBR121307RsParam">
+        SELECT
+          CLASSES_CODE AS classesCode,
+          CLASSES_NAME AS classesName,
+          MACHINING_CODE_U AS machiningCodeU,
+          MACHINING_NAME_U AS machiningNameU
+        FROM
+          br_m_pd_classes
+        WHERE
+          DEL_FLG = 0
+          AND CLASSES_CODE = #{classesCode}
+        GROUP BY
+          MACHINING_CODE_U
+    </select>
+
+
+    <select id="findClassesList" resultType="com.msk.core.entity.BrMPdClasses"
+            parameterType="com.msk.br.bean.IBR121307RsParam">
+        SELECT
+        DISTINCT(CLASSES_NAME) AS classesName,
+        CLASSES_CODE AS classesCode
+        FROM
+        br_m_pd_classes
+        WHERE
+        DEL_FLG = 0
+    </select>
+
+</mapper>
